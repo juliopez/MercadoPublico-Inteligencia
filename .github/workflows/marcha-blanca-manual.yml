@@ -1,0 +1,113 @@
+name: Marcha blanca - operaciones manuales
+on:
+  workflow_dispatch:
+    inputs:
+      operacion:
+        description: "Proceso que se desea ejecutar"
+        required: true
+        type: choice
+        options:
+          - licitaciones
+          - compra_agil
+          - ordenes_compra
+          - publicar
+          - completa
+      fecha:
+        description: "Fecha a procesar (AAAA-MM-DD); vacío = hoy en Chile"
+        required: false
+        type: string
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: marcha-blanca-observatorio
+  cancel-in-progress: false
+jobs:
+  ejecutar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar dependencias
+        run: pip install --disable-pip-version-check 'gspread==6.2.1' 'google-auth==2.40.3'
+      - name: Definir fecha
+        env:
+          FECHA: ${{ inputs.fecha }}
+        shell: bash
+        run: |
+          fecha="${FECHA:-$(TZ=America/Santiago date +%F)}"
+          if ! [[ "$fecha" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "::error::Fecha inválida (AAAA-MM-DD)"; exit 1
+          fi
+          echo "SYNC_FECHA_2026=$fecha" >> "$GITHUB_ENV"
+      - name: Ejecutar ETL seleccionados (máximo tres intentos por componente)
+        if: ${{ inputs.operacion != 'publicar' }}
+        shell: bash
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SHEET_ID: ${{ vars.GOOGLE_SHEET_ID }}
+          API_MAX_ATTEMPTS: '1'
+          SYNC_MAX_PAGES: '1000'
+          OP: ${{ inputs.operacion }}
+        run: |
+          set -uo pipefail
+          status=0
+          run_etl() {
+            local label="$1"; shift
+            local ok=1
+            for attempt in 1 2 3; do
+              echo "::notice::$label - intento $attempt/3 - $SYNC_FECHA_2026"
+              if "$@"; then ok=0; break; fi
+              if [[ $attempt -lt 3 ]]; then sleep 45; fi
+            done
+            if [[ $ok -ne 0 ]]; then
+              echo "::error::$label falló tras tres intentos. Reejecutar manualmente la misma fecha."
+              status=1
+            fi
+          }
+          if [[ "$OP" == "licitaciones" || "$OP" == "completa" ]]; then
+            run_etl licitaciones env SYNC_MODALIDAD=licitaciones python3 scripts/sync_chilecompra_sheets.py
+          fi
+          if [[ "$OP" == "compra_agil" || "$OP" == "completa" ]]; then
+            run_etl compra_agil env SYNC_MODALIDAD=compra_agil python3 scripts/sync_chilecompra_sheets.py
+          fi
+          if [[ "$OP" == "ordenes_compra" || "$OP" == "completa" ]]; then
+            run_etl ordenes_compra python3 scripts/sync_ordenes_compra_sheets.py
+          fi
+          exit "$status"
+      - name: Generar extracto público desde Google Sheets
+        if: ${{ inputs.operacion == 'publicar' || inputs.operacion == 'completa' }}
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SHEET_ID: ${{ vars.GOOGLE_SHEET_ID }}
+        run: python3 scripts/publicar_observatorio.py
+      - name: Guardar datos publicados
+        if: ${{ inputs.operacion == 'publicar' || inputs.operacion == 'completa' }}
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/observatorio.json
+          if ! git diff --cached --quiet; then
+            git commit -m "data: publicación manual observatorio"
+            git pull --rebase
+            git push
+          fi
+      - name: Configurar Pages
+        if: ${{ inputs.operacion == 'publicar' || inputs.operacion == 'completa' }}
+        uses: actions/configure-pages@v5
+      - name: Empaquetar sitio
+        if: ${{ inputs.operacion == 'publicar' || inputs.operacion == 'completa' }}
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+      - name: Desplegar Pages
+        if: ${{ inputs.operacion == 'publicar' || inputs.operacion == 'completa' }}
+        uses: actions/deploy-pages@v4
