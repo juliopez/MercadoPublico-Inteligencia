@@ -1,0 +1,19 @@
+name: Analizar motivos de seleccion
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  motivos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Consultar motivos
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+        run: python3 scripts/extraer_motivos.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: motivos-seleccion
+          path: output/motivos/motivos.json
+          retention-days: 1
