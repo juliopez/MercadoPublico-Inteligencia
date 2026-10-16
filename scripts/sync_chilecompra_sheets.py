@@ -69,21 +69,21 @@ def fetch(page, start, end):
 
 def main():
     now=datetime.now(timezone.utc)
-    month=int(os.getenv("SYNC_MONTH_2026","10"))
-    if not 1 <= month <= 12: raise SystemExit("SYNC_MONTH_2026 fuera de rango")
-    start=f"2026-{month:02d}-01T00:00:00"
-    year2,month2=(2027,1) if month==12 else (2026,month+1)
-    last=(datetime(year2,month2,1,tzinfo=timezone.utc)-timedelta(days=1)).day
-    end=f"2026-{month:02d}-{last:02d}T23:59:59"
-    if month > now.month and now.year==2026: raise SystemExit("Mes futuro no permitido")
+    fecha=os.getenv("SYNC_FECHA_2026","2026-10-15")
+    try:
+        day=datetime.strptime(fecha,"%Y-%m-%d").date()
+    except ValueError:
+        raise SystemExit("Fecha inválida; usar AAAA-MM-DD")
+    if day.year!=2026 or day>now.date():
+        raise SystemExit("La fecha debe pertenecer a 2026 y no puede ser futura")
+    start=fecha+"T00:00:00"
+    end=fecha+"T23:59:59"
     maxpages=int(os.getenv("SYNC_MAX_PAGES","20"))
     modalidad=os.getenv("SYNC_MODALIDAD","compra_agil")
     if modalidad not in ("compra_agil","licitaciones"):raise SystemExit("Modalidad no admitida")
     found={}
     totalpages=None
     if modalidad=="licitaciones":
-        fecha=os.getenv("SYNC_FECHA_2026","2026-10-01")
-        if not fecha.startswith("2026-") or fecha>now.date().isoformat():raise SystemExit("Fecha fuera de 2026")
         args=urlencode({"fecha":datetime.strptime(fecha,"%Y-%m-%d").strftime("%d%m%Y"),"ticket":TICKET})
         req=Request("https://api.mercadopublico.cl/servicios/v1/publico/licitaciones.json?"+args,headers={"Accept":"application/json"})
         with urlopen(req,timeout=65) as response: data=json.load(response)
@@ -100,13 +100,15 @@ def main():
     else:
       for page in range(1,maxpages+1):
         payload=fetch(page,start,end)
-        pages=(payload.get("paginacion") or {}).get("total_paginas",0)
+        pages=int((payload.get("paginacion") or {}).get("total_paginas") or 0)
+        if pages<1:raise RuntimeError("Paginación ausente: sin escritura")
         totalpages=pages
         batch=payload.get("items") or []
         for item in batch:
             if item.get("codigo"):found[item["codigo"]]=row(item,now.isoformat())
         print(f"Página {page}/{pages}, registros {len(batch)}, únicos {len(found)}",flush=True)
-        if page>=pages or not batch: break
+        if page>=pages: break
+        if not batch:raise RuntimeError("Página vacía antes de completar la paginación: sin escritura")
         time.sleep(1)
     if modalidad=="compra_agil" and totalpages and totalpages>maxpages:
         raise RuntimeError(f"Extracción incompleta: {totalpages} páginas, máximo {maxpages}. No se escribe Google Sheets.")
@@ -118,7 +120,7 @@ def main():
     existing=sheet.get_all_values()
     if not existing or existing[0][:15]!=HEADERS[:15]:
         raise RuntimeError("Cabeceras de Procesos no coinciden con el esquema.")
-    # Escribe filas completas conservando el formato original y la columna P.
+    # Conserva atributos documentales existentes si la API actual no los informa.
     sheet.update(range_name="P1:T1",values=[HEADERS[15:]],value_input_option="RAW")
     index={}
     for n,r in enumerate(existing[1:],start=2):
@@ -129,6 +131,8 @@ def main():
     for code,values in found.items():
         if code in index:
             old=existing[index[code]-1]
+            for k in range(20):
+                if len(old)>k and not values[k] and old[k]:values[k]=old[k]
             for k in (16,17,18):
                 if len(old)>k and old[k] and old[k]!="Sin clasificar":values[k]=old[k]
             updates.append({"range":f"Procesos!A{index[code]}:T{index[code]}","values":[values]})
