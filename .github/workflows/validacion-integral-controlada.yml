@@ -17,7 +17,7 @@ concurrency:
 jobs:
   validar:
     runs-on: ubuntu-latest
-    timeout-minutes: 100
+    timeout-minutes: 20
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -51,7 +51,9 @@ jobs:
           SYNC_MAX_RECORDS: '5'
           SYNC_MANIFEST_FILE: /tmp/validacion_licitaciones.txt
         run: python scripts/sync_chilecompra_sheets.py
-      - name: ETL procesos de Compra Ágil (máximo 5)
+      - name: ETL procesos de Compra Ágil (máximo 5; fallo aislado)
+        id: agile
+        continue-on-error: true
         env:
           SYNC_MODALIDAD: compra_agil
           SYNC_MAX_RECORDS: '5'
@@ -59,20 +61,14 @@ jobs:
           SYNC_MANIFEST_FILE: /tmp/validacion_compra_agil.txt
         shell: bash
         run: |
-          # Máximo tres intentos, separados por 30 minutos. El fallo final detiene publicación.
-          for attempt in 1 2 3; do
-            echo "::notice title=Compra Ágil::Intento $attempt/3 para la fecha $SYNC_FECHA_2026"
-            if python scripts/sync_chilecompra_sheets.py; then
-              echo "::notice title=Compra Ágil::Extracción completada"
-              exit 0
-            fi
-            if [ "$attempt" -lt 3 ]; then
-              echo "::warning title=API temporalmente no disponible::Reintento en 30 minutos"
-              sleep 1800
-            fi
-          done
-          echo "::error title=Compra Ágil fallida::Tres intentos agotados; no publicar"
-          exit 1
+          # Un intento por esta validación: 504 ya se confirmó tres veces.
+          if python scripts/sync_chilecompra_sheets.py; then
+            echo "status=completo" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=pendiente" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Compra Ágil pendiente::La API falló; se continúa con licitaciones"
+            exit 1
+          fi
       - name: Detalle de licitaciones (máximo 5)
         env:
           DETAIL_FECHA: ${{ inputs.fecha }}
@@ -86,14 +82,31 @@ jobs:
           DETAIL_OFFSET: '0'
           DETAIL_MAX_CODES: '5'
           DETAIL_MANIFEST_FILE: /tmp/validacion_compra_agil.txt
+        if: steps.agile.outcome == 'success'
+        continue-on-error: true
         run: python scripts/etl_multiproceso_manual.py
+      - name: Registrar cobertura y pendientes de la prueba
+        shell: bash
+        run: |
+          mkdir -p data
+          python - <<'PY'
+          import json,os,datetime
+          payload={"fecha_publicacion":os.environ["SYNC_FECHA_2026"],
+                   "tipo":"validacion_controlada",
+                   "licitaciones":"procesos_recuperados; detalle requiere revisión de logs",
+                   "compra_agil":"${{ steps.agile.outcome }}",
+                   "completitud":"parcial" if "${{ steps.agile.outcome }}"!="success" else "sujeta_a_validacion",
+                   "nota":"La publicación no certifica cobertura completa de ofertas ni adjudicaciones"}
+          with open("data/estado_cobertura.json","w",encoding="utf-8") as out:json.dump(payload,out,ensure_ascii=False,indent=2)
+          print("COBERTURA",json.dumps(payload,ensure_ascii=False))
+          PY
       - name: Exportar Google Sheets a JSON público
         run: python scripts/publicar_observatorio.py
-      - name: Publicar sólo si todos los ETL terminaron bien
+      - name: Publicar con cobertura explícita (parcial si Compra Ágil falló)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/observatorio.json
+          git add data/observatorio.json data/estado_cobertura.json
           if ! git diff --cached --quiet; then
             git commit -m "data: validación integral del Observatorio"
             git push
