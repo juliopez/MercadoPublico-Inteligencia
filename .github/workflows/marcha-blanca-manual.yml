@@ -75,6 +75,9 @@ jobs:
           if [[ "$OP" == "licitaciones" || "$OP" == "completa" ]]; then
             run_etl licitaciones env SYNC_MODALIDAD=licitaciones python3 scripts/sync_chilecompra_sheets.py
           fi
+          if [[ "$OP" == "licitaciones" || "$OP" == "completa" ]]; then
+            run_etl licitaciones_resultados python3 scripts/sync_resultados_licitaciones.py
+          fi
           if [[ "$OP" == "compra_agil" || "$OP" == "completa" ]]; then
             run_etl compra_agil env SYNC_MODALIDAD=compra_agil python3 scripts/sync_chilecompra_sheets.py
           fi
