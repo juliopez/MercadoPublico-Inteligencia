@@ -10,7 +10,15 @@ from google.oauth2.service_account import Credentials
 
 SHEET_ID = os.environ["GOOGLE_SHEET_ID"]
 TICKET = os.environ["CHILECOMPRA_TICKET"]
-SA = json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
+RAW_SA = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
+if not RAW_SA:
+    raise SystemExit("Falta GOOGLE_SERVICE_ACCOUNT_JSON en GitHub Secrets; sin cambios.")
+try:
+    SA = json.loads(RAW_SA)
+except json.JSONDecodeError:
+    raise SystemExit("GOOGLE_SERVICE_ACCOUNT_JSON no es JSON valido; sin cambios.")
+if not isinstance(SA, dict) or not SA.get("client_email") or not SA.get("private_key"):
+    raise SystemExit("Credencial Google incompleta; sin cambios.")
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 HEADERS = ["codigo","nombre","estado","convocatoria","fecha_publicacion","fecha_cierre",
            "fecha_ultimo_cambio","monto_disponible_clp","organismo_comprador",
