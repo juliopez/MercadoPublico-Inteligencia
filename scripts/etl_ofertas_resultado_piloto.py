@@ -3,6 +3,7 @@
 import json, os, sys, time
 from datetime import datetime, timezone
 from urllib.request import Request, urlopen
+from urllib.error import HTTPError, URLError
 import gspread
 from google.oauth2.service_account import Credentials
 
@@ -24,8 +25,16 @@ if len(keys)!=len(set(keys)):sys.exit("DATA_ERROR: IDs de cotización duplicados
 resultkeys=[r[0] for r in oldre[1:] if r and r[0]]
 if len(resultkeys)!=len(set(resultkeys)):sys.exit("DATA_ERROR: procesos duplicados en Resultados")
 url="https://api2.mercadopublico.cl/v2/compra-agil/"+CODE
-with urlopen(Request(url,headers={"ticket":token,"Accept":"application/json"}),timeout=55) as rsp:
-    data=json.load(rsp)
+try:
+    with urlopen(Request(url,headers={"ticket":token,"Accept":"application/json"}),timeout=55) as rsp:
+        data=json.load(rsp)
+except HTTPError as exc:
+    retry_after = exc.headers.get("Retry-After") if exc.headers else None
+    print(f"API_TEMPORAL_ERROR HTTP={exc.code} retry_after={retry_after or 'no_informado'}; escrituras=0", flush=True)
+    sys.exit(2)
+except (URLError, TimeoutError) as exc:
+    print(f"API_CONNECTIVITY_ERROR {type(exc).__name__}; escrituras=0", flush=True)
+    sys.exit(2)
 p=data.get("payload") or {}
 if p.get("codigo")!=CODE:sys.exit("API_ERROR: código no coincide")
 offers=p.get("proveedores_cotizando") or []
