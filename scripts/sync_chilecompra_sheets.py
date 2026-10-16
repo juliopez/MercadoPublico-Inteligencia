@@ -91,7 +91,7 @@ def main():
             # El listado básico puede carecer de FechaPublicacion; usar fecha de consulta,
             # NO confundir con FechaCreacion del objeto de respuesta (fecha de consulta).
             publicada=x.get("FechaPublicacion") or fecha
-            found[str(code)]=list(map(safe,[code,x.get("Nombre"),estado,"",publicada,x.get("FechaCierre"),x.get("FechaAdjudicacion"),x.get("MontoEstimado"),b.get("NombreOrganismo"),b.get("RutUnidad"),b.get("NombreUnidad"),b.get("RegionUnidad"),"","","",now.isoformat(),"Sin clasificar","Sin clasificar","","Licitación"]))
+            found[str(code)]=list(map(safe,[code,x.get("Nombre"),estado,"",publicada,x.get("FechaCierre"),"",x.get("MontoEstimado"),b.get("NombreOrganismo"),b.get("RutUnidad"),b.get("NombreUnidad"),b.get("RegionUnidad"),"","","",now.isoformat(),"Sin clasificar","Sin clasificar","","Licitación"]))
         print("API_V1_LICITACIONES",fecha,"registros",len(found),flush=True)
     else:
       for page in range(1,maxpages+1):
@@ -108,6 +108,10 @@ def main():
         time.sleep(1)
     if modalidad=="compra_agil" and totalpages and totalpages>maxpages:
         raise RuntimeError(f"Extracción incompleta: {totalpages} páginas, máximo {maxpages}. No se escribe Google Sheets.")
+    cap=int(os.getenv("SYNC_MAX_RECORDS","0"))
+    if cap>0:
+        found=dict(list(found.items())[:cap])
+        print("LIMITE_VALIDACION",cap,"registros",len(found),flush=True)
     if not found:
         print("Sin registros para ventana; no se cambia la hoja.")
         return
