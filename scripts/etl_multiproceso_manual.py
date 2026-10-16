@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 import gspread
+from api_retry import fetch_json
 from google.oauth2.service_account import Credentials
 
 CODES=("2284-520-COT26","425-325-COT26","2927-370-COT26")
@@ -37,8 +38,7 @@ for n,code in enumerate(CODES):
     if n:time.sleep(3)
     try:
         request=Request("https://api2.mercadopublico.cl/v2/compra-agil/"+code,headers={"ticket":ticket,"Accept":"application/json"})
-        with urlopen(request,timeout=40) as response:
-            data=json.load(response)
+        data=fetch_json(request,timeout=40,label="Detalle "+code)
         payload=data.get("payload") or {}
         offers=payload.get("proveedores_cotizando")
         if payload.get("codigo")!=code or not isinstance(offers,list) or not offers:
@@ -53,7 +53,7 @@ for n,code in enumerate(CODES):
         print("API_OK",code,"ofertas",len(offers),flush=True)
     except HTTPError as err:
         failures[code]="HTTP_"+str(err.code)
-        print("API_PENDIENTE",code,failures[code],flush=True)
+        print("::warning title=Proceso pendiente::"+code+": "+failures[code]+". Esperar unos minutos y volver a ejecutar manualmente.",flush=True)
     except (URLError,TimeoutError,ValueError) as err:
         failures[code]=type(err).__name__
         print("API_PENDIENTE",code,failures[code],flush=True)
@@ -115,3 +115,7 @@ start=2+len(prior)
 audit.update(range_name=f"D{start}:K{start+len(entries)-1}",values=entries,value_input_option="RAW")
 print("CONTROL_OK","registros_auditoria",len(entries),flush=True)
 print("ETL_MULTIPROCESO_OK",json.dumps({"correctos":len(success),"pendientes":failures,"ofertas_totales":len(all_ids),"resultados_totales":len(all_codes)},ensure_ascii=False),flush=True)
+
+if failures:
+    print(f"::warning title=Extracción parcial::{len(failures)} procesos pendientes; vuelva a ejecutar manualmente más tarde. No se han sobrescrito datos de procesos fallidos.",flush=True)
+    raise SystemExit(2)
