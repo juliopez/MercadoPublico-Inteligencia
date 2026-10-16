@@ -1,0 +1,6 @@
+.env
+.env.*
+output/
+*.db
+*.sqlite
+__pycache__/
