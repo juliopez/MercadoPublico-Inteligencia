@@ -114,10 +114,10 @@ def main():
     creds=Credentials.from_service_account_info(SA,scopes=SCOPES)
     sheet=gspread.authorize(creds).open_by_key(SHEET_ID).worksheet("Procesos")
     existing=sheet.get_all_values()
-    if not existing or existing[0][:15]!=HEADERS[:15]:
+    if not existing or existing[0][:20]!=HEADERS:
         raise RuntimeError("Cabeceras de Procesos no coinciden con el esquema.")
     # Conserva atributos documentales existentes si la API actual no los informa.
-    sheet.update(range_name="P1:T1",values=[HEADERS[15:]],value_input_option="RAW")
+    # No modificar cabeceras ni columnas opcionales U:W tras la migración.
     index={}
     for n,r in enumerate(existing[1:],start=2):
         if r and r[0]:
@@ -131,6 +131,7 @@ def main():
                 if len(old)>k and not values[k] and old[k]:values[k]=old[k]
             for k in (16,17,18):
                 if len(old)>k and old[k] and old[k]!="Sin clasificar":values[k]=old[k]
+            # Solo actualizar el contrato base A:T: las columnas añadidas permanecen intactas.
             updates.append({"range":f"Procesos!A{index[code]}:T{index[code]}","values":[values]})
         else:appends.append(values)
     # API batch update of values, in manageable batches.
