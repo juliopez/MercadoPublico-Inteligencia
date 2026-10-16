@@ -1,8 +1,6 @@
 name: Incremental diario ChileCompra (procesos)
 on:
-  schedule:
-    # 16:00 UTC es mediodía o 13:00 en Chile continental según horario de verano.
-    - cron: '0 16 * * *'
+  # La programación diaria se habilitará solo después de limpiar Sheets e importar CSV históricos.
   workflow_dispatch:
 permissions:
   contents: write
