@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """ETL manual multiproceso: errores aislados y selección separada del contrato."""
-import json, os, time
+import json, os, time, re
 from datetime import datetime, timezone
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
@@ -26,7 +26,7 @@ candidates=[]
 for p in process_rows:
     code=str(p.get("codigo") or "").strip()
     day=str(p.get("fecha_publicacion") or "")[:10]
-    if code.endswith("-COT26") and (not TARGET_DATE or day==TARGET_DATE):
+    if re.search(r"-COT\\d{2}$",code) and (not TARGET_DATE or day==TARGET_DATE):
         candidates.append(code)
 CODES=tuple(dict.fromkeys(candidates))[:MAX_CODES]
 print("DETALLE_PLAN",len(CODES),"procesos seleccionados","fecha",TARGET_DATE or "sin filtro","limite",MAX_CODES,flush=True)
