@@ -121,30 +121,44 @@ def main():
     creds=Credentials.from_service_account_info(SA,scopes=SCOPES)
     sheet=gspread.authorize(creds).open_by_key(SHEET_ID).worksheet("Procesos")
     existing=sheet.get_all_values()
-    if not existing or existing[0][:20]!=HEADERS:
-        raise RuntimeError("Cabeceras de Procesos no coinciden con el esquema.")
-    # Conserva atributos documentales existentes si la API actual no los informa.
-    # No modificar cabeceras ni columnas opcionales U:W tras la migración.
+    if not existing:
+        raise RuntimeError("Hoja Procesos sin cabeceras")
+    columns=existing[0]
+    required=("codigo","nombre","estado","fecha_publicacion","organismo_comprador","modalidad")
+    if len(columns)!=len(set(columns)) or any(h not in columns for h in required):
+        raise RuntimeError("Esquema Procesos inválido: columnas obligatorias ausentes o repetidas")
+    # Proyectar por nombres, no posiciones: admite la reducción controlada de columnas.
+    code_col=columns.index("codigo")
     index={}
     for n,r in enumerate(existing[1:],start=2):
-        if r and r[0]:
-            if r[0] in index:raise RuntimeError("Código duplicado en Sheets")
-            index[r[0]]=n
-    updates=[]; appends=[]
-    for code,values in found.items():
+        code=r[code_col] if len(r)>code_col else ""
+        if code:
+            if code in index:raise RuntimeError("Código duplicado en Sheets")
+            index[code]=n
+    def col_letter(n):
+        out=""
+        while n:
+            n,rem=divmod(n-1,26)
+            out=chr(65+rem)+out
+        return out
+    last=col_letter(len(columns))
+    updates=[];appends=[]
+    for code,api_values in found.items():
+        by_name=dict(zip(HEADERS,api_values))
+        new=[by_name.get(h,"") for h in columns]
         if code in index:
             old=existing[index[code]-1]
-            for k in range(20):
-                if len(old)>k and not values[k] and old[k]:values[k]=old[k]
-            for k in (16,17,18):
-                if len(old)>k and old[k] and old[k]!="Sin clasificar":values[k]=old[k]
-            # Solo actualizar el contrato base A:T: las columnas añadidas permanecen intactas.
-            updates.append({"range":f"Procesos!A{index[code]}:T{index[code]}","values":[values]})
-        else:appends.append(values)
-    # API batch update of values, in manageable batches.
+            for k,h in enumerate(columns):
+                previous=old[k] if k<len(old) else ""
+                if not new[k] and previous:new[k]=previous
+                if h in ("categoria","subcategoria","codigo_categoria_oficial") and previous and previous!="Sin clasificar":
+                    new[k]=previous
+                if h not in HEADERS:new[k]=previous
+            updates.append({"range":f"Procesos!A{index[code]}:{last}{index[code]}","values":[new]})
+        else:appends.append(new)
     for i in range(0,len(updates),100):
         sheet.spreadsheet.values_batch_update({"valueInputOption":"RAW","data":updates[i:i+100]})
-    if appends:sheet.append_rows(appends,value_input_option="RAW",table_range="A:T")
+    if appends:sheet.append_rows(appends,value_input_option="RAW",table_range=f"A:{last}")
     print(f"Sincronizados: {len(updates)} actualizados, {len(appends)} nuevos.")
 
 if __name__=="__main__":
