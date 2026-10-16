@@ -2,7 +2,7 @@
 """Carga manual idempotente de órdenes de compra publicadas en una fecha.
 No infiere adjudicaciones ni vínculos con procesos ausentes en la fuente.
 """
-import json, os
+import json, os, time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from urllib.parse import urlencode
@@ -43,6 +43,18 @@ def main():
     mapped={}
     for item in records:
         if not isinstance(item,dict): raise RuntimeError("OC sin objeto válido")
+        # La lista diaria informa datos básicos; el código ofrece el detalle oficial.
+        if not item.get("Proveedor") or item.get("Total") is None:
+            detail_code=text(val(item,"Codigo","codigo")).strip()
+            if not detail_code: raise RuntimeError("OC sin código en listado")
+            detail_req=Request(URL+"?"+urlencode({"codigo":detail_code,"ticket":ticket}),headers={"Accept":"application/json"})
+            detail=fetch_json(detail_req,timeout=65,label="Detalle OC "+detail_code)
+            candidates=detail.get("Listado") if isinstance(detail,dict) else None
+            if not isinstance(candidates,list):raise RuntimeError("Detalle OC sin listado: "+detail_code)
+            selected=next((d for d in candidates if str(d.get("Codigo") or "")==detail_code),None)
+            if not selected:raise RuntimeError("Código de OC no coincide: "+detail_code)
+            item=selected
+            time.sleep(float(os.getenv("OC_DETAIL_DELAY_SECONDS","0.2")))
         code = text(val(item,"Codigo","codigo")).strip()
         if not code or code in mapped: raise RuntimeError("Código OC ausente o repetido")
         fechas=item.get("Fechas") or {}
