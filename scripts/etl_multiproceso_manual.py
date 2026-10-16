@@ -91,4 +91,27 @@ if len(all_ids)!=len(set(all_ids)) or len(all_codes)!=len(set(all_codes)):
 for code,offers,result in success:
     if not all(row[10] in all_ids for row in offers) or code not in all_codes:
         raise SystemExit("ERROR_VERIFICACION: lote incompleto")
+# Registro histórico en Control!D:K, sin alterar metadatos existentes A:B.
+audit=book.worksheet("Control")
+audit_headers=["fecha_utc","codigo","http_resultado","estado_extraccion","ofertas_recuperadas","ofertas_insertadas","ofertas_actualizadas","observacion"]
+current=audit.get("D1:K1")
+if current and current[0] and current[0]!=audit_headers:
+    raise SystemExit("ERROR_CONTROL: encabezados D:K no coinciden; revisar antes de escribir")
+if not current or not current[0]:
+    audit.update(range_name="D1:K1",values=[audit_headers],value_input_option="RAW")
+stamp=datetime.now(timezone.utc).isoformat()
+entries=[]
+for code,offers,result in success:
+    ids={row[10] for row in offers}
+    inserted=sum(row[10] in ids for row in o_new)
+    updated=sum(op["values"][0][10] in ids for op in o_updates)
+    entries.append([stamp,code,"200","completo",len(offers),inserted,updated,"Selección informada; OC pública no verificada"])
+for code,reason in failures.items():
+    http=reason.split("_",1)[1] if reason.startswith("HTTP_") else ""
+    entries.append([stamp,code,http,"pendiente",0,0,0,reason])
+# Añadir filas D:K después del último registro de auditoría, preservando A:B.
+prior=audit.get("D2:D")
+start=2+len(prior)
+audit.update(range_name=f"D{start}:K{start+len(entries)-1}",values=entries,value_input_option="RAW")
+print("CONTROL_OK","registros_auditoria",len(entries),flush=True)
 print("ETL_MULTIPROCESO_OK",json.dumps({"correctos":len(success),"pendientes":failures,"ofertas_totales":len(all_ids),"resultados_totales":len(all_codes)},ensure_ascii=False),flush=True)
