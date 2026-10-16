@@ -6,18 +6,20 @@ from pathlib import Path
 import gspread
 from google.oauth2.service_account import Credentials
 
-NAMES=("Procesos","Ofertas","Resultados")
+NAMES=("Procesos","Ofertas","Resultados","OrdenesCompra")
 # Lista explícita: no se publica RUT, identificadores internos de OC, metadatos de control ni credenciales.
 PUBLIC={
 "Procesos":("codigo","nombre","estado","convocatoria","fecha_publicacion","fecha_cierre","monto_disponible_clp","organismo_comprador","region","total_ofertas_recibidas","motivo_seleccion","url_detalle","categoria","subcategoria","modalidad"),
 "Ofertas":("codigo","proveedor","monto_ofertado_clp","fecha_oferta","fuente","seleccionado","id_cotizacion"),
-"Resultados":("codigo","adjudicatario","monto_adjudicado_clp","fecha_resultado","motivo_seleccion","fuente","validado","id_cotizacion_ganadora","monto_oferta_seleccionada_clp","estado_verificacion_oc")
+"Resultados":("codigo","adjudicatario","monto_adjudicado_clp","fecha_resultado","motivo_seleccion","fuente","validado","id_cotizacion_ganadora","monto_oferta_seleccionada_clp","estado_verificacion_oc"),
+"OrdenesCompra":("codigo_oc","codigo_proceso","fecha_creacion","fecha_aceptacion","estado","proveedor","monto_total_oc_clp","tipo_oc","cantidad_lineas","total_lineas_neto")
 }
 # Solo metadatos públicos no sensibles; las columnas son opcionales durante la migración.
 OPTIONAL_PUBLIC={
 "Procesos":("fuente_registro","estado_cobertura_detalle"),
 "Ofertas":("url_documento_oferta","nivel_visibilidad"),
-"Resultados":("tipo_resultado","fuente_adjudicacion","codigo_oc_publica","url_documento_publico","id_linea_adjudicacion","clave_resultado")
+"Resultados":("tipo_resultado","fuente_adjudicacion","codigo_oc_publica","url_documento_publico","id_linea_adjudicacion","clave_resultado"),
+"OrdenesCompra":()
 }
 def main():
     sa=json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
