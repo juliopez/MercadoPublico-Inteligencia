@@ -17,7 +17,7 @@ PUBLIC={
 OPTIONAL_PUBLIC={
 "Procesos":("fuente_registro","estado_cobertura_detalle"),
 "Ofertas":("url_documento_oferta","nivel_visibilidad"),
-"Resultados":("tipo_resultado","fuente_adjudicacion","codigo_oc_publica","url_documento_publico")
+"Resultados":("tipo_resultado","fuente_adjudicacion","codigo_oc_publica","url_documento_publico","id_linea_adjudicacion","clave_resultado")
 }
 def main():
     sa=json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
