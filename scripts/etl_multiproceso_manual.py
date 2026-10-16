@@ -35,6 +35,26 @@ ws_o=book.worksheet("Ofertas");ws_r=book.worksheet("Resultados")
 orig_o=ws_o.get_all_values();orig_r=ws_r.get_all_values()
 if orig_o[0][:17]!=OHEAD or orig_r[0][:14]!=RHEAD:
     raise SystemExit("ERROR_ESQUEMA: encabezados no coinciden; sin escrituras")
+# Las extensiones del esquema son opcionales y deben estar después del contrato base.
+OEXTRA=("url_documento_oferta","nivel_visibilidad","fecha_actualizacion_fuente")
+REXTRA=("tipo_resultado","fuente_adjudicacion","codigo_oc_publica","url_documento_publico")
+def validate_extensions(headers,base,extras):
+    tail=headers[len(base):]
+    if any(name in headers[:len(base)] for name in extras):
+        raise SystemExit("ERROR_ESQUEMA: columnas extendidas dentro del bloque base")
+    if any(name in tail for name in extras):
+        expected=[name for name in extras if name in tail]
+        actual=[name for name in tail if name in extras]
+        if expected!=actual:raise SystemExit("ERROR_ESQUEMA: orden de columnas extendidas")
+    return headers
+o_headers=validate_extensions(orig_o[0],OHEAD,OEXTRA)
+r_headers=validate_extensions(orig_r[0],RHEAD,REXTRA)
+def extend(base,headers,extras,values):
+    # Nunca emitir datos más allá de las columnas conocidas ni inventar documentos públicos.
+    result=base+[""]*max(0,len(headers)-len(base))
+    for key,val in values.items():
+        if key in extras and key in headers:result[headers.index(key)]=val
+    return result
 o_index={};r_index={}
 # Clave compuesta: el identificador de oferta puede repetirse en procesos distintos.
 for i,r in enumerate(orig_o[1:],start=2):
@@ -90,7 +110,7 @@ for code,offers,result in success:
             idx=o_index[key];old=orig_o[idx-1];merged=merge(row,old)
             if merged!=merge([""]*17,old):
                 o_updates.append({"range":f"Ofertas!A{idx}:Q{idx}","values":[merged]})
-        else:o_new.append(row)
+        else:o_new.append(extend(row,o_headers,OEXTRA,{"nivel_visibilidad":"no disponible"}))
     if result is None:continue
     if code in r_index:
         idx=r_index[code];old=orig_r[idx-1]
@@ -99,13 +119,13 @@ for code,offers,result in success:
         merged=merge(result,old)
         if merged!=merge([""]*14,old):
             r_updates.append({"range":f"Resultados!A{idx}:N{idx}","values":[merged]})
-    else:r_new.append(result)
+    else:r_new.append(extend(result,r_headers,REXTRA,{"tipo_resultado":"oferta_seleccionada"}))
 print("PLAN","procesos_ok",len(success),"fallidos",len(failures),"ofertas_nuevas",len(o_new),"ofertas_actualizar",len(o_updates),"resultados_nuevos",len(r_new),flush=True)
 # Procesos fallidos nunca entran en los lotes de escritura.
 if o_updates:book.values_batch_update({"valueInputOption":"RAW","data":o_updates})
-if o_new:ws_o.append_rows(o_new,value_input_option="RAW",table_range="A:Q")
+if o_new:ws_o.append_rows(o_new,value_input_option="RAW")
 if r_updates:book.values_batch_update({"valueInputOption":"RAW","data":r_updates})
-if r_new:ws_r.append_rows(r_new,value_input_option="RAW",table_range="A:N")
+if r_new:ws_r.append_rows(r_new,value_input_option="RAW")
 after_o=ws_o.get_all_values();after_r=ws_r.get_all_values()
 all_ids=[(r[0],r[10]) for r in after_o[1:] if len(r)>10 and r[0] and r[10]]
 all_codes=[r[0] for r in after_r[1:] if r and r[0]]
