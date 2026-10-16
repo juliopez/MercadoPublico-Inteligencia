@@ -25,6 +25,7 @@ HEADERS = ["codigo","nombre","estado","convocatoria","fecha_publicacion","fecha_
            "rut_organismo","unidad_compra","region","total_ofertas_recibidas",
            "motivo_seleccion","url_detalle","fecha_sincronizacion","categoria","subcategoria","codigo_categoria_oficial","modalidad"]
 BASE="https://api2.mercadopublico.cl/v2/compra-agil"
+LICITACION_ESTADOS={"5":"Publicada","6":"Cerrada","7":"Desierta","8":"Adjudicada","18":"Revocada","19":"Suspendida"}
 
 def value(obj, key):
     return (obj or {}).get(key) or ""
@@ -94,8 +95,13 @@ def main():
             if not isinstance(b,dict):b={}
             code=x.get("CodigoExterno")
             if not code:raise RuntimeError("Licitación sin código; sin escrituras")
-            clase=x.get("Tipo") or x.get("TipoLicitacion") or ""
-            found[str(code)]=list(map(safe,[code,x.get("Nombre"),x.get("CodigoEstado"),"",x.get("FechaPublicacion"),x.get("FechaCierre"),x.get("FechaAdjudicacion"),x.get("MontoEstimado"),b.get("NombreOrganismo"),b.get("RutUnidad"),b.get("NombreUnidad"),b.get("RegionUnidad"),"","","",now.isoformat(),"Sin clasificar","Sin clasificar","","Licitación "+str(clase)]))
+            estado_code=str(x.get("CodigoEstado") or "")
+            estado=x.get("Estado") or LICITACION_ESTADOS.get(estado_code) or ("Código "+estado_code if estado_code else "")
+            # La API V1 documenta que fecha=DDMMAAAA lista licitaciones publicadas ese día.
+            # El listado básico puede carecer de FechaPublicacion; usar fecha de consulta,
+            # NO confundir con FechaCreacion del objeto de respuesta (fecha de consulta).
+            publicada=x.get("FechaPublicacion") or fecha
+            found[str(code)]=list(map(safe,[code,x.get("Nombre"),estado,"",publicada,x.get("FechaCierre"),x.get("FechaAdjudicacion"),x.get("MontoEstimado"),b.get("NombreOrganismo"),b.get("RutUnidad"),b.get("NombreUnidad"),b.get("RegionUnidad"),"","","",now.isoformat(),"Sin clasificar","Sin clasificar","","Licitación"]))
         print("API_V1_LICITACIONES",fecha,"registros",len(found),flush=True)
     else:
       for page in range(1,maxpages+1):
