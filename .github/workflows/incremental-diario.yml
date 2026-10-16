@@ -14,7 +14,7 @@ concurrency:
 jobs:
   incremental:
     runs-on: ubuntu-latest
-    timeout-minutes: 355
+    timeout-minutes: 240
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "SYNC_FECHA_2026=$(TZ=America/Santiago date +%F)" >> "$GITHUB_ENV"
           echo "Fecha de carga incremental: $(TZ=America/Santiago date +%F)"
-      - name: Extraer procesos por modalidad con recuperación cada 30 minutos
+      - name: Extraer procesos por modalidad (un intento HTTP por ciclo; reintentos cada 30 minutos)
         id: extract
         shell: bash
         env:
@@ -40,6 +40,7 @@ jobs:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           GOOGLE_SHEET_ID: ${{ vars.GOOGLE_SHEET_ID }}
           SYNC_MAX_PAGES: '20'
+          API_MAX_ATTEMPTS: '1'
         run: |
           failures=0
           for mode in licitaciones compra_agil; do
