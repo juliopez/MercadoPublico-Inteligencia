@@ -89,9 +89,9 @@ function populate(){
 }
 function situation(p){
  const raw=String(p.estado||'').trim().toLowerCase();
- const r=sets.resultados.find(x=>x.codigo===p.codigo);
+ const rs=sets.resultados.filter(x=>x.codigo===p.codigo);
  // Adjudicación contractual: exigir referencia contractual, no solo oferta seleccionada.
- const verified=Boolean(r&&String(r.adjudicatario||'').trim()&&String(r.validado||'').toLowerCase().includes('si'));
+ const verified=rs.some(r=>String(r.adjudicatario||'').trim()&&String(r.validado||'').toLowerCase().startsWith('si'));
  if(verified)return 'adjudicado';
  if(/desiert/.test(raw))return 'desierto';
  if(/revoc|cancel|anulad|invalid/.test(raw))return 'cancelado';
@@ -273,10 +273,12 @@ function companyProfile(){
 function detail(code){
  const p=sets.procesos.find(x=>x.codigo===code);if(!p)return;
  const offers=sets.ofertas.filter(x=>x.codigo===code);
- const r=sets.resultados.find(x=>x.codigo===code);
+ const results=sets.resultados.filter(x=>x.codigo===code);
+ const r=results.find(x=>x.tipo_resultado==='oferta_seleccionada')||results.find(x=>x.id_cotizacion_ganadora)||results[0];
  const selected=offers.filter(o=>['1','true','sí','si'].includes(String(o.seleccionado||'').toLowerCase()));
  const official=Number(p.total_ofertas_recibidas),hasOfficial=String(p.total_ofertas_recibidas||'').trim()!==''&&Number.isFinite(official);
- const verified=Boolean(r&&r.adjudicatario&&String(r.validado||'').trim().toLowerCase().startsWith('si'));
+ const verifiedResults=results.filter(x=>x.adjudicatario&&String(x.validado||'').trim().toLowerCase().startsWith('si'));
+ const verified=verifiedResults.length>0;
  const winnerOffer=r?.id_cotizacion_ganadora?offers.find(o=>o.id_cotizacion===r.id_cotizacion_ganadora):null;
  currentProcess=code;updateFavoriteButtons();$('detailTitle').textContent=p.nombre||code;
  $('facts').innerHTML=facts(p,[['codigo','Código'],['estado','Estado informado por ChileCompra'],['modalidad','Modalidad'],['categoria','Categoría'],['subcategoria','Subcategoría'],['organismo_comprador','Organismo comprador'],['region','Región'],['fecha_publicacion','Publicación'],['fecha_cierre','Cierre'],['monto_disponible_clp','Presupuesto disponible CLP']]);
@@ -286,12 +288,12 @@ function detail(code){
  ['Ofertas individuales disponibles',String(offers.length)],
  ['Oferta seleccionada',winnerOffer?.proveedor||selected.map(o=>o.proveedor).filter(Boolean).join(', ')|| (r?.id_cotizacion_ganadora?'ID '+r.id_cotizacion_ganadora:'No identificada')],
  ['Monto de oferta seleccionada CLP',r?.monto_oferta_seleccionada_clp?fmt(r.monto_oferta_seleccionada_clp):(selected[0]?.monto_ofertado_clp?fmt(selected[0].monto_ofertado_clp):'No informado')],
- ['Adjudicatario contractual',verified?r.adjudicatario:'No verificado'],
- ['Monto adjudicado CLP',verified&&r.monto_adjudicado_clp?fmt(r.monto_adjudicado_clp):'No verificado'],
+ ['Adjudicatario contractual',verified?verifiedResults.map(x=>x.adjudicatario).filter(Boolean).join(' / '):'No verificado'],
+ ['Monto adjudicado CLP',verified?verifiedResults.map(x=>x.monto_adjudicado_clp?fmt(x.monto_adjudicado_clp):'No informado').join(' / '):'No verificado'],
  ['Motivo de selección',r?.motivo_seleccion||p.motivo_seleccion||'No informado']
  ].map(([label,value])=>'<div><dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd></div>').join('')+'</dl><p class="muted" style="font-size:12px">El total oficial de ofertas puede ser mayor que las ofertas individuales actualmente recuperadas. Oferta seleccionada no implica adjudicación contractual.</p>';
  $('offerDetails').innerHTML=offers.length?'<table><thead><tr><th>Proveedor</th><th>Oferta CLP</th><th>Seleccionada</th></tr></thead><tbody>'+offers.map(o=>'<tr><td>'+esc(o.proveedor||'No informado')+'</td><td>'+esc(fmt(o.monto_ofertado_clp))+'</td><td>'+esc(['1','true','sí','si'].includes(String(o.seleccionado||'').toLowerCase())?'Sí':'No')+'</td></tr>').join('')+'</tbody></table>':'<p class="muted">Todavía no hay ofertas individuales recuperadas para este proceso.</p>';
- $('resultDetails').innerHTML=r?'<dl class="facts">'+facts(r,[['id_cotizacion_ganadora','Identificador de oferta seleccionada'],['monto_oferta_seleccionada_clp','Monto oferta seleccionada CLP'],['adjudicatario','Adjudicatario informado'],['monto_adjudicado_clp','Monto contractual CLP'],['estado_verificacion_oc','Estado de verificación'],['fecha_resultado','Fecha del resultado']])+'</dl>':'<p class="muted">No existe un resultado individual publicado para este proceso.</p>';
+ $('resultDetails').innerHTML=results.length?results.map((item,i)=>'<p class="muted">Resultado '+(i+1)+' de '+results.length+'</p><dl class="facts">'+facts(item,[['tipo_resultado','Tipo de resultado'],['id_linea_adjudicacion','Línea adjudicada'],['id_cotizacion_ganadora','Identificador de oferta seleccionada'],['monto_oferta_seleccionada_clp','Monto oferta seleccionada CLP'],['adjudicatario','Adjudicatario informado'],['monto_adjudicado_clp','Monto contractual CLP'],['estado_verificacion_oc','Estado de verificación'],['fecha_resultado','Fecha del resultado']])+'</dl>').join(''):'<p class="muted">No existe un resultado individual publicado para este proceso.</p>';
  if(p.url_detalle&&/^https:\/\//i.test(p.url_detalle))$('resultDetails').innerHTML+='<p><a href="'+esc(p.url_detalle)+'" target="_blank" rel="noopener noreferrer">Consultar proceso en ChileCompra ↗</a></p>';
  $('detailPanel').hidden=false;$('detailPanel').scrollIntoView({behavior:'smooth',block:'start'});
 }
