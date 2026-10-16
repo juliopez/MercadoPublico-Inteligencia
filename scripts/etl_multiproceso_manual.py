@@ -36,10 +36,12 @@ orig_o=ws_o.get_all_values();orig_r=ws_r.get_all_values()
 if orig_o[0][:17]!=OHEAD or orig_r[0][:14]!=RHEAD:
     raise SystemExit("ERROR_ESQUEMA: encabezados no coinciden; sin escrituras")
 o_index={};r_index={}
+# Clave compuesta: el identificador de oferta puede repetirse en procesos distintos.
 for i,r in enumerate(orig_o[1:],start=2):
-    if len(r)>10 and r[10]:
-        if r[10] in o_index:raise SystemExit("DUPLICADOS_OFERTAS: sin escrituras")
-        o_index[r[10]]=i
+    if len(r)>10 and r[0] and r[10]:
+        key=(r[0],r[10])
+        if key in o_index:raise SystemExit("DUPLICADOS_OFERTAS: sin escrituras")
+        o_index[key]=i
 for i,r in enumerate(orig_r[1:],start=2):
     if r and r[0]:
         if r[0] in r_index:raise SystemExit("DUPLICADOS_RESULTADOS: sin escrituras")
@@ -83,7 +85,7 @@ def merge(new,old):
 o_updates=[];o_new=[];r_updates=[];r_new=[]
 for code,offers,result in success:
     for row in offers:
-        key=row[10]
+        key=(row[0],row[10])
         if key in o_index:
             idx=o_index[key];old=orig_o[idx-1];merged=merge(row,old)
             if merged!=merge([""]*17,old):
@@ -105,12 +107,12 @@ if o_new:ws_o.append_rows(o_new,value_input_option="RAW",table_range="A:Q")
 if r_updates:book.values_batch_update({"valueInputOption":"RAW","data":r_updates})
 if r_new:ws_r.append_rows(r_new,value_input_option="RAW",table_range="A:N")
 after_o=ws_o.get_all_values();after_r=ws_r.get_all_values()
-all_ids=[r[10] for r in after_o[1:] if len(r)>10 and r[10]]
+all_ids=[(r[0],r[10]) for r in after_o[1:] if len(r)>10 and r[0] and r[10]]
 all_codes=[r[0] for r in after_r[1:] if r and r[0]]
 if len(all_ids)!=len(set(all_ids)) or len(all_codes)!=len(set(all_codes)):
     raise SystemExit("ERROR_VERIFICACION: duplicados detectados")
 for code,offers,result in success:
-    if not all(row[10] in all_ids for row in offers) or (result is not None and code not in all_codes):
+    if not all((row[0],row[10]) in all_ids for row in offers) or (result is not None and code not in all_codes):
         raise SystemExit("ERROR_VERIFICACION: lote incompleto")
 # Registro histórico en Control!D:K, sin alterar metadatos existentes A:B.
 audit=book.worksheet("Control")
@@ -123,9 +125,9 @@ if not current or not current[0]:
 stamp=datetime.now(timezone.utc).isoformat()
 entries=[]
 for code,offers,result in success:
-    ids={row[10] for row in offers}
-    inserted=sum(row[10] in ids for row in o_new)
-    updated=sum(op["values"][0][10] in ids for op in o_updates)
+    ids={(row[0],row[10]) for row in offers}
+    inserted=sum((row[0],row[10]) in ids for row in o_new)
+    updated=sum((op["values"][0][0],op["values"][0][10]) in ids for op in o_updates)
     entries.append([stamp,code,"200","completo",len(offers),inserted,updated,"Selección informada; OC pública no verificada" if result is not None else "Ofertas recuperadas; sin proveedor seleccionado"])
 for code,reason in failures.items():
     http=reason.split("_",1)[1] if reason.startswith("HTTP_") else ""
