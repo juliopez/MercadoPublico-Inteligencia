@@ -1,5 +1,28 @@
 # Esquema de datos objetivo — Observatorio Mercado Público
 
+> **Decisión vigente (16-10-2026, prevalece sobre propuestas antiguas de este documento):** el contrato de datos se determina por campos efectivamente disponibles en la API oficial de ChileCompra utilizada por los ETL, no por columnas adicionales de los CSV históricos. Las columnas extendidas enumeradas más abajo son propuestas condicionadas, **no autorizaciones para crearlas**. No crear `OrdenesCompra` ni nuevas columnas únicamente por existir en CSV. Mantener metadatos técnicos mínimos y privados para idempotencia, auditoría y recuperación.
+
+## Puesta en marcha: carga histórica reducida
+- Límite **provisional**, no objetivo de volumen ni capacidad probada: hasta 10.000 procesos, 20.000 ofertas y 10.000 resultados (40.000 filas entre las tres tablas).
+- Esos máximos no son cuotas a completar: si la API no respalda claves o atributos, importar menos.
+- Selección cronológica reproducible por año y modalidad, sin seleccionar solamente ganadores o procesos exitosos.
+- Integridad referencial obligatoria: cada oferta y resultado debe vincularse a un proceso incluido; nunca inventar identificadores de oferta ausentes.
+- **Compra Ágil histórico:** si el CSV carece de `id_cotizacion`, no inventarlo ni usar automáticamente la misma clave de la API. La importación de ofertas queda supeditada a una clave verificable; en caso contrario, importar solo los procesos compatibles.
+- Licitaciones históricas: no incorporar adjudicaciones por línea, archivos adjuntos ni montos si los campos equivalentes no se confirman en la API.
+- La cuota de diez procesos en GitHub Actions solo pertenece a la **validación única** y no al incremental definitivo.
+- Los ZIP oficiales permanecen intactos; el filtrado histórico será una etapa de transformación separada, sin alterar los CSV originales.
+- Antes de cualquier importación: cerrar validación integral, respaldar Sheets, revisar cabeceras definitivas y limpiar filas de prueba.
+- **Estado:** ninguna importación histórica autorizada todavía; cron diario desactivado.
+
+## Auditoría de alcance por tabla
+| Hoja | Respaldado por API usada actualmente | Técnicos privados | Condicionados / no aprobados |
+|---|---|---|---|
+| Procesos | codigo, nombre, estado, fechas disponibles, monto, comprador, región, número de ofertas cuando se informe, modalidad | fecha_sincronizacion, fuente_registro | fecha_ultimo_cambio no debe recibir FechaAdjudicacion; clasificaciones no extraídas de API deben distinguirse como internas |
+| Ofertas | datos publicados en el detalle V2 de Compra Ágil (proveedor, monto, id_cotizacion, selección, fecha, estado cuando exista) | fuente, fecha_extraccion, id_oc_interno | enlaces documentales y ofertas individuales de licitaciones, hasta comprobar exposición en API |
+| Resultados | selección V2 comprobable; adjudicaciones V1 solo si detalle verificable las identifica | validado, estado_verificacion_oc, clave_resultado si es imprescindible | contratos, adjudicatarios múltiples y PDF no inferibles de CSV por sí solo |
+| Control / Ejecuciones | No son atributos de API | bitácora de fallos y reintentos | ninguna información operativa se publica como dato de contratación |
+
+
 **Estado:** propuesta de migración, sin alterar la base actual. Aplicar tras cierre de ETL y antes de importar los CSV históricos. No activar carga diaria antes de validar el nuevo esquema.
 
 ## Principios
