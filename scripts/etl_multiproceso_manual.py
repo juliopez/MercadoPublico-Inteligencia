@@ -11,6 +11,7 @@ from google.oauth2.service_account import Credentials
 # Solo se consultan procesos Compra Ágil existentes en Sheets; lote limitado.
 # La selección publicada el mismo día normalmente no existe todavía.
 MAX_CODES=max(1,min(100,int(os.getenv("DETAIL_MAX_CODES","10"))))
+OFFSET=max(0,int(os.getenv("DETAIL_OFFSET","0")))
 TARGET_DATE=os.getenv("DETAIL_FECHA","").strip()
 if TARGET_DATE:
     datetime.strptime(TARGET_DATE,"%Y-%m-%d")
@@ -28,8 +29,8 @@ for p in process_rows:
     day=str(p.get("fecha_publicacion") or "")[:10]
     if re.search(r"-COT\d{2}$",code) and (not TARGET_DATE or day==TARGET_DATE):
         candidates.append(code)
-CODES=tuple(dict.fromkeys(candidates))[:MAX_CODES]
-print("DETALLE_PLAN",len(CODES),"procesos seleccionados","fecha",TARGET_DATE or "sin filtro","limite",MAX_CODES,flush=True)
+CODES=tuple(dict.fromkeys(candidates))[OFFSET:OFFSET+MAX_CODES]
+print("DETALLE_PLAN",len(CODES),"procesos seleccionados","fecha",TARGET_DATE or "sin filtro","limite",MAX_CODES,"desde_indice",OFFSET,flush=True)
 ws_o=book.worksheet("Ofertas");ws_r=book.worksheet("Resultados")
 orig_o=ws_o.get_all_values();orig_r=ws_r.get_all_values()
 if orig_o[0][:17]!=OHEAD or orig_r[0][:14]!=RHEAD:
@@ -57,8 +58,11 @@ for n,code in enumerate(CODES):
         data=fetch_json(request,timeout=40,label="Detalle "+code)
         payload=data.get("payload") or {}
         offers=payload.get("proveedores_cotizando")
-        if payload.get("codigo")!=code or not isinstance(offers,list) or not offers:
+        if payload.get("codigo")!=code or not isinstance(offers,list):
             raise ValueError("Respuesta incompleta")
+        if not offers:
+            print("SIN_OFERTAS_PUBLICAS",code,"sin escritura y sin adjudicación inferida",flush=True)
+            continue
         ids=[str(o.get("id_cotizacion") or "") for o in offers]
         winners=[o for o in offers if o.get("proveedor_seleccionado") in (True,1,"1")]
         if not all(ids) or len(ids)!=len(set(ids)) or len(winners)>1:
@@ -70,7 +74,7 @@ for n,code in enumerate(CODES):
     except HTTPError as err:
         failures[code]="HTTP_"+str(err.code)
         print("::warning title=Proceso pendiente::"+code+": "+failures[code]+". Esperar unos minutos y volver a ejecutar manualmente.",flush=True)
-    except (URLError,TimeoutError,ValueError) as err:
+    except (URLError,TimeoutError,ValueError,KeyError,TypeError) as err:
         failures[code]=type(err).__name__
         print("API_PENDIENTE",code,failures[code],flush=True)
 # Conserva valores existentes donde la API entrega vacío.
