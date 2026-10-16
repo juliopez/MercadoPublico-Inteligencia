@@ -19,7 +19,7 @@ if not rows or rows[0][0]!="codigo":sys.exit("Esquema invalido")
 existing={row[0]:row for row in rows[1:] if row}
 now=datetime.now(timezone.utc)
 params={"publicado_desde":(now-timedelta(days=7)).strftime("%Y-%m-%dT00:00:00"),
-"publicado_hasta":now.strftime("%Y-%m-%dT23:59:59"),"q":"capacitacion","tamano_pagina":10,"numero_pagina":1}
+"publicado_hasta":now.strftime("%Y-%m-%dT23:59:59"),"tamano_pagina":10,"numero_pagina":1}
 url="https://api2.mercadopublico.cl/v2/compra-agil?"+urlencode(params)
 with urlopen(Request(url,headers={"ticket":ticket,"Accept":"application/json"}),timeout=45) as response:
     body=json.load(response)
