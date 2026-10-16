@@ -45,19 +45,21 @@ def main():
         if not isinstance(item,dict): raise RuntimeError("OC sin objeto válido")
         code = text(val(item,"Codigo","codigo")).strip()
         if not code or code in mapped: raise RuntimeError("Código OC ausente o repetido")
+        fechas=item.get("Fechas") or {}
+        items=item.get("Items") or {}
         prov = val(item,"Proveedor","proveedor")
         if isinstance(prov,dict): prov=val(prov,"Nombre","RazonSocial","nombre")
         row = [
             code,
             val(item,"CodigoLicitacion","codigo_licitacion","CodigoProceso"),
-            val(item,"FechaCreacion","fecha_creacion"),
-            val(item,"FechaAceptacion","fecha_aceptacion"),
-            val(item,"Estado","estado"),
+            val(fechas,"FechaCreacion") or val(item,"FechaCreacion","fecha_creacion"),
+            val(fechas,"FechaAceptacion") or val(item,"FechaAceptacion","fecha_aceptacion"),
+            val(item,"Estado","estado","CodigoEstado"),
             prov,
-            val(item,"Total","MontoTotal","monto_total"),
+            val(item,"Total","MontoTotal","monto_total") if val(item,"TipoMoneda") in ("","CLP") else "",
             val(item,"Tipo","tipo","CodigoTipo"),
-            val(item,"CantidadLineas","cantidad_lineas"),
-            val(item,"TotalLineasNeto","total_lineas_neto")
+            val(items,"Cantidad") or val(item,"CantidadLineas","cantidad_lineas"),
+            val(item,"TotalNeto","TotalLineasNeto","total_lineas_neto")
         ]
         mapped[code]=[text(v) for v in row]
     sa=json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
