@@ -15,7 +15,7 @@ Opciones:
 - `publicar`: exporta exclusivamente información pública de Google Sheets a `data/observatorio.json` y despliega Pages, sin llamar ChileCompra.
 - `completa`: ejecuta las tres categorías y después publica si todas finalizaron correctamente.
 
-**Fecha**: `AAAA-MM-DD`; vacía equivale a hoy en Chile. La misma fecha puede ejecutarse nuevamente para recuperar fallas. Máximo 3 intentos por componente en el workflow; entre fallas, se conserva la información anterior. Los registros ausentes en respuestas de la API no se interpretan como eliminaciones.
+**Fecha**: `AAAA-MM-DD`, obligatoria en el formulario; no se infiere la fecha actual. Se rechazan fechas inexistentes o futuras. La misma fecha puede ejecutarse nuevamente para recuperar fallas. En la opción `publicar`, la fecha introducida no filtra los datos: se exporta el estado actual completo de Sheets. Máximo 3 intentos por componente en el workflow; entre fallas, se conserva la información anterior. Los registros ausentes en respuestas de la API no se interpretan como eliminaciones.
 
 Para desplegar únicamente cambios del frontend, existe el workflow manual `pages.yml`.
 
