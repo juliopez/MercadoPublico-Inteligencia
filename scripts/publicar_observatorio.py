@@ -13,6 +13,12 @@ PUBLIC={
 "Ofertas":("codigo","proveedor","monto_ofertado_clp","fecha_oferta","estado_oferta","seleccionado","id_cotizacion"),
 "Resultados":("codigo","adjudicatario","monto_adjudicado_clp","fecha_resultado","motivo_seleccion","validado","id_cotizacion_ganadora","monto_oferta_seleccionada_clp","estado_verificacion_oc")
 }
+# Solo metadatos públicos no sensibles; las columnas son opcionales durante la migración.
+OPTIONAL_PUBLIC={
+"Procesos":("fuente_registro","estado_cobertura_detalle"),
+"Ofertas":("url_documento_oferta","nivel_visibilidad"),
+"Resultados":("tipo_resultado","fuente_adjudicacion","codigo_oc_publica","url_documento_publico")
+}
 def main():
     sa=json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
     cred=Credentials.from_service_account_info(sa,scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"])
@@ -25,9 +31,10 @@ def main():
         needed=PUBLIC[name]
         absent=[col for col in needed if col not in heads]
         if absent:raise RuntimeError(f"Faltan columnas en {name}: {absent}")
-        indices=[heads.index(col) for col in needed]
+        columns=needed+tuple(col for col in OPTIONAL_PUBLIC[name] if col in heads)
+        indices=[heads.index(col) for col in columns]
         result["tablas"][name.lower()]=[
-          {key:(row[i] if i<len(row) else "") for key,i in zip(needed,indices)}
+          {key:(row[i] if i<len(row) else "") for key,i in zip(columns,indices)}
           for row in values[1:] if row and row[0].strip()
         ]
     output=Path("data/observatorio.json")
