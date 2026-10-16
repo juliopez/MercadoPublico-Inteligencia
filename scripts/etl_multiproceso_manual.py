@@ -37,28 +37,26 @@ CODES=tuple(dict.fromkeys(candidates))[OFFSET:OFFSET+MAX_CODES]
 print("DETALLE_PLAN",len(CODES),"procesos seleccionados","fecha",TARGET_DATE or "sin filtro","limite",MAX_CODES,"desde_indice",OFFSET,flush=True)
 ws_o=book.worksheet("Ofertas");ws_r=book.worksheet("Resultados")
 orig_o=ws_o.get_all_values();orig_r=ws_r.get_all_values()
-if orig_o[0][:17]!=OHEAD or orig_r[0][:14]!=RHEAD:
-    raise SystemExit("ERROR_ESQUEMA: encabezados no coinciden; sin escrituras")
-# Las extensiones del esquema son opcionales y deben estar después del contrato base.
-OEXTRA=("url_documento_oferta","nivel_visibilidad","fecha_actualizacion_fuente")
-REXTRA=("tipo_resultado","fuente_adjudicacion","codigo_oc_publica","url_documento_publico","id_linea_adjudicacion","clave_resultado")
-def validate_extensions(headers,base,extras):
-    tail=headers[len(base):]
-    if any(name in headers[:len(base)] for name in extras):
-        raise SystemExit("ERROR_ESQUEMA: columnas extendidas dentro del bloque base")
-    if any(name in tail for name in extras):
-        expected=[name for name in extras if name in tail]
-        actual=[name for name in tail if name in extras]
-        if expected!=actual:raise SystemExit("ERROR_ESQUEMA: orden de columnas extendidas")
-    return headers
-o_headers=validate_extensions(orig_o[0],OHEAD,OEXTRA)
-r_headers=validate_extensions(orig_r[0],RHEAD,REXTRA)
+# Esquema reducido: negocio visible y claves necesarias para idempotencia.
+OKEEP=["codigo","proveedor","monto_ofertado_clp","fecha_oferta","fuente","id_cotizacion","seleccionado"]
+RKEEP=["codigo","adjudicatario","monto_adjudicado_clp","fecha_resultado","motivo_seleccion","fuente","validado","id_cotizacion_ganadora","monto_oferta_seleccionada_clp","estado_verificacion_oc"]
+if not orig_o or orig_o[0]!=OKEEP or not orig_r or orig_r[0]!=RKEEP:
+    raise SystemExit("ERROR_ESQUEMA: se requieren cabeceras reducidas exactas; sin escrituras")
+def expand(rows,keys,legacy):
+    return [legacy]+[[dict(zip(keys,r)).get(h,"") for h in legacy] for r in rows[1:]]
+def projected(row,legacy,keep):
+    data=dict(zip(legacy,row))
+    return [data.get(h,"") for h in keep]
+def col(n):
+    out=""
+    while n:
+        n,r=divmod(n-1,26);out=chr(65+r)+out
+    return out
+orig_o=expand(orig_o,OKEEP,OHEAD)
+orig_r=expand(orig_r,RKEEP,RHEAD)
+o_headers=OHEAD;r_headers=RHEAD
 def extend(base,headers,extras,values):
-    # Nunca emitir datos más allá de las columnas conocidas ni inventar documentos públicos.
-    result=base+[""]*max(0,len(headers)-len(base))
-    for key,val in values.items():
-        if key in extras and key in headers:result[headers.index(key)]=val
-    return result
+    return base
 o_index={};r_index={}
 # Clave compuesta: el identificador de oferta puede repetirse en procesos distintos.
 for i,r in enumerate(orig_o[1:],start=2):
@@ -116,8 +114,8 @@ for code,offers,result in success:
             idx=o_index[key];old=orig_o[idx-1];merged=merge(row,old)
             # Las columnas opcionales no se sobrescriben al actualizar datos base.
             if merged!=old[:17]:
-                o_updates.append({"range":f"Ofertas!A{idx}:Q{idx}","values":[merged]})
-        else:o_new.append(extend(row,o_headers,OEXTRA,{"nivel_visibilidad":"no disponible"}))
+                o_updates.append({"range":f"Ofertas!A{idx}:{col(len(OKEEP))}{idx}","values":[projected(merged,OHEAD,OKEEP)]})
+        else:o_new.append(projected(row,OHEAD,OKEEP))
     if result is None:continue
     result_key=(code,"seleccion:"+str(result[9]))
     fallback=(code,"legacy")
@@ -138,7 +136,7 @@ for code,offers,result in success:
                 result[col]=old[col] if len(old)>col else ""
         merged=merge(result,old)
         if merged!=old[:14]:
-            r_updates.append({"range":f"Resultados!A{idx}:N{idx}","values":[merged]})
+            r_updates.append({"range":f"Resultados!A{idx}:{col(len(RKEEP))}{idx}","values":[projected(merged,RHEAD,RKEEP)]})
         # Clasificar registros antiguos solo cuando no exista otra clasificación.
         if "clave_resultado" in r_headers:
             key_col=r_headers.index("clave_resultado")
@@ -150,14 +148,14 @@ for code,offers,result in success:
             col=r_headers.index("tipo_resultado")
             # Posición O corresponde a la primera columna ampliada.
             r_updates.append({"range":f"Resultados!{chr(65+col)}{idx}","values":[["oferta_seleccionada"]]})
-    else:r_new.append(extend(result,r_headers,REXTRA,{"tipo_resultado":"oferta_seleccionada","clave_resultado":result_key[1]}))
+    else:r_new.append(projected(result,RHEAD,RKEEP))
 print("PLAN","procesos_ok",len(success),"fallidos",len(failures),"ofertas_nuevas",len(o_new),"ofertas_actualizar",len(o_updates),"resultados_nuevos",len(r_new),flush=True)
 # Procesos fallidos nunca entran en los lotes de escritura.
 if o_updates:book.values_batch_update({"valueInputOption":"RAW","data":o_updates})
 if o_new:ws_o.append_rows(o_new,value_input_option="RAW")
 if r_updates:book.values_batch_update({"valueInputOption":"RAW","data":r_updates})
 if r_new:ws_r.append_rows(r_new,value_input_option="RAW")
-after_o=ws_o.get_all_values();after_r=ws_r.get_all_values()
+after_o=expand(ws_o.get_all_values(),OKEEP,OHEAD);after_r=expand(ws_r.get_all_values(),RKEEP,RHEAD)
 all_ids=[(r[0],r[10]) for r in after_o[1:] if len(r)>10 and r[0] and r[10]]
 all_codes=[(r[0],r[r_headers.index("clave_resultado")] if "clave_resultado" in r_headers and len(r)>r_headers.index("clave_resultado") and r[r_headers.index("clave_resultado")] else ("seleccion:"+r[9] if len(r)>9 and r[9] else "legacy")) for r in after_r[1:] if r and r[0]]
 if len(all_ids)!=len(set(all_ids)) or len(all_codes)!=len(set(all_codes)):
@@ -177,8 +175,8 @@ stamp=datetime.now(timezone.utc).isoformat()
 entries=[]
 for code,offers,result in success:
     ids={(row[0],row[10]) for row in offers}
-    inserted=sum((row[0],row[10]) in ids for row in o_new)
-    updated=sum((op["values"][0][0],op["values"][0][10]) in ids for op in o_updates)
+    inserted=sum((row[0],row[OKEEP.index("id_cotizacion")]) in ids for row in o_new)
+    updated=sum((op["values"][0][0],op["values"][0][OKEEP.index("id_cotizacion")]) in ids for op in o_updates)
     entries.append([stamp,code,"200","completo",len(offers),inserted,updated,"Selección informada; OC pública no verificada" if result is not None else "Ofertas recuperadas; sin proveedor seleccionado"])
 for code,reason in failures.items():
     http=reason.split("_",1)[1] if reason.startswith("HTTP_") else ""
