@@ -23,7 +23,7 @@ SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 HEADERS = ["codigo","nombre","estado","convocatoria","fecha_publicacion","fecha_cierre",
            "fecha_ultimo_cambio","monto_disponible_clp","organismo_comprador",
            "rut_organismo","unidad_compra","region","total_ofertas_recibidas",
-           "motivo_seleccion","url_detalle","fecha_sincronizacion","categoria","subcategoria","codigo_categoria_oficial"]
+           "motivo_seleccion","url_detalle","fecha_sincronizacion","categoria","subcategoria","codigo_categoria_oficial","modalidad"]
 BASE="https://api2.mercadopublico.cl/v2/compra-agil"
 
 def value(obj, key):
@@ -45,7 +45,7 @@ def row(item, now):
         value(f,"fecha_ultimo_cambio"),value(m,"monto_disponible_clp"),
         value(i,"organismo_comprador"),value(i,"rut"),value(i,"unidad_compra"),
         value(i,"nombre_region"),value(r,"total_ofertas_recibidas"),
-        value(motive,"motivo_seleccion"),value(links,"detalle"),now,"Sin clasificar","Sin clasificar",""]))
+        value(motive,"motivo_seleccion"),value(links,"detalle"),now,"Sin clasificar","Sin clasificar","","Compra Ágil"]))
 
 def fetch(page, start, end):
     args={"publicado_desde":start,"publicado_hasta":end,
@@ -77,9 +77,28 @@ def main():
     end=f"2026-{month:02d}-{last:02d}T23:59:59"
     if month > now.month and now.year==2026: raise SystemExit("Mes futuro no permitido")
     maxpages=int(os.getenv("SYNC_MAX_PAGES","20"))
+    modalidad=os.getenv("SYNC_MODALIDAD","compra_agil")
+    if modalidad not in ("compra_agil","licitaciones"):raise SystemExit("Modalidad no admitida")
     found={}
     totalpages=None
-    for page in range(1,maxpages+1):
+    if modalidad=="licitaciones":
+        fecha=os.getenv("SYNC_FECHA_2026","2026-10-01")
+        if not fecha.startswith("2026-") or fecha>now.date().isoformat():raise SystemExit("Fecha fuera de 2026")
+        args=urlencode({"fecha":datetime.strptime(fecha,"%Y-%m-%d").strftime("%d%m%Y"),"ticket":TICKET})
+        req=Request("https://api.mercadopublico.cl/servicios/v1/publico/licitaciones.json?"+args,headers={"Accept":"application/json"})
+        with urlopen(req,timeout=65) as response: data=json.load(response)
+        if not isinstance(data,dict) or not isinstance(data.get("Listado"),list):raise RuntimeError("Formato V1 no reconocido")
+        if data.get("Cantidad") is not None and int(data["Cantidad"])!=len(data["Listado"]):raise RuntimeError("Listado V1 incompleto")
+        for x in data["Listado"]:
+            b=x.get("Comprador") or {}
+            if not isinstance(b,dict):b={}
+            code=x.get("CodigoExterno")
+            if not code:raise RuntimeError("Licitación sin código; sin escrituras")
+            clase=x.get("Tipo") or x.get("TipoLicitacion") or ""
+            found[str(code)]=list(map(safe,[code,x.get("Nombre"),x.get("CodigoEstado"),"",x.get("FechaPublicacion"),x.get("FechaCierre"),x.get("FechaAdjudicacion"),x.get("MontoEstimado"),b.get("NombreOrganismo"),b.get("RutUnidad"),b.get("NombreUnidad"),b.get("RegionUnidad"),"","","",now.isoformat(),"Sin clasificar","Sin clasificar","","Licitación "+str(clase)]))
+        print("API_V1_LICITACIONES",fecha,"registros",len(found),flush=True)
+    else:
+      for page in range(1,maxpages+1):
         payload=fetch(page,start,end)
         pages=(payload.get("paginacion") or {}).get("total_paginas",0)
         totalpages=pages
@@ -89,7 +108,7 @@ def main():
         print(f"Página {page}/{pages}, registros {len(batch)}, únicos {len(found)}",flush=True)
         if page>=pages or not batch: break
         time.sleep(1)
-    if totalpages and totalpages>maxpages:
+    if modalidad=="compra_agil" and totalpages and totalpages>maxpages:
         raise RuntimeError(f"Extracción incompleta: {totalpages} páginas, máximo {maxpages}. No se escribe Google Sheets.")
     if not found:
         print("Sin registros para ventana; no se cambia la hoja.")
@@ -100,7 +119,7 @@ def main():
     if not existing or existing[0][:15]!=HEADERS[:15]:
         raise RuntimeError("Cabeceras de Procesos no coinciden con el esquema.")
     # Escribe filas completas conservando el formato original y la columna P.
-    sheet.update(range_name="P1:S1",values=[HEADERS[15:]],value_input_option="RAW")
+    sheet.update(range_name="P1:T1",values=[HEADERS[15:]],value_input_option="RAW")
     index={}
     for n,r in enumerate(existing[1:],start=2):
         if r and r[0]:
@@ -112,12 +131,12 @@ def main():
             old=existing[index[code]-1]
             for k in (16,17,18):
                 if len(old)>k and old[k] and old[k]!="Sin clasificar":values[k]=old[k]
-            updates.append({"range":f"Procesos!A{index[code]}:S{index[code]}","values":[values]})
+            updates.append({"range":f"Procesos!A{index[code]}:T{index[code]}","values":[values]})
         else:appends.append(values)
     # API batch update of values, in manageable batches.
     for i in range(0,len(updates),100):
         sheet.spreadsheet.values_batch_update({"valueInputOption":"RAW","data":updates[i:i+100]})
-    if appends:sheet.append_rows(appends,value_input_option="RAW",table_range="A:S")
+    if appends:sheet.append_rows(appends,value_input_option="RAW",table_range="A:T")
     print(f"Sincronizados: {len(updates)} actualizados, {len(appends)} nuevos.")
 
 if __name__=="__main__":
