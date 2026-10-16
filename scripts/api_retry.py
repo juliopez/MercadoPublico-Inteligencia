@@ -5,8 +5,8 @@ from urllib.request import urlopen
 
 TEMPORARY=(429,502,503,504)
 
-def fetch_json(req, timeout=50, label="API", attempts=4):
-    attempts=max(1,min(4,int(os.getenv("API_MAX_ATTEMPTS",str(attempts)))))
+def fetch_json(req, timeout=50, label="API", attempts=3):
+    attempts=max(1,min(3,int(os.getenv("API_MAX_ATTEMPTS",str(attempts)))))
     last_error=None
     for i in range(attempts):
         try:
