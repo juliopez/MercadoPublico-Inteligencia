@@ -1,0 +1,15 @@
+name: Inspeccionar pistas para OC candidata
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pistas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Examinar identificadores y fechas sin divulgar valores
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+        run: python3 scripts/pistas_oc_candidato.py
