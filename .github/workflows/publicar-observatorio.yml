@@ -3,12 +3,17 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  pages: write
+  id-token: write
 concurrency:
-  group: publicar-datos-observatorio
+  group: pages
   cancel-in-progress: false
 jobs:
   exportar:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -34,3 +39,12 @@ jobs:
             git commit -m "data: actualizar extracto de Google Sheets"
             git push
           fi
+      - name: Preparar GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Empaquetar sitio y extracto
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+      - name: Desplegar frontend con datos
+        id: deployment
+        uses: actions/deploy-pages@v4
