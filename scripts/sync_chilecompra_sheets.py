@@ -41,7 +41,7 @@ def row(item, now):
 
 def fetch(page, start, end):
     args={"publicado_desde":start,"publicado_hasta":end,
-          "tamano_pagina":50,"numero_pagina":page}
+          "q":"capacitacion","tamano_pagina":50,"numero_pagina":page}
     req=Request(BASE+"?"+urlencode(args),headers={"ticket":TICKET,"Accept":"application/json"})
     for attempt in range(3):
         try:
