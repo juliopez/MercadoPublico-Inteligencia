@@ -1,0 +1,11 @@
+codigo;tematica;organismo;proveedor;monto;resultado
+DEMO-001-COT26;Power BI;Organismo demo A;OTEC Alfa;950000;No seleccionado
+DEMO-001-COT26;Power BI;Organismo demo A;OTEC Beta;1180000;Adjudicado
+DEMO-001-COT26;Power BI;Organismo demo A;OTEC Gamma;1320000;No seleccionado
+DEMO-002-COT26;Inteligencia artificial;Organismo demo B;OTEC Alfa;1440000;Adjudicado
+DEMO-002-COT26;Inteligencia artificial;Organismo demo B;OTEC Gamma;1670000;No seleccionado
+DEMO-003-COT26;SQL;Organismo demo C;OTEC Beta;870000;No seleccionado
+DEMO-003-COT26;SQL;Organismo demo C;OTEC Gamma;790000;Adjudicado
+DEMO-004-COT26;Power BI;Organismo demo B;OTEC Alfa;1100000;No seleccionado
+DEMO-004-COT26;Power BI;Organismo demo B;OTEC Beta;1240000;Adjudicado
+DEMO-005-COT26;Excel;Organismo demo A;OTEC Gamma;680000;Adjudicado
