@@ -10,15 +10,10 @@ on:
           - compra_agil
           - licitaciones
       fecha_2026:
-        description: "Fecha licitaciones V1 (AAAA-MM-DD)"
-        default: "2026-10-01"
+        description: "Fecha de publicación para ambas modalidades (AAAA-MM-DD)"
+        default: "2026-10-15"
         type: string
         required: true
-      mes_2026:
-        description: 'Mes de 2026 (01 a 12), una ventana por ejecución'
-        required: true
-        default: '10'
-        type: string
 permissions:
   contents: read
 concurrency:
@@ -42,6 +37,5 @@ jobs:
           GOOGLE_SHEET_ID: ${{ vars.GOOGLE_SHEET_ID }}
           SYNC_MODALIDAD: ${{ inputs.modalidad }}
           SYNC_FECHA_2026: ${{ inputs.fecha_2026 }}
-          SYNC_MONTH_2026: ${{ inputs.mes_2026 }}
           SYNC_MAX_PAGES: '20'
         run: python3 scripts/sync_chilecompra_sheets.py
