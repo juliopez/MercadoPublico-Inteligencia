@@ -65,8 +65,8 @@ def main():
         day=datetime.strptime(fecha,"%Y-%m-%d").date()
     except ValueError:
         raise SystemExit("Fecha inválida; usar AAAA-MM-DD")
-    if day.year!=2026 or day>now.date():
-        raise SystemExit("La fecha debe pertenecer a 2026 y no puede ser futura")
+    if day>datetime.now(__import__("zoneinfo").ZoneInfo("America/Santiago")).date():
+        raise SystemExit("La fecha no puede ser futura en Chile")
     start=fecha+"T00:00:00"
     end=fecha+"T23:59:59"
     maxpages=int(os.getenv("SYNC_MAX_PAGES","20"))
