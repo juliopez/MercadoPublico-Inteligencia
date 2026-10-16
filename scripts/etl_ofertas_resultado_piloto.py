@@ -53,7 +53,7 @@ for key,values in incoming.items():
     else:appends.append(values)
 # Campos contractuales permanecen vacíos explícitamente.
 motive=(p.get("motivos") or {}).get("motivo_seleccion")
-selection=list(map(v,[CODE,"","","","",motive,"API Compra Ágil V2 - detalle","No: OC pública no verificada",
+selection=list(map(v,[CODE,"","","","","",motive,"API Compra Ágil V2 - detalle","No: OC pública no verificada",
 winner.get("id_cotizacion"),winner.get("monto_total"),winner.get("id_oc"),
 "Pendiente de verificar OC pública",now]))
 if len(oldre[0])<14:re.update(range_name="J1:N1",values=[MORE],value_input_option="RAW")
