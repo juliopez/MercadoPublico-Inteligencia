@@ -1,40 +1,29 @@
-# Observatorio Mercado Público · Piloto v0.1
+# Observatorio Mercado Público — marcha blanca manual
 
-Dashboard estático inicial para estudiar ofertas de capacitación. **Los datos iniciales son ficticios**. No publicar información confidencial en un repositorio o sitio público.
+## Arquitectura
+ChileCompra (API V1 y V2) → ETL GitHub Actions → Google Sheets (fuente canónica) → JSON público → GitHub Pages (frontend `index.html`).
 
-## Uso local
+**No hay cron activo.** No se consultan las API al abrir el frontend. El repositorio no contiene credenciales. Secretos: `CHILECOMPRA_TICKET`, `GOOGLE_SERVICE_ACCOUNT_JSON`. Variable: `GOOGLE_SHEET_ID`.
 
-Desde la carpeta del proyecto:
+## Operación diaria
+Abrir [Actions → Marcha blanca - operaciones manuales](../../actions/workflows/marcha-blanca-manual.yml) y seleccionar **Run workflow**.
 
-```bash
-python3 -m http.server 8000
-```
+Opciones:
+- `licitaciones`: sincroniza procesos y consulta detalles de adjudicación disponibles en API V1. Las ofertas individuales no se inventan cuando la API no las suministra.
+- `compra_agil`: sincroniza procesos y obtiene detalle de cotizaciones/selecciones correspondientes a los procesos del día.
+- `ordenes_compra`: sincroniza listado oficial de OC en `OrdenesCompra`.
+- `publicar`: exporta exclusivamente información pública de Google Sheets a `data/observatorio.json` y despliega Pages, sin llamar ChileCompra.
+- `completa`: ejecuta las tres categorías y después publica si todas finalizaron correctamente.
 
-Abrir http://localhost:8000. También se puede importar un CSV local directamente desde el dashboard. Formato UTF-8, separador `;`, cabecera:
+**Fecha**: `AAAA-MM-DD`; vacía equivale a hoy en Chile. La misma fecha puede ejecutarse nuevamente para recuperar fallas. Máximo 3 intentos por componente en el workflow; entre fallas, se conserva la información anterior. Los registros ausentes en respuestas de la API no se interpretan como eliminaciones.
 
-```text
-codigo;tematica;organismo;proveedor;monto;resultado
-```
+Para desplegar únicamente cambios del frontend, existe el workflow manual `pages.yml`.
 
-`resultado` utiliza `Adjudicado` o `No seleccionado`; `monto` es entero en CLP. **Cada fila es una oferta**, no un proceso.
+## Esquema y limitaciones
+La Google Sheet principal tiene `Procesos` (16 campos), `Ofertas` (7), `Resultados` (10), `OrdenesCompra` (10), además de `Control`, `Indicadores` e histórico de agosto. Los archivos históricos se importan separadamente; el proceso diario no sustituye esa carga.
 
-## Publicar en GitHub Pages
+El ETL de detalle de Compra Ágil cubre cotizaciones disponibles para los procesos seleccionados, no garantiza que todas sean públicas. En licitaciones, el detalle V1 permite adjudicaciones cuando estas se informan pero no garantiza el universo de ofertas individuales. La publicación conserva la última versión si la exportación falla. La extracción completa y la compatibilidad con volúmenes históricos grandes requieren validación operativa antes de declarar producción.
 
-1. Crear repositorio GitHub (preferiblemente de prueba, sin datos sensibles).
-2. Subir el contenido a la rama `main`.
-3. Settings → Pages → Build and deployment → GitHub Actions.
-4. Verificar el despliegue en Actions.
-
-La carga del CSV por navegador es local y no envía el archivo a GitHub. Sin embargo, **cualquier CSV confirmado y subido al repositorio publicado será público**.
-
-## Estado real de integración
-
-- [x] Dashboard con filtros, métricas, gráficos y exportación CSV.
-- [x] Formato de intercambio tabular y ejemplo totalmente ficticio.
-- [x] Workflow de publicación en GitHub Pages.
-- [ ] Conectar ticket oficial de ChileCompra en GitHub Actions Secrets.
-- [ ] Validar esquema real de respuesta de API Compra Ágil v2 antes de mapearlo.
-- [ ] Conectar Google Sheets y Looker Studio con credenciales seguras.
-- [ ] Controlar duplicación de segundos llamados, fecha de extracción e histórico.
-
-Fuentes: https://www.chilecompra.cl/api/ y https://docs.github.com/en/pages
+## Recuperación y respaldo
+Rama: `respaldo-pre-limpieza-marcha-blanca-20261016`.
+Los errores de GitHub Actions quedan visibles en el log de ejecución. Para reintentar, repetir manualmente la categoría y fecha fallidas; luego ejecutar `publicar`.
