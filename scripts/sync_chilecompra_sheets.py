@@ -23,7 +23,7 @@ SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 HEADERS = ["codigo","nombre","estado","convocatoria","fecha_publicacion","fecha_cierre",
            "fecha_ultimo_cambio","monto_disponible_clp","organismo_comprador",
            "rut_organismo","unidad_compra","region","total_ofertas_recibidas",
-           "motivo_seleccion","url_detalle","fecha_sincronizacion"]
+           "motivo_seleccion","url_detalle","fecha_sincronizacion","categoria","subcategoria","codigo_categoria_oficial"]
 BASE="https://api2.mercadopublico.cl/v2/compra-agil"
 
 def value(obj, key):
@@ -45,7 +45,7 @@ def row(item, now):
         value(f,"fecha_ultimo_cambio"),value(m,"monto_disponible_clp"),
         value(i,"organismo_comprador"),value(i,"rut"),value(i,"unidad_compra"),
         value(i,"nombre_region"),value(r,"total_ofertas_recibidas"),
-        value(motive,"motivo_seleccion"),value(links,"detalle"),now]))
+        value(motive,"motivo_seleccion"),value(links,"detalle"),now,"Sin clasificar","Sin clasificar",""]))
 
 def fetch(page, start, end):
     args={"publicado_desde":start,"publicado_hasta":end,
@@ -69,9 +69,13 @@ def fetch(page, start, end):
 
 def main():
     now=datetime.now(timezone.utc)
-    since=now-timedelta(days=int(os.getenv("SYNC_LOOKBACK_DAYS","7")))
-    start=since.strftime("%Y-%m-%dT00:00:00")
-    end=now.strftime("%Y-%m-%dT23:59:59")
+    month=int(os.getenv("SYNC_MONTH_2026","10"))
+    if not 1 <= month <= 12: raise SystemExit("SYNC_MONTH_2026 fuera de rango")
+    start=f"2026-{month:02d}-01T00:00:00"
+    year2,month2=(2027,1) if month==12 else (2026,month+1)
+    last=(datetime(year2,month2,1,tzinfo=timezone.utc)-timedelta(days=1)).day
+    end=f"2026-{month:02d}-{last:02d}T23:59:59"
+    if month > now.month and now.year==2026: raise SystemExit("Mes futuro no permitido")
     maxpages=int(os.getenv("SYNC_MAX_PAGES","20"))
     found={}
     totalpages=None
@@ -96,17 +100,24 @@ def main():
     if not existing or existing[0][:15]!=HEADERS[:15]:
         raise RuntimeError("Cabeceras de Procesos no coinciden con el esquema.")
     # Escribe filas completas conservando el formato original y la columna P.
-    if len(existing[0])<16:sheet.update(range_name="P1",values=[["fecha_sincronizacion"]],value_input_option="RAW")
-    index={r[0]:n for n,r in enumerate(existing[1:],start=2) if r and r[0]}
+    sheet.update(range_name="P1:S1",values=[HEADERS[15:]],value_input_option="RAW")
+    index={}
+    for n,r in enumerate(existing[1:],start=2):
+        if r and r[0]:
+            if r[0] in index:raise RuntimeError("Código duplicado en Sheets")
+            index[r[0]]=n
     updates=[]; appends=[]
     for code,values in found.items():
         if code in index:
-            updates.append({"range":f"Procesos!A{index[code]}:P{index[code]}","values":[values]})
+            old=existing[index[code]-1]
+            for k in (16,17,18):
+                if len(old)>k and old[k] and old[k]!="Sin clasificar":values[k]=old[k]
+            updates.append({"range":f"Procesos!A{index[code]}:S{index[code]}","values":[values]})
         else:appends.append(values)
     # API batch update of values, in manageable batches.
     for i in range(0,len(updates),100):
         sheet.spreadsheet.values_batch_update({"valueInputOption":"RAW","data":updates[i:i+100]})
-    if appends:sheet.append_rows(appends,value_input_option="RAW",table_range="A:P")
+    if appends:sheet.append_rows(appends,value_input_option="RAW",table_range="A:S")
     print(f"Sincronizados: {len(updates)} actualizados, {len(appends)} nuevos.")
 
 if __name__=="__main__":
