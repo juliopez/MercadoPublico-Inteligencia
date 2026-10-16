@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 import gspread
+from api_retry import fetch_json
 from google.oauth2.service_account import Credentials
 
 SHEET_ID = os.environ["GOOGLE_SHEET_ID"]
@@ -52,21 +53,10 @@ def fetch(page, start, end):
     args={"publicado_desde":start,"publicado_hasta":end,
           "tamano_pagina":50,"numero_pagina":page}
     req=Request(BASE+"?"+urlencode(args),headers={"ticket":TICKET,"Accept":"application/json"})
-    for attempt in range(3):
-        try:
-            with urlopen(req,timeout=50) as response:
-                data=json.load(response)
-            if not data.get("payload") or data.get("success") not in (True,"OK"):
-                raise RuntimeError("Respuesta API sin payload válido")
-            return data["payload"]
-        except HTTPError as e:
-            if e.code not in (429,502,503,504) or attempt==2: raise
-            retry=e.headers.get("Retry-After")
-            delay=min(60,int(retry)) if retry and retry.isdigit() else (attempt+1)*10
-            time.sleep(delay)
-        except (URLError,TimeoutError):
-            if attempt==2: raise
-            time.sleep((attempt+1)*10)
+    data=fetch_json(req,timeout=50,label=f"Compra Ágil página {page}")
+    if not data.get("payload") or data.get("success") not in (True,"OK"):
+        raise RuntimeError("Respuesta API sin payload válido; no se escriben datos")
+    return data["payload"]
 
 def main():
     now=datetime.now(timezone.utc)
@@ -87,7 +77,7 @@ def main():
     if modalidad=="licitaciones":
         args=urlencode({"fecha":datetime.strptime(fecha,"%Y-%m-%d").strftime("%d%m%Y"),"ticket":TICKET})
         req=Request("https://api.mercadopublico.cl/servicios/v1/publico/licitaciones.json?"+args,headers={"Accept":"application/json"})
-        with urlopen(req,timeout=65) as response: data=json.load(response)
+        data=fetch_json(req,timeout=65,label="Licitaciones "+fecha)
         if not isinstance(data,dict) or not isinstance(data.get("Listado"),list):raise RuntimeError("Formato V1 no reconocido")
         if data.get("Cantidad") is not None and int(data["Cantidad"])!=len(data["Listado"]):raise RuntimeError("Listado V1 incompleto")
         for x in data["Listado"]:
