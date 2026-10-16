@@ -10,8 +10,8 @@ NAMES=("Procesos","Ofertas","Resultados")
 # Lista explícita: no se publica RUT, identificadores internos de OC, metadatos de control ni credenciales.
 PUBLIC={
 "Procesos":("codigo","nombre","estado","convocatoria","fecha_publicacion","fecha_cierre","monto_disponible_clp","organismo_comprador","region","total_ofertas_recibidas","motivo_seleccion","url_detalle","categoria","subcategoria","modalidad"),
-"Ofertas":("codigo","proveedor","monto_ofertado_clp","fecha_oferta","estado_oferta","seleccionado","id_cotizacion"),
-"Resultados":("codigo","adjudicatario","monto_adjudicado_clp","fecha_resultado","motivo_seleccion","validado","id_cotizacion_ganadora","monto_oferta_seleccionada_clp","estado_verificacion_oc")
+"Ofertas":("codigo","proveedor","monto_ofertado_clp","fecha_oferta","fuente","seleccionado","id_cotizacion"),
+"Resultados":("codigo","adjudicatario","monto_adjudicado_clp","fecha_resultado","motivo_seleccion","fuente","validado","id_cotizacion_ganadora","monto_oferta_seleccionada_clp","estado_verificacion_oc")
 }
 # Solo metadatos públicos no sensibles; las columnas son opcionales durante la migración.
 OPTIONAL_PUBLIC={
