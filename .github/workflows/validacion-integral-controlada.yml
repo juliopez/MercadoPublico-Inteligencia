@@ -17,7 +17,7 @@ concurrency:
 jobs:
   validar:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 100
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -57,7 +57,22 @@ jobs:
           SYNC_MAX_RECORDS: '5'
           SYNC_MAX_PAGES: '20'
           SYNC_MANIFEST_FILE: /tmp/validacion_compra_agil.txt
-        run: python scripts/sync_chilecompra_sheets.py
+        shell: bash
+        run: |
+          # Máximo tres intentos, separados por 30 minutos. El fallo final detiene publicación.
+          for attempt in 1 2 3; do
+            echo "::notice title=Compra Ágil::Intento $attempt/3 para la fecha $SYNC_FECHA_2026"
+            if python scripts/sync_chilecompra_sheets.py; then
+              echo "::notice title=Compra Ágil::Extracción completada"
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              echo "::warning title=API temporalmente no disponible::Reintento en 30 minutos"
+              sleep 1800
+            fi
+          done
+          echo "::error title=Compra Ágil fallida::Tres intentos agotados; no publicar"
+          exit 1
       - name: Detalle de licitaciones (máximo 5)
         env:
           DETAIL_FECHA: ${{ inputs.fecha }}
