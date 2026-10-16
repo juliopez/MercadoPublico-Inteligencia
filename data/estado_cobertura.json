@@ -1,0 +1,8 @@
+{
+  "fecha_publicacion": "2026-10-15",
+  "tipo": "validacion_controlada",
+  "licitaciones": "procesos_recuperados; detalle requiere revisión de logs",
+  "compra_agil": "failure",
+  "completitud": "parcial",
+  "nota": "La publicación no certifica cobertura completa de ofertas ni adjudicaciones"
+}
