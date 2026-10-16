@@ -1,0 +1,15 @@
+name: Explorar muestra histórica
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  muestra:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Explorar metadatos de compras historicas
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+        run: python3 scripts/muestra_historica.py
