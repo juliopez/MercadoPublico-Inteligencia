@@ -49,24 +49,28 @@ jobs:
         env:
           SYNC_MODALIDAD: licitaciones
           SYNC_MAX_RECORDS: '5'
+          SYNC_MANIFEST_FILE: /tmp/validacion_licitaciones.txt
         run: python scripts/sync_chilecompra_sheets.py
       - name: ETL procesos de Compra Ágil (máximo 5)
         env:
           SYNC_MODALIDAD: compra_agil
           SYNC_MAX_RECORDS: '5'
           SYNC_MAX_PAGES: '20'
+          SYNC_MANIFEST_FILE: /tmp/validacion_compra_agil.txt
         run: python scripts/sync_chilecompra_sheets.py
       - name: Detalle de licitaciones (máximo 5)
         env:
           DETAIL_FECHA: ${{ inputs.fecha }}
           DETAIL_OFFSET: '0'
           DETAIL_MAX_CODES: '5'
+          DETAIL_MANIFEST_FILE: /tmp/validacion_licitaciones.txt
         run: python scripts/enriquecer_licitaciones.py
       - name: Ofertas y resultados Compra Ágil (máximo 5 procesos)
         env:
           DETAIL_FECHA: ${{ inputs.fecha }}
           DETAIL_OFFSET: '0'
           DETAIL_MAX_CODES: '5'
+          DETAIL_MANIFEST_FILE: /tmp/validacion_compra_agil.txt
         run: python scripts/etl_multiproceso_manual.py
       - name: Exportar Google Sheets a JSON público
         run: python scripts/publicar_observatorio.py
