@@ -78,6 +78,9 @@ jobs:
           if [[ "$OP" == "compra_agil" || "$OP" == "completa" ]]; then
             run_etl compra_agil env SYNC_MODALIDAD=compra_agil python3 scripts/sync_chilecompra_sheets.py
           fi
+          if [[ "$OP" == "compra_agil" || "$OP" == "completa" ]]; then
+            run_etl compra_agil_detalle env DETAIL_FECHA="$SYNC_FECHA_2026" DETAIL_MAX_CODES=1000000 DETAIL_DELAY_SECONDS=0.25 python3 scripts/etl_multiproceso_manual.py
+          fi
           if [[ "$OP" == "ordenes_compra" || "$OP" == "completa" ]]; then
             run_etl ordenes_compra python3 scripts/sync_ordenes_compra_sheets.py
           fi
