@@ -14,7 +14,7 @@
 const sets={procesos:[],ofertas:[],resultados:[]}, $=id=>document.getElementById(id);
 const fields={procesos:['codigo','nombre'],ofertas:['codigo','id_cotizacion'],resultados:['codigo']};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const val=(r,k)=>r?.[k]||'',fmt=v=>{let n=Number(String(v).replace(/\./g,'').replace(',','.'));return v!==''&&Number.isFinite(n)?new Intl.NumberFormat('es-CL').format(n):'No informado'};
+const val=(r,k)=>r?.[k]||'',fmt=v=>{if(v===null||v===undefined||String(v).trim()==='')return 'No informado';const n=Number(String(v).trim().replace(/\./g,'').replace(',','.'));return Number.isFinite(n)?new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(n):'No informado'};
 function parseCSV(s){
  s=s.replace(/^\uFEFF/,'');const first=s.split(/\r?\n/)[0];const delim=(first.match(/;/g)||[]).length>(first.match(/,/g)||[]).length?';':',';
  let out=[],row=[],field='',quoted=false;
