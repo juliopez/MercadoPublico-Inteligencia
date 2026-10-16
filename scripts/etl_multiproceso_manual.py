@@ -29,6 +29,10 @@ for p in process_rows:
     day=str(p.get("fecha_publicacion") or "")[:10]
     if re.search(r"-COT\d{2}$",code) and (not TARGET_DATE or day==TARGET_DATE):
         candidates.append(code)
+manifest=os.getenv("DETAIL_MANIFEST_FILE","")
+if manifest:
+    with open(manifest,encoding="utf-8") as handle:allowed={line.strip() for line in handle if line.strip()}
+    candidates=[code for code in candidates if code in allowed]
 CODES=tuple(dict.fromkeys(candidates))[OFFSET:OFFSET+MAX_CODES]
 print("DETALLE_PLAN",len(CODES),"procesos seleccionados","fecha",TARGET_DATE or "sin filtro","limite",MAX_CODES,"desde_indice",OFFSET,flush=True)
 ws_o=book.worksheet("Ofertas");ws_r=book.worksheet("Resultados")
