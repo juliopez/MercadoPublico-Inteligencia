@@ -1,6 +1,16 @@
 name: ETL multiproceso manual
 on:
   workflow_dispatch:
+    inputs:
+      fecha:
+        description: 'Fecha de publicación (AAAA-MM-DD), vacío = primeros procesos disponibles'
+        type: string
+        required: false
+      max_codigos:
+        description: 'Máximo de procesos a consultar (1-100)'
+        type: number
+        required: true
+        default: 10
 permissions:
   contents: read
 concurrency:
@@ -22,4 +32,6 @@ jobs:
           CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           GOOGLE_SHEET_ID: ${{ vars.GOOGLE_SHEET_ID }}
+          DETAIL_FECHA: ${{ inputs.fecha }}
+          DETAIL_MAX_CODES: ${{ inputs.max_codigos }}
         run: python3 scripts/etl_multiproceso_manual.py
