@@ -37,7 +37,7 @@ if orig_o[0][:17]!=OHEAD or orig_r[0][:14]!=RHEAD:
     raise SystemExit("ERROR_ESQUEMA: encabezados no coinciden; sin escrituras")
 # Las extensiones del esquema son opcionales y deben estar después del contrato base.
 OEXTRA=("url_documento_oferta","nivel_visibilidad","fecha_actualizacion_fuente")
-REXTRA=("tipo_resultado","fuente_adjudicacion","codigo_oc_publica","url_documento_publico")
+REXTRA=("tipo_resultado","fuente_adjudicacion","codigo_oc_publica","url_documento_publico","id_linea_adjudicacion","clave_resultado")
 def validate_extensions(headers,base,extras):
     tail=headers[len(base):]
     if any(name in headers[:len(base)] for name in extras):
@@ -64,8 +64,10 @@ for i,r in enumerate(orig_o[1:],start=2):
         o_index[key]=i
 for i,r in enumerate(orig_r[1:],start=2):
     if r and r[0]:
-        if r[0] in r_index:raise SystemExit("DUPLICADOS_RESULTADOS: sin escrituras")
-        r_index[r[0]]=i
+        key_pos=r_headers.index("clave_resultado") if "clave_resultado" in r_headers else -1
+        key=(r[0],r[key_pos]) if key_pos>=0 and len(r)>key_pos and r[key_pos] else (r[0],"seleccion:"+r[9] if len(r)>9 and r[9] else "legacy")
+        if key in r_index:raise SystemExit("DUPLICADOS_RESULTADOS: sin escrituras")
+        r_index[key]=i
 def v(x):return "" if x is None else str(x)
 def offer_row(code,x,stamp):
     return list(map(v,[code,"",x.get("rut_proveedor"),x.get("razon_social"),x.get("monto_total"),"CLP",x.get("fecha_creacion"),x.get("estado"),"API Compra Ágil V2 - detalle",stamp,x.get("id_cotizacion"),x.get("valor_neto"),x.get("total_impuesto"),x.get("monto_despacho"),1 if x.get("proveedor_seleccionado") in (True,1,"1") else 0,x.get("id_oc"),x.get("estado")]))
@@ -113,8 +115,11 @@ for code,offers,result in success:
                 o_updates.append({"range":f"Ofertas!A{idx}:Q{idx}","values":[merged]})
         else:o_new.append(extend(row,o_headers,OEXTRA,{"nivel_visibilidad":"no disponible"}))
     if result is None:continue
-    if code in r_index:
-        idx=r_index[code];old=orig_r[idx-1]
+    result_key=(code,"seleccion:"+str(result[9]))
+    fallback=(code,"legacy")
+    existing_key=result_key if result_key in r_index else fallback if fallback in r_index else None
+    if existing_key is not None:
+        idx=r_index[existing_key];old=orig_r[idx-1]
         # No modificar nunca las columnas C:F (identidad/monto/fecha contractuales).
         for col in range(2,6):result[col]=old[col] if col<len(old) else ""
         # Nunca degradar una adjudicación previamente validada a selección no verificada.
@@ -131,11 +136,17 @@ for code,offers,result in success:
         if merged!=old[:14]:
             r_updates.append({"range":f"Resultados!A{idx}:N{idx}","values":[merged]})
         # Clasificar registros antiguos solo cuando no exista otra clasificación.
+        if "clave_resultado" in r_headers:
+            key_col=r_headers.index("clave_resultado")
+            if len(old)<=key_col or not old[key_col]:
+                colname=chr(65+key_col) if key_col<26 else None
+                if not colname:raise SystemExit("ERROR_ESQUEMA: índice de clave fuera de rango")
+                r_updates.append({"range":f"Resultados!{colname}{idx}","values":[[result_key[1]]]})
         if "tipo_resultado" in r_headers and not prior_type and not verified:
             col=r_headers.index("tipo_resultado")
             # Posición O corresponde a la primera columna ampliada.
             r_updates.append({"range":f"Resultados!{chr(65+col)}{idx}","values":[["oferta_seleccionada"]]})
-    else:r_new.append(extend(result,r_headers,REXTRA,{"tipo_resultado":"oferta_seleccionada"}))
+    else:r_new.append(extend(result,r_headers,REXTRA,{"tipo_resultado":"oferta_seleccionada","clave_resultado":result_key[1]}))
 print("PLAN","procesos_ok",len(success),"fallidos",len(failures),"ofertas_nuevas",len(o_new),"ofertas_actualizar",len(o_updates),"resultados_nuevos",len(r_new),flush=True)
 # Procesos fallidos nunca entran en los lotes de escritura.
 if o_updates:book.values_batch_update({"valueInputOption":"RAW","data":o_updates})
@@ -144,11 +155,11 @@ if r_updates:book.values_batch_update({"valueInputOption":"RAW","data":r_updates
 if r_new:ws_r.append_rows(r_new,value_input_option="RAW")
 after_o=ws_o.get_all_values();after_r=ws_r.get_all_values()
 all_ids=[(r[0],r[10]) for r in after_o[1:] if len(r)>10 and r[0] and r[10]]
-all_codes=[r[0] for r in after_r[1:] if r and r[0]]
+all_codes=[(r[0],r[r_headers.index("clave_resultado")] if "clave_resultado" in r_headers and len(r)>r_headers.index("clave_resultado") and r[r_headers.index("clave_resultado")] else ("seleccion:"+r[9] if len(r)>9 and r[9] else "legacy")) for r in after_r[1:] if r and r[0]]
 if len(all_ids)!=len(set(all_ids)) or len(all_codes)!=len(set(all_codes)):
     raise SystemExit("ERROR_VERIFICACION: duplicados detectados")
 for code,offers,result in success:
-    if not all((row[0],row[10]) in all_ids for row in offers) or (result is not None and code not in all_codes):
+    if not all((row[0],row[10]) in all_ids for row in offers) or (result is not None and (code,"seleccion:"+str(result[9])) not in all_codes):
         raise SystemExit("ERROR_VERIFICACION: lote incompleto")
 # Registro histórico en Control!D:K, sin alterar metadatos existentes A:B.
 audit=book.worksheet("Control")
