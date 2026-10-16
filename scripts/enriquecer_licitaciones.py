@@ -26,7 +26,7 @@ def value(row,key):return row[idx[key]] if idx[key]<len(row) else ""
 selected=[(n,row) for n,row in enumerate(data[1:],start=2) if value(row,"modalidad").strip().startswith("Licitación") and (not day or value(row,"fecha_publicacion")[:10]==day)]
 selected=selected[offset:offset+limit]
 print("DETALLE_LICITACIONES",len(selected),"fecha",day or "todas","offset",offset,flush=True)
-updates=[];failed=[]
+updates=[];failed=[];awards_seen=0;awards_multiple=0;actas_seen=0
 for n,(sheetrow,row) in enumerate(selected):
     if n:time.sleep(1)
     code=value(row,"codigo")
@@ -41,6 +41,28 @@ for n,(sheetrow,row) in enumerate(selected):
         fechas=detail.get("Fechas") or {}
         if not isinstance(comprador,dict) or not isinstance(fechas,dict):raise ValueError("Objetos del detalle inválidos")
         pairs={"fecha_cierre":fechas.get("FechaCierre"),"organismo_comprador":comprador.get("NombreOrganismo"),"region":comprador.get("RegionUnidad")}
+        adjud=detail.get("Adjudicacion") or {}
+        acta=adjud.get("UrlActa") if isinstance(adjud,dict) else None
+        if isinstance(acta,str) and acta.startswith("https://"):
+            actas_seen+=1
+            if "url_detalle" in idx and not value(row,"url_detalle").strip():
+                col=idx["url_detalle"];letter=""
+                while col>=0:
+                    letter=chr(65+col%26)+letter
+                    col=col//26-1
+                updates.append({"range":f"Procesos!{letter}{sheetrow}","values":[[acta]]})
+        items=detail.get("Items") or {}
+        lines=items.get("Listado") if isinstance(items,dict) else None
+        winners=set()
+        for item in (lines if isinstance(lines,list) else []):
+            award=item.get("Adjudicacion") if isinstance(item,dict) else None
+            if isinstance(award,dict) and award.get("RutProveedor"):
+                winners.add(str(award["RutProveedor"]).strip())
+        if winners:
+            awards_seen+=1
+            if len(winners)>1:awards_multiple+=1
+        # No escribir Resultados: el esquema actual no representa
+        # adjudicaciones por línea o múltiples proveedores.
         for key,new in pairs.items():
             if new is not None and str(new).strip() and not value(row,key).strip():
                 col=idx[key];letter=""
@@ -54,5 +76,5 @@ for n,(sheetrow,row) in enumerate(selected):
         failed.append(code);print("::warning title=Consulta pendiente::"+code+" "+type(e).__name__,flush=True)
 for k in range(0,len(updates),100):
     book.values_batch_update({"valueInputOption":"RAW","data":updates[k:k+100]})
-print("DETALLE_RESUMEN",json.dumps({"seleccionados":len(selected),"campos_completados":len(updates),"pendientes":len(failed)},ensure_ascii=False),flush=True)
+print("DETALLE_RESUMEN",json.dumps({"seleccionados":len(selected),"campos_completados":len(updates),"actas_identificadas":actas_seen,"procesos_con_adjudicacion_por_linea":awards_seen,"con_multiples_proveedores":awards_multiple,"pendientes":len(failed)},ensure_ascii=False),flush=True)
 if failed:raise SystemExit("DETALLE_PARCIAL: revisar procesos pendientes; no se han sustituido valores existentes")
