@@ -1,0 +1,23 @@
+name: Extraer procesos ChileCompra
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  extraccion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extraer tres paginas historicas
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+        run: python3 scripts/extraer_procesos.py
+      - name: Guardar CSV temporal de procesos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: procesos-chilecompra-csv
+          path: output/historico/procesos.csv
+          retention-days: 1
+          if-no-files-found: warn
