@@ -10,7 +10,7 @@ from google.oauth2.service_account import Credentials
 
 # Solo se consultan procesos Compra Ágil existentes en Sheets; lote limitado.
 # La selección publicada el mismo día normalmente no existe todavía.
-MAX_CODES=max(1,min(100,int(os.getenv("DETAIL_MAX_CODES","10"))))
+MAX_CODES=max(1,int(os.getenv("DETAIL_MAX_CODES","1000000")))
 OFFSET=max(0,int(os.getenv("DETAIL_OFFSET","0")))
 TARGET_DATE=os.getenv("DETAIL_FECHA","").strip()
 if TARGET_DATE:
@@ -78,7 +78,7 @@ def select_row(code,selected,motive,stamp):
     return list(map(v,[code,"","","","","",motive,"API Compra Ágil V2 - detalle","No: OC pública no verificada",selected.get("id_cotizacion"),selected.get("monto_total"),selected.get("id_oc"),"Pendiente de verificar OC pública",stamp]))
 success=[];failures={}
 for n,code in enumerate(CODES):
-    if n:time.sleep(3)
+    if n:time.sleep(float(os.getenv("DETAIL_DELAY_SECONDS","0.25")))
     try:
         request=Request("https://api2.mercadopublico.cl/v2/compra-agil/"+code,headers={"ticket":ticket,"Accept":"application/json"})
         data=fetch_json(request,timeout=40,label="Detalle "+code)
