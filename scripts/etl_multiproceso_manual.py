@@ -108,7 +108,8 @@ for code,offers,result in success:
         key=(row[0],row[10])
         if key in o_index:
             idx=o_index[key];old=orig_o[idx-1];merged=merge(row,old)
-            if merged!=merge([""]*17,old):
+            # Las columnas opcionales no se sobrescriben al actualizar datos base.
+            if merged!=old[:17]:
                 o_updates.append({"range":f"Ofertas!A{idx}:Q{idx}","values":[merged]})
         else:o_new.append(extend(row,o_headers,OEXTRA,{"nivel_visibilidad":"no disponible"}))
     if result is None:continue
@@ -116,9 +117,24 @@ for code,offers,result in success:
         idx=r_index[code];old=orig_r[idx-1]
         # No modificar nunca las columnas C:F (identidad/monto/fecha contractuales).
         for col in range(2,6):result[col]=old[col] if col<len(old) else ""
+        # Nunca degradar una adjudicación previamente validada a selección no verificada.
+        prior_type=old[r_headers.index("tipo_resultado")] if "tipo_resultado" in r_headers and len(old)>r_headers.index("tipo_resultado") else ""
+        verified=bool((len(old)>8 and old[8].strip().lower().startswith(("si","sí"))) or
+                      prior_type in ("adjudicacion_informada","contrato_verificado"))
+        if verified:
+            for col in (8,12):
+                result[col]=old[col] if len(old)>col else ""
+            # No reemplazar los datos de selección con información que pueda contradecir el registro verificado.
+            for col in (9,10,11):
+                result[col]=old[col] if len(old)>col else ""
         merged=merge(result,old)
-        if merged!=merge([""]*14,old):
+        if merged!=old[:14]:
             r_updates.append({"range":f"Resultados!A{idx}:N{idx}","values":[merged]})
+        # Clasificar registros antiguos solo cuando no exista otra clasificación.
+        if "tipo_resultado" in r_headers and not prior_type and not verified:
+            col=r_headers.index("tipo_resultado")
+            # Posición O corresponde a la primera columna ampliada.
+            r_updates.append({"range":f"Resultados!{chr(65+col)}{idx}","values":[["oferta_seleccionada"]]})
     else:r_new.append(extend(result,r_headers,REXTRA,{"tipo_resultado":"oferta_seleccionada"}))
 print("PLAN","procesos_ok",len(success),"fallidos",len(failures),"ofertas_nuevas",len(o_new),"ofertas_actualizar",len(o_updates),"resultados_nuevos",len(r_new),flush=True)
 # Procesos fallidos nunca entran en los lotes de escritura.
