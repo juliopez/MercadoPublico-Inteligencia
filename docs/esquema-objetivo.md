@@ -28,7 +28,9 @@
 ## Resultados (14 columnas vigentes; conservar A:N)
 `codigo,convocatoria,rut_adjudicatario,adjudicatario,monto_adjudicado_clp,fecha_resultado,motivo_seleccion,fuente,validado,id_cotizacion_ganadora,monto_oferta_seleccionada_clp,id_oc_interno,estado_verificacion_oc,fecha_extraccion`
 
-**Agregar tras N**: `tipo_resultado` (sin_seleccion/oferta_seleccionada/adjudicacion_informada/contrato_verificado/desierto/revocado), `fuente_adjudicacion`, `codigo_oc_publica`, `url_documento_publico`.
+**Agregar tras N**: `tipo_resultado` (sin_seleccion/oferta_seleccionada/adjudicacion_informada/contrato_verificado/desierto/revocado), `fuente_adjudicacion`, `codigo_oc_publica`, `url_documento_publico`, `id_linea_adjudicacion`, `clave_resultado`.
+
+**Nueva clave de Resultados:** `codigo + clave_resultado`. Para Compra Ágil, la selección usa `seleccion:<id_cotizacion>`; para adjudicaciones de licitaciones, usar `adjudicacion:<identificador_línea>:<identificador_proveedor>` solo cuando ambos identificadores estén disponibles. No deduplicar por código de proceso solamente. No inferir una línea ni un adjudicatario cuando la API no los proporciona. En la importación histórica, los resultados sin clave deben revisarse o migrarse a una clave verificable antes de activar la carga diaria.
 
 Las columnas C:F permanecen vacías si solo se verificó una oferta seleccionada. Una licitación oficialmente adjudicada no implica, por sí sola, que se haya identificado el contrato u orden de compra.
 
