@@ -24,6 +24,10 @@ if any(x not in head for x in required):raise SystemExit("ERROR_ESQUEMA: faltan 
 idx={key:head.index(key) for key in head}
 def value(row,key):return row[idx[key]] if idx[key]<len(row) else ""
 selected=[(n,row) for n,row in enumerate(data[1:],start=2) if value(row,"modalidad").strip().startswith("Licitación") and (not day or value(row,"fecha_publicacion")[:10]==day)]
+manifest=os.getenv("DETAIL_MANIFEST_FILE","")
+if manifest:
+    with open(manifest,encoding="utf-8") as handle:allowed={line.strip() for line in handle if line.strip()}
+    selected=[(n,row) for n,row in selected if value(row,"codigo") in allowed]
 selected=selected[offset:offset+limit]
 print("DETALLE_LICITACIONES",len(selected),"fecha",day or "todas","offset",offset,flush=True)
 updates=[];failed=[];awards_seen=0;awards_multiple=0;actas_seen=0
