@@ -112,6 +112,9 @@ def main():
     if cap>0:
         found=dict(list(found.items())[:cap])
         print("LIMITE_VALIDACION",cap,"registros",len(found),flush=True)
+    manifest=os.getenv("SYNC_MANIFEST_FILE","")
+    if manifest:
+        with open(manifest,"w",encoding="utf-8") as out:out.write("\\n".join(found)+"\\n")
     if not found:
         print("Sin registros para ventana; no se cambia la hoja.")
         return
