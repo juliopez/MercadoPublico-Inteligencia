@@ -68,12 +68,16 @@ def reconcile_details(con, root=None):
         recovered+=1
     return recovered
 
-def run(con,maximum):
+def run(con,maximum,max_duracion=420):
     recovered=reconcile_details(con)
     if recovered: print(f'Detalles recuperados desde disco sin HTTP: {recovered}')
     ticket=os.environ.get("CHILECOMPRA_TICKET","").strip()
     if not ticket:raise SystemExit("Falta CHILECOMPRA_TICKET")
+    inicio_ciclo=time.monotonic()
     for _ in range(maximum):
+        if time.monotonic()-inicio_ciclo+45>max_duracion:
+            print('Límite de duración: detenido antes de otra solicitud')
+            break
         if core.circuit_open(con):
             print("Circuit breaker abierto: sin consultas")
             break
@@ -86,6 +90,12 @@ def run(con,maximum):
         code=j["codigo"]
         req=Request(core.BASE+"/"+quote(code,safe=""),headers={"ticket":ticket,"Accept":"application/json",
             "User-Agent":"Observatorio-Detalles-Tolerante/1.0"})
+        # Reservar turno compartido; estimar espera para respetar presupuesto temporal.
+        row_rate=con.execute("SELECT siguiente_epoch FROM rate_limit WHERE servicio='api_v2'").fetchone()
+        waiting=max(0.0,(row_rate['siguiente_epoch']-time.time())) if row_rate else 0.0
+        if time.monotonic()-inicio_ciclo+waiting+45>max_duracion:
+            print('Límite de duración: espera global excedería presupuesto; detenido')
+            break
         core.reserve_request(con)
         started=time.monotonic();http=None;raw=None;error=None;retry=None
         try:
@@ -130,15 +140,16 @@ def main():
     p.add_argument("accion",choices=("iniciar","estado","ejecutar"))
     p.add_argument("--fecha",default="2026-10-15")
     p.add_argument("--max-solicitudes",type=int,default=1)
+    p.add_argument("--max-duracion",type=int,default=420,help='segundos, 120 a 900')
     a=p.parse_args()
-    if not 1<=a.max_solicitudes<=2:p.error("Máximo dos solicitudes por ejecución")
+    if not 1<=a.max_solicitudes<=5 or not 120<=a.max_duracion<=900:p.error('Máximo cinco solicitudes, duración 120-900 segundos')
     con=core.db_open(ROOT/"control.sqlite3")
     try:
         install(con)
         if a.accion=="iniciar":seed(con,a.fecha)
         elif a.accion=="ejecutar":
             with core.execution_lock(ROOT):
-                run(con,a.max_solicitudes)
+                run(con,a.max_solicitudes,a.max_duracion)
         report(con)
     finally:con.close()
 if __name__=="__main__":
