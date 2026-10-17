@@ -3,7 +3,6 @@
 import json
 import os
 import time
-from datetime import date
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -34,7 +33,7 @@ def main():
             retry_after = response.headers.get("Retry-After", "")
     except HTTPError as error:
         status = error.code
-        raw = error.read(1024)
+        raw = error.read(2048)
         content_type = error.headers.get("Content-Type", "")
         retry_after = error.headers.get("Retry-After", "")
     except (URLError, TimeoutError, OSError) as error:
@@ -46,6 +45,18 @@ def main():
               "retry_after": retry_after or None}
     if status != 200:
         result["estado"] = "error_http"
+        # Mostrar solamente mensajes de error; nunca cabeceras ni ticket.
+        try:
+            body = json.loads(raw)
+            if isinstance(body, dict):
+                keys = ("message", "mensaje", "error", "detail", "details", "errors", "title")
+                result["respuesta_error"] = {k: str(body[k])[:400] for k in keys if k in body}
+                if not result["respuesta_error"]:
+                    result["claves_error"] = list(body.keys())[:12]
+            else:
+                result["respuesta_error_tipo"] = type(body).__name__
+        except (ValueError, UnicodeDecodeError):
+            result["respuesta_error_texto"] = raw.decode("utf-8", errors="replace")[:400]
     else:
         try:
             data = json.loads(raw)
@@ -60,6 +71,7 @@ def main():
             # No mostrar identificadores, cotizaciones ni valores individuales.
         except (ValueError, UnicodeDecodeError):
             result["json_valido"] = False
+    print("parametros_sin_ticket=" + json.dumps(params, ensure_ascii=False), flush=True)
     print(json.dumps(result, ensure_ascii=False), flush=True)
     print("Fin. No se han guardado datos ni modificado los ETL originales.", flush=True)
 
