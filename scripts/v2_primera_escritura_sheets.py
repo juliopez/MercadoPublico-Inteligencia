@@ -10,6 +10,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 import gspread
+import v2_global_control as global_v2
 from google.oauth2.service_account import Credentials
 
 BASE="https://api2.mercadopublico.cl/v2/compra-agil"
@@ -75,19 +76,24 @@ def main():
     url=BASE+"?"+urlencode({"publicado_desde":start.isoformat(timespec="seconds"),
         "publicado_hasta":end.isoformat(timespec="seconds"),"numero_pagina":a.pagina,"tamano_pagina":10})
     request=Request(url,headers={"ticket":os.environ["CHILECOMPRA_TICKET"],"Accept":"application/json"})
+    if not global_v2.reserve(ctrl):
+        print('V2_NO_CONSULTA_CONTROL_GLOBAL');return
     try:
         with urlopen(request,timeout=45) as resp:
             status=resp.status;data=json.loads(resp.read())
     except HTTPError as exc:
         status=exc.code;exc.close()
+        global_v2.finish(ctrl,status)
         wait=3600 if status==429 else min(3600,300*2**min(attempts,3))
         next_date=(datetime.now(timezone.utc)+timedelta(seconds=wait)).isoformat(timespec="seconds")
         checkpoint("espera" if status in (429,500,502,503,504) else "revision",status,0,next_date if status in (429,500,502,503,504) else "")
         print(f"HTTP_{status}: registrado sin cambios en Procesos");return
     except (URLError,TimeoutError,OSError) as exc:
+        global_v2.finish(ctrl,None)
         next_date=(datetime.now(timezone.utc)+timedelta(minutes=5)).isoformat(timespec="seconds")
         checkpoint("espera","red",0,next_date)
         print("ERROR_RED: registrado",type(exc).__name__);return
+    global_v2.finish(ctrl,200)
     payload=data.get("payload") if isinstance(data,dict) else None
     if data.get("success") not in ("OK",True) or not isinstance(payload,dict):
         raise RuntimeError("Respuesta inválida, no escribir")
