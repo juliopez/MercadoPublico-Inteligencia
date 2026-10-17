@@ -130,7 +130,7 @@ def execute(con,args):
     start,end=day_range(args.fecha)
     calls=0
     while calls<args.max_solicitudes:
-        row=con.execute("""SELECT * FROM jobs WHERE fecha=? AND estado!='completo'
+        row=con.execute("""SELECT * FROM jobs WHERE fecha=? AND estado IN ('pendiente','espera')
           AND (disponible='' OR disponible<=?) ORDER BY pagina LIMIT 1""",
           (args.fecha,stamp(utc()))).fetchone()
         if row is None:
