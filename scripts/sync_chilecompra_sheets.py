@@ -124,6 +124,7 @@ def main():
     maxpages=int(os.getenv("SYNC_MAX_PAGES","20"))
     modalidad=os.getenv("SYNC_MODALIDAD","compra_agil")
     keyword=os.getenv("COMPRA_AGIL_CATEGORIA","").strip()
+    if keyword=="Todas":keyword=""
     if len(keyword)>120:raise SystemExit("Categoría demasiado larga (máximo 120 caracteres)")
     if keyword and modalidad!="compra_agil":raise SystemExit("El filtro solo se admite en Compra Ágil")
     if modalidad not in ("compra_agil","licitaciones"):raise SystemExit("Modalidad no admitida")
