@@ -33,6 +33,10 @@ def db_open(path):
       archivo TEXT, registros INTEGER, paginas_total INTEGER,
       actualizado TEXT NOT NULL, UNIQUE(fecha,pagina)
     );
+    CREATE TABLE IF NOT EXISTS circuit (
+      servicio TEXT PRIMARY KEY, consecutivos INTEGER NOT NULL DEFAULT 0,
+      abierto_hasta TEXT NOT NULL DEFAULT '', actualizado TEXT NOT NULL
+    );
     CREATE TABLE IF NOT EXISTS events (
       id INTEGER PRIMARY KEY, fecha TEXT, pagina INTEGER,
       evento TEXT, http INTEGER, segundos REAL, cuando TEXT
@@ -121,6 +125,23 @@ def show(con,date):
     print(json.dumps({"fecha":date,"estados":{r["estado"]:r["n"] for r in rows}},ensure_ascii=False))
     for j in con.execute("SELECT pagina,estado,intentos,http,error,disponible FROM jobs WHERE fecha=? ORDER BY pagina",(date,)):
         print(dict(j))
+def circuit_open(con, service="api_v2"):
+    r=con.execute("SELECT abierto_hasta FROM circuit WHERE servicio=?",(service,)).fetchone()
+    return bool(r and r["abierto_hasta"] and r["abierto_hasta"]>stamp(utc()))
+
+def circuit_record(con, http, service="api_v2", threshold=3, cooldown=1800):
+    r=con.execute("SELECT consecutivos FROM circuit WHERE servicio=?",(service,)).fetchone()
+    before=r["consecutivos"] if r else 0
+    failure=http in (500,502,503,504) or http is None
+    consecutivos=(before+1) if failure else 0
+    # Ante HTTP 429 se suspende todo el servicio, no solo el trabajo individual.
+    until=stamp(utc()+timedelta(seconds=(3600 if http==429 else cooldown))) if (http==429 or consecutivos>=threshold) else ""
+    con.execute("""INSERT INTO circuit(servicio,consecutivos,abierto_hasta,actualizado)
+        VALUES(?,?,?,?) ON CONFLICT(servicio) DO UPDATE SET
+        consecutivos=excluded.consecutivos,abierto_hasta=excluded.abierto_hasta,
+        actualizado=excluded.actualizado""",(service,consecutivos,until,stamp(utc())))
+    return until
+
 def execute(con,args):
     ticket=os.environ.get("CHILECOMPRA_TICKET","").strip()
     if not ticket:
@@ -130,6 +151,9 @@ def execute(con,args):
     start,end=day_range(args.fecha)
     calls=0
     while calls<args.max_solicitudes:
+        if circuit_open(con):
+            print("Circuit breaker V2 abierto: no se realizan solicitudes.",flush=True)
+            break
         row=con.execute("""SELECT * FROM jobs WHERE fecha=? AND estado IN ('pendiente','espera')
           AND (disponible='' OR disponible<=?) ORDER BY pagina LIMIT 1""",
           (args.fecha,stamp(utc()))).fetchone()
@@ -170,6 +194,8 @@ def execute(con,args):
                       WHERE fecha=? AND pagina=?""",(str(dest),count,total,stamp(utc()),args.fecha,page))
                     event(con,args.fecha,page,"completo",200,elapsed)
                 prior_total=total
+                with con:
+                    circuit_record(con,200)
                 print(f"Página {page}: HTTP 200, {count} registros, {elapsed}s, guardada")
             except (ValueError,KeyError,TypeError,UnicodeError,OSError) as e:
                 issue="validacion:"+str(e)[:90]
@@ -192,6 +218,7 @@ def execute(con,args):
                   WHERE fecha=? AND pagina=?""",
                   (state,attempts,due,http,issue or "respuesta_no_valida",stamp(utc()),args.fecha,page))
                 event(con,args.fecha,page,state,http,elapsed)
+                circuit_record(con,http)
             print(f"Página {page}: HTTP {http}, {elapsed}s; estado={state}; próximo intento={due or 'revisión manual'}")
             print("Detenido al primer fallo; sin reintentos en esta ejecución")
             break
