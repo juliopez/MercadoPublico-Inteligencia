@@ -12,9 +12,8 @@ def main():
     p.add_argument("--fecha-inicial",default="2026-10-15")
     p.add_argument("--max-paginas",type=int,default=1)
     p.add_argument("--max-detalles",type=int,default=1)
-    p.add_argument("--tope-pagina",type=int,default=496)
     a=p.parse_args()
-    if not 0<=a.max_paginas<=2 or not 0<=a.max_detalles<=2 or not 1<=a.tope_pagina<=10000:
+    if not 0<=a.max_paginas<=2 or not 0<=a.max_detalles<=2:
         p.error("Máximo 2 páginas, 2 detalles y tope positivo")
     if a.fecha!="auto":datetime.strptime(a.fecha,"%Y-%m-%d")
     datetime.strptime(a.fecha_inicial,"%Y-%m-%d")
@@ -37,9 +36,9 @@ def main():
             label=date.isoformat()
             meta=indexed.get(f"compra_agil:{label}:total_paginas:10",[])
             total=int(meta[8]) if len(meta)>8 and meta[8] else None
-            if total is not None and not 1<=total<=a.tope_pagina:
-                raise RuntimeError("Total API fuera del tope configurado")
-            bound=total or a.tope_pagina
+            if total is not None and not 1<=total<=100000:
+                raise RuntimeError("Paginación API incoherente; revisión requerida")
+            bound=total or 1
             if any((len(indexed.get(f"compra_agil:{label}:pagina:{page}:10",[]))<5
                     or indexed[f"compra_agil:{label}:pagina:{page}:10"][4]!="completo")
                    for page in range(1,bound+1)):
@@ -52,8 +51,8 @@ def main():
         a.fecha=chosen
         print("V2_FECHA_SELECCIONADA:",a.fecha)
     meta=indexed.get(f"compra_agil:{a.fecha}:total_paginas:10",[])
-    bound=int(meta[8]) if len(meta)>8 and meta[8] else a.tope_pagina
-    if not 1<=bound<=a.tope_pagina:raise RuntimeError("Total fuera del tope")
+    bound=int(meta[8]) if len(meta)>8 and meta[8] else 1
+    if not 1<=bound<=100000:raise RuntimeError("Paginación API incoherente")
     pages=[]
     for page in range(1,bound+1):
         r=indexed.get(f"compra_agil:{a.fecha}:pagina:{page}:10",[])
@@ -61,7 +60,7 @@ def main():
         if len(r)>6 and r[6] and r[6]>now:continue
         pages.append(page)
         if len(pages)>=a.max_paginas:break
-    # Si se excluyen los listados, no generar páginas.
+    # Sin metadato se consulta la primera página para descubrir total_paginas.\n    # Si se excluyen los listados, no generar páginas.
     if not a.max_paginas:pages=[]
     commands=[]
     for page in pages:
