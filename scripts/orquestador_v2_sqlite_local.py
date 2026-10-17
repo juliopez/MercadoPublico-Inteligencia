@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Orquestador experimental V2: cola SQLite local, sin Sheets ni ETL originales."""
 import argparse
+import contextlib
+import fcntl
 import json
 import os
 import random
@@ -159,6 +161,21 @@ def circuit_record(con, http, service="api_v2", threshold=3, cooldown=1800):
         actualizado=excluded.actualizado""",(service,consecutivos,until,stamp(utc())))
     return until
 
+@contextlib.contextmanager
+def execution_lock(root=ROOT):
+    """Bloquea la ejecución HTTP entre procesos del mismo Ubuntu; el SO libera al morir."""
+    root.mkdir(parents=True, exist_ok=True)
+    path=root/'api_v2_ejecucion.lock'
+    with path.open('a+b') as lock:
+        try:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise RuntimeError('Ya hay otra ejecución API V2 activa; ninguna solicitud realizada')
+        try:
+            yield
+        finally:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+
 def execute(con,args):
     ticket=os.environ.get("CHILECOMPRA_TICKET","").strip()
     if not ticket:
@@ -263,7 +280,8 @@ def main():
         elif args.accion=="estado":
             show(con,args.fecha)
         else:
-            execute(con,args)
+            with execution_lock(ROOT):
+                execute(con,args)
     finally:
         con.close()
 if __name__=="__main__":
