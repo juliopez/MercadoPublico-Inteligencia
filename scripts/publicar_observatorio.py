@@ -54,11 +54,11 @@ def main():
         for start in range(0,len(records),10000):
             part_name=f"observatorio-{name}-{start//10000+1:04d}.json"
             part_path=chunks_dir/part_name
-            payload=json.dumps(records[start:start+10000],ensure_ascii=False,separators=(",",":"))+"\\n"
+            payload=json.dumps(records[start:start+10000],ensure_ascii=False,separators=(",",":"))+"\n"
             if len(payload.encode("utf-8"))>=25000000:
                 raise RuntimeError(f"Fragmento excesivo: {part_name}")
             part_path.write_text(payload,encoding="utf-8")
             manifest["partes"][name].append("data/partes/"+part_name)
-    output.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+    output.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print("EXPORTACION_OK",*(f"{k}={len(v)}" for k,v in result["tablas"].items()))
 if __name__=="__main__":main()
