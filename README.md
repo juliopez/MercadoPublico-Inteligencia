@@ -166,3 +166,12 @@ Revisión estática del código, **sin ejecutar las API ni modificar las hojas**
 **Riesgos remanentes:** cada proceso Python tiene su propio control de ritmo; no hay un límite oficialmente confirmado para las API. Las páginas V2 pueden variar si cambia el conjunto de origen. El listado V1 debe recibirse completo antes de guardarlo, por diseño. Los checkpoints de detalles no garantizan que una entidad no cambie después de procesada. Esta auditoría no sustituye pruebas de integración y reconciliación de registros.
 
 **Validación:** cambios confirmados en GitHub; no ejecutados contra las API. Conservar esta distinción antes de declarar exitosa la marcha blanca.
+
+
+## 13. Revisión documental de API V2 (tras ejecución n.º 6)
+
+Se contrastó la integración con el [portal oficial de ChileCompra](https://www.chilecompra.cl/api/) y referencias técnicas de la guía API Compra Ágil V2. El endpoint `GET /v2/compra-agil`, filtros `publicado_desde` y `publicado_hasta` y cabecera `ticket` coinciden con la interfaz descrita; los errores **HTTP 504** de las ejecuciones n.º 4, 5 y 6 no demuestran que el endpoint o el ticket sean incorrectos.
+
+**Cambio puntual:** se incorporó zona horaria explícita `America/Santiago` en los parámetros ISO 8601 de la ventana diaria, respetando el día civil chileno elegido por el operador. No se redujo el universo de registros ni se activaron particiones horarias porque todavía no se ha validado en documentación oficial la estabilidad de la paginación entre consultas particionadas.
+
+**Pendiente:** validar el formato de fecha y la disponibilidad real del servicio en una próxima ejecución manual, sin efectuar pruebas masivas innecesarias. No se modificaron las hojas ni los ETL de Licitaciones u Órdenes de compra.
