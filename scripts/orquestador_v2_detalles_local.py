@@ -52,7 +52,24 @@ def report(con):
         "SELECT estado, COUNT(*) n FROM detail_jobs GROUP BY estado")},ensure_ascii=False))
     r=con.execute("SELECT consecutivos,abierto_hasta FROM circuit WHERE servicio='api_v2'").fetchone()
     if r:print("Circuit breaker V2:",dict(r))
+def reconcile_details(con, root=ROOT):
+    '''Confirma JSON ya escrito pero pendiente en SQLite; sin HTTP.'''
+    recovered=0
+    rows=con.execute("SELECT codigo FROM detail_jobs WHERE estado!='completo'").fetchall()
+    for row in rows:
+        code=row['codigo']; path=root/'detalles'/(code+'.json')
+        if not path.exists(): continue
+        try: validar_detalle(path.read_bytes(),code)
+        except (ValueError,OSError,UnicodeError,TypeError) as exc:
+            raise ValueError(f'Archivo detalle pendiente inválido: {code}') from exc
+        with con:
+            con.execute("UPDATE detail_jobs SET estado='completo',http=200,archivo=?,disponible='',error=NULL,actualizado=? WHERE codigo=?",(str(path),core.stamp(core.utc()),code))
+        recovered+=1
+    return recovered
+
 def run(con,maximum):
+    recovered=reconcile_details(con)
+    if recovered: print(f'Detalles recuperados desde disco sin HTTP: {recovered}')
     ticket=os.environ.get("CHILECOMPRA_TICKET","").strip()
     if not ticket:raise SystemExit("Falta CHILECOMPRA_TICKET")
     for _ in range(maximum):
