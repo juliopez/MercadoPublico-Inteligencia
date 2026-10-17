@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 """Ciclo único V2 desde GitHub Actions; no programa ejecuciones por sí solo."""
 import argparse,json,os,subprocess,sys,time
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
+from zoneinfo import ZoneInfo
 import gspread
 from google.oauth2.service_account import Credentials
 
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument("--fecha",required=True)
+    p.add_argument("--fecha",default="auto")
+    p.add_argument("--fecha-inicial",default="2026-10-15")
     p.add_argument("--max-paginas",type=int,default=1)
     p.add_argument("--max-detalles",type=int,default=1)
     p.add_argument("--tope-pagina",type=int,default=496)
     a=p.parse_args()
     if not 0<=a.max_paginas<=2 or not 0<=a.max_detalles<=2 or not 1<=a.tope_pagina<=10000:
         p.error("Máximo 2 páginas, 2 detalles y tope positivo")
-    datetime.strptime(a.fecha,"%Y-%m-%d")
+    if a.fecha!="auto":datetime.strptime(a.fecha,"%Y-%m-%d")
+    datetime.strptime(a.fecha_inicial,"%Y-%m-%d")
     cred=Credentials.from_service_account_info(json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"]),
         scopes=["https://www.googleapis.com/auth/spreadsheets"])
     sheet=gspread.authorize(cred).open_by_key(os.environ["GOOGLE_SHEET_ID"])
@@ -26,8 +29,33 @@ def main():
     if len(indexed)!=sum(1 for r in rows[1:] if r and r[0]):
         raise RuntimeError("Checkpoints duplicados, detenido")
     now=datetime.now(timezone.utc).isoformat(timespec="seconds")
+    if a.fecha=="auto":
+        date=datetime.strptime(a.fecha_inicial,"%Y-%m-%d").date()
+        yesterday=datetime.now(ZoneInfo("America/Santiago")).date()-timedelta(days=1)
+        chosen=None
+        while date<=yesterday:
+            label=date.isoformat()
+            meta=indexed.get(f"compra_agil:{label}:total_paginas:10",[])
+            total=int(meta[8]) if len(meta)>8 and meta[8] else None
+            if total is not None and not 1<=total<=a.tope_pagina:
+                raise RuntimeError("Total API fuera del tope configurado")
+            bound=total or a.tope_pagina
+            if any((len(indexed.get(f"compra_agil:{label}:pagina:{page}:10",[]))<5
+                    or indexed[f"compra_agil:{label}:pagina:{page}:10"][4]!="completo")
+                   for page in range(1,bound+1)):
+                chosen=label
+                break
+            date+=timedelta(days=1)
+        if chosen is None:
+            print("V2_FECHAS_AL_DIA")
+            return
+        a.fecha=chosen
+        print("V2_FECHA_SELECCIONADA:",a.fecha)
+    meta=indexed.get(f"compra_agil:{a.fecha}:total_paginas:10",[])
+    bound=int(meta[8]) if len(meta)>8 and meta[8] else a.tope_pagina
+    if not 1<=bound<=a.tope_pagina:raise RuntimeError("Total fuera del tope")
     pages=[]
-    for page in range(1,a.tope_pagina+1):
+    for page in range(1,bound+1):
         r=indexed.get(f"compra_agil:{a.fecha}:pagina:{page}:10",[])
         if len(r)>4 and r[4] in ("completo","revision"):continue
         if len(r)>6 and r[6] and r[6]>now:continue
