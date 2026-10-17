@@ -146,7 +146,7 @@ for code,offers,result in success:
                 result[field_idx]=old[field_idx] if len(old)>field_idx else ""
             # No reemplazar los datos de selección con información que pueda contradecir el registro verificado.
             for field_idx in (9,10,11):
-                result[col]=old[col] if len(old)>col else ""
+                result[field_idx]=old[field_idx] if len(old)>field_idx else ""
         merged=merge(result,old)
         if merged!=old[:14]:
             r_updates.append({"range":f"Resultados!A{idx}:{col(len(RKEEP))}{idx}","values":[projected(merged,RHEAD,RKEEP)]})
