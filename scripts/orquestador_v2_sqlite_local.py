@@ -37,6 +37,7 @@ def db_open(path):
       servicio TEXT PRIMARY KEY, consecutivos INTEGER NOT NULL DEFAULT 0,
       abierto_hasta TEXT NOT NULL DEFAULT '', actualizado TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS rate_limit (servicio TEXT PRIMARY KEY, siguiente_epoch REAL NOT NULL);
     CREATE TABLE IF NOT EXISTS events (
       id INTEGER PRIMARY KEY, fecha TEXT, pagina INTEGER,
       evento TEXT, http INTEGER, segundos REAL, cuando TEXT
@@ -125,6 +126,22 @@ def show(con,date):
     print(json.dumps({"fecha":date,"estados":{r["estado"]:r["n"] for r in rows}},ensure_ascii=False))
     for j in con.execute("SELECT pagina,estado,intentos,http,error,disponible FROM jobs WHERE fecha=? ORDER BY pagina",(date,)):
         print(dict(j))
+def reserve_request(con, min_interval=60, service='api_v2'):
+    if min_interval < 0: raise ValueError('Intervalo invalido')
+    con.execute('BEGIN IMMEDIATE')
+    try:
+        row=con.execute('SELECT siguiente_epoch FROM rate_limit WHERE servicio=?',(service,)).fetchone()
+        now=time.time()
+        scheduled=max(now, row['siguiente_epoch'] if row else now)
+        con.execute('INSERT INTO rate_limit(servicio,siguiente_epoch) VALUES(?,?) ON CONFLICT(servicio) DO UPDATE SET siguiente_epoch=excluded.siguiente_epoch',(service,scheduled+min_interval))
+        con.commit()
+    except BaseException:
+        con.rollback()
+        raise
+    delay=max(0.0,scheduled-time.time())
+    if delay>0: time.sleep(delay)
+    return delay
+
 def circuit_open(con, service="api_v2"):
     r=con.execute("SELECT abierto_hasta FROM circuit WHERE servicio=?",(service,)).fetchone()
     return bool(r and r["abierto_hasta"] and r["abierto_hasta"]>stamp(utc()))
@@ -167,6 +184,7 @@ def execute(con,args):
         params={"publicado_desde":start,"publicado_hasta":end,"numero_pagina":page,"tamano_pagina":10}
         req=Request(BASE+"?"+urlencode(params),headers={"ticket":ticket,"Accept":"application/json",
           "User-Agent":"Observatorio-Orquestador-Experimental/1.0"})
+        reserve_request(con)
         t=time.monotonic(); raw=None; http=None; issue=None; retry=None
         try:
             with urlopen(req,timeout=45) as resp:
@@ -223,8 +241,7 @@ def execute(con,args):
             print("Detenido al primer fallo; sin reintentos en esta ejecución")
             break
         calls+=1
-        if calls<args.max_solicitudes:
-            time.sleep(args.pausa)
+        # La reserva SQLite aplica el intervalo global entre inicios.
     show(con,args.fecha)
 def main():
     p=argparse.ArgumentParser(description="Orquestador experimental V2 con cola SQLite local")
