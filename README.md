@@ -191,3 +191,83 @@ No se ejecutó el workflow ni se consultó la API al incorporar el formulario.
 Se reemplazó el campo de texto libre `categoria_compra_agil` por una **lista desplegable** (`workflow_dispatch` con `type: choice`): `Todas` (por defecto), `Capacitación`, `Computación`, `Software`, `Asesoría`, `Consultoría`, `Equipamiento`, `Mantención`, `Servicios` e `Insumos médicos`. El valor `Todas` equivale a una búsqueda sin el parámetro textual `q`. Los demás valores se envían literalmente como palabras clave de búsqueda.
 
 **No son categorías oficiales exhaustivas de ChileCompra** ni códigos UNSPSC: son temáticas orientativas para pruebas de alcance acotado. La lista puede revisarse posteriormente en función de las categorías oficiales disponibles. El control de fecha sigue siendo obligatorio y no se modificaron los registros existentes.
+
+
+## 16. Evidencia empírica API V2 Compra Ágil — Ubuntu, 17-10-2026
+
+**Propósito:** conservar evidencia reproducible sobre los problemas HTTP de la API V2 y facilitar que un futuro equipo o asistente retome el diagnóstico sin repetir consultas. **Estado:** investigación técnica; NO demuestra disponibilidad sostenida, NO equivale a integración validada con Sheets. El propietario priorizó resolver el consumo directo de API V2, sin utilizar archivos históricos en esta investigación.
+
+### 16.1 Restricciones vigentes
+
+- **Mantener congelados los ETL originales** y su orquestación (incluidos `scripts/sync_chilecompra_sheets.py`, `scripts/etl_multiproceso_manual.py`, `scripts/sync_resultados_licitaciones.py`, `scripts/sync_ordenes_compra_sheets.py`, `.github/workflows/marcha-blanca-manual.yml`). Los diagnósticos y el extractor aquí descritos son **independientes**.
+- Ejecutar las pruebas controladas desde **Ubuntu local**; no modificar Google Sheets, `data/observatorio.json` ni `index.html` mientras no se apruebe una integración.
+- **No publicar el ticket API**, las respuestas que puedan contener datos sensibles ni las credenciales. La variable local de entorno es `CHILECOMPRA_TICKET`.
+- Incidente reportado a ChileCompra: **`INC-1403213-Q2T1Z9`**. Solicitud enviada exitosamente el 17-10-2026; respuesta oficial pendiente al documentar estas mediciones.
+
+### 16.2 Endpoints y parámetros comprobados
+
+| Operación | Endpoint | Autenticación | Estado |
+|---|---|---|---|
+| Listado Compra Ágil | `GET https://api2.mercadopublico.cl/v2/compra-agil` | Header `ticket` | Respuestas HTTP 200 verificadas con paginación |
+| Detalle individual | `GET https://api2.mercadopublico.cl/v2/compra-agil/{codigo}` | Header `ticket` | HTTP 504 recurrente; hubo al menos una respuesta HTTP 200 previa |
+| Licitación V1 (control comparativo) | `GET https://api.mercadopublico.cl/servicios/v1/publico/licitaciones.json?codigo=...&ticket=...` | Parámetro `ticket` | HTTP 200 en prueba puntual |
+
+Parámetros del listado que devolvieron HTTP 200: `publicado_desde=2026-10-15T00:00:00-03:00`, `publicado_hasta=2026-10-15T23:59:59-03:00`, `numero_pagina=1`, `tamano_pagina=10`. **Restricción confirmada por error HTTP 400:** `tamano_pagina` debe estar **entre 10 y 50**; un intento con valor 1 fue rechazado con el mensaje `Parámetros de consulta inválidos`. El parámetro `q` es una búsqueda **textual**, no una categoría oficial.
+
+### 16.3 Resultados observados (no son métricas SLA)
+
+| Prueba | Resultado empírico |
+|---|---|
+| V1, licitación `1017312-6-LR26` | HTTP 200, **0,32 s** (diagnóstico de encabezados) |
+| V2, detalle `425-339-COT26` | HTTP 200, **26,69 s** (diagnóstico de encabezados; **no se leyó el cuerpo**) |
+| V2, detalle con `curl --http1.1` | HTTP 504, **29,907 s**; DNS 0,113 s, TCP 0,312 s, TLS 0,524 s; primer byte 29,907 s; mensaje de error JSON de 41 bytes |
+| V2, listado con `tamano_pagina=1` | HTTP 400; el servidor exige valor entre 10 y 50 |
+| V2, listado con 10 registros, página 1 | HTTP 200, **19,37 s**, 10 ítems, **496 páginas** informadas para 15-10-2026 |
+| V2, listado con 50 registros sin filtro | HTTP 504 en **29,52 s**, `Endpoint request timed out` |
+| V2, listado con 50 registros y `q=capacitación` | HTTP 504 en **29,72 s**, mismo mensaje |
+| V2, diagnóstico 3 páginas de 10 | Tres HTTP 200: **10,70 / 8,81 / 7,16 s**; 30 ítems, 496 páginas informadas |
+| V2, extractor local 3 páginas de 10 | Tres HTTP 200: **7,36 / 8,09 / 7,48 s**; tres JSON completos almacenados |
+| V2, extensión a 10 páginas | Primer intento: **HTTP 500** en página 4, 11,16 s; nueva ejecución: páginas 4–10 con HTTP 200 en **8,20 / 4,30 / 5,53 / 8,61 / 12,64 / 9,78 / 7,30 s** |
+| V2, detalle `425-339-COT26` | HTTP 504, **29,60 s**, `Endpoint request timed out` |
+| V2, detalle `425-325-COT26` | HTTP 504, **29,71 s**, mismo mensaje |
+| V2, detalle `3179-290-COT26` | HTTP 504, **29,57 s**, mismo mensaje |
+
+**Resultado consolidado del extractor local:** **10 páginas / 100 registros / 100 códigos únicos / 0 duplicados observados**, con almacenamiento persistente en JSON y reanudación de páginas válidas sin nuevas solicitudes. La API reportó **496 páginas** para la fecha y tamaño 10: **NO** se completó la extracción de las 496 páginas. En una reejecución de las primeras tres páginas, el extractor informó explícitamente `sin consultar API`.
+
+**Importante:** el HTTP 500 de la página 4 se resolvió en un intento posterior (fue transitorio *en ese caso*). Las tres solicitudes de detalle posteriores devolvieron HTTP 504 alrededor de 29,6 s pese a pausas de 60 s. La respuesta exitosa inicial del detalle y los fallos posteriores impiden afirmar que ese endpoint esté permanentemente caído.
+
+### 16.4 Auditoría de los 100 JSON de listado (sin llamadas adicionales)
+
+Se inspeccionaron los 100 registros locales. Todos tenían presentes las **claves de primer nivel**: `codigo`, `nombre`, `estado`, `convocatoria`, `documentos`, `fechas`, `institucion`, `links`, `montos`, `motivos` y `resumen`. La presencia de claves **no garantiza que sus valores sean completos**.
+
+Subcampos observados: `resumen.total_ofertas_recibidas`, `montos.monto_disponible_clp`, `institucion.organismo_comprador`, `fechas.fecha_publicacion`, `fechas.fecha_cierre`, y `links.detalle`, entre otros. **El listado no contiene cotizaciones individuales explícitas ni precios individualizados por proveedor** en la muestra. No inferir adjudicaciones ni ofertas de participantes a partir de estos resúmenes.
+
+Los 100 `links.detalle` inspeccionados tenían rutas relativas del patrón `/v2/compra-agil/{codigo}` (ejemplo `/v2/compra-agil/2288-708-COT26`), que corresponde al **mismo endpoint de detalle** probado. No se identificó en esos enlaces una vía alternativa para evitar HTTP 504.
+
+Se dispone además de **un JSON de detalle exitoso** recuperado inicialmente en GitHub Actions para `425-339-COT26`, con aproximadamente **24,7 KB**, **14 cotizaciones** y **un producto solicitado**. Esa respuesta fue válida en esa ocasión y permitió observar las cotizaciones; **su tamaño pequeño no explica por sí solo los tiempos de espera**. No confundir el HTTP 200 observado mediante el diagnóstico de encabezados con una descarga JSON completa.
+
+### 16.5 Scripts separados y dónde buscar los respaldos
+
+Todos los siguientes scripts de diagnóstico son **experimentales** y están en `scripts/`, sin conectarse a Google Sheets:
+
+- `diagnostico_api_v1_v2_local.py`: comparación V1/V2 por código; solo estado y tiempos, no cuerpos.
+- `diagnostico_curl_v2_local.sh`: detalle V2 por `curl` HTTP/1.1, medidas de DNS/TCP/TLS/primer byte.
+- `diagnostico_listado_v2_local.py`: una página del listado con tamaño 50, opcional `--q`; historial de versiones anteriores probó tamaño 10 y 1.
+- `diagnostico_paginacion_v2_local.py`: hasta tres páginas de 10; registro técnico sin cuerpos.
+- `extractor_v2_incremental_local.py`: extractor **local** de listado V2, actualmente con máximo **10 páginas por ejecución**, tamaño de página 10, pausa configurable (60 s usada), guardado atómico, reanudación y controles de códigos repetidos.
+- `diagnostico_tres_detalles_v2_local.py`: tres códigos de detalle con pausa 60 s; detención ante HTTP 429; registra respuestas y guarda cuerpo JSON cuando HTTP 200.
+- `auditar_campos_listado_v2_local.py`: inspección **offline** de claves/subclaves de listados.
+
+**Archivos locales de Ubuntu, NO incluidos en GitHub por defecto:** `extraccion_v2_local/2026-10-15_b7e05155c31a/pagina_0001.json` hasta `pagina_0010.json`, más `manifest.json`; `diagnostico_detalles_v2/resultados.json` (tres 504); `diagnostico_paginas_v2/resultados.json` (tres 200). El artefacto de la primera consulta exitosa de detalle en Actions corresponde a la ejecución **`39047390195`**, artefacto **`12105548946`**; verificar su disponibilidad antes de usarlo, pues los artefactos expiran.
+
+**Reanudar/validar localmente:** desde la raíz del clon Ubuntu y con `CHILECOMPRA_TICKET` configurado, ejecutar `python3 scripts/extractor_v2_incremental_local.py --fecha 2026-10-15 --max-paginas 10 --pausa 60`. Mientras existan y sean válidos los diez JSON locales, **no debe generar consultas nuevas**. No ampliar a 496 páginas sin un plan y aprobación explícita. El almacenamiento local **no se sincroniza automáticamente** con GitHub ni con Sheets.
+
+### 16.6 Interpretación técnica y punto de continuación
+
+**Confirmado:** conectividad y autenticación operan; el listado V2 puede recuperarse por páginas con interrupciones recuperables; el detalle individual presentó HTTP 504 **reproducible en tres códigos**, con un mensaje del servidor `Endpoint request timed out` y latencias cercanas a 30 s. El servicio también presentó HTTP 500 transitorio en listado y HTTP 400 por parámetro inválido.
+
+**Hipótesis, NO causa demostrada:** existe un límite de ejecución o de pasarela cercano a 30 s. No se ha identificado si ocurre en aplicación, base de datos, balanceador u otro componente interno. No atribuir causalmente el éxito del listado a las pausas o al tamaño 10 sin pruebas comparables; las muestras son reducidas y la disponibilidad es intermitente.
+
+**Pendiente externo:** solicitar respuesta técnica de ChileCompra al incidente **`INC-1403213-Q2T1Z9`** respecto de timeout del detalle, posible incidencia conocida y mecanismo documentado para obtener cotizaciones; complementar con los tres HTTP 504 medidos si hace falta.
+
+**Decisión vigente del propietario:** concluir el diagnóstico de **API V2** antes de discutir relevancia para LoBa, cargas históricas, cambios en frontend o escrituras en Sheets. **No repetir indiscriminadamente consultas de detalle**; conservar los respaldos, examinar primero evidencia existente y mantener los ETL originales congelados hasta nueva autorización.
