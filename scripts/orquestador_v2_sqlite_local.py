@@ -176,8 +176,9 @@ def execution_lock(root=ROOT):
         finally:
             fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
 
-def reconcile_pages(con, fecha, root=ROOT):
+def reconcile_pages(con, fecha, root=None):
     '''Recupera un JSON persistido antes del checkpoint; no sobrescribe ni consulta API.'''
+    root = ROOT if root is None else root
     done={r['pagina'] for r in con.execute("SELECT pagina FROM jobs WHERE fecha=? AND estado='completo'",(fecha,))}
     seen=set()
     totals=set()
