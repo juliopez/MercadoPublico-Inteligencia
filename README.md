@@ -659,3 +659,27 @@ Tras la exportación de 480.502 registros, el front anterior no mostraba recuent
 ### 17.50 Diagnóstico de carga en blanco (17-10-2026)
 
 Al observar el sitio con contadores `—` y cobertura «Cargando información…», se agregó a `index.html` una lectura **independiente** del manifiesto de datos, previa a la carga histórica completa, para presentar recuentos y fecha inmediatamente, además de mostrar errores de HTTP, JavaScript y promesas. Este diagnóstico no altera la base ni el exportador, y distingue un problema de publicación del manifiesto de un bloqueo durante el procesamiento de casi 480.502 filas. Commit frontal de referencia `50d06387`. Pendiente verificar en navegador tras GitHub Pages y evaluar rendimiento; los contadores del manifiesto no significan que las funciones de búsqueda estén listas.
+
+
+### 17.51 Incidente de publicación histórica: causas, corrección y cierre (17-10-2026)
+
+**Alcance.** Al publicar una carga masiva ya incorporada a Google Sheets, el sitio GitHub Pages dejó de mostrar recuentos y permanecía en «Cargando información…». El incidente afectó la **capa de publicación y lectura del front**; no hay evidencia de pérdida o borrado en Google Sheets.
+
+**Causas identificadas y evidencia:**
+
+1. **Archivo monolítico demasiado grande.** En [Actions 39077127070](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39077127070), la lectura de Sheets finalizó con `EXPORTACION_OK procesos=82384 ofertas=398086 resultados=2 ordenescompra=30`, pero `git push` fue rechazado (`GH001`): `data/observatorio.json` medía **174,58 MB**, superando el límite de **100 MB por archivo** de GitHub. El despliegue de esa ejecución no llegó a realizarse.
+2. **JSON de manifiesto inválido en la primera publicación segmentada.** La inspección del archivo publicado encontró caracteres literales `\\n` **después** del cierre del JSON (posición 3021). El navegador mostró `Unexpected non-whitespace character after JSON at position 3021 (line 71 column 2)`. El HTML se había desplegado, pero el front no podía interpretar el manifiesto.
+3. **Falta de visibilidad en la carga.** La primera versión del lector esperaba completar todos los fragmentos antes de actualizar los contadores y no exponía suficientemente el motivo del fallo; esto confundía un problema de publicación con la ausencia de registros.
+
+**Correcciones incorporadas:**
+
+- `scripts/publicar_observatorio.py` produce un **manifiesto** `data/observatorio.json` más fragmentos `data/partes/observatorio-<tabla>-NNNN.json` de hasta 10.000 filas por archivo, con límite preventivo de 25 MB por fragmento. El front conserva compatibilidad con el formato anterior.
+- Ambos workflows de publicación incluyen `data/partes/` cuando confirman el extracto. La ruta de publicación desde Sheets valida con `json.loads` tanto el manifiesto como cada fragmento y verifica que los recuentos coincidan antes de confirmar los cambios.
+- Se corrigió el sufijo inválido del manifiesto en commit `25d9576784c01cd5d350be192848bf90b1cf52b9`. Se agregó la validación automática en `c78f71a4485a95de8e63ba887df901ce01ec17af`.
+- `index.html` muestra los recuentos desde el manifiesto sin esperar todos los registros, descarga por tandas y muestra errores de red y de parseo de manera visible. **Importante:** que se vean contadores no demuestra por sí solo que búsquedas y filtros hayan terminado de cargar.
+
+**Verificación posterior:** la captura del sitio de fecha 17-10-2026 mostró **480.502 registros**, desglosados en **82.384 procesos, 398.086 ofertas, 2 resultados y 30 órdenes de compra**; además, fecha del proceso más antiguo **31-08-2026** y última publicación **17-10-2026, 20:14 (Chile)**. Esta evidencia confirma la lectura de los metadatos y la visualización de contadores; la prueba completa de consultas, filtros y fichas con este volumen de datos **sigue pendiente**.
+
+**Procedimiento de publicación recomendado:** tras cargas manuales en Sheets, usar exclusivamente `publicar-sheets-pages.yml` para exportar, validar y desplegar sin consultar ChileCompra. Usar `front-pages.yml` solo para cambios de presentación; el orquestador integral queda reservado para los ciclos ETL autorizados. En cada publicación comprobar `EXPORTACION_OK`, validación de todos los fragmentos, resultado `Success` del despliegue y al menos una búsqueda/consulta funcional en el navegador. No publicar un manifiesto que apunte a archivos inexistentes o inválidos.
+
+**Limitaciones pendientes:** el navegador aún puede necesitar cargar ~480 mil registros para disponer de todas las funciones; evaluar índices/carga bajo demanda y tiempos de respuesta antes de considerar la plataforma escalable. No se modificaron registros de Sheets para resolver este incidente.
