@@ -58,66 +58,9 @@ def fetch(page, start, end):
         raise RuntimeError("Respuesta API sin payload válido; no se escriben datos")
     return data["payload"]
 
-def main():
-    now=datetime.now(timezone.utc)
-    fecha=os.getenv("SYNC_FECHA_2026","2026-10-15")
-    try:
-        day=datetime.strptime(fecha,"%Y-%m-%d").date()
-    except ValueError:
-        raise SystemExit("Fecha inválida; usar AAAA-MM-DD")
-    if day>datetime.now(__import__("zoneinfo").ZoneInfo("America/Santiago")).date():
-        raise SystemExit("La fecha no puede ser futura en Chile")
-    start=fecha+"T00:00:00"
-    end=fecha+"T23:59:59"
-    maxpages=int(os.getenv("SYNC_MAX_PAGES","20"))
-    modalidad=os.getenv("SYNC_MODALIDAD","compra_agil")
-    if modalidad not in ("compra_agil","licitaciones"):raise SystemExit("Modalidad no admitida")
-    found={}
-    totalpages=None
-    if modalidad=="licitaciones":
-        args=urlencode({"fecha":datetime.strptime(fecha,"%Y-%m-%d").strftime("%d%m%Y"),"ticket":TICKET})
-        req=Request("https://api.mercadopublico.cl/servicios/v1/publico/licitaciones.json?"+args,headers={"Accept":"application/json"})
-        data=fetch_json(req,timeout=65,label="Licitaciones "+fecha)
-        if not isinstance(data,dict) or not isinstance(data.get("Listado"),list):raise RuntimeError("Formato V1 no reconocido")
-        if data.get("Cantidad") is not None and int(data["Cantidad"])!=len(data["Listado"]):raise RuntimeError("Listado V1 incompleto")
-        for x in data["Listado"]:
-            b=x.get("Comprador") or {}
-            if not isinstance(b,dict):b={}
-            code=x.get("CodigoExterno")
-            if not code:raise RuntimeError("Licitación sin código; sin escrituras")
-            estado_code=str(x.get("CodigoEstado") or "")
-            estado=x.get("Estado") or LICITACION_ESTADOS.get(estado_code) or ("Código "+estado_code if estado_code else "")
-            # La API V1 documenta que fecha=DDMMAAAA lista licitaciones publicadas ese día.
-            # El listado básico puede carecer de FechaPublicacion; usar fecha de consulta,
-            # NO confundir con FechaCreacion del objeto de respuesta (fecha de consulta).
-            publicada=x.get("FechaPublicacion") or fecha
-            found[str(code)]=list(map(safe,[code,x.get("Nombre"),estado,"",publicada,x.get("FechaCierre"),"",x.get("MontoEstimado"),b.get("NombreOrganismo"),b.get("RutUnidad"),b.get("NombreUnidad"),b.get("RegionUnidad"),"","","",now.isoformat(),"Sin clasificar","Sin clasificar","","Licitación"]))
-        print("API_V1_LICITACIONES",fecha,"registros",len(found),flush=True)
-    else:
-      for page in range(1,maxpages+1):
-        payload=fetch(page,start,end)
-        pages=int((payload.get("paginacion") or {}).get("total_paginas") or 0)
-        if pages<1:raise RuntimeError("Paginación ausente: sin escritura")
-        totalpages=pages
-        batch=payload.get("items") or []
-        for item in batch:
-            if item.get("codigo"):found[item["codigo"]]=row(item,now.isoformat())
-        print(f"Página {page}/{pages}, registros {len(batch)}, únicos {len(found)}",flush=True)
-        if page>=pages: break
-        if not batch:raise RuntimeError("Página vacía antes de completar la paginación: sin escritura")
-        time.sleep(1)
-    if modalidad=="compra_agil" and totalpages and totalpages>maxpages:
-        raise RuntimeError(f"Extracción incompleta: {totalpages} páginas, máximo {maxpages}. No se escribe Google Sheets.")
-    cap=int(os.getenv("SYNC_MAX_RECORDS","0"))
-    if cap>0:
-        found=dict(list(found.items())[:cap])
-        print("LIMITE_VALIDACION",cap,"registros",len(found),flush=True)
-    manifest=os.getenv("SYNC_MANIFEST_FILE","")
-    if manifest:
-        with open(manifest,"w",encoding="utf-8") as out:out.write("\n".join(found)+"\n")
-    if not found:
-        print("Sin registros para ventana; no se cambia la hoja.")
-        return
+
+def upsert_rows(found):
+    if not found:return (0,0)
     creds=Credentials.from_service_account_info(SA,scopes=SCOPES)
     sheet=gspread.authorize(creds).open_by_key(SHEET_ID).worksheet("Procesos")
     existing=sheet.get_all_values()
@@ -159,7 +102,110 @@ def main():
     for i in range(0,len(updates),100):
         sheet.spreadsheet.values_batch_update({"valueInputOption":"RAW","data":updates[i:i+100]})
     if appends:sheet.append_rows(appends,value_input_option="RAW",table_range=f"A:{last}")
-    print(f"Sincronizados: {len(updates)} actualizados, {len(appends)} nuevos.")
+    print(f"Sincronizados: {len(updates)} actualizados, {len(appends)} nuevos.",flush=True)
+    return len(updates),len(appends)
+
+
+def main():
+    now=datetime.now(timezone.utc)
+    fecha=os.getenv("SYNC_FECHA_2026","2026-10-15")
+    try:
+        day=datetime.strptime(fecha,"%Y-%m-%d").date()
+    except ValueError:
+        raise SystemExit("Fecha inválida; usar AAAA-MM-DD")
+    if day>datetime.now(__import__("zoneinfo").ZoneInfo("America/Santiago")).date():
+        raise SystemExit("La fecha no puede ser futura en Chile")
+    start=fecha+"T00:00:00"
+    end=fecha+"T23:59:59"
+    maxpages=int(os.getenv("SYNC_MAX_PAGES","20"))
+    modalidad=os.getenv("SYNC_MODALIDAD","compra_agil")
+    if modalidad not in ("compra_agil","licitaciones"):raise SystemExit("Modalidad no admitida")
+    found={}
+    totalpages=None
+    if modalidad=="licitaciones":
+        args=urlencode({"fecha":datetime.strptime(fecha,"%Y-%m-%d").strftime("%d%m%Y"),"ticket":TICKET})
+        req=Request("https://api.mercadopublico.cl/servicios/v1/publico/licitaciones.json?"+args,headers={"Accept":"application/json"})
+        data=fetch_json(req,timeout=65,label="Licitaciones "+fecha)
+        if not isinstance(data,dict) or not isinstance(data.get("Listado"),list):raise RuntimeError("Formato V1 no reconocido")
+        if data.get("Cantidad") is not None and int(data["Cantidad"])!=len(data["Listado"]):raise RuntimeError("Listado V1 incompleto")
+        for x in data["Listado"]:
+            b=x.get("Comprador") or {}
+            if not isinstance(b,dict):b={}
+            code=x.get("CodigoExterno")
+            if not code:raise RuntimeError("Licitación sin código; sin escrituras")
+            estado_code=str(x.get("CodigoEstado") or "")
+            estado=x.get("Estado") or LICITACION_ESTADOS.get(estado_code) or ("Código "+estado_code if estado_code else "")
+            # La API V1 documenta que fecha=DDMMAAAA lista licitaciones publicadas ese día.
+            # El listado básico puede carecer de FechaPublicacion; usar fecha de consulta,
+            # NO confundir con FechaCreacion del objeto de respuesta (fecha de consulta).
+            publicada=x.get("FechaPublicacion") or fecha
+            found[str(code)]=list(map(safe,[code,x.get("Nombre"),estado,"",publicada,x.get("FechaCierre"),"",x.get("MontoEstimado"),b.get("NombreOrganismo"),b.get("RutUnidad"),b.get("NombreUnidad"),b.get("RegionUnidad"),"","","",now.isoformat(),"Sin clasificar","Sin clasificar","","Licitación"]))
+        print("API_V1_LICITACIONES",fecha,"registros",len(found),flush=True)
+    else:
+        creds=Credentials.from_service_account_info(SA,scopes=SCOPES)
+        book=gspread.authorize(creds).open_by_key(SHEET_ID)
+        control=book.worksheet("Control")
+        control_values=control.get("A1:B")
+        if not control_values or control_values[0][:2]!=["variable","valor"]:
+            raise RuntimeError("Control A:B requiere encabezados variable, valor")
+        prefix="compra_agil_page:"+fecha+":"
+        previous={}
+        for r in control_values[1:]:
+            if len(r)<2 or not r[0].startswith(prefix):continue
+            page_string=r[0][len(prefix):]
+            if not page_string.isdigit() or not r[1].isdigit():raise RuntimeError("Checkpoint de paginación inválido")
+            page_number=int(page_string)
+            if page_number in previous and previous[page_number]!=int(r[1]):raise RuntimeError("Checkpoint contradictorio")
+            previous[page_number]=int(r[1])
+        totals=set(previous.values())
+        if len(totals)>1:raise RuntimeError("Número total de páginas contradictorio")
+        totalpages=next(iter(totals),None)
+        if totalpages is not None and totalpages>maxpages:
+            raise RuntimeError(f"Hay {totalpages} páginas y el máximo configurado es {maxpages}")
+        page=1
+        while totalpages is None or page<=totalpages:
+            if page>maxpages:raise RuntimeError(f"Extracción supera {maxpages} páginas, no se considera completa")
+            if page in previous:
+                print(f"Página {page}/{totalpages}: ya persistida; omitida",flush=True)
+                page+=1
+                continue
+            payload=fetch(page,start,end)
+            pages=int((payload.get("paginacion") or {}).get("total_paginas") or 0)
+            if pages<1:raise RuntimeError("Paginación ausente")
+            if totalpages is not None and pages!=totalpages:
+                raise RuntimeError(f"Paginación cambió: antes {totalpages}, ahora {pages}; revisar ventana")
+            totalpages=pages
+            if totalpages>maxpages:raise RuntimeError(f"Extracción excede {maxpages} páginas")
+            batch=payload.get("items")
+            if not isinstance(batch,list):raise RuntimeError("Página sin lista de ítems")
+            if page<totalpages and not batch:raise RuntimeError("Página intermedia vacía")
+            page_rows={}
+            for item in batch:
+                if not isinstance(item,dict) or not item.get("codigo"):
+                    raise RuntimeError("Registro Compra Ágil sin código; página no guardada")
+                code=str(item["codigo"])
+                if code in page_rows:raise RuntimeError("Código duplicado en página "+str(page))
+                page_rows[code]=row(item,now.isoformat())
+            # Persistencia antes del checkpoint: una interrupción intermedia
+            # provocará reescritura idempotente, no pérdida de la página.
+            updated,inserted=upsert_rows(page_rows)
+            control.append_row([prefix+str(page),str(totalpages)],value_input_option="RAW",table_range="A:B")
+            print(f"Página {page}/{totalpages} persistida: {len(page_rows)} registros, "
+                  f"{inserted} nuevos, {updated} actualizados",flush=True)
+            page+=1
+        print("COMPRA_AGIL_LISTADO_COMPLETO",fecha,"páginas",totalpages,flush=True)
+        return
+    cap=int(os.getenv("SYNC_MAX_RECORDS","0"))
+    if cap>0:
+        found=dict(list(found.items())[:cap])
+        print("LIMITE_VALIDACION",cap,"registros",len(found),flush=True)
+    manifest=os.getenv("SYNC_MANIFEST_FILE","")
+    if manifest:
+        with open(manifest,"w",encoding="utf-8") as out:out.write("\n".join(found)+"\n")
+    if not found:
+        print("Sin registros para ventana; no se cambia la hoja.")
+        return
+    upsert_rows(found)
 
 if __name__=="__main__":
     main()
