@@ -5,7 +5,7 @@ on:
       fecha:
         description: "Fecha de publicaciones (AAAA-MM-DD)"
         required: true
-        default: "2026-10-15"
+        default: "auto"
         type: string
       tope_pagina:
         description: "Última página admisible para la fecha"
@@ -37,6 +37,6 @@ jobs:
           CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           GOOGLE_SHEET_ID: ${{ vars.GOOGLE_SHEET_ID }}
-          FECHA: ${{ github.event_name == 'workflow_dispatch' && inputs.fecha || '2026-10-15' }}
+          FECHA: ${{ github.event_name == 'workflow_dispatch' && inputs.fecha || 'auto' }}
           TOPE: ${{ github.event_name == 'workflow_dispatch' && inputs.tope_pagina || '496' }}
         run: python3 scripts/v2_ciclo_github.py --fecha "$FECHA" --tope-pagina "$TOPE" --max-paginas 1 --max-detalles 1
