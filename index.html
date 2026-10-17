@@ -28,14 +28,25 @@ function parseCSV(s){
 async function load(id,key){const file=$(id).files[0];if(!file)return;try{const rows=parseCSV(await file.text());if(rows.length&&fields[key].some(k=>!(k in rows[0])))throw Error('Faltan columnas necesarias para '+key);sets[key]=rows;populate();render();}catch(e){$('status').textContent='Error en '+file.name+': '+e.message;}}
 const norm=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().trim();
 let globalMatches=[];
+const indexes={processByCode:new Map(),offersByCode:new Map(),resultsByCode:new Map(),offersByCompany:new Map(),resultsByCompany:new Map(),buyers:[],companies:[],processSearch:[]};
+function groupIndex(map,key,row){if(!key)return;const group=map.get(key);if(group)group.push(row);else map.set(key,[row]);}
+function rebuildIndexes(){
+ for(const key of ['processByCode','offersByCode','resultsByCode','offersByCompany','resultsByCompany'])indexes[key].clear();
+ for(const p of sets.procesos)if(p.codigo&&!indexes.processByCode.has(p.codigo))indexes.processByCode.set(p.codigo,p);
+ for(const o of sets.ofertas){groupIndex(indexes.offersByCode,o.codigo,o);groupIndex(indexes.offersByCompany,o.proveedor,o);}
+ for(const r of sets.resultados){groupIndex(indexes.resultsByCode,r.codigo,r);groupIndex(indexes.resultsByCompany,r.adjudicatario,r);}
+ indexes.processSearch=sets.procesos.map(p=>({process:p,search:norm(p.codigo+' '+p.nombre)}));
+ indexes.companies=[...new Set([...indexes.offersByCompany.keys(),...indexes.resultsByCompany.keys()])];
+ indexes.buyers=[...new Set(sets.procesos.map(p=>p.organismo_comprador).filter(Boolean))];
+}
 function showGlobal(){
  const q=norm($('globalQuery').value),box=$('globalResults');
  globalMatches=[];
  if(q.length<2){box.hidden=true;$('globalQuery').setAttribute('aria-expanded','false');return;}
- const processItems=sets.procesos.filter(p=>norm(p.codigo+' '+p.nombre).includes(q)).slice(0,6).map(p=>({type:'proceso',key:p.codigo,title:p.nombre||p.codigo,subtitle:'Proceso · '+p.codigo}));
- const companies=[...new Set([...sets.ofertas.map(o=>o.proveedor),...sets.resultados.map(r=>r.adjudicatario)].filter(Boolean))];
+ const processItems=indexes.processSearch.filter(item=>item.search.includes(q)).slice(0,6).map(({process:p})=>({type:'proceso',key:p.codigo,title:p.nombre||p.codigo,subtitle:'Proceso · '+p.codigo}));
+ const companies=indexes.companies;
  const companyItems=companies.filter(v=>norm(v).includes(q)).slice(0,5).map(v=>({type:'empresa',key:v,title:v,subtitle:'Empresa proveedora'}));
- const buyers=[...new Set(sets.procesos.map(p=>p.organismo_comprador).filter(Boolean))];
+ const buyers=indexes.buyers;
  const buyerItems=buyers.filter(v=>norm(v).includes(q)).slice(0,5).map(v=>({type:'organismo',key:v,title:v,subtitle:'Organismo comprador'}));
  globalMatches=[...processItems,...companyItems,...buyerItems].slice(0,12);
  box.replaceChildren();
@@ -120,7 +131,7 @@ function populate(){
 }
 function situation(p){
  const raw=String(p.estado||'').trim().toLowerCase();
- const rs=sets.resultados.filter(x=>x.codigo===p.codigo);
+ const rs=indexes.resultsByCode.get(p.codigo)||[];
  // Adjudicación contractual: exigir referencia contractual, no solo oferta seleccionada.
  const verified=rs.some(r=>String(r.adjudicatario||'').trim()&&String(r.validado||'').toLowerCase().startsWith('si'));
  if(verified)return 'adjudicado';
@@ -133,10 +144,10 @@ function situation(p){
 }
 const statusLabels={ejecucion:'En ejecución',cerrado:'Cerrado, pendiente de resultado',adjudicado:'Adjudicado',desierto:'Desierto',cancelado:'Cancelado o revocado',desconocido:'Sin información suficiente'};
 function participation(code,company,kind){
- const offers=sets.ofertas.filter(o=>o.codigo===code&&(!company||o.proveedor===company));
- const results=sets.resultados.filter(r=>r.codigo===code&&(!company||r.adjudicatario===company));
+ const offers=(indexes.offersByCode.get(code)||[]).filter(o=>!company||o.proveedor===company);
+ const results=(indexes.resultsByCode.get(code)||[]).filter(r=>!company||r.adjudicatario===company);
  if(kind==='oferto')return offers.length>0;
- if(kind==='seleccionada')return offers.some(o=>['1','true','sí','si'].includes(String(o.seleccionado||'').toLowerCase()))||sets.resultados.some(r=>r.codigo===code&&offers.some(o=>o.id_cotizacion&&o.id_cotizacion===r.id_cotizacion_ganadora));
+ if(kind==='seleccionada')return offers.some(o=>['1','true','sí','si'].includes(String(o.seleccionado||'').toLowerCase()))||(indexes.resultsByCode.get(code)||[]).some(r=>offers.some(o=>o.id_cotizacion&&o.id_cotizacion===r.id_cotizacion_ganadora));
  if(kind==='adjudicataria')return results.some(r=>r.adjudicatario&&String(r.validado||'').toLowerCase().includes('si'));
  return offers.length>0||results.length>0;
 }
@@ -294,10 +305,10 @@ function exportedRecords(type,key){
 function companyProfile(){
  const name=$('empresa').value;
  if(!name){alert('Selecciona una empresa proveedora para abrir su perfil.');return;}
- const offers=sets.ofertas.filter(o=>o.proveedor===name);
- const results=sets.resultados.filter(r=>r.adjudicatario===name);
+ const offers=indexes.offersByCompany.get(name)||[];
+ const results=indexes.resultsByCompany.get(name)||[];
  const codes=[...new Set([...offers.map(o=>o.codigo),...results.map(r=>r.codigo)])];
- const procs=codes.map(c=>sets.procesos.find(p=>p.codigo===c)).filter(Boolean);
+ const procs=codes.map(c=>indexes.processByCode.get(c)).filter(Boolean);
  const dates=procs.map(p=>String(p.fecha_publicacion||'').slice(0,10)).filter(s=>/^\\d{4}-\\d{2}-\\d{2}$/.test(s)).sort();
  const verified=results.filter(r=>r.adjudicatario&&String(r.validado||'').trim().toLowerCase().startsWith('si'));
  const amount=verified.reduce((acc,r)=>acc+(Number(r.monto_adjudicado_clp)||0),0);
@@ -335,9 +346,9 @@ function documentAnchor(value,label){
  return url?'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(label)+' ↗</a>':'';
 }
 function detail(code){
- const p=sets.procesos.find(x=>x.codigo===code);if(!p)return;
- const offers=sets.ofertas.filter(x=>x.codigo===code);
- const results=sets.resultados.filter(x=>x.codigo===code);
+ const p=indexes.processByCode.get(code);if(!p)return;
+ const offers=indexes.offersByCode.get(code)||[];
+ const results=indexes.resultsByCode.get(code)||[];
  const r=results.find(x=>x.tipo_resultado==='oferta_seleccionada')||results.find(x=>x.id_cotizacion_ganadora)||results[0];
  const selected=offers.filter(o=>['1','true','sí','si'].includes(String(o.seleccionado||'').toLowerCase()));
  const official=Number(p.total_ofertas_recibidas),hasOfficial=String(p.total_ofertas_recibidas||'').trim()!==''&&Number.isFinite(official);
@@ -428,7 +439,7 @@ async function loadPublished(){
   $('headUpdated').textContent=localTime;
   $('coverageSummary').textContent=sets.procesos.length.toLocaleString('es-CL')+' procesos · '+sets.ofertas.length.toLocaleString('es-CL')+' ofertas individuales · '+sets.resultados.length.toLocaleString('es-CL')+' resultados · '+sets.ordenescompra.length.toLocaleString('es-CL')+' órdenes de compra. Cobertura parcial según disponibilidad; última publicación: '+localTime+'.';
   $('freshness').textContent='Última publicación: '+localTime+' (Chile continental; no implica actualización diaria programada)';
-  normalizeRecords();populate();populateCompare();render();renderFavorites();showGlobal();
+  rebuildIndexes();normalizeRecords();populate();populateCompare();render();renderFavorites();showGlobal();
  }catch(err){$('status').textContent='Sin conexión de datos: '+err.message;}
 }
 renderFavorites();$('exportProcess').onclick=()=>exportedRecords('proceso',currentProcess);$('exportCompany').onclick=()=>exportedRecords('empresa',currentCompany);$('exportBuyer').onclick=()=>exportedRecords('organismo',currentBuyer);$('favoriteProcess').onclick=()=>toggleFavorite('proceso',currentProcess);$('favoriteCompany').onclick=()=>toggleFavorite('empresa',currentCompany);$('favoriteBuyer').onclick=()=>toggleFavorite('organismo',currentBuyer);loadPublished();['query','dateFrom','dateTo','empresa','organismo','modalidad','categoria','region','situacion','participacion'].forEach(id=>$(id).addEventListener(id==='query'?'input':'change',render));$('clearFilters').onclick=()=>{for(const id of ['query','dateFrom','dateTo','empresa','organismo','modalidad','categoria','region','situacion','participacion'])$(id).value='';render()};$('rows').onclick=e=>{const btn=e.target.closest('button[data-code]');if(btn)detail(btn.dataset.code)};$('runCompare').onclick=compareCompanies;$('showCompany').onclick=companyProfile;$('showBuyer').onclick=buyerProfile;$('closeBuyer').onclick=()=>{$('buyerPanel').hidden=true};$('closeCompany').onclick=()=>{$('companyPanel').hidden=true};$('close').onclick=()=>{$('detailPanel').hidden=true};$('export').onclick=()=>{const ls=filtered(),cols=['codigo','nombre','modalidad','categoria','subcategoria','organismo_comprador','region','estado'];const quoted=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const csv=[cols.join(';'),...ls.map(r=>cols.map(k=>quoted(r[k])).join(';'))].join('\r\n');const u=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download='procesos_2026_filtrados.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
