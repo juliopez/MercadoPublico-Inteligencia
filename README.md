@@ -371,3 +371,7 @@ python3 -m unittest discover -s scripts -p 'test_orquestador_v2_exclusion.py' -v
 python3 -m unittest discover -s scripts -p 'test_orquestador_v2*.py' -v
 ```
 Ambos comandos **no consumen ChileCompra**. Siguiente etapa tras aprobar: probar una interrupción controlada sin API y revisar consistencia de tareas; los ETL originales continúan congelados.
+
+### 17.13 Pruebas de exclusión mutua superadas en Ubuntu (17-10-2026)
+
+El propietario ejecutó las cuatro pruebas específicas de exclusión mutua con resultado **`Ran 4 tests in 0.003s / OK`**. La regresión con patrón `test_orquestador_v2*.py` terminó **`Ran 19 tests in 0.025s / OK`**. Fueron simulaciones locales sin solicitudes a ChileCompra. Se verificaron segunda ejecución bloqueada, liberación del bloqueo tras excepción o KeyboardInterrupt y persistencia SQLite. Próxima validación: interrupción de tarea durante la recuperación y coherencia entre archivo JSON y checkpoint; no alterar ETL originales ni Sheets.
