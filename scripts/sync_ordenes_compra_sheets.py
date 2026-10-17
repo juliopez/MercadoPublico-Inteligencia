@@ -45,8 +45,10 @@ def main():
     book=gspread.authorize(cred).open_by_key(os.environ["GOOGLE_SHEET_ID"])
     audit=book.worksheet("Control")
     checkpoint_head=["tipo","fecha_consulta","codigo","estado"]
-    if audit.get("U1:X1") not in ([],[checkpoint_head]):raise RuntimeError("Control U:X incompatible")
-    if not audit.get("U1:X1"):audit.update(range_name="U1:X1",values=[checkpoint_head])
+    checkpoint_header=audit.get("U1:X1")
+    if checkpoint_header and not any(cell for row in checkpoint_header for cell in row):checkpoint_header=[]
+    if checkpoint_header not in ([],[checkpoint_head]):raise RuntimeError("Control U:X incompatible")
+    if not checkpoint_header:audit.update(range_name="U1:X1",values=[checkpoint_head])
     checkpoint_rows=audit.get("U2:X")
     done={row[2] for row in checkpoint_rows if len(row)>3 and row[0]=="ordenes_compra" and row[1]==date and row[3]=="completo"}
     checkpoint_next=2+len(checkpoint_rows)
