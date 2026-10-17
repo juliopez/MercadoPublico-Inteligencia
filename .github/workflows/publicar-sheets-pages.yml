@@ -33,6 +33,23 @@ jobs:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           GOOGLE_SHEET_ID: ${{ vars.GOOGLE_SHEET_ID }}
         run: python3 scripts/publicar_observatorio.py
+      - name: Verificar JSON antes de publicar
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest=json.loads(Path('data/observatorio.json').read_text(encoding='utf-8'))
+          count=0
+          for table,parts in manifest['partes'].items():
+            total=0
+            for part in parts:
+              records=json.loads(Path(part).read_text(encoding='utf-8'))
+              assert isinstance(records,list),part
+              total+=len(records)
+              count+=1
+            assert total==manifest['conteos'][table],(table,total)
+          print('JSON_VALIDADO',count,'fragmentos',sum(manifest['conteos'].values()),'registros')
+          PY
       - name: Persistir instantanea publica
         shell: bash
         run: |
