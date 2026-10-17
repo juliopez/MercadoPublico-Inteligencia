@@ -136,16 +136,16 @@ for code,offers,result in success:
     if existing_key is not None:
         idx=r_index[existing_key];old=orig_r[idx-1]
         # No modificar nunca las columnas C:F (identidad/monto/fecha contractuales).
-        for col in range(2,6):result[col]=old[col] if col<len(old) else ""
+        for field_idx in range(2,6):result[field_idx]=old[field_idx] if field_idx<len(old) else ""
         # Nunca degradar una adjudicación previamente validada a selección no verificada.
         prior_type=old[r_headers.index("tipo_resultado")] if "tipo_resultado" in r_headers and len(old)>r_headers.index("tipo_resultado") else ""
         verified=bool((len(old)>8 and old[8].strip().lower().startswith(("si","sí"))) or
                       prior_type in ("adjudicacion_informada","contrato_verificado"))
         if verified:
-            for col in (8,12):
-                result[col]=old[col] if len(old)>col else ""
+            for field_idx in (8,12):
+                result[field_idx]=old[field_idx] if len(old)>field_idx else ""
             # No reemplazar los datos de selección con información que pueda contradecir el registro verificado.
-            for col in (9,10,11):
+            for field_idx in (9,10,11):
                 result[col]=old[col] if len(old)>col else ""
         merged=merge(result,old)
         if merged!=old[:14]:
@@ -158,9 +158,9 @@ for code,offers,result in success:
                 if not colname:raise SystemExit("ERROR_ESQUEMA: índice de clave fuera de rango")
                 r_updates.append({"range":f"Resultados!{colname}{idx}","values":[[result_key[1]]]})
         if "tipo_resultado" in r_headers and not prior_type and not verified:
-            col=r_headers.index("tipo_resultado")
+            field_idx=r_headers.index("tipo_resultado")
             # Posición O corresponde a la primera columna ampliada.
-            r_updates.append({"range":f"Resultados!{chr(65+col)}{idx}","values":[["oferta_seleccionada"]]})
+            r_updates.append({"range":f"Resultados!{chr(65+field_idx)}{idx}","values":[["oferta_seleccionada"]]})
     else:r_new.append(projected(result,RHEAD,RKEEP))
 print("PLAN","procesos_ok",len(success),"fallidos",len(failures),"ofertas_nuevas",len(o_new),"ofertas_actualizar",len(o_updates),"resultados_nuevos",len(r_new),flush=True)
 # Procesos fallidos nunca entran en los lotes de escritura.
