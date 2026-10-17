@@ -75,11 +75,26 @@ def main():
     process=book.worksheet("Procesos").get_all_records()
     valid_codes={str(x.get("codigo","")).strip() for x in process if str(x.get("modalidad","")).strip().casefold() in ("compra ágil","compra agil")}
     if code=="auto":
-        done={row[0][len("detalle:"):] for row in control.get_all_values()[1:] if row and row[0].startswith("detalle:") and len(row)>4 and row[4]=="completo"}
-        candidates=sorted(c for c in valid_codes if re.fullmatch(r"[A-Za-z0-9]+-[A-Za-z0-9]+-COT[0-9]{2}",c) and c not in done)
+        control_rows=control.get_all_values()[1:]
+        checkpoints={row[0][len("detalle:"):]:row for row in control_rows
+                     if row and row[0].startswith("detalle:")}
+        candidates=[]
+        for item in process:
+            candidate=str(item.get("codigo","")).strip()
+            if candidate not in valid_codes or not re.fullmatch(r"[A-Za-z0-9]+-[A-Za-z0-9]+-COT[0-9]{2}",candidate):
+                continue
+            # El listado informa la cantidad de ofertas, no asegura que el detalle las exponga.
+            try: total=int(str(item.get("total_ofertas_recibidas") or "0").strip())
+            except ValueError:total=0
+            if total<=0:continue
+            state=checkpoints.get(candidate,[])
+            if len(state)>4 and state[4] in ("completo","revision"):continue
+            if len(state)>6 and state[6] and state[6]>stamp():continue
+            candidates.append((-total,candidate))
         if not candidates:
-            print("DETALLE_SIN_CANDIDATOS: no hay códigos nuevos elegibles");return
-        code=candidates[0]
+            print("DETALLE_SIN_CANDIDATOS_CON_OFERTAS: sin procesos elegibles según resumen; no HTTP");return
+        code=sorted(candidates)[0][1]
+        print("DETALLE_CODIGO_SELECCIONADO:",code)
         print("DETALLE_CODIGO_SELECCIONADO:",code)
     if code not in valid_codes:
         raise RuntimeError("Código no existe en Procesos como Compra Ágil, no consultar")
