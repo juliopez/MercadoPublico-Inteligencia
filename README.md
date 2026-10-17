@@ -326,3 +326,10 @@ No ejecutar todavía `orquestador_v2_detalles_local.py ejecutar` hasta validar l
 El propietario ejecutó la batería `test_orquestador_v2_circuito_detalles.py` y la terminal confirmó **`Ran 5 tests in 0.007s` / `OK`**. Sumadas las seis pruebas anteriores, existen **11 simulaciones aprobadas**. También ejecutó `orquestador_v2_detalles_local.py iniciar --fecha 2026-10-15` y `estado`: ambos informaron **`{"pendiente": 100}`**, sin consultas HTTP reales. Los 100 procesos del listado quedan como trabajos pendientes de detalle en SQLite.
 
 **Limitación prioritaria antes de efectuar pruebas reales del detalle:** el prototipo actual considera suficiente que HTTP 200 devuelva un objeto JSON, pero todavía debe comprobar el contrato real de detalle y la correspondencia del código solicitado. No declarar completos los detalles hasta implementar esa validación. El circuit breaker compartido se probó con mocks; su eficacia operacional requiere verificación controlada. No modificar ETL originales ni Google Sheets.
+
+
+### 17.5 Validación del JSON de detalle antes de marcar completo (17-10-2026)
+
+Se corrigió `scripts/orquestador_v2_detalles_local.py`: una respuesta HTTP 200 **no basta** para confirmar un detalle. La función `validar_detalle(raw,codigo)` exige `success=OK` (o `true`), `errors` vacío, `payload` con código idéntico al solicitado y las estructuras `institucion` (objeto), `proveedores_cotizando` (lista) y `productos_solicitados` (lista). Esta estructura fue contrastada con el JSON real de `425-339-COT26` recuperado previamente por GitHub Actions. Si la validación falla, el detalle no se marca `completo` y se conserva para reintento. **Pendiente:** establecer verificaciones semánticas más profundas de cotizaciones/adjudicaciones.
+
+Pruebas nuevas sin red: `python3 -m unittest discover -s scripts -p 'test_validacion_detalle_v2.py' -v` (seis casos: válido, código ajeno, éxito falso, errores encapsulados, payload ausente, lista de cotizaciones ausente). Deben ejecutarse primero en Ubuntu y verificar `OK`; no ejecutar todavía llamadas reales hasta esa validación.
