@@ -104,3 +104,15 @@ Para procesar una fecha: [abrir Actions](../../actions/workflows/marcha-blanca-m
 Una vez validados los datos en Sheets, seleccionar `publicar` para generar el JSON y desplegar Pages. Si solo cambia el HTML, utilizar `pages.yml`. Una publicación manual no debe interpretarse como validación de los ETL.
 
 **Referencia de recuperación del código:** rama `respaldo-pre-limpieza-marcha-blanca-20261016`. No se generó un respaldo nuevo de los datos de Google Sheets durante el reinicio.
+
+
+## 8. Corrección transversal de control de API (16-10-2026, posterior a la primera cancelación)
+
+**Implementación en código, pendiente de prueba operativa.** Se modificaron `api_retry.py`, los ETL de detalles de licitaciones y Compra Ágil, el ETL de órdenes de compra y el workflow manual.
+
+- El cliente compartido usa un intervalo mínimo configurable (`API_MIN_INTERVAL_SECONDS`, predeterminado 1,5 s) entre consultas **dentro de cada proceso Python**. No representa una tasa autorizada ni garantiza que la API no limite solicitudes.
+- HTTP 429 provoca una detención inmediata del lote, registra `Retry-After` si se informa y crea la señal `.api_rate_limited`. El workflow detecta esa señal y **no inicia el segundo/tercer intento ni otras categorías**. La señal es temporal dentro del runner, no contiene credenciales.
+- En `Control!M:P` se registran checkpoints de detalle de licitaciones; en `Control!Q:T`, checkpoints de detalle de Compra Ágil; y en `Control!U:X`, checkpoints de órdenes de compra. Se emplean registros por fecha y código para evitar repetir los ítems completados en una reejecución manual.
+- El complemento de licitaciones persiste cada adjudicación antes de anotar su checkpoint; el detalle de Compra Ágil guarda los avances del lote procesado; las órdenes de compra guardan los datos recuperados antes de informar un corte por 429.
+- Los errores distintos de 429 aún requieren inspección de logs y, si corresponde, ejecución manual con la misma fecha; los checkpoints no garantizan que un proceso previamente consultado nunca cambie de estado en el futuro.
+- **Atención:** los límites concretos de ambas API son desconocidos. No se han ejecutado pruebas de carga posteriores a este cambio y no corresponde considerar validadas aún la cobertura completa, la integración del flujo ni la actualización de estados futuros.
