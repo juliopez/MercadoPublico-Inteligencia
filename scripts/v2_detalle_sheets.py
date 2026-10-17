@@ -9,6 +9,7 @@ from datetime import datetime,timezone,timedelta
 from urllib.request import Request,urlopen
 from urllib.error import HTTPError,URLError
 import gspread
+import v2_global_control as global_v2
 from google.oauth2.service_account import Credentials
 from v2_primera_escritura_sheets import CONTROL_HEAD,stamp,safe
 
@@ -95,7 +96,6 @@ def main():
             print("DETALLE_SIN_CANDIDATOS_CON_OFERTAS: sin procesos elegibles según resumen; no HTTP");return
         code=sorted(candidates)[0][1]
         print("DETALLE_CODIGO_SELECCIONADO:",code)
-        print("DETALLE_CODIGO_SELECCIONADO:",code)
     if code not in valid_codes:
         raise RuntimeError("Código no existe en Procesos como Compra Ágil, no consultar")
     ws_o=book.worksheet("Ofertas");ws_r=book.worksheet("Resultados")
@@ -117,20 +117,25 @@ def main():
         else:control.append_row(record,value_input_option="RAW",table_range="A:J")
     req=Request("https://api2.mercadopublico.cl/v2/compra-agil/"+code,
         headers={"ticket":os.environ["CHILECOMPRA_TICKET"],"Accept":"application/json"})
+    if not global_v2.reserve(control):
+        print('DETALLE_NO_CONSULTA_CONTROL_GLOBAL');return
     try:
         with urlopen(req,timeout=45) as resp:
             raw=resp.read();http=resp.status
     except HTTPError as e:
         http=e.code;e.close()
+        global_v2.finish(control,http)
         temporary=http in (429,500,502,503,504)
         sec=3600 if http==429 else min(3600,300*2**min(attempts,3))
         due=(datetime.now(timezone.utc)+timedelta(seconds=sec)).isoformat(timespec="seconds") if temporary else ""
         checkpoint("espera" if temporary else "revision",http,0,due)
         print(f"DETALLE_HTTP_{http}: registrado sin escrituras");return
     except (URLError,TimeoutError,OSError) as exc:
+        global_v2.finish(control,None)
         due=(datetime.now(timezone.utc)+timedelta(minutes=5)).isoformat(timespec="seconds")
         checkpoint("espera","red",0,due)
         print("DETALLE_ERROR_RED",type(exc).__name__);return
+    global_v2.finish(control,200)
     data=json.loads(raw)
     payload=data.get("payload") if isinstance(data,dict) else None
     if data.get("success") not in (True,"OK") or data.get("errors") or not isinstance(payload,dict) or str(payload.get("codigo"))!=code:
