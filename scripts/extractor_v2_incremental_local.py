@@ -4,7 +4,6 @@ import argparse
 import hashlib
 import json
 import os
-import sys
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -37,6 +36,10 @@ def validated(path, expected_page, size):
     except (OSError, ValueError, KeyError, TypeError, AttributeError):
         return None
 
+def page_codes(path):
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return {str(item["codigo"]) for item in data["payload"]["items"]}
+
 def main():
     parser = argparse.ArgumentParser(description="Extractor local incremental, sin escrituras a Sheets")
     parser.add_argument("--fecha", default="2026-10-15")
@@ -45,8 +48,8 @@ def main():
     parser.add_argument("--q", default="")
     parser.add_argument("--salida", default="extraccion_v2_local")
     args = parser.parse_args()
-    if not 1 <= args.max_paginas <= 3:
-        parser.error("En esta etapa se permiten solamente 1 a 3 páginas por ejecución")
+    if not 1 <= args.max_paginas <= 10:
+        parser.error("En esta etapa se permiten solamente 1 a 10 páginas por ejecución")
     if args.pausa < 30:
         parser.error("La pausa mínima experimental es de 30 segundos")
     if len(args.q) > 120:
@@ -80,6 +83,7 @@ def main():
             history = []
     print(f"Directorio: {out} | paginas maximas: {args.max_paginas} | tamano: 10", flush=True)
     total_pages = None
+    seen = set()
     for number in range(1, args.max_paginas + 1):
         pagefile = out / f"pagina_{number:04d}.json"
         previous = validated(pagefile, number, 10) if pagefile.exists() else None
@@ -88,6 +92,11 @@ def main():
             if total_pages is not None and pages != total_pages:
                 print("Paginación inconsistente en caché; detenido", flush=True)
                 break
+            overlap = seen.intersection(page_codes(pagefile))
+            if overlap:
+                print(f"Duplicados entre páginas en archivo guardado: {len(overlap)}; detenido", flush=True)
+                break
+            seen.update(page_codes(pagefile))
             total_pages = pages
             print(f"Pagina {number}: guardada y validada ({count} registros), sin consultar API", flush=True)
             if number >= total_pages:
@@ -125,9 +134,16 @@ def main():
                         record["error"]="paginacion_inconsistente"
                         tmp.unlink(missing_ok=True)
                     else:
-                        total_pages=pages
-                        os.replace(tmp,pagefile)
-                        record.update({"registros":count,"total_paginas":pages,"guardado":True})
+                        overlap = seen.intersection(page_codes(tmp))
+                        if overlap:
+                            record["error"] = "duplicados_entre_paginas"
+                            record["duplicados"] = len(overlap)
+                            tmp.unlink(missing_ok=True)
+                        else:
+                            total_pages=pages
+                            seen.update(page_codes(tmp))
+                            os.replace(tmp,pagefile)
+                            record.update({"registros":count,"total_paginas":pages,"guardado":True})
             except (OSError,UnicodeError,ValueError) as exc:
                 record["error"]="error_guardado_o_validacion"
                 tmp.unlink(missing_ok=True)
@@ -142,6 +158,7 @@ def main():
         if number<args.max_paginas:
             print(f"Esperando {args.pausa} segundos...",flush=True)
             time.sleep(args.pausa)
+    print(f"Códigos únicos en páginas validadas: {len(seen)}", flush=True)
     print(f"Resumen técnico: {log}",flush=True)
     print("No se publicaron datos ni se modificaron ETL originales.",flush=True)
 
