@@ -430,6 +430,25 @@ async function loadPublished(){
   const response=await fetch('./data/observatorio.json',{cache:'no-store'});
   if(!response.ok)throw Error('No fue posible cargar la instantánea pública del Observatorio.');
   const data=await response.json();
+  if(data.partes){
+   // El manifiesto se publica solo al completar todos los fragmentos.
+   const next={};
+   for(const name of ['procesos','ofertas','resultados','ordenescompra']){
+    const parts=data.partes[name];
+    if(!Array.isArray(parts))throw Error('Faltan fragmentos: '+name);
+    next[name]=[];
+    for(const part of parts){
+     if(!/^data\/partes\/observatorio-[a-z]+-[0-9]{4}\.json$/.test(part))throw Error('Ruta de fragmento no válida');
+     const res=await fetch('./'+part,{cache:'no-store'});
+     if(!res.ok)throw Error('No se pudo descargar '+part);
+     const records=await res.json();
+     if(!Array.isArray(records))throw Error('Fragmento inválido: '+part);
+     next[name].push(...records);
+    }
+    if(data.conteos&&next[name].length!==data.conteos[name])throw Error('Recuento de fragmentos inconsistente: '+name);
+   }
+   data.tablas=next;
+  }
   publishedAt=data.fecha_actualizacion||"";
   for(const name of ['procesos','ofertas','resultados']){
    if(!Array.isArray(data.tablas?.[name]))throw Error('Archivo incompleto: '+name);
