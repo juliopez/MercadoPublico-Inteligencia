@@ -35,6 +35,7 @@ if manifest:
     candidates=[code for code in candidates if code in allowed]
 audit_checkpoint=book.worksheet("Control")
 existing_checkpoint=audit_checkpoint.get("Q1:T1")
+if existing_checkpoint and not any(cell for row in existing_checkpoint for cell in row):existing_checkpoint=[]
 checkpoint_head=["tipo","fecha_consulta","codigo","estado"]
 if existing_checkpoint and existing_checkpoint!=[checkpoint_head]:raise SystemExit("CONTROL_CHECKPOINT_CA_INVALIDO")
 if not existing_checkpoint:audit_checkpoint.update(range_name="Q1:T1",values=[checkpoint_head])
