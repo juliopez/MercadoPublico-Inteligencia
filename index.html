@@ -11,6 +11,29 @@
 <section class="panel" id="favoritesSection"><div class="tools"><div><h2>Mis favoritos</h2><p class="muted">Procesos, empresas y organismos guardados en este navegador. No se sincronizan entre dispositivos ni generan notificaciones.</p></div><span class="tag" id="favoriteCount">0 guardados</span></div><div id="favoriteItems" class="tablewrap"><p class="muted">Todavía no hay favoritos.</p></div></section><section id="buyerPanel" class="panel" hidden><div class="tools"><div><h2 id="buyerTitle">Perfil del organismo comprador</h2><p class="muted">Actividad observada según los procesos publicados en el Observatorio</p></div><button class="secondary" id="exportBuyer" type="button">Exportar organismo CSV</button><button id="favoriteBuyer" class="secondary" type="button">☆ Guardar organismo</button><button id="closeBuyer" class="secondary">Cerrar perfil</button></div><div class="details" id="buyerCoverage"></div><dl class="facts" id="buyerStats" style="margin-top:14px"></dl><h2 style="margin-top:20px">Procesos publicados</h2><div class="tablewrap"><table><thead><tr><th>Código</th><th>Proceso</th><th>Publicación</th><th>Situación</th><th>Presupuesto CLP</th><th>Adjudicatario verificado</th></tr></thead><tbody id="buyerRows"></tbody></table></div></section><section id="companyPanel" class="panel" hidden><div class="tools"><div><h2 id="companyTitle">Perfil de empresa</h2><p class="muted">Trayectoria observada en los datos disponibles, sin límite anual predefinido</p></div><button class="secondary" id="exportCompany" type="button">Exportar empresa CSV</button><button id="favoriteCompany" class="secondary" type="button">☆ Guardar empresa</button><button id="closeCompany" class="secondary">Cerrar perfil</button></div><div class="details" id="companyCoverage"></div><div class="facts" id="companyStats" style="margin-top:14px"></div><h2 style="margin-top:20px">Procesos asociados</h2><div class="tablewrap"><table><thead><tr><th>Proceso</th><th>Fecha</th><th>Organismo</th><th>Participación</th><th>Oferta CLP</th><th>Monto contractual CLP</th></tr></thead><tbody id="companyRows"></tbody></table></div></section><section id="detailPanel" class="panel" hidden><div class="tools"><h2 id="detailTitle">Detalle del proceso</h2><button class="secondary" id="exportProcess" type="button">Exportar proceso CSV</button><button class="secondary" id="favoriteProcess" type="button">☆ Guardar proceso</button><button class="secondary" id="close">Cerrar</button></div><div class="detail-coverage" id="detailCoverage" role="status"></div><div class="details"><dl class="facts" id="facts"></dl></div><div class="details" id="processMetrics" style="margin-top:12px"></div><div class="two" style="margin-top:16px"><div><h2>Ofertas relacionadas</h2><div class="scroll" id="offerDetails"></div></div><div><h2>Resultado y verificación</h2><div class="details" id="resultDetails"></div></div></div></section>
 </main><footer>Fuente: ChileCompra · Información disponible según cobertura de la API</footer>
 <script>
+(function(){
+ const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+ const nf=n=>Number(n||0).toLocaleString('es-CL');
+ window.addEventListener('error',e=>set('status','Error de JavaScript: '+(e.message||'desconocido')));
+ window.addEventListener('unhandledrejection',e=>set('status','Error de datos: '+(e.reason?.message||String(e.reason))));
+ fetch('./data/observatorio.json?v=20261017-fix',{cache:'no-store'}).then(async r=>{
+  if(!r.ok)throw Error('HTTP '+r.status+' al abrir el manifiesto');
+  const d=await r.json();
+  if(!d.conteos)throw Error('Manifiesto sin conteos: posible publicación anterior');
+  const c=d.conteos;
+  set('headCount',nf(Object.values(c).reduce((n,x)=>n+Number(x||0),0)));
+  set('headBreakdown',nf(c.procesos)+' procesos · '+nf(c.ofertas)+' ofertas · '+nf(c.resultados)+' resultados · '+nf(c.ordenescompra)+' OC');
+  set('coverageSummary',nf(c.procesos)+' procesos · '+nf(c.ofertas)+' ofertas · '+nf(c.resultados)+' resultados · '+nf(c.ordenescompra)+' órdenes de compra. Preparando búsqueda…');
+  const dt=new Date(d.fecha_actualizacion);
+  if(!Number.isNaN(dt.getTime()))set('headUpdated',new Intl.DateTimeFormat('es-CL',{dateStyle:'short',timeStyle:'short',timeZone:'America/Santiago'}).format(dt));
+ }).catch(e=>{
+  set('headCount','No disponible');
+  set('coverageSummary','Error al consultar el manifiesto público: '+e.message);
+  set('status','Error de publicación: '+e.message);
+ });
+})();
+</script>
+<script>
 const sets={procesos:[],ofertas:[],resultados:[],ordenescompra:[]}, $=id=>document.getElementById(id);
 const fields={procesos:['codigo','nombre'],ofertas:['codigo','id_cotizacion'],resultados:['codigo']};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
