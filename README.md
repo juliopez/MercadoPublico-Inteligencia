@@ -184,3 +184,10 @@ El formulario de `Marcha blanca - operaciones manuales` ahora ofrece `categoria_
 Este campo **no es el código de una categoría oficial** y no modifica la estructura de las columnas de `Procesos`. Los checkpoints de páginas de una consulta filtrada se separan de los de una consulta sin filtro mediante una clave derivada del texto. Las consultas filtradas son pruebas de un subconjunto y **no demuestran cobertura histórica completa del día**. La fase de cotizaciones se ejecuta después de finalizar la búsqueda filtrada y utiliza los procesos de Compra Ágil presentes en Sheets para la fecha solicitada.
 
 No se ejecutó el workflow ni se consultó la API al incorporar el formulario.
+
+
+## 15. Selector de rubros en el formulario manual
+
+Se reemplazó el campo de texto libre `categoria_compra_agil` por una **lista desplegable** (`workflow_dispatch` con `type: choice`): `Todas` (por defecto), `Capacitación`, `Computación`, `Software`, `Asesoría`, `Consultoría`, `Equipamiento`, `Mantención`, `Servicios` e `Insumos médicos`. El valor `Todas` equivale a una búsqueda sin el parámetro textual `q`. Los demás valores se envían literalmente como palabras clave de búsqueda.
+
+**No son categorías oficiales exhaustivas de ChileCompra** ni códigos UNSPSC: son temáticas orientativas para pruebas de alcance acotado. La lista puede revisarse posteriormente en función de las categorías oficiales disponibles. El control de fecha sigue siendo obligatorio y no se modificaron los registros existentes.
