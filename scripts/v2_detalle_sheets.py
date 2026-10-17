@@ -72,7 +72,7 @@ def main():
         scopes=["https://www.googleapis.com/auth/spreadsheets"])
     book=gspread.authorize(cred).open_by_key(os.environ["GOOGLE_SHEET_ID"])
     control=book.worksheet("ControlV2")
-    if control.row_values(1)!=CONTROL_HEAD:raise RuntimeError("ControlV2 incompatible")
+    if control.row_values(1)[:10]!=CONTROL_HEAD:raise RuntimeError("ControlV2 incompatible")
     process=book.worksheet("Procesos").get_all_records()
     valid_codes={str(x.get("codigo","")).strip() for x in process if str(x.get("modalidad","")).strip().casefold() in ("compra ágil","compra agil")}
     if code=="auto":
