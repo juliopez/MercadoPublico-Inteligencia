@@ -128,6 +128,19 @@ def main():
         else:appends.append([d.get(h,"") for h in heads])
     if updates:book.values_batch_update({"valueInputOption":"RAW","data":updates})
     if appends:proces.append_rows(appends,value_input_option="RAW")
+    # Registrar total real de páginas para poder avanzar a la siguiente fecha.
+    total_key=f"compra_agil:{a.fecha}:total_paginas:10"
+    total_matches=[(i,row) for i,row in enumerate(ctrl.get_all_values()[1:],2) if row and row[0]==total_key]
+    if len(total_matches)>1:raise RuntimeError("Metadatos de total duplicados")
+    if total_matches:
+        old=total_matches[0][1]
+        if len(old)>8 and old[8] and int(old[8])!=total:
+            raise RuntimeError("Cambió el total de páginas para la fecha; revisar")
+    meta=[total_key,"compra_agil_total",a.fecha,"","completo",1,"",200,total,stamp()]
+    if total_matches:
+        ctrl.update(range_name=f"A{total_matches[0][0]}:J{total_matches[0][0]}",values=[meta],value_input_option="RAW")
+    else:
+        ctrl.append_row(meta,value_input_option="RAW",table_range="A:J")
     checkpoint("completo",200,len(items))
     print(f"V2_SHEETS_OK: página {a.pagina}/{total}, {len(items)} registros, {len(appends)} nuevos, {len(updates)} actualizados")
 if __name__=="__main__":
