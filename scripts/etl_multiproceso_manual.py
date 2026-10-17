@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 import gspread
-from api_retry import fetch_json
+from api_retry import fetch_json, RateLimited
 from google.oauth2.service_account import Credentials
 
 # Solo se consultan procesos Compra Ágil existentes en Sheets; lote limitado.
@@ -33,7 +33,15 @@ manifest=os.getenv("DETAIL_MANIFEST_FILE","")
 if manifest:
     with open(manifest,encoding="utf-8") as handle:allowed={line.strip() for line in handle if line.strip()}
     candidates=[code for code in candidates if code in allowed]
-CODES=tuple(dict.fromkeys(candidates))[OFFSET:OFFSET+MAX_CODES]
+audit_checkpoint=book.worksheet("Control")
+existing_checkpoint=audit_checkpoint.get("Q1:T1")
+checkpoint_head=["tipo","fecha_consulta","codigo","estado"]
+if existing_checkpoint and existing_checkpoint!=[checkpoint_head]:raise SystemExit("CONTROL_CHECKPOINT_CA_INVALIDO")
+if not existing_checkpoint:audit_checkpoint.update(range_name="Q1:T1",values=[checkpoint_head])
+prior_checkpoint=audit_checkpoint.get("Q2:T")
+done={row[2] for row in prior_checkpoint if len(row)>3 and row[0]=="compra_agil_detalle" and row[3]=="completo"}
+checkpoint_next=2+len(prior_checkpoint)
+CODES=tuple(code for code in dict.fromkeys(candidates) if code not in done)[OFFSET:OFFSET+MAX_CODES]
 print("DETALLE_PLAN",len(CODES),"procesos seleccionados","fecha",TARGET_DATE or "sin filtro","limite",MAX_CODES,"desde_indice",OFFSET,flush=True)
 ws_o=book.worksheet("Ofertas");ws_r=book.worksheet("Resultados")
 orig_o=ws_o.get_all_values();orig_r=ws_r.get_all_values()
@@ -76,7 +84,7 @@ def offer_row(code,x,stamp):
 def select_row(code,selected,motive,stamp):
     # La contratación pública no se infiere de la selección.
     return list(map(v,[code,"","","","","",motive,"API Compra Ágil V2 - detalle","No: OC pública no verificada",selected.get("id_cotizacion"),selected.get("monto_total"),selected.get("id_oc"),"Pendiente de verificar OC pública",stamp]))
-success=[];failures={}
+success=[];failures={};no_offers=[];rate_hit=False
 for n,code in enumerate(CODES):
     if n:time.sleep(float(os.getenv("DETAIL_DELAY_SECONDS","0.25")))
     try:
@@ -88,6 +96,7 @@ for n,code in enumerate(CODES):
             raise ValueError("Respuesta incompleta")
         if not offers:
             print("SIN_OFERTAS_PUBLICAS",code,"sin escritura y sin adjudicación inferida",flush=True)
+            no_offers.append(code)
             continue
         ids=[str(o.get("id_cotizacion") or "") for o in offers]
         winners=[o for o in offers if o.get("proveedor_seleccionado") in (True,1,"1")]
@@ -97,6 +106,9 @@ for n,code in enumerate(CODES):
         success.append((code,[offer_row(code,o,stamp) for o in offers],
                         select_row(code,winners[0],(payload.get("motivos") or {}).get("motivo_seleccion"),stamp) if winners else None))
         print("API_OK",code,"ofertas",len(offers),flush=True)
+    except RateLimited:
+        rate_hit=True
+        break
     except HTTPError as err:
         failures[code]="HTTP_"+str(err.code)
         print("::warning title=Proceso pendiente::"+code+": "+failures[code]+". Esperar unos minutos y volver a ejecutar manualmente.",flush=True)
@@ -186,8 +198,14 @@ prior=audit.get("D2:D")
 start=2+len(prior)
 audit.update(range_name=f"D{start}:K{start+len(entries)-1}",values=entries,value_input_option="RAW")
 print("CONTROL_OK","registros_auditoria",len(entries),flush=True)
+for code in [x[0] for x in success]+no_offers:
+    audit_checkpoint.update(range_name=f"Q{checkpoint_next}:T{checkpoint_next}",values=[["compra_agil_detalle",TARGET_DATE,code,"completo"]])
+    checkpoint_next+=1
 print("ETL_MULTIPROCESO_OK",json.dumps({"correctos":len(success),"pendientes":failures,"ofertas_totales":len(all_ids),"resultados_totales":len(all_codes)},ensure_ascii=False),flush=True)
 
+if rate_hit:
+    print("DETENIDO_429_CA: avances guardados; reanudar manualmente",flush=True)
+    raise SystemExit(75)
 if failures:
     print(f"::warning title=Extracción parcial::{len(failures)} procesos pendientes; vuelva a ejecutar manualmente más tarde. No se han sobrescrito datos de procesos fallidos.",flush=True)
     raise SystemExit(2)
