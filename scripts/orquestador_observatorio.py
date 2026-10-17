@@ -38,6 +38,7 @@ def main():
             i=len(ws.col_values(1));records[key]=(i,row)
         records[key]=(i,row)
     failures=0
+    rate_limited=False
     for name,cmd,extra in steps:
         selected=None
         day=origin
@@ -63,7 +64,10 @@ def main():
             if result.stdout:print(result.stdout[-4500:])
             if result.stderr:print(result.stderr[-1500:],file=sys.stderr)
             ok=result.returncode==0
-            status=str(result.returncode)
+            rate_hit=("HTTP 429" in (result.stdout+"\n"+result.stderr) or
+                      "Too Many Requests" in (result.stdout+"\n"+result.stderr) or
+                      result.returncode==75)
+            status="75" if rate_hit else str(result.returncode)
         except subprocess.TimeoutExpired:
             print("ORQUESTADOR_TIEMPO_AGOTADO",name,label)
             ok=False;status="timeout"
@@ -76,6 +80,7 @@ def main():
             update(key,name,label,"espera",count+1,due,status)
             print("ORQUESTADOR_ETAPA_DIFERIDA",name,label,due)
             if status=="75":
+                rate_limited=True
                 print("ORQUESTADOR_429: detener consultas adicionales de API en este ciclo")
                 break
     # V2 usa su propia selección de fechas, checkpoints y circuit breaker.
@@ -87,6 +92,7 @@ def main():
         if result.stdout:print(result.stdout[-6000:])
         if result.stderr:print(result.stderr[-2000:],file=sys.stderr)
         if result.returncode:failures+=1
-    print("ORQUESTADOR_FIN errores_componentes=",failures)
+    print("ORQUESTADOR_FIN errores_componentes=",failures, "rate_limited=",rate_limited)
+    if failures:print("ORQUESTADOR_RESULTADO_PARCIAL: fuente(s) pendiente(s); JSON publicable conserva datos previos")
     # Una falla de una fuente no impide publicar información ya confirmada en Sheets.
 if __name__=="__main__":main()
