@@ -39,7 +39,7 @@ checkpoint_head=["tipo","fecha_consulta","codigo","estado"]
 if existing_checkpoint and existing_checkpoint!=[checkpoint_head]:raise SystemExit("CONTROL_CHECKPOINT_CA_INVALIDO")
 if not existing_checkpoint:audit_checkpoint.update(range_name="Q1:T1",values=[checkpoint_head])
 prior_checkpoint=audit_checkpoint.get("Q2:T")
-done={row[2] for row in prior_checkpoint if len(row)>3 and row[0]=="compra_agil_detalle" and row[3]=="completo"}
+done={row[2] for row in prior_checkpoint if len(row)>3 and row[0]=="compra_agil_detalle" and row[1]==TARGET_DATE and row[3]=="completo"}
 checkpoint_next=2+len(prior_checkpoint)
 CODES=tuple(code for code in dict.fromkeys(candidates) if code not in done)[OFFSET:OFFSET+MAX_CODES]
 print("DETALLE_PLAN",len(CODES),"procesos seleccionados","fecha",TARGET_DATE or "sin filtro","limite",MAX_CODES,"desde_indice",OFFSET,flush=True)
@@ -196,7 +196,8 @@ for code,reason in failures.items():
 # Añadir filas D:K después del último registro de auditoría, preservando A:B.
 prior=audit.get("D2:D")
 start=2+len(prior)
-audit.update(range_name=f"D{start}:K{start+len(entries)-1}",values=entries,value_input_option="RAW")
+if entries:
+    audit.update(range_name=f"D{start}:K{start+len(entries)-1}",values=entries,value_input_option="RAW")
 print("CONTROL_OK","registros_auditoria",len(entries),flush=True)
 for code in [x[0] for x in success]+no_offers:
     audit_checkpoint.update(range_name=f"Q{checkpoint_next}:T{checkpoint_next}",values=[["compra_agil_detalle",TARGET_DATE,code,"completo"]])
