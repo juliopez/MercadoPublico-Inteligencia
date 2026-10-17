@@ -140,3 +140,14 @@ La ejecución n.º 4 (`compra_agil`, fecha `2026-10-14`) terminó con tres error
 - El bloqueo inmediato ante **HTTP 429** sigue vigente; los errores HTTP **502/503/504** mantienen hasta tres intentos **totales por componente en el workflow** con pausas de 45 segundos. Un HTTP 504 no demuestra por sí mismo que el formato de la consulta sea inválido.
 
 **Validación pendiente:** el cambio se revisó en el código fuente, sin ejecutar todavía un workflow con ChileCompra. No se modificaron frontend ni datos de Google Sheets.
+
+
+## 11. Reanudación por páginas de Compra Ágil (después de ejecución n.º 5)
+
+La ejecución n.º 5 para `2026-10-14` informó **107 páginas** de API V2; alcanzó a descargar páginas 1 y 2 (100 registros) antes de un HTTP 504, pero la versión anterior descartó ese trabajo al fallar la siguiente página.
+
+La nueva versión de `sync_chilecompra_sheets.py` guarda **cada página validada directamente en `Procesos`** y solo después registra el checkpoint en las columnas **A:B de `Control`**, con clave `compra_agil_page:AAAA-MM-DD:N` y valor de total de páginas. Una interrupción antes del checkpoint implica repetir esa página mediante escritura idempotente; no elimina registros guardados. Una nueva ejecución con la misma fecha **omite las páginas confirmadas**, verifica que el total de páginas no haya cambiado y continúa con las siguientes.
+
+**Criterio de finalización:** solo después de recorrer todas las páginas (o reconocer su checkpoint) se informa `COMPRA_AGIL_LISTADO_COMPLETO` y se habilita la etapa de cotizaciones en el workflow. Si hay HTTP 504, los registros de páginas ya confirmadas permanecen en Google Sheets y el workflow no llama al ETL de detalle.
+
+**Advertencias:** las páginas de una API paginada pueden variar si cambia el orden o se agregan registros mientras se consulta. El mecanismo verifica la cantidad de páginas, pero **no garantiza una fotografía transaccional del origen**. Los checkpoints de páginas son marcas de una fecha y no sustituyen la actualización futura de procesos. El cambio está implementado en código y **pendiente de prueba operativa**, sin ejecutarse consultas reales adicionales durante su implementación.
