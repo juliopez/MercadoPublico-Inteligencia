@@ -84,7 +84,7 @@ jobs:
           COMPRA_AGIL_CATEGORIA: ${{ inputs.categoria_compra_agil == 'Todas' && '' || inputs.categoria_compra_agil }}
         run: |
           set -uo pipefail
-          if [[ -n "$COMPRA_AGIL_CATEGORIA" && "$OP" != "compra_agil" ]]; then
+          if [[ -n "$COMPRA_AGIL_CATEGORIA" && "$COMPRA_AGIL_CATEGORIA" != "Todas" && "$OP" != "compra_agil" ]]; then
             echo "::error::La categoría manual solo está disponible para compra_agil."
             exit 1
           fi
