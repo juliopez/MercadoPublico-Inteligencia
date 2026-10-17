@@ -1,0 +1,48 @@
+name: V2 - lote limitado de paginas Sheets
+on:
+  workflow_dispatch:
+    inputs:
+      fecha:
+        description: 'Fecha de publicación (AAAA-MM-DD)'
+        required: true
+        default: '2026-10-15'
+        type: string
+      pagina_inicial:
+        description: 'Página inicial'
+        required: true
+        default: '2'
+        type: string
+      max_paginas:
+        description: 'Páginas por ciclo (1 a 3)'
+        required: true
+        default: '3'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+permissions:
+  contents: read
+concurrency:
+  group: observatorio-v2-pruebas
+  cancel-in-progress: false
+jobs:
+  paginas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar dependencias
+        run: pip install --disable-pip-version-check 'gspread==6.2.1' 'google-auth==2.40.3'
+      - name: Ejecutar lote paginado hacia Sheets
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SHEET_ID: ${{ vars.GOOGLE_SHEET_ID }}
+          FECHA: ${{ inputs.fecha }}
+          PAGINA: ${{ inputs.pagina_inicial }}
+          MAX_PAGINAS: ${{ inputs.max_paginas }}
+        run: python3 scripts/v2_lote_paginas_sheets.py --fecha "$FECHA" --pagina-inicial "$PAGINA" --max-paginas "$MAX_PAGINAS"
