@@ -271,3 +271,15 @@ Todos los siguientes scripts de diagnóstico son **experimentales** y están en 
 **Pendiente externo:** solicitar respuesta técnica de ChileCompra al incidente **`INC-1403213-Q2T1Z9`** respecto de timeout del detalle, posible incidencia conocida y mecanismo documentado para obtener cotizaciones; complementar con los tres HTTP 504 medidos si hace falta.
 
 **Decisión vigente del propietario:** concluir el diagnóstico de **API V2** antes de discutir relevancia para LoBa, cargas históricas, cambios en frontend o escrituras en Sheets. **No repetir indiscriminadamente consultas de detalle**; conservar los respaldos, examinar primero evidencia existente y mantener los ETL originales congelados hasta nueva autorización.
+
+
+## 17. Orquestador local SQLite tolerante a fallos — prototipo 17-10-2026
+
+**Archivo nuevo:** `scripts/orquestador_v2_sqlite_local.py`. Su implementación es un prototipo **aislado de los ETL congelados**: no escribe en Google Sheets ni modifica el frontend. No debe considerarse probado contra API hasta ejecutar la validación local y controlada.
+
+- Usa `orquestacion_v2_local/control.sqlite3` con tablas `jobs` (estado por fecha y página) y `events` (bitácora). Archivos JSON en `orquestacion_v2_local/AAAA-MM-DD/pagina_NNNN.json`.
+- `iniciar --fecha 2026-10-15 --paginas 10 --importar-local` permite incorporar los diez JSON previamente recuperados desde `extraccion_v2_local/2026-10-15_*` **sin consultar la API**.
+- `estado --fecha 2026-10-15` consulta únicamente SQLite.
+- `ejecutar --fecha 2026-10-15 --max-solicitudes 2 --pausa 60` consume las tareas disponibles, con un límite de 1 a 3 solicitudes por ejecución; puede reanudar sin duplicar códigos entre páginas. Solo ejecutar con autorización y ticket presente en variable de entorno.
+- Respuestas 500/502/503/504 y errores de red se difieren con espera progresiva y pequeña aleatoriedad; 429 se suspende al menos una hora (o más si `Retry-After` numérico lo exige); 400/401/403 se marcan para revisión. La ejecución se detiene al primer error en lugar de insistir.
+- **Pendientes antes de producción:** pruebas locales de inicialización/consulta SQLite, pruebas supervisadas de fallos, bloqueo de ejecuciones concurrentes, normalizar actualizaciones temporales y cambios de páginas, compatibilidad de `Retry-After` como fecha HTTP, circuit breaker global, cola de detalles separada, conciliación de cobertura total, persistencia fuera del equipo y políticas de actualización de registros que cambian. Un simple backoff no soluciona los HTTP 504 sistemáticos del detalle.
