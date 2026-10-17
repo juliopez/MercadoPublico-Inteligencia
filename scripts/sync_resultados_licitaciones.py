@@ -65,7 +65,9 @@ def main():
             org=as_text(a.get("Nombre") or a.get("NombreProveedor") or "")
             amount=as_text(a.get("Monto") or "")
             awarded=bool(a.get("Tipo") or a.get("Numero") or a.get("Fecha") or org or amount)
-            if not awarded:\n                checkpoint(code)\n                continue
+            if not awarded:
+                checkpoint(code)
+                continue
             new=[code,org,amount,as_text(a.get("Fecha") or ""),"","API ChileCompra V1 - adjudicación","Adjudicación informada por API","","","OC no verificada"]
             if code in existing:
                 i,old=existing[code]
@@ -73,8 +75,12 @@ def main():
                 merged=[old[j] or new[j] for j in range(len(RH))]
                 if merged!=old:ws.update(range_name=f"A{i}:J{i}",values=[merged],value_input_option="RAW")
             else:
-                ws.append_rows([new],value_input_option='RAW')\n            checkpoint(code)
-        except RateLimited:\n            print('DETENIDO_429',code,flush=True)\n            raise\n        except (ValueError,TypeError,KeyError,RuntimeError) as ex:
+                ws.append_rows([new],value_input_option='RAW')
+            checkpoint(code)
+        except RateLimited:
+            print('DETENIDO_429',code,flush=True)
+            raise
+        except (ValueError,TypeError,KeyError,RuntimeError) as ex:
             failures.append(code+":"+type(ex).__name__)
         except Exception as ex:
             failures.append(code+":"+type(ex).__name__)
