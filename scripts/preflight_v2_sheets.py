@@ -22,9 +22,11 @@ def main():
     for name,necessary in REQUIRED.items():
         sh=book.worksheet(name)
         header=sh.row_values(1)
-        if len(header)!=len(set(header)):
+        if name!="Control" and len(header)!=len(set(header)):
             raise RuntimeError(f"{name}: cabeceras repetidas")
-        missing=necessary-set(header)
+        if name=="Control" and header[:2]!=["variable","valor"]:
+            raise RuntimeError("Control!A1:B1 no coincide con variable, valor")
+        missing=necessary-(set(header[:2]) if name=="Control" else set(header))
         if missing:raise RuntimeError(f"{name}: faltan {sorted(missing)}")
         print(f"OK {name}: {len(header)} columnas; {sh.row_count} filas de capacidad")
     control=book.worksheet("Control")
