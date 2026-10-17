@@ -20,6 +20,21 @@ def parse(s):
     return datetime.fromisoformat(s) if s else datetime.min.replace(tzinfo=timezone.utc)
 def write(ws,r):
     ws.update(range_name="L2:Q2",values=[r],value_input_option="RAW")
+def blocked(ws):
+    r=load(ws);t=now()
+    if parse(r[2])>t:
+        print("API_GLOBAL_SUSPENDIDA hasta",r[2]);return True
+    return False
+
+def record_global_429(ws):
+    r=load(ws);t=now();until=t+timedelta(hours=1)
+    r[0]="api_v2"
+    r[2]=iso(max(parse(r[2]),until))
+    r[3]=iso(max(parse(r[3]),until))
+    r[4]="429";r[5]=iso(t)
+    write(ws,r)
+    print("API_GLOBAL_HTTP_429_SUSPENDIDA hasta",r[2])
+
 def reserve(ws):
     r=load(ws);t=now()
     if parse(r[2])>t:
