@@ -50,9 +50,10 @@ def row(item, now):
         value(i,"nombre_region"),value(r,"total_ofertas_recibidas"),
         value(motive,"motivo_seleccion"),value(links,"detalle"),now,"Sin clasificar","Sin clasificar","","Compra Ágil"]))
 
-def fetch(page, start, end):
+def fetch(page, start, end, keyword=""):
     args={"publicado_desde":start,"publicado_hasta":end,
           "tamano_pagina":50,"numero_pagina":page}
+    if keyword:args["q"]=keyword
     req=Request(BASE+"?"+urlencode(args),headers={"ticket":TICKET,"Accept":"application/json"})
     data=fetch_json(req,timeout=50,label=f"Compra Ágil página {page}")
     if not data.get("payload") or data.get("success") not in (True,"OK"):
@@ -122,6 +123,9 @@ def main():
     end=datetime.combine(day,datetime.max.time(),local_zone).isoformat(timespec="seconds")
     maxpages=int(os.getenv("SYNC_MAX_PAGES","20"))
     modalidad=os.getenv("SYNC_MODALIDAD","compra_agil")
+    keyword=os.getenv("COMPRA_AGIL_CATEGORIA","").strip()
+    if len(keyword)>120:raise SystemExit("Categoría demasiado larga (máximo 120 caracteres)")
+    if keyword and modalidad!="compra_agil":raise SystemExit("El filtro solo se admite en Compra Ágil")
     if modalidad not in ("compra_agil","licitaciones"):raise SystemExit("Modalidad no admitida")
     found={}
     totalpages=None
@@ -151,7 +155,10 @@ def main():
         control_values=control.get("A1:B")
         if not control_values or control_values[0][:2]!=["variable","valor"]:
             raise RuntimeError("Control A:B requiere encabezados variable, valor")
-        prefix="compra_agil_page:"+fecha+":"
+        # Checkpoints de prueba filtrada separados de los del universo completo.
+        import hashlib
+        suffix=":q:"+hashlib.sha256(keyword.casefold().encode("utf-8")).hexdigest()[:16] if keyword else ":todos"
+        prefix="compra_agil_page:"+fecha+suffix+":"
         previous={}
         for r in control_values[1:]:
             if len(r)<2 or not r[0].startswith(prefix):continue
@@ -172,7 +179,7 @@ def main():
                 print(f"Página {page}/{totalpages}: ya persistida; omitida",flush=True)
                 page+=1
                 continue
-            payload=fetch(page,start,end)
+            payload=fetch(page,start,end,keyword)
             pages=int((payload.get("paginacion") or {}).get("total_paginas") or 0)
             if pages<1:raise RuntimeError("Paginación ausente")
             if totalpages is not None and pages!=totalpages:
