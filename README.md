@@ -175,3 +175,12 @@ Se contrastó la integración con el [portal oficial de ChileCompra](https://www
 **Cambio puntual:** se incorporó zona horaria explícita `America/Santiago` en los parámetros ISO 8601 de la ventana diaria, respetando el día civil chileno elegido por el operador. No se redujo el universo de registros ni se activaron particiones horarias porque todavía no se ha validado en documentación oficial la estabilidad de la paginación entre consultas particionadas.
 
 **Pendiente:** validar el formato de fecha y la disponibilidad real del servicio en una próxima ejecución manual, sin efectuar pruebas masivas innecesarias. No se modificaron las hojas ni los ETL de Licitaciones u Órdenes de compra.
+
+
+## 14. Campo manual de rubro/categoría en Compra Ágil
+
+El formulario de `Marcha blanca - operaciones manuales` ahora ofrece `categoria_compra_agil` como **texto libre opcional** junto con operación y fecha. Solo se permite para `compra_agil`; el ETL incorpora el texto en el parámetro de búsqueda `q` de API V2. Si se deja vacío, mantiene la consulta por fecha sin filtro textual.
+
+Este campo **no es el código de una categoría oficial** y no modifica la estructura de las columnas de `Procesos`. Los checkpoints de páginas de una consulta filtrada se separan de los de una consulta sin filtro mediante una clave derivada del texto. Las consultas filtradas son pruebas de un subconjunto y **no demuestran cobertura histórica completa del día**. La fase de cotizaciones se ejecuta después de finalizar la búsqueda filtrada y utiliza los procesos de Compra Ágil presentes en Sheets para la fecha solicitada.
+
+No se ejecutó el workflow ni se consultó la API al incorporar el formulario.
