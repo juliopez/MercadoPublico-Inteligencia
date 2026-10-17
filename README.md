@@ -301,3 +301,21 @@ Casos: HTTP 200 con almacenamiento y omisión de páginas ya completadas; HTTP 5
 ### 17.2 Validación en Ubuntu de simulaciones (17-10-2026)
 
 El propietario ejecutó `python3 -m unittest discover -s scripts -p 'test_orquestador_v2_sqlite_local.py' -v` desde Ubuntu. La captura de terminal muestra **`Ran 6 tests in 0.031s` y `OK`**, sin errores ni fallos. Casos cubiertos: 200 persistido, 500/504 diferidos sin perder completos, 429 suspendido, 400 para revisión sin selección automática, tarea con espera no elegible y duplicación de códigos entre páginas bloqueada. **Son pruebas con HTTP simulado; no prueban disponibilidad ni recuperación de detalles en la API real.** Próxima etapa: circuito de suspensión global y cola de detalles independiente, manteniendo congelados los ETL originales.
+
+
+### 17.3 Circuit breaker compartido y cola separada de detalles (17-10-2026)
+
+Se incorporó **circuit breaker persistente** al `scripts/orquestador_v2_sqlite_local.py`, con tabla `circuit` en la misma base SQLite. Tres fallos transitorios consecutivos (HTTP 500/502/503/504 o error de conexión) suspenden nuevas solicitudes durante 30 minutos; un HTTP 429 abre el circuito inmediatamente durante al menos una hora; respuestas HTTP 200 reinician el contador. Esta es una **política experimental del cliente, no un límite oficial**. Todas las colas que comparten el mismo archivo SQLite consultan el circuito antes de pedir datos.
+
+Archivo nuevo `scripts/orquestador_v2_detalles_local.py`: cola independiente `detail_jobs` por código, inicializada a partir de los listados JSON **ya guardados** (`iniciar`). Permite consultar su `estado` sin consumir API; la acción `ejecutar` queda **explícita**, limitada a una solicitud por defecto y máximo dos. Los errores 500/504 quedan en espera diferida y los códigos completos se guardan individualmente. Esta es una primera versión de prototipo: todavía requiere validar que cada HTTP 200 incluya la estructura de detalle y el código solicitado, control de concurrencia y comportamiento operativo con el endpoint real.
+
+**Pruebas offline nuevas:** `python3 -m unittest discover -s scripts -p 'test_orquestador_v2_circuito_detalles.py' -v`. Cubren activación por tres fallos consecutivos, reinicio tras éxito, activación inmediata por HTTP 429, inicialización idempotente de detalles desde archivos locales y bloqueo de solicitudes cuando el circuito está abierto. Las pruebas se incorporaron al repositorio, **pendientes de ejecución y validación en Ubuntu**. No se modifica Sheets, frontend ni ETL originales.
+
+**Secuencia segura en Ubuntu, sin llamadas reales a ChileCompra:**
+```bash
+git pull origin main
+python3 -m unittest discover -s scripts -p 'test_orquestador_v2_circuito_detalles.py' -v
+python3 scripts/orquestador_v2_detalles_local.py iniciar --fecha 2026-10-15
+python3 scripts/orquestador_v2_detalles_local.py estado
+```
+No ejecutar todavía `orquestador_v2_detalles_local.py ejecutar` hasta validar las pruebas y acordar una prueba real puntual.
