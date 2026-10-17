@@ -41,6 +41,24 @@ def main():
         ]
     output=Path("data/observatorio.json")
     output.parent.mkdir(parents=True,exist_ok=True)
-    output.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    # Manifiesto pequeño y fragmentos acotados: evita el límite GitHub de 100 MB.
+    # Se reemplazan solo los fragmentos generados por este exportador.
+    chunks_dir=Path("data/partes")
+    chunks_dir.mkdir(parents=True,exist_ok=True)
+    for old_part in chunks_dir.glob("observatorio-*.json"):
+        old_part.unlink()
+    manifest={"fecha_actualizacion":result["fecha_actualizacion"],"fuente":result["fuente"],"partes":{},"conteos":{}}
+    for name,records in result["tablas"].items():
+        manifest["partes"][name]=[]
+        manifest["conteos"][name]=len(records)
+        for start in range(0,len(records),10000):
+            part_name=f"observatorio-{name}-{start//10000+1:04d}.json"
+            part_path=chunks_dir/part_name
+            payload=json.dumps(records[start:start+10000],ensure_ascii=False,separators=(",",":"))+"\\n"
+            if len(payload.encode("utf-8"))>=25000000:
+                raise RuntimeError(f"Fragmento excesivo: {part_name}")
+            part_path.write_text(payload,encoding="utf-8")
+            manifest["partes"][name].append("data/partes/"+part_name)
+    output.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
     print("EXPORTACION_OK",*(f"{k}={len(v)}" for k,v in result["tablas"].items()))
 if __name__=="__main__":main()
