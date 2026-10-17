@@ -655,3 +655,7 @@ Nuevo workflow [`publicar-sheets-pages.yml`](.github/workflows/publicar-sheets-p
 ### 17.49 Corrección de contadores con datos fragmentados (17-10-2026)
 
 Tras la exportación de 480.502 registros, el front anterior no mostraba recuentos hasta terminar la descarga secuencial de todos los archivos. Se actualizó `index.html` para mostrar **de inmediato** los totales declarados en el manifiesto `data/observatorio.json`, realizar solicitudes en lotes concurrentes de cuatro fragmentos, presentar progreso y avisar explícitamente de errores de descarga. Los recuentos del manifiesto indican volumen publicado, **no confirman por sí mismos que se hayan cargado todos los datos consultables**. Cambio limitado al front; activar publicación con `front-pages.yml` y validar visualmente que la consulta termina de cargar.
+
+### 17.50 Diagnóstico de carga en blanco (17-10-2026)
+
+Al observar el sitio con contadores `—` y cobertura «Cargando información…», se agregó a `index.html` una lectura **independiente** del manifiesto de datos, previa a la carga histórica completa, para presentar recuentos y fecha inmediatamente, además de mostrar errores de HTTP, JavaScript y promesas. Este diagnóstico no altera la base ni el exportador, y distingue un problema de publicación del manifiesto de un bloqueo durante el procesamiento de casi 480.502 filas. Commit frontal de referencia `50d06387`. Pendiente verificar en navegador tras GitHub Pages y evaluar rendimiento; los contadores del manifiesto no significan que las funciones de búsqueda estén listas.
