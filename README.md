@@ -359,3 +359,15 @@ Pruebas offline incorporadas: `scripts/test_orquestador_v2_frecuencia.py`, cuatr
 ### 17.11 Validación Ubuntu del limitador global (17-10-2026)
 
 Capturas del propietario: `test_orquestador_v2_frecuencia.py` terminó **4/4 (`Ran 4 tests in 0.005s`, `OK`)**; la batería de regresión `test_orquestador_v2*.py` terminó **15/15 (`Ran 15 tests in 0.025s`, `OK`)**. Las pruebas usaron SQLite y respuestas simuladas, **sin consumo real de ChileCompra**. El límite experimental compartido entre listado y detalle se mantiene en 60 segundos entre reservas de solicitudes. Pendiente: coordinación estricta de solicitudes simultáneas y recuperación de una reserva en proceso ante interrupciones; no declarar todavía automatización desatendida de producción.
+
+### 17.12 Exclusión mutua entre listados y detalles (17-10-2026)
+
+Los dos ejecutables locales incorporaron un **bloqueo exclusivo de archivo POSIX (`fcntl.flock`)** compartido en `orquestacion_v2_local/api_v2_ejecucion.lock`. Se adquiere al iniciar la operación explícita `ejecutar` y se mantiene durante **toda la ejecución**, incluido el consumo HTTP y las esperas. Si existe otra ejecución en curso, la nueva finaliza con un error claro **sin generar solicitudes**. En Ubuntu, el sistema operativo libera el bloqueo al finalizar el proceso, incluso por interrupción o cierre inesperado; el archivo `.lock` puede permanecer en disco sin significar que el recurso siga bloqueado. El control protege únicamente ejecuciones de estos dos programas en el mismo equipo y sobre la misma carpeta: **no coordina distintas computadoras ni acciones GitHub**.
+
+Se añadió `scripts/test_orquestador_v2_exclusion.py` para simular segundo ejecutor bloqueado, liberación ante excepción e interrupción y conservación del estado SQLite. Validación pendiente en Ubuntu:
+```bash
+git pull origin main
+python3 -m unittest discover -s scripts -p 'test_orquestador_v2_exclusion.py' -v
+python3 -m unittest discover -s scripts -p 'test_orquestador_v2*.py' -v
+```
+Ambos comandos **no consumen ChileCompra**. Siguiente etapa tras aprobar: probar una interrupción controlada sin API y revisar consistencia de tareas; los ETL originales continúan congelados.
