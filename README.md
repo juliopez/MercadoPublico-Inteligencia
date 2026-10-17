@@ -375,3 +375,15 @@ Ambos comandos **no consumen ChileCompra**. Siguiente etapa tras aprobar: probar
 ### 17.13 Pruebas de exclusión mutua superadas en Ubuntu (17-10-2026)
 
 El propietario ejecutó las cuatro pruebas específicas de exclusión mutua con resultado **`Ran 4 tests in 0.003s / OK`**. La regresión con patrón `test_orquestador_v2*.py` terminó **`Ran 19 tests in 0.025s / OK`**. Fueron simulaciones locales sin solicitudes a ChileCompra. Se verificaron segunda ejecución bloqueada, liberación del bloqueo tras excepción o KeyboardInterrupt y persistencia SQLite. Próxima validación: interrupción de tarea durante la recuperación y coherencia entre archivo JSON y checkpoint; no alterar ETL originales ni Sheets.
+
+
+### 17.14 Reconciliación después de una interrupción JSON → SQLite (17-10-2026)
+
+Se incorporó recuperación **offline antes de volver a consultar la API** en las dos colas:
+
+- `orquestador_v2_sqlite_local.py`: `reconcile_pages` examina páginas JSON persistidas cuyo checkpoint aún no figura como `completo`; comprueba estructura, recuento, código único y consistencia con páginas confirmadas, luego registra el checkpoint y evento `recuperado_desde_archivo` sin consumir HTTP.
+- `orquestador_v2_detalles_local.py`: `reconcile_details` comprueba que el JSON local coincida con el código de la cola y, si es válido, lo marca `completo` sin repetir la solicitud.
+- Los JSON existentes nunca deben sobrescribirse para encubrir una inconsistencia. Ante archivo inválido, la reconciliación se detiene para revisión, sin confirmar falsamente.
+- `scripts/test_orquestador_v2_recuperacion.py` incluye **seis casos offline**: interrupción antes del archivo, después de escribir página sin checkpoint, después del checkpoint, detalle guardado sin checkpoint, detalle aún no guardado y JSON inválido.
+
+Ejecutar desde Ubuntu `python3 -m unittest discover -s scripts -p 'test_orquestador_v2_recuperacion.py' -v` y luego `python3 -m unittest discover -s scripts -p 'test_orquestador_v2*.py' -v`. **Pendiente resultado de pruebas**. No se consultó ChileCompra, no se modificaron los ETL congelados ni Google Sheets. Esta reconciliación soluciona el intervalo de fallo entre escritura atómica del archivo y actualización SQLite, pero no equivale todavía a garantía transaccional de extremo a extremo frente a todo tipo de pérdida de disco.
