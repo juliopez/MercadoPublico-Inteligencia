@@ -1,3 +1,87 @@
+# Observatorio de Mercado Público
+
+**Plataforma de inteligencia y seguimiento de compras públicas en Chile.** Integra información de licitaciones, Compra Ágil, ofertas, resultados y órdenes de compra proveniente de ChileCompra, utilizando una base operativa privada en Google Sheets y una visualización pública en GitHub Pages.
+
+**Estado del proyecto (17 de octubre de 2026):** orquestación unificada, programada y con recuperación incremental. La extracción V1, el almacenamiento de procesos y la publicación del JSON/Pages han sido comprobados en ejecución integral; algunos detalles de Compra Ágil siguen afectados por respuestas 504/429 y **la inserción real de sus ofertas y resultados aún no está validada**. Las primeras ejecuciones automáticas recurrentes siguen sujetas a observación.
+
+**Enlaces:** [Ver el observatorio](https://juliopez.github.io/MercadoPublico-Inteligencia/) · [Orquestación principal](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/workflows/observatorio-unico.yml) · [Frontend](index.html) · [Instantánea pública](data/observatorio.json)
+
+## Arquitectura de un vistazo
+
+```mermaid
+flowchart TD
+    GH["GitHub Actions<br/>observatorio-unico.yml<br/>programado cada 6 horas"]
+    GH --> ORQ["Orquestador general<br/>scripts/orquestador_observatorio.py"]
+    ORQ --> V1["API V1 ChileCompra<br/>licitaciones y resultados"]
+    ORQ --> OC["API V1 ChileCompra<br/>órdenes de compra"]
+    ORQ --> V2["API V2 ChileCompra<br/>Compra Ágil: listados y detalles"]
+    V1 --> DB[("Google Sheets<br/>Procesos · Resultados")]
+    OC --> DB
+    V2 --> DB
+    ORQ <--> CTRL[("ControlV2<br/>checkpoints · pausas · reintentos")]
+    V2 <--> CTRL
+    DB --> PUB["publicar_observatorio.py<br/>exportación de datos públicos"]
+    PUB --> JSON["data/observatorio.json"]
+    JSON --> PAGE["GitHub Pages<br/>index.html — dashboard"]
+    GH -. "orquesta la publicación" .-> PAGE
+```
+
+**La navegación del dashboard no consulta directamente las API.** El sitio lee la instantánea pública `data/observatorio.json`, generada desde Google Sheets. Las credenciales de ChileCompra y Google permanecen en los secretos de GitHub; **no** se publican en el JSON ni en el frontend.
+
+## Cómo funciona
+
+1. **Programación y coordinación.** El único workflow periódico, [`observatorio-unico.yml`](.github/workflows/observatorio-unico.yml), está configurado mediante GitHub Actions cada seis horas. GitHub puede iniciar un cron con retraso. También admite ejecución manual.
+2. **Extracción incremental.** [`orquestador_observatorio.py`](scripts/orquestador_observatorio.py) coordina licitaciones V1, resultados V1, órdenes de compra y el ciclo V2. Se procesan fechas cerradas pendientes en Chile, sin depender de que la ejecución empiece a una hora exacta. Compra Ágil V2 usa **10 registros por página** y el total de páginas informado por la API para cada fecha.
+3. **Persistencia.** Los ETL insertan o actualizan datos en las hojas privadas `Procesos`, `Ofertas`, `Resultados` y `OrdenesCompra`. La hoja `ControlV2` registra progreso, errores y reintentos. Las escrituras válidas se conservan aunque una consulta posterior falle.
+4. **Exportación pública.** [`publicar_observatorio.py`](scripts/publicar_observatorio.py) extrae únicamente los campos autorizados de Sheets y construye [`data/observatorio.json`](data/observatorio.json).
+5. **Publicación.** El workflow confirma el JSON actualizado en el repositorio y despliega el sitio en GitHub Pages. Si alguna API queda pendiente, el dashboard puede publicar los **datos válidos ya consolidados**, sin presentar la carga parcial como cobertura completa.
+
+## Qué ocurre cuando falla una API
+
+| Situación | Acción operativa |
+|---|---|
+| Consulta válida | Escribir datos en Sheets y registrar avance |
+| HTTP 504 u otro error transitorio | Registrar el error, conservar avances y diferir el reintento |
+| HTTP 429 (límite de consultas) | Suspender las nuevas consultas V1/V2 durante el ciclo y guardar una **pausa persistente compartida de una hora** en `ControlV2` |
+| Nueva ejecución con pausa vigente | Omitir nuevas consultas hasta el vencimiento del bloqueo |
+| Extracción parcial o aplazada | Exportar y publicar los datos disponibles; mantener pendientes para ciclos posteriores |
+
+El mecanismo combina **checkpoints**, control de frecuencia, pausas persistentes y un *circuit breaker* para V2. Está diseñado para tolerar respuestas recurrentes de error **sin perder registros ya guardados**. Esto no garantiza que la API entregue todos los detalles: una respuesta 504 puede dejar ofertas y resultados pendientes de recuperación.
+
+## Componentes de producción
+
+| Componente | Archivo | Propósito |
+|---|---|---|
+| Orquestación completa | [`observatorio-unico.yml`](.github/workflows/observatorio-unico.yml) | Programación, extracción, exportación y despliegue |
+| Coordinación V1/V2 | [`orquestador_observatorio.py`](scripts/orquestador_observatorio.py) | Secuencia única y checkpoints por componente |
+| Licitaciones V1 | [`sync_chilecompra_sheets.py`](scripts/sync_chilecompra_sheets.py) | Listados de licitaciones por fecha |
+| Resultados V1 | [`sync_resultados_licitaciones.py`](scripts/sync_resultados_licitaciones.py) | Adjudicaciones verificables disponibles |
+| Órdenes de compra | [`sync_ordenes_compra_sheets.py`](scripts/sync_ordenes_compra_sheets.py) | Órdenes de compra publicadas |
+| Ciclo Compra Ágil V2 | [`v2_ciclo_github.py`](scripts/v2_ciclo_github.py) | Selección de fecha, página y detalle pendientes |
+| Listados y detalles V2 | [`v2_primera_escritura_sheets.py`](scripts/v2_primera_escritura_sheets.py), [`v2_detalle_sheets.py`](scripts/v2_detalle_sheets.py) | Escritura incremental en Sheets |
+| Control y solicitudes | [`v2_global_control.py`](scripts/v2_global_control.py), [`api_retry.py`](scripts/api_retry.py) | Suspensiones, frecuencia y tratamiento de errores |
+| Publicación | [`publicar_observatorio.py`](scripts/publicar_observatorio.py) | JSON público con campos seleccionados |
+
+El repositorio conserva además [`etl-loba-puntual.yml`](.github/workflows/etl-loba-puntual.yml) para consultas manuales LoBa **sin programación recurrente**. Los scripts auxiliares especializados no participan en la cadena periódica.
+
+## Estado de validación y limitaciones conocidas
+
+- **Comprobado:** recuperación de listados V1, cargas incrementales de páginas V2 a `Procesos`, almacenamiento de checkpoints, manejo observado de HTTP 504/429 y publicación desde Google Sheets hasta GitHub Pages.
+- **Pendiente de confirmar en operación sostenida:** varias ejecuciones programadas consecutivas y recuperación posterior a bloqueos globales.
+- **Pendiente de validar con datos reales:** escrituras efectivas de ofertas y selecciones V2 en `Ofertas` y `Resultados` cuando ChileCompra entregue detalles disponibles.
+- **Mantenimiento:** no se ha reconstruido una suite de regresión específica para la nueva arquitectura productiva con Google Sheets.
+
+Para investigar una incidencia, consultar primero los [registros del workflow principal](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/workflows/observatorio-unico.yml) y luego `ControlV2`. No es necesario repetir manualmente consultas que ya estén sujetas a una espera registrada.
+
+---
+
+## Historial técnico y decisiones de desarrollo
+
+**Las secciones siguientes son el registro histórico acumulado de la construcción del observatorio.** Incluyen decisiones y configuraciones **anteriores que ya fueron reemplazadas**, como la marcha blanca manual, cron desactivado, pruebas SQLite y múltiples workflows experimentales. **Para conocer el funcionamiento vigente, utilizar las secciones anteriores.** Se mantiene este material íntegro como trazabilidad de pruebas, cambios, errores y soluciones.
+
+<details>
+<summary><strong>Consultar historial técnico completo (documentación original)</strong></summary>
+
 # Observatorio de Mercado Público — Estado y operación de marcha blanca
 
 **Corte documental:** 16 de octubre de 2026. **Estado:** desarrollo operativo en validación; no se considera producción.  
@@ -515,3 +599,6 @@ Corrección de integración de seguridad sin consulta adicional: `scripts/v2_glo
 ### 17.44 Limpieza de repositorio y consolidación (17-10-2026)
 
 Auditoría de dependencias y limpieza de diagnósticos/ensayos V2, pruebas de SQLite local y workflows manuales redundantes. **Inventario tras limpieza:** `scripts/` contiene **27 archivos**; `.github/workflows/` contiene solamente **2 workflows**, `observatorio-unico.yml` (único programado, API V1+V2 → Sheets → JSON → Pages) y `etl-loba-puntual.yml` (consulta LoBa manual separada, sin cron ni escritura a Sheets). Se retiraron `marcha-blanca-manual.yml` y `pages.yml` para evitar rutas duplicadas de extracción/publicación. Se mantienen los ETL y módulos llamados en producción: `orquestador_observatorio.py`, `sync_chilecompra_sheets.py`, `sync_resultados_licitaciones.py`, `sync_ordenes_compra_sheets.py`, `v2_ciclo_github.py`, `v2_primera_escritura_sheets.py`, `v2_detalle_sheets.py`, `v2_global_control.py`, `api_retry.py`, `publicar_observatorio.py`; además de la utilidad puntual LoBa. Otros scripts especializados conservados no forman parte de la cadena automatizada. Los tests `test_orquestador_v2_*.py` y `test_validacion_detalle_v2.py` se retiraron porque dependían de los antiguos módulos SQLite locales ya eliminados; **todavía no existe una suite de regresión actualizada para el ETL Sheets**, que es una tarea de calidad pendiente. El historial Git permite recuperar íntegramente lo retirado. No se alteraron `index.html`, `data/observatorio.json` ni las credenciales/configuración del workflow productivo. La limpieza no ejecutó consultas a ChileCompra ni revalidó una ejecución automática real.
+
+
+</details>
