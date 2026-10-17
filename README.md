@@ -64,6 +64,39 @@ El mecanismo combina **checkpoints**, control de frecuencia, pausas persistentes
 
 El repositorio conserva además [`etl-loba-puntual.yml`](.github/workflows/etl-loba-puntual.yml) para consultas manuales LoBa **sin programación recurrente**. Los scripts auxiliares especializados no participan en la cadena periódica.
 
+## Carga histórica oficial a Google Sheets
+
+La carga masiva de históricos es **independiente de los ETL de API V1/V2**: permite incorporar archivos descargados desde [Datos Abiertos de ChileCompra](https://datos-abiertos.chilecompra.cl/descargas) directamente al libro privado [Observatorio Mercado Público — Base de Datos](https://docs.google.com/spreadsheets/d/1y81QaPy37APkBwxlYrKyE66_1ECdhL87GyWNitTfHr4/edit). No requiere volver a consultar las API ni ejecutar un ETL automático. **No confundir la carga en Sheets con la publicación del frontend**; esta última requiere una exportación posterior del JSON público y su despliegue.
+
+### Procedimiento reproducible de incorporación
+
+1. **Seleccionar fuente y período.** Descargar el histórico oficial en ZIP/CSV identificando tipo (licitaciones, Compra Ágil u órdenes de compra), año y mes. No mezclar categorías ni asumir que todos los registros del archivo corresponden a procesos distintos.
+2. **Inspeccionar estructura y granularidad.** Identificar columnas, codificación, número de filas y clave de cada entidad. Los históricos pueden contener múltiples filas por proceso (por artículos, cotizaciones u otro detalle). **Consolidar por código del proceso solamente para la hoja `Procesos`**, con un criterio determinístico para escoger/consolidar atributos; preservar la información de detalle en su modelo correspondiente cuando se decida importar ofertas o resultados. No sumar montos de líneas heterogéneas sin validar su significado.
+3. **Normalizar al contrato de destino.** Para `Procesos`, respetar exactamente las **16 columnas y su orden**: `codigo`, `nombre`, `estado`, `convocatoria`, `fecha_publicacion`, `fecha_cierre`, `monto_disponible_clp`, `organismo_comprador`, `region`, `total_ofertas_recibidas`, `motivo_seleccion`, `url_detalle`, `fecha_sincronizacion`, `categoria`, `subcategoria`, `modalidad`. Usar fechas normalizadas (AAAA-MM-DD cuando la fuente lo permita), montos numéricos sin símbolos de moneda y códigos conservados literalmente. Las columnas sin información verificable se dejan vacías; no inventar adjudicaciones, ofertas, proveedores, URLs o categorías. Identificar `modalidad` como Compra Ágil o Licitación según proceda.
+4. **Leer estado real del libro antes de modificarlo.** Confirmar encabezados de `Procesos`, última fila ocupada y conjunto de códigos ya registrados. Comparar los códigos del histórico con los existentes, no solo con los del mismo mes; el histórico puede incluir procesos publicados antes y modificados posteriormente. Mantener el criterio **insertar únicamente códigos nuevos**, sin sobreescribir registros existentes. Investigar claves vacías o inconsistentes antes de cargar.
+5. **Crear respaldo íntegro** del libro operativo de Google Sheets **antes de escribir**, conservando un enlace identificable con fecha y período; no confundir este respaldo con una hoja auxiliar.
+6. **Preparar y validar una hoja auxiliar o CSV** con los registros nuevos, la misma cabecera de 16 campos y unicidad por `codigo`. Comprobar recuentos: filas originales, códigos únicos, códigos ya presentes y registros nuevos. La diferencia entre filas originales y procesos únicos se documenta como filas de detalle/repeticiones, no como procesos perdidos.
+7. **Insertar al final de `Procesos` por bloques**, respetando el orden de columnas. En las cargas realizadas se usó el conector de Google Sheets, lectura de rangos, comparación de códigos y escritura `pasteData` por lotes; ante un bloqueo, comprobar la última fila escrita y **reanudar desde el primer bloque no confirmado**, sin repetir los lotes ya incorporados. Evitar sobrescribir encabezados o filas previas. No tocar `Ofertas`, `Resultados`, `OrdenesCompra`, controles, ETL ni cron cuando el alcance autorizado sea solo `Procesos`.
+8. **Validar inmediatamente en destino.** Contar códigos no vacíos, códigos distintos y duplicados; verificar que `total_final = total_inicial + nuevos`, que todos los códigos del lote estén representados y que ninguna fila previa se haya reemplazado. Hacer muestreos de fechas, montos, modalidad y campos extensos. Informar respaldo, total final y cualquier pendiente.
+9. **Publicar por separado cuando se autorice.** Una carga exitosa en Sheets **no actualiza automáticamente** `data/observatorio.json` ni GitHub Pages. Ejecutar la exportación desde Sheets y el despliegue **sin volver a extraer datos de las API** cuando el propósito sea exclusivamente reflejar lo ya cargado. Verificar contadores y filtros del dashboard después de publicar.
+
+### Registro de cargas verificadas — septiembre de 2026
+
+| Fuente | Filas originales | Procesos únicos en histórico | Ya presentes | Incorporados | Total final de `Procesos` |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Licitaciones (septiembre) | 6.917 procesos | 6.917 | 692 | 6.225 | 8.860 |
+| Compra Ágil (septiembre) | 1.133.812 filas | 72.459 | 0 | 72.459 | **81.319** |
+
+- En la primera carga había **2.635** procesos. Se importaron 6.225 nuevos tras identificar 692 existentes: **8.860**, sin duplicados.
+- Para Compra Ágil se consolidaron **1.133.812 filas de detalle** en **72.459 códigos únicos** (1.061.353 filas adicionales respecto del grano proceso). Se conservó el conjunto previo de 8.860 códigos y se anexaron los 72.459 nuevos.
+- **Validación final de `Procesos`: 81.319 filas con código, 81.319 códigos distintos, 0 códigos duplicados y 0 códigos vacíos.**
+- [Respaldo previo a Compra Ágil](https://docs.google.com/spreadsheets/d/1na9IhA-g4GG5iH4QpujJ0r81Jl1uV8w9ehcWKpe_RSo/edit) · [Hoja auxiliar depurada de Compra Ágil](https://docs.google.com/spreadsheets/d/149_YB64BfW22rKnfAkrNxrUB8dQVV4GS3YK7lGIs1Z8/edit).
+- **Alcance:** únicamente procesos. `Ofertas` y `Resultados` históricos permanecen pendientes de una carga y validación propias; el número de procesos no acredita cobertura de adjudicaciones ni de órdenes de compra.
+
+**Regla temporal importante:** el mes del archivo histórico no equivale necesariamente al mes de publicación o adjudicación de cada proceso. Una licitación publicada en julio puede cambiar de estado en octubre. Por ello la deduplicación debe ser por **código de proceso**, y la actualización histórica de estados existentes requiere un procedimiento separado, auditable y explícitamente autorizado.
+
+---
+
 ## Estado de validación y limitaciones conocidas
 
 - **Comprobado:** recuperación de listados V1, cargas incrementales de páginas V2 a `Procesos`, almacenamiento de checkpoints, manejo observado de HTTP 504/429 y publicación desde Google Sheets hasta GitHub Pages.
