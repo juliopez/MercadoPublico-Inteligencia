@@ -319,3 +319,10 @@ python3 scripts/orquestador_v2_detalles_local.py iniciar --fecha 2026-10-15
 python3 scripts/orquestador_v2_detalles_local.py estado
 ```
 No ejecutar todavía `orquestador_v2_detalles_local.py ejecutar` hasta validar las pruebas y acordar una prueba real puntual.
+
+
+### 17.4 Validación offline confirmada en Ubuntu (17-10-2026)
+
+El propietario ejecutó la batería `test_orquestador_v2_circuito_detalles.py` y la terminal confirmó **`Ran 5 tests in 0.007s` / `OK`**. Sumadas las seis pruebas anteriores, existen **11 simulaciones aprobadas**. También ejecutó `orquestador_v2_detalles_local.py iniciar --fecha 2026-10-15` y `estado`: ambos informaron **`{"pendiente": 100}`**, sin consultas HTTP reales. Los 100 procesos del listado quedan como trabajos pendientes de detalle en SQLite.
+
+**Limitación prioritaria antes de efectuar pruebas reales del detalle:** el prototipo actual considera suficiente que HTTP 200 devuelva un objeto JSON, pero todavía debe comprobar el contrato real de detalle y la correspondencia del código solicitado. No declarar completos los detalles hasta implementar esa validación. El circuit breaker compartido se probó con mocks; su eficacia operacional requiere verificación controlada. No modificar ETL originales ni Google Sheets.
