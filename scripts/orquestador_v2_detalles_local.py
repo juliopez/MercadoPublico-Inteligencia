@@ -68,6 +68,7 @@ def run(con,maximum):
         code=j["codigo"]
         req=Request(core.BASE+"/"+quote(code,safe=""),headers={"ticket":ticket,"Accept":"application/json",
             "User-Agent":"Observatorio-Detalles-Tolerante/1.0"})
+        core.reserve_request(con)
         started=time.monotonic();http=None;raw=None;error=None;retry=None
         try:
             with urlopen(req,timeout=45) as response:
