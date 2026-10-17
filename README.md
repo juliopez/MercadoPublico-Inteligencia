@@ -116,3 +116,12 @@ Una vez validados los datos en Sheets, seleccionar `publicar` para generar el JS
 - El complemento de licitaciones persiste cada adjudicación antes de anotar su checkpoint; el detalle de Compra Ágil guarda los avances del lote procesado; las órdenes de compra guardan los datos recuperados antes de informar un corte por 429.
 - Los errores distintos de 429 aún requieren inspección de logs y, si corresponde, ejecución manual con la misma fecha; los checkpoints no garantizan que un proceso previamente consultado nunca cambie de estado en el futuro.
 - **Atención:** los límites concretos de ambas API son desconocidos. No se han ejecutado pruebas de carga posteriores a este cambio y no corresponde considerar validadas aún la cobertura completa, la integración del flujo ni la actualización de estados futuros.
+
+
+## 9. Revisión de adjudicaciones incompletas tras la tercera ejecución
+
+La ejecución manual n.º 3 se detuvo correctamente ante HTTP 429. Antes de detenerse dejó dos filas en `Resultados` con fecha, pero sin proveedor ni monto. Estas filas **no deben considerarse adjudicaciones confirmadas**.
+
+La versión corregida de `sync_resultados_licitaciones.py` exige proveedor y monto explícitos antes de insertar un nuevo resultado, registra `pendiente_datos` cuando falta alguno de los dos y no interpreta checkpoints antiguos `completo` como suficientes si no existe un resultado con ambos campos. Una reejecución de la misma fecha puede consultar esos códigos pendientes, y una fecha posterior permite revisar adjudicaciones ya registradas. **Esto no significa que la API entregue siempre el proveedor o el monto:** cuando no los entrega se preserva la incertidumbre.
+
+**Pendiente operativo:** revisar las dos filas incompletas ya existentes en `Resultados` (`1017312-6-LR26`, `1030-20-LE26`); esta corrección de código no las borró ni las convirtió en resultados confirmados. No se activó workflow ni se realizaron consultas adicionales a ChileCompra.
