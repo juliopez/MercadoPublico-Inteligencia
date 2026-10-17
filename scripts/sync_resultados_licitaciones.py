@@ -41,13 +41,13 @@ def main():
     if header and header!=[headers]:raise RuntimeError("Control M:P incompatible")
     if not header:audit.update(range_name="M1:P1",values=[headers])
     prior=audit.get("M2:P")
-    done={r[2] for r in prior if len(r)>3 and r[0]=="licitaciones_resultados" and r[3]=="completo"}
+    done={r[2] for r in prior if len(r)>3 and r[0]=="licitaciones_resultados" and r[1]==date and r[3]=="completo"}
     nextrow=2+len(prior)
     def checkpoint(code):
         nonlocal nextrow
         audit.update(range_name=f"M{nextrow}:P{nextrow}",values=[["licitaciones_resultados",date,code,"completo"]])
         nextrow+=1
-    seen=set(); updates=[]; inserts=[]; failures=[]
+    seen=set(); updated_count=0; inserted_count=0; failures=[]
     for p in candidates:
         code=str(p.get("codigo") or "").strip()
         if not code or code in seen or code in done:continue
@@ -73,9 +73,12 @@ def main():
                 i,old=existing[code]
                 # No degradar datos históricos validados; solo completar vacíos.
                 merged=[old[j] or new[j] for j in range(len(RH))]
-                if merged!=old:ws.update(range_name=f"A{i}:J{i}",values=[merged],value_input_option="RAW")
+                if merged!=old:
+                    ws.update(range_name=f"A{i}:J{i}",values=[merged],value_input_option="RAW")
+                    updated_count+=1
             else:
                 ws.append_rows([new],value_input_option='RAW')
+                inserted_count+=1
             checkpoint(code)
         except RateLimited:
             print('DETENIDO_429',code,flush=True)
@@ -85,7 +88,7 @@ def main():
         except Exception as ex:
             failures.append(code+":"+type(ex).__name__)
         time.sleep(float(os.getenv("LICITACION_DETAIL_DELAY","0.2")))
-    print("DETALLE_LICITACIONES",json.dumps({"fecha":date,"consultadas":len(seen),"insertadas":len(inserts),"actualizadas":len(updates),"errores":len(failures)},ensure_ascii=False))
+    print("DETALLE_LICITACIONES",json.dumps({"fecha":date,"consultadas":len(seen),"insertadas":inserted_count,"actualizadas":updated_count,"errores":len(failures)},ensure_ascii=False))
     if failures:
         print("PENDIENTES",json.dumps(failures[:50],ensure_ascii=False))
         raise SystemExit(2)
