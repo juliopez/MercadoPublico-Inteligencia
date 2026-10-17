@@ -7,6 +7,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from urllib.parse import urlencode
 from urllib.request import Request
+from urllib.error import HTTPError, URLError
 import gspread
 from google.oauth2.service_account import Credentials
 from api_retry import fetch_json, RateLimited
@@ -52,7 +53,7 @@ def main():
     checkpoint_rows=audit.get("U2:X")
     done={row[2] for row in checkpoint_rows if len(row)>3 and row[0]=="ordenes_compra" and row[1]==date and row[3]=="completo"}
     checkpoint_next=2+len(checkpoint_rows)
-    mapped={};rate_hit=False
+    mapped={};rate_hit=False;temporary_error=None
     for item in records:
         if isinstance(item,dict) and str(item.get("Codigo") or "") in done:continue
         if not isinstance(item,dict): raise RuntimeError("OC sin objeto válido")
@@ -65,6 +66,10 @@ def main():
                 detail=fetch_json(detail_req,timeout=65,label="Detalle OC "+detail_code)
             except RateLimited:
                 rate_hit=True
+                break
+            except (HTTPError,URLError,TimeoutError) as ex:
+                temporary_error=ex
+                print("DETENIDO_ERROR_TRANSITORIO_OC",detail_code,type(ex).__name__,flush=True)
                 break
             candidates=detail.get("Listado") if isinstance(detail,dict) else None
             if not isinstance(candidates,list):raise RuntimeError("Detalle OC sin listado: "+detail_code)
@@ -121,6 +126,9 @@ def main():
     if rate_hit:
         print("DETENIDO_429_OC: lote parcial guardado; reanudar manualmente",flush=True)
         raise SystemExit(75)
+    if temporary_error is not None:
+        print("DETENIDO_ERROR_TRANSITORIO_OC: lote parcial guardado; reanudar manualmente",flush=True)
+        raise SystemExit(74)
     print("ETL_OC_OK",json.dumps({"fecha":date,"recibidas":len(mapped),"nuevas":len(inserts),"actualizadas":len(updates)},ensure_ascii=False))
 
 if __name__=="__main__": main()
