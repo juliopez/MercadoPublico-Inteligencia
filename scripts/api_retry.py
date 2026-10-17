@@ -1,5 +1,6 @@
 """Cliente HTTP compartido: ritmo moderado y corte inmediato ante HTTP 429."""
 import json, os, time
+from pathlib import Path
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from urllib.error import HTTPError, URLError
@@ -35,6 +36,7 @@ def fetch_json(req,timeout=50,label="API",attempts=3):
         except HTTPError as err:
             if err.code==429:
                 retry=_retry_after(err.headers)
+                Path('.api_rate_limited').write_text(json.dumps({'origen':label,'retry_after':retry}),encoding='utf-8')
                 print(f"::error title=ChileCompra limitó consultas::{label}: HTTP 429. Retry-After={retry}; detener lote sin probar otro código.",flush=True)
                 raise RateLimited(label,retry) from err
             if err.code not in (502,503,504):raise
