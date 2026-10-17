@@ -1,8 +1,6 @@
 name: Observatorio - orquestacion unica
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '17 */6 * * *'
 permissions:
   contents: write
   pages: write
