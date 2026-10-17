@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Una petición diagnóstica al listado V2 de Compra Ágil. No modifica Sheets."""
+import argparse
 import json
 import os
 import time
@@ -10,6 +11,9 @@ from urllib.request import Request, urlopen
 BASE = "https://api2.mercadopublico.cl/v2/compra-agil"
 
 def main():
+    parser = argparse.ArgumentParser(description="Una consulta V2 por ejecución")
+    parser.add_argument("--q", default="", help="Filtro textual opcional de Compra Ágil")
+    args = parser.parse_args()
     ticket = os.environ.get("CHILECOMPRA_TICKET", "").strip()
     if not ticket:
         raise SystemExit("Falta CHILECOMPRA_TICKET; configura la variable en Ubuntu")
@@ -17,13 +21,15 @@ def main():
     params = {
         "publicado_desde": "2026-10-15T00:00:00-03:00",
         "publicado_hasta": "2026-10-15T23:59:59-03:00",
-        "tamano_pagina": 10,
+        "tamano_pagina": 50,
         "numero_pagina": 1,
     }
+    if args.q:
+        params["q"] = args.q
     req = Request(BASE + "?" + urlencode(params),
                   headers={"ticket": ticket, "Accept": "application/json",
                            "User-Agent": "Observatorio-Diagnostico-Listado/1.0"})
-    print("Una consulta: listado V2, 2026-10-15, pagina 1, tamano 10", flush=True)
+    print("Una consulta: listado V2, 2026-10-15, pagina 1, tamano 50, filtro=" + (args.q or "(sin filtro)"), flush=True)
     inicio = time.monotonic()
     try:
         with urlopen(req, timeout=45) as response:
