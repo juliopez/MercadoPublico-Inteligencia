@@ -635,3 +635,7 @@ Auditoría de dependencias y limpieza de diagnósticos/ensayos V2, pruebas de SQ
 
 
 </details>
+
+### 17.45 Acceso alternativo a ficha oficial por código (17-10-2026)
+
+El front ofrece, exclusivamente en **licitaciones** (no Compra Ágil), un enlace de intento directo al detalle oficial de Mercado Público construido con `https://www.mercadopublico.cl/Procurement/Modules/RFB/DetailsAcquisition.aspx?idlicitacion=CODIGO`. Existe evidencia pública de fichas accesibles por este parámetro, pero también casos con HTTP 404: **no es garantía de apertura ni equivale a un enlace verificado por registro**. El enlace se muestra con aviso explícito y se mantiene el acceso al buscador avanzado y la copia del código como respaldo. Se conservan con prioridad los enlaces documentales explícitos existentes en `url_detalle` cuando pasan la validación de dominio. No se añadieron columnas, no se modificaron Sheets, ETL, JSON ni workflows; no se realizaron nuevas solicitudes a las API de ChileCompra. Pendiente confirmar el comportamiento del enlace desde un navegador real para diferentes códigos antes de tratarlo como función de acceso directo estable.
