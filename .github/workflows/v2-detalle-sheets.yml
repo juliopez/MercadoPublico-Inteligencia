@@ -3,9 +3,9 @@ on:
   workflow_dispatch:
     inputs:
       codigo:
-        description: 'Código Compra Ágil presente en Procesos (ej. 1057491-1883-COT26)'
+        description: 'Código Compra Ágil en Procesos o auto'
         required: true
-        default: '1057491-1883-COT26'
+        default: 'auto'
         type: string
 permissions:
   contents: read
