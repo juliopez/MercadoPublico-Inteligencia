@@ -66,15 +66,23 @@ def main():
     p.add_argument("--codigo",required=True)
     a=p.parse_args()
     code=a.codigo.strip()
-    if not re.fullmatch(r"[A-Za-z0-9]+-[A-Za-z0-9]+-COT[0-9]{2}",code):p.error("Código Compra Ágil inválido")
+    if code!="auto" and not re.fullmatch(r"[A-Za-z0-9]+-[A-Za-z0-9]+-COT[0-9]{2}",code):p.error("Código Compra Ágil inválido")
     cred=Credentials.from_service_account_info(json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"]),
         scopes=["https://www.googleapis.com/auth/spreadsheets"])
     book=gspread.authorize(cred).open_by_key(os.environ["GOOGLE_SHEET_ID"])
     control=book.worksheet("ControlV2")
     if control.row_values(1)!=CONTROL_HEAD:raise RuntimeError("ControlV2 incompatible")
     process=book.worksheet("Procesos").get_all_records()
-    if not any(str(x.get("codigo",""))==code for x in process):
-        raise RuntimeError("Código no existe en Procesos, no consultar")
+    valid_codes={str(x.get("codigo","")).strip() for x in process if str(x.get("modalidad","")).strip().casefold() in ("compra ágil","compra agil")}
+    if code=="auto":
+        done={row[0][len("detalle:"):] for row in control.get_all_values()[1:] if row and row[0].startswith("detalle:") and len(row)>4 and row[4]=="completo"}
+        candidates=sorted(c for c in valid_codes if re.fullmatch(r"[A-Za-z0-9]+-[A-Za-z0-9]+-COT[0-9]{2}",c) and c not in done)
+        if not candidates:
+            print("DETALLE_SIN_CANDIDATOS: no hay códigos nuevos elegibles");return
+        code=candidates[0]
+        print("DETALLE_CODIGO_SELECCIONADO:",code)
+    if code not in valid_codes:
+        raise RuntimeError("Código no existe en Procesos como Compra Ágil, no consultar")
     ws_o=book.worksheet("Ofertas");ws_r=book.worksheet("Resultados")
     if ws_o.row_values(1)!=O or ws_r.row_values(1)!=R:
         raise RuntimeError("Esquema Ofertas o Resultados incompatible")
