@@ -68,7 +68,7 @@ def reconcile_details(con, root=None):
         recovered+=1
     return recovered
 
-def run(con,maximum,max_duracion=420):
+def run(con,maximum,max_duracion=420,codigo=None):
     recovered=reconcile_details(con)
     if recovered: print(f'Detalles recuperados desde disco sin HTTP: {recovered}')
     ticket=os.environ.get("CHILECOMPRA_TICKET","").strip()
@@ -81,11 +81,14 @@ def run(con,maximum,max_duracion=420):
         if core.circuit_open(con):
             print("Circuit breaker abierto: sin consultas")
             break
-        j=con.execute("""SELECT * FROM detail_jobs WHERE estado IN ('pendiente','espera')
-             AND (disponible='' OR disponible<=?) ORDER BY codigo LIMIT 1""",
-             (core.stamp(core.utc()),)).fetchone()
+        if codigo:
+            j=con.execute("""SELECT * FROM detail_jobs WHERE codigo=? AND estado IN ('pendiente','espera')
+                 AND (disponible='' OR disponible<=?) LIMIT 1""",(codigo,core.stamp(core.utc()))).fetchone()
+        else:
+            j=con.execute("""SELECT * FROM detail_jobs WHERE estado IN ('pendiente','espera')
+                 AND (disponible='' OR disponible<=?) ORDER BY codigo LIMIT 1""",(core.stamp(core.utc()),)).fetchone()
         if not j:
-            print("No hay detalles elegibles")
+            print('Código no elegible: ausente, completado o todavía en espera' if codigo else 'No hay detalles elegibles')
             break
         code=j["codigo"]
         req=Request(core.BASE+"/"+quote(code,safe=""),headers={"ticket":ticket,"Accept":"application/json",
@@ -132,6 +135,9 @@ def run(con,maximum,max_duracion=420):
                         (state,n,due,http,error,str(path) if path else None,core.stamp(core.utc()),code))
             core.circuit_record(con,http if path or http!=200 else None)
         print(f"{code}: HTTP {http}, {round(time.monotonic()-started,2)} s, {state}, próximo={due or '-'}")
+        if codigo:
+            print('Prueba puntual finalizada: máximo una consulta por código')
+            break
         if state!="completo":
             print("Detenido tras fallo; reintento diferido")
             break
@@ -141,6 +147,7 @@ def main():
     p.add_argument("--fecha",default="2026-10-15")
     p.add_argument("--max-solicitudes",type=int,default=1)
     p.add_argument("--max-duracion",type=int,default=420,help='segundos, 120 a 900')
+    p.add_argument('--codigo',help='Código de detalle puntual, sin eludir disponibilidad')
     a=p.parse_args()
     if not 1<=a.max_solicitudes<=5 or not 120<=a.max_duracion<=900:p.error('Máximo cinco solicitudes, duración 120-900 segundos')
     con=core.db_open(ROOT/"control.sqlite3")
@@ -149,7 +156,7 @@ def main():
         if a.accion=="iniciar":seed(con,a.fecha)
         elif a.accion=="ejecutar":
             with core.execution_lock(ROOT):
-                run(con,a.max_solicitudes,a.max_duracion)
+                run(con,a.max_solicitudes,a.max_duracion,a.codigo)
         report(con)
     finally:con.close()
 if __name__=="__main__":
