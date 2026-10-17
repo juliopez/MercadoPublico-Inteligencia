@@ -35,6 +35,13 @@ def main():
             cloned.parent.mkdir(parents=True,exist_ok=True)
             copy2(original,cloned)
             before_bytes=original.read_bytes()
+            # Copiar las demás páginas completas para verificar consistencia.
+            for old in con.execute("SELECT fecha,pagina,archivo FROM jobs WHERE fecha=? AND estado='completo'",(date,)).fetchall():
+                f=Path(old['archivo'])
+                if not f.is_file(): raise RuntimeError('Página original ausente')
+                target=core.file_for(root,old['fecha'],old['pagina'])
+                target.parent.mkdir(parents=True,exist_ok=True)
+                if not target.exists(): copy2(f,target)
             # Simular: JSON ya escrito pero se perdió el checkpoint.
             with con:
                 con.execute("UPDATE jobs SET estado='pendiente',archivo=NULL,registros=NULL,http=NULL WHERE fecha=? AND pagina=?",(date,page))
