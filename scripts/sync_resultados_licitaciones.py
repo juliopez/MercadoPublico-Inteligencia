@@ -38,6 +38,7 @@ def main():
     audit=wb.worksheet("Control")
     headers=["tipo","fecha_consulta","codigo","estado"]
     header=audit.get("M1:P1")
+    if header and not any(cell for row in header for cell in row):header=[]
     if header and header!=[headers]:raise RuntimeError("Control M:P incompatible")
     if not header:audit.update(range_name="M1:P1",values=[headers])
     prior=audit.get("M2:P")
