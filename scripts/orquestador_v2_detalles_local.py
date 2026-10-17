@@ -118,7 +118,9 @@ def main():
     try:
         install(con)
         if a.accion=="iniciar":seed(con,a.fecha)
-        elif a.accion=="ejecutar":run(con,a.max_solicitudes)
+        elif a.accion=="ejecutar":
+            with core.execution_lock(ROOT):
+                run(con,a.max_solicitudes)
         report(con)
     finally:con.close()
 if __name__=="__main__":
