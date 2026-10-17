@@ -17,13 +17,13 @@ def main():
     params = {
         "publicado_desde": "2026-10-15T00:00:00-03:00",
         "publicado_hasta": "2026-10-15T23:59:59-03:00",
-        "tamano_pagina": 1,
+        "tamano_pagina": 10,
         "numero_pagina": 1,
     }
     req = Request(BASE + "?" + urlencode(params),
                   headers={"ticket": ticket, "Accept": "application/json",
                            "User-Agent": "Observatorio-Diagnostico-Listado/1.0"})
-    print("Una consulta: listado V2, 2026-10-15, pagina 1, tamano 1", flush=True)
+    print("Una consulta: listado V2, 2026-10-15, pagina 1, tamano 10", flush=True)
     inicio = time.monotonic()
     try:
         with urlopen(req, timeout=45) as response:
