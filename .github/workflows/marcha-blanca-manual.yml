@@ -16,6 +16,10 @@ on:
         description: "Fecha obligatoria de los datos (AAAA-MM-DD)"
         required: true
         type: string
+      categoria_compra_agil:
+        description: "Rubro/categoría como texto libre (opcional; solo Compra Ágil)"
+        required: false
+        type: string
 permissions:
   contents: write
   pages: write
@@ -65,8 +69,13 @@ jobs:
           API_MAX_ATTEMPTS: '1'
           SYNC_MAX_PAGES: '1000'
           OP: ${{ inputs.operacion }}
+          COMPRA_AGIL_CATEGORIA: ${{ inputs.categoria_compra_agil }}
         run: |
           set -uo pipefail
+          if [[ -n "$COMPRA_AGIL_CATEGORIA" && "$OP" != "compra_agil" ]]; then
+            echo "::error::La categoría manual solo está disponible para compra_agil."
+            exit 1
+          fi
           run_etl() {
             local label="$1"; shift
             local ok=1
