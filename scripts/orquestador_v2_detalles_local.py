@@ -17,6 +17,17 @@ SOURCE=Path(__file__).with_name("orquestador_v2_sqlite_local.py")
 spec=importlib.util.spec_from_file_location("orquestador_lista_v2",SOURCE)
 core=importlib.util.module_from_spec(spec);spec.loader.exec_module(core)
 ROOT=Path("orquestacion_v2_local")
+def validar_detalle(raw, codigo):
+    data=json.loads(raw)
+    if not isinstance(data,dict) or data.get('success') not in ('OK',True): raise ValueError('success invalido')
+    if data.get('errors'): raise ValueError('errors no vacio')
+    payload=data.get('payload')
+    if not isinstance(payload,dict) or str(payload.get('codigo',''))!=codigo: raise ValueError('codigo incorrecto')
+    if not isinstance(payload.get('institucion'),dict): raise ValueError('institucion invalida')
+    if not isinstance(payload.get('proveedores_cotizando'),list): raise ValueError('proveedores_cotizando invalido')
+    if not isinstance(payload.get('productos_solicitados'),list): raise ValueError('productos_solicitados invalido')
+    return data
+
 def install(con):
     con.execute("""CREATE TABLE IF NOT EXISTS detail_jobs(
       codigo TEXT PRIMARY KEY, estado TEXT NOT NULL DEFAULT 'pendiente',
@@ -68,14 +79,14 @@ def run(con,maximum):
         path=None
         if http==200 and raw:
             try:
-                parsed=json.loads(raw)
+                parsed=validar_detalle(raw,code)
                 if not isinstance(parsed,dict):
                     raise ValueError("Detalle no es objeto JSON")
                 # Las respuestas exitosas deben preservarse, no asumir estado de adjudicación.
                 path=ROOT/"detalles"/(code+".json")
                 core.write_atomic(path,raw)
             except (ValueError,OSError,UnicodeError) as exc:
-                error="json_invalido";path=None
+                error="detalle_invalido";path=None
         n=j["intentos"]+1
         if path:
             state="completo";delay=0
