@@ -345,3 +345,7 @@ El propietario ejecutó en Ubuntu `python3 scripts/orquestador_v2_detalles_local
 ### 17.8 Integridad comprobada del primer detalle real (17-10-2026)
 
 Auditoría offline del código **`1057491-1883-COT26`** efectuada en Ubuntu: estado SQLite `completo`, HTTP `200`, `intentos=1`, archivo JSON presente, **2.585 bytes**, `payload.codigo` coincidente, `proveedores_cotizando` **0**, `productos_solicitados` **1**, comprobación `Integridad: CORRECTA`. La integridad **no implica** que haya cotizaciones individuales disponibles; una lista vacía es estructura válida. Quedan 99 detalles pendientes. Evidencia de **un ciclo real** solicitud → validación → persistencia; no de disponibilidad sostenida de detalle. El siguiente ensayo debe ser limitado y supervisado, no una descarga masiva.
+
+### 17.9 Dos detalles reales adicionales recuperados (17-10-2026)
+
+Prueba Ubuntu `orquestador_v2_detalles_local.py ejecutar --max-solicitudes 2`: **`1057491-1884-COT26` HTTP 200 en 3,47 s** y **`1057491-1885-COT26` HTTP 200 en 15,97 s**, ambos marcados `completo`. Estado posterior de la cola: **3 completos, 97 pendientes**; circuit breaker `consecutivos=0`, `abierto_hasta=''`. Junto con `1057491-1883-COT26` se han recuperado **3 detalles reales** desde la API V2 mediante el orquestador. Continúa pendiente validar un fallo real y aplicar limitación de frecuencia global entre colas/solicitudes; el prototipo actual puede ejecutar detalles consecutivos sin una pausa explícita. No declarar estabilidad general con tres éxitos.
