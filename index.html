@@ -384,10 +384,15 @@ function detail(code){
  }
  const validLinks=[...new Set(links.filter(Boolean))];
  const isAgil=/-COT\d{2}$/i.test(p.codigo||'')||p._modalidadFiltro==='Compra Ágil';
+ // La ruta por código existe, pero no se considera verificada para cada registro.
+ const officialCode=String(p.codigo||'').trim();
+ const candidateUrl=!isAgil&&/^[0-9]+-[0-9]+-[A-Z]{2,3}[0-9]{2}$/i.test(officialCode)
+  ?'https://www.mercadopublico.cl/Procurement/Modules/RFB/DetailsAcquisition.aspx?idlicitacion='+encodeURIComponent(officialCode):'';
+ const directOption=candidateUrl?'<p><a href="'+esc(candidateUrl)+'" target="_blank" rel="noopener noreferrer">Intentar abrir ficha oficial por código ↗</a></p><p class="muted">Esta ruta puede devolver error 404. Si ocurre, utiliza el buscador inferior.</p>':'';
  const searchUrl=isAgil?'https://buscador.mercadopublico.cl/compra-agil':'https://www.mercadopublico.cl/portal/Modules/Site/Busquedas/BuscadorAvanzado.aspx?qs=1';
  const searchLabel=isAgil?'Abrir buscador de Compra Ágil':'Abrir buscador de licitaciones';
  const instruction=isAgil?'Busca en el campo «Palabra clave o N° de Compra Ágil», no en el buscador de licitaciones.':'Busca el código en «Código, nombre o descripción» del buscador de licitaciones.';
- $('resultDetails').innerHTML+='<div class="detail-documents"><strong>Documentos y fuentes oficiales</strong><div>'+(validLinks.length?validLinks.join(''):'<span class="muted">Este registro no incluye enlaces documentales directos comprobados.</span>')+'</div><p class="muted">'+esc(instruction)+' El enlace siguiente abre un buscador general de la modalidad correcta, <strong>no una ficha directa ni una búsqueda automática</strong>.</p><p><button type="button" class="secondary" id="copyOfficialCode" data-code="'+esc(p.codigo)+'">Copiar código '+esc(p.codigo)+'</button> <a href="'+esc(searchUrl)+'" target="_blank" rel="noopener noreferrer">'+esc(searchLabel)+' ↗</a></p><span id="copyOfficialFeedback" role="status" class="muted"></span></div>';
+ $('resultDetails').innerHTML+='<div class="detail-documents"><strong>Documentos y fuentes oficiales</strong><div>'+(validLinks.length?validLinks.join(''):'<span class="muted">Este registro no incluye enlaces documentales directos comprobados.</span>')+'</div>'+directOption+'<p class="muted">'+esc(instruction)+' El enlace siguiente abre un buscador general de la modalidad correcta, <strong>no una ficha directa ni una búsqueda automática</strong>.</p><p><button type="button" class="secondary" id="copyOfficialCode" data-code="'+esc(p.codigo)+'">Copiar código '+esc(p.codigo)+'</button> <a href="'+esc(searchUrl)+'" target="_blank" rel="noopener noreferrer">'+esc(searchLabel)+' ↗</a></p><span id="copyOfficialFeedback" role="status" class="muted"></span></div>';
  $('copyOfficialCode').addEventListener('click',async()=>{
   try{await navigator.clipboard.writeText(p.codigo);$('copyOfficialFeedback').textContent='Código copiado. Pégalo en el buscador oficial.';}
   catch{$('copyOfficialFeedback').textContent='Copia el código mostrado y pégalo en el buscador oficial.';}
