@@ -74,6 +74,11 @@ jobs:
             for attempt in 1 2 3; do
               echo "::notice::$label - intento $attempt/3 - $SYNC_FECHA_2026"
               if "$@"; then ok=0; break; fi
+              if [[ -f .api_rate_limited ]]; then
+                echo "::error::ChileCompra respondió HTTP 429. Lote detenido; sin nuevos intentos ni categorías adicionales."
+                cat .api_rate_limited
+                exit 1
+              fi
               if [[ $attempt -lt 3 ]]; then sleep 45; fi
             done
             if [[ $ok -ne 0 ]]; then
