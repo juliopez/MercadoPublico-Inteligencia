@@ -125,3 +125,18 @@ La ejecución manual n.º 3 se detuvo correctamente ante HTTP 429. Antes de dete
 La versión corregida de `sync_resultados_licitaciones.py` exige proveedor y monto explícitos antes de insertar un nuevo resultado, registra `pendiente_datos` cuando falta alguno de los dos y no interpreta checkpoints antiguos `completo` como suficientes si no existe un resultado con ambos campos. Una reejecución de la misma fecha puede consultar esos códigos pendientes, y una fecha posterior permite revisar adjudicaciones ya registradas. **Esto no significa que la API entregue siempre el proveedor o el monto:** cuando no los entrega se preserva la incertidumbre.
 
 **Pendiente operativo:** revisar las dos filas incompletas ya existentes en `Resultados` (`1017312-6-LR26`, `1030-20-LE26`); esta corrección de código no las borró ni las convirtió en resultados confirmados. No se activó workflow ni se realizaron consultas adicionales a ChileCompra.
+
+
+## 10. Auditoría transversal de dependencias — ejecución Compra Ágil n.º 4
+
+La ejecución n.º 4 (`compra_agil`, fecha `2026-10-14`) terminó con tres errores **HTTP 504** en la consulta paginada inicial de API V2. No obtuvo procesos de Compra Ágil. Se detectó que el workflow lanzaba aun así `compra_agil_detalle`, que terminó sin procesos.
+
+**Corrección implementada:** cada llamada a `run_etl` en `.github/workflows/marcha-blanca-manual.yml` termina inmediatamente el paso con error si el componente falla después de sus intentos. De este modo:
+
+- Si falla el listado de **Licitaciones**, no se ejecutan sus adjudicaciones.
+- Si falla el listado de **Compra Ágil**, no se consultan cotizaciones.
+- Si falla cualquier etapa de `completa`, no se inicia la categoría siguiente ni se publica el JSON.
+- Si una categoría individual falla, el flujo finaliza en error, conservando los datos ya escritos en Sheets.
+- El bloqueo inmediato ante **HTTP 429** sigue vigente; los errores HTTP **502/503/504** mantienen hasta tres intentos **totales por componente en el workflow** con pausas de 45 segundos. Un HTTP 504 no demuestra por sí mismo que el formato de la consulta sea inválido.
+
+**Validación pendiente:** el cambio se revisó en el código fuente, sin ejecutar todavía un workflow con ChileCompra. No se modificaron frontend ni datos de Google Sheets.
