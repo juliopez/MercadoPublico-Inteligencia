@@ -32,6 +32,8 @@ on:
           - "Mantención"
           - "Servicios"
           - "Insumos médicos"
+          - "Educación, formación, entrenamiento y capacitación"
+          - "Tecnologías de la información, telecomunicaciones y radiodifusión"
 permissions:
   contents: write
   pages: write
