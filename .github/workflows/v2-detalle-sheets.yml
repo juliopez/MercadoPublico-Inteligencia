@@ -1,0 +1,32 @@
+name: V2 - detalle a Ofertas y Resultados
+on:
+  workflow_dispatch:
+    inputs:
+      codigo:
+        description: 'Código Compra Ágil presente en Procesos (ej. 1057491-1883-COT26)'
+        required: true
+        default: '1057491-1883-COT26'
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: observatorio-v2-pruebas
+  cancel-in-progress: false
+jobs:
+  detalle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar dependencias
+        run: pip install --disable-pip-version-check 'gspread==6.2.1' 'google-auth==2.40.3'
+      - name: Descargar detalle y completar Ofertas y Resultados
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SHEET_ID: ${{ vars.GOOGLE_SHEET_ID }}
+          CODIGO: ${{ inputs.codigo }}
+        run: python3 scripts/v2_detalle_sheets.py --codigo "$CODIGO"
