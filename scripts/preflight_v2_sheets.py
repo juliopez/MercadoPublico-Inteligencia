@@ -29,14 +29,13 @@ def main():
         missing=necessary-(set(header[:2]) if name=="Control" else set(header))
         if missing:raise RuntimeError(f"{name}: faltan {sorted(missing)}")
         print(f"OK {name}: {len(header)} columnas; {sh.row_count} filas de capacidad")
-    control=book.worksheet("Control")
-    # Reservar solo tras constatar que el rango no contenga datos.
-    occupied=control.get("U1:AD15")
-    if any(str(cell).strip() for row in occupied for cell in row):
-        print("AVISO: Control!U1:AD15 contiene datos; no reservar ni sobrescribir")
-        raise RuntimeError("No es seguro usar la zona candidata de checkpoints")
-    print("OK zona candidata Control!U1:AD15 libre (comprobación parcial, sin reserva)")
-    print("PREFLIGHT_V2_OK: autenticación, esquemas y zona candidata; 0 escrituras, 0 llamadas ChileCompra")
+    try:
+        dedicated=book.worksheet("ControlV2")
+    except gspread.WorksheetNotFound:
+        print("ControlV2: aún no existe; se creará al habilitar la escritura V2")
+    else:
+        print(f"ControlV2: ya existe, {dedicated.col_count} columnas")
+    print("PREFLIGHT_V2_OK: autenticación y esquemas validados; 0 escrituras, 0 llamadas ChileCompra")
 if __name__=="__main__":
     try: main()
     except Exception as e:
