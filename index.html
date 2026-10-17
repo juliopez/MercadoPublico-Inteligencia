@@ -59,22 +59,58 @@ $('globalQuery').addEventListener('input',showGlobal);
 $('globalQuery').addEventListener('keydown',e=>{if(e.key==='Escape'){$('globalResults').hidden=true;$('globalQuery').setAttribute('aria-expanded','false');}if(e.key==='Enter'&&globalMatches.length){e.preventDefault();pickGlobal(globalMatches[0]);}});
 $('globalResults').addEventListener('click',e=>{const btn=e.target.closest('button[data-index]');if(btn)pickGlobal(globalMatches[Number(btn.dataset.index)]);});
 document.addEventListener('click',e=>{if(!e.target.closest('.global-search')){$('globalResults').hidden=true;$('globalQuery').setAttribute('aria-expanded','false');}});
-function normalizeRecords(){
- for(const p of sets.procesos){
-  p.categoria=String(p.categoria||'').trim()||'Sin clasificar';
-  p.region=String(p.region||'').trim()||'No informada';
-  const raw=String(p.modalidad||'').trim();
-  const suffix=String(p.codigo||'').match(/-([A-Z]{1,3})26$/i)?.[1]?.toUpperCase();
-  if(raw.startsWith('Licitación'))p.modalidad=suffix?'Licitación ('+suffix+')':'Licitación (tipo no informado)';
-  else if(/-COT26$/i.test(p.codigo||''))p.modalidad='Compra Ágil';
-  else p.modalidad=raw||'No informada';
+// Etiquetas normalizadas para filtros; los campos originales del JSON se preservan.
+function canonicalRegion(value){
+ const raw=String(value||'').replace(/\s+/g,' ').trim();
+ if(!raw)return 'No informada';
+ const key=norm(raw).replace(/[.,]/g,'').replace(/^region (de |del |de la )?/,'').trim();
+ if(['rm','metropolitana','metropolitana de santiago','santiago'].includes(key))return 'Región Metropolitana de Santiago';
+ return raw;
+}
+function canonicalModalidad(p){
+ const raw=String(p.modalidad||'').trim();
+ const code=String(p.codigo||'').trim();
+ if(/-COT\d{2}$/i.test(code)||norm(raw).includes('compra agil'))return 'Compra Ágil';
+ if(/-([A-Z]{1,3})\d{2}$/i.test(code)&&!/-COT\d{2}$/i.test(code)||norm(raw).startsWith('licitacion'))return 'Licitación';
+ return raw||'No informada';
+}
+function canonicalValues(rows,key){
+ const groups=new Map();
+ for(const p of rows){
+  const value=String(p[key]||'').replace(/\s+/g,' ').trim();
+  const normalized=norm(value);
+  if(!normalized)continue;
+  if(!groups.has(normalized))groups.set(normalized,value);
+  else {
+   const current=groups.get(normalized);
+   // Se privilegia la escritura con tildes cuando ambas son equivalentes.
+   if(/[áéíóúñÁÉÍÓÚÑ]/.test(value)&&!/[áéíóúñÁÉÍÓÚÑ]/.test(current))groups.set(normalized,value);
+  }
  }
- const unknownCategory=sets.procesos.filter(p=>p.categoria==='Sin clasificar').length;
- const unknownRegion=sets.procesos.filter(p=>p.region==='No informada').length;
- $('qualityNote').textContent='Cobertura de campos: '+unknownCategory+' procesos sin categoría oficial identificada · '+unknownRegion+' sin región. Los códigos entre paréntesis en modalidad provienen del identificador del proceso; no se infiere la clasificación temática.';
+ return groups;
+}
+function normalizeRecords(){
+ const categoryNames=canonicalValues(sets.procesos,'categoria');
+ const regionNames=canonicalValues(sets.procesos,'region');
+ for(const p of sets.procesos){
+  p._modalidadFiltro=canonicalModalidad(p);
+  const category=String(p.categoria||'').replace(/\s+/g,' ').trim();
+  p._categoriaFiltro=categoryNames.get(norm(category))||'Sin clasificar';
+  const region=canonicalRegion(p.region);
+  p._regionFiltro=region==='Región Metropolitana de Santiago'?region:(regionNames.get(norm(region))||region);
+ }
+ const unknownCategory=sets.procesos.filter(p=>p._categoriaFiltro==='Sin clasificar').length;
+ const unknownRegion=sets.procesos.filter(p=>p._regionFiltro==='No informada').length;
+ $('qualityNote').textContent='Cobertura de campos: '+unknownCategory+' procesos sin categoría oficial identificada · '+unknownRegion+' sin región. La interfaz agrupa diferencias de mayúsculas, tildes y espacios, sin modificar los valores originales de ChileCompra.';
 }
 function populate(){
- const sources={modalidad:sets.procesos.map(p=>p.modalidad),categoria:sets.procesos.map(p=>p.categoria),region:sets.procesos.map(p=>p.region),organismo:sets.procesos.map(p=>p.organismo_comprador),empresa:[...sets.ofertas.map(o=>o.proveedor),...sets.resultados.map(r=>r.adjudicatario)].filter(Boolean)};
+ const sources={
+  modalidad:sets.procesos.map(p=>p._modalidadFiltro),
+  categoria:sets.procesos.map(p=>p._categoriaFiltro),
+  region:sets.procesos.map(p=>p._regionFiltro),
+  organismo:sets.procesos.map(p=>p.organismo_comprador),
+  empresa:[...sets.ofertas.map(o=>o.proveedor),...sets.resultados.map(r=>r.adjudicatario)].filter(Boolean)
+ };
  for(const [key,valuesRaw] of Object.entries(sources)){
   const el=$(key),chosen=el.value,values=[...new Set(valuesRaw.map(v=>String(v||'').trim()).filter(Boolean))].sort((x,y)=>x.localeCompare(y,'es'));
   const defaultLabel=key==='empresa'?'Todas las empresas':key==='organismo'?'Todos los organismos':'Todas';
@@ -112,7 +148,7 @@ function filtered(){
   (!$('dateFrom').value||String(p.fecha_publicacion||'').slice(0,10)>=$('dateFrom').value)&&
   (!$('dateTo').value||String(p.fecha_publicacion||'').slice(0,10)<=$('dateTo').value)&&
   (!$('situacion').value||situation(p)===$('situacion').value)&&
-  ['modalidad','categoria','region'].every(k=>!$(k).value||$(k).value===p[k])&&
+  [['modalidad','_modalidadFiltro'],['categoria','_categoriaFiltro'],['region','_regionFiltro']].every(([filter,key])=>!$(filter).value||$(filter).value===p[key])&&
   (!$('organismo').value||p.organismo_comprador===$('organismo').value));
 }
 const PAGE_SIZE=25;
@@ -128,7 +164,7 @@ function render(){
  const shown=list.slice(start,start+PAGE_SIZE);
  $('count').textContent=list.length+' procesos visibles · '+sets.procesos.length+' publicados';
  $('status').textContent='Datos locales: '+sets.procesos.length+' procesos · '+sets.ofertas.length+' ofertas · '+sets.resultados.length+' resultados · '+sets.ordenescompra.length+' órdenes de compra';
- $('rows').innerHTML=shown.length?shown.map(p=>'<tr><td><span class="process-code">'+esc(p.codigo)+'</span></td><td><span class="process-name">'+esc(p.nombre||'Sin nombre')+'</span></td><td><span class="tag">'+esc(p.modalidad||'No informado')+'</span></td><td>'+esc(p.categoria||'Sin clasificar')+'</td><td>'+esc(p.organismo_comprador)+'</td><td>'+esc(p.region)+'</td><td>'+'<span class="situation-pill" data-situation="'+esc(situation(p))+'">'+esc(statusLabels[situation(p)])+'</span>'+'</td><td>'+esc(p.estado||'No informado')+'</td><td><button data-code="'+esc(p.codigo)+'">Ver</button></td></tr>').join(''):'<tr><td colspan="9" class="empty">No hay procesos para mostrar.</td></tr>';
+ $('rows').innerHTML=shown.length?shown.map(p=>'<tr><td><span class="process-code">'+esc(p.codigo)+'</span></td><td><span class="process-name">'+esc(p.nombre||'Sin nombre')+'</span></td><td><span class="tag">'+esc(p._modalidadFiltro||'No informada')+'</span></td><td>'+esc(p._categoriaFiltro||'Sin clasificar')+'</td><td>'+esc(p.organismo_comprador)+'</td><td>'+esc(p._regionFiltro||'No informada')+'</td><td>'+'<span class="situation-pill" data-situation="'+esc(situation(p))+'">'+esc(statusLabels[situation(p)])+'</span>'+'</td><td>'+esc(p.estado||'No informado')+'</td><td><button data-code="'+esc(p.codigo)+'">Ver</button></td></tr>').join(''):'<tr><td colspan="9" class="empty">No hay procesos para mostrar.</td></tr>';
  $('pageInfo').textContent='Página '+currentPage+' de '+pages+' · '+(shown.length?start+1:0)+'–'+(start+shown.length)+' de '+list.length;
  $('pagePrev').disabled=currentPage===1;
  $('pageNext').disabled=currentPage===pages;
