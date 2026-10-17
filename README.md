@@ -296,3 +296,8 @@ python3 -m unittest discover -s scripts -p 'test_orquestador_v2_sqlite_local.py'
 Casos: HTTP 200 con almacenamiento y omisión de páginas ya completadas; HTTP 500/504 con diferimiento sin pérdida del progreso; HTTP 429 con espera mínima de una hora; HTTP 400 con estado de revisión no elegible para nuevos intentos; tareas en espera no seleccionadas antes de vencer su plazo; detección de códigos duplicados entre páginas. **No se consulta la API en estas pruebas, ni se usa el ticket real.**
 
 **Corrección preventiva:** la selección de trabajos en `orquestador_v2_sqlite_local.py` ahora considera únicamente estados `pendiente` y `espera`; una tarea `revision` no se reintenta automáticamente. Las pruebas se incorporaron a GitHub; su ejecución y resultado en Ubuntu deben verificarse antes de declarar validada la recuperación simulada.
+
+
+### 17.2 Validación en Ubuntu de simulaciones (17-10-2026)
+
+El propietario ejecutó `python3 -m unittest discover -s scripts -p 'test_orquestador_v2_sqlite_local.py' -v` desde Ubuntu. La captura de terminal muestra **`Ran 6 tests in 0.031s` y `OK`**, sin errores ni fallos. Casos cubiertos: 200 persistido, 500/504 diferidos sin perder completos, 429 suspendido, 400 para revisión sin selección automática, tarea con espera no elegible y duplicación de códigos entre páginas bloqueada. **Son pruebas con HTTP simulado; no prueban disponibilidad ni recuperación de detalles en la API real.** Próxima etapa: circuito de suspensión global y cola de detalles independiente, manteniendo congelados los ETL originales.
