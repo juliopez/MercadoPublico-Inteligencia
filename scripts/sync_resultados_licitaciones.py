@@ -7,6 +7,7 @@ import json, os, time
 from datetime import datetime, timezone
 from urllib.parse import urlencode
 from urllib.request import Request
+from urllib.error import HTTPError, URLError
 from zoneinfo import ZoneInfo
 import gspread
 from google.oauth2.service_account import Credentials
@@ -87,6 +88,9 @@ def main():
                 ws.append_rows([new],value_input_option='RAW')
                 inserted_count+=1
             checkpoint(code,"completo")
+        except (HTTPError,URLError,TimeoutError) as ex:
+            print("DETENIDO_ERROR_TRANSITORIO",code,type(ex).__name__,flush=True)
+            raise
         except RateLimited:
             print('DETENIDO_429',code,flush=True)
             raise
