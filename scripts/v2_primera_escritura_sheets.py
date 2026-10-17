@@ -56,7 +56,7 @@ def main():
         ctrl=book.add_worksheet(title="ControlV2",rows=1000,cols=10)
     actual=ctrl.row_values(1)
     if not actual:ctrl.update(range_name="A1:J1",values=[CONTROL_HEAD],value_input_option="RAW")
-    elif actual!=CONTROL_HEAD:raise RuntimeError("Esquema ControlV2 incompatible, sin escrituras")
+    elif actual[:10]!=CONTROL_HEAD:raise RuntimeError("Esquema ControlV2 incompatible, sin escrituras")
     key=f"compra_agil:{a.fecha}:pagina:{a.pagina}:10"
     control_rows=ctrl.get_all_values()
     found=[(i,row) for i,row in enumerate(control_rows[1:],2) if row and row[0]==key]
