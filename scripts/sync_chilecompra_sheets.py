@@ -2,6 +2,7 @@
 """ChileCompra Compra Ágil -> Google Sheets, idempotente por código."""
 import json, os, sys, time
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
@@ -115,8 +116,10 @@ def main():
         raise SystemExit("Fecha inválida; usar AAAA-MM-DD")
     if day>datetime.now(__import__("zoneinfo").ZoneInfo("America/Santiago")).date():
         raise SystemExit("La fecha no puede ser futura en Chile")
-    start=fecha+"T00:00:00"
-    end=fecha+"T23:59:59"
+    # Ventana local de Chile con desfase ISO 8601 explícito.
+    local_zone=ZoneInfo("America/Santiago")
+    start=datetime.combine(day,datetime.min.time(),local_zone).isoformat(timespec="seconds")
+    end=datetime.combine(day,datetime.max.time(),local_zone).isoformat(timespec="seconds")
     maxpages=int(os.getenv("SYNC_MAX_PAGES","20"))
     modalidad=os.getenv("SYNC_MODALIDAD","compra_agil")
     if modalidad not in ("compra_agil","licitaciones"):raise SystemExit("Modalidad no admitida")
