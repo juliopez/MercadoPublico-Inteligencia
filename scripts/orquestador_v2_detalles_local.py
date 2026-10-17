@@ -52,8 +52,9 @@ def report(con):
         "SELECT estado, COUNT(*) n FROM detail_jobs GROUP BY estado")},ensure_ascii=False))
     r=con.execute("SELECT consecutivos,abierto_hasta FROM circuit WHERE servicio='api_v2'").fetchone()
     if r:print("Circuit breaker V2:",dict(r))
-def reconcile_details(con, root=ROOT):
+def reconcile_details(con, root=None):
     '''Confirma JSON ya escrito pero pendiente en SQLite; sin HTTP.'''
+    root = ROOT if root is None else root
     recovered=0
     rows=con.execute("SELECT codigo FROM detail_jobs WHERE estado!='completo'").fetchall()
     for row in rows:
