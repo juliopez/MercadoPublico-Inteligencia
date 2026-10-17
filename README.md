@@ -283,3 +283,16 @@ Todos los siguientes scripts de diagnóstico son **experimentales** y están en 
 - `ejecutar --fecha 2026-10-15 --max-solicitudes 2 --pausa 60` consume las tareas disponibles, con un límite de 1 a 3 solicitudes por ejecución; puede reanudar sin duplicar códigos entre páginas. Solo ejecutar con autorización y ticket presente en variable de entorno.
 - Respuestas 500/502/503/504 y errores de red se difieren con espera progresiva y pequeña aleatoriedad; 429 se suspende al menos una hora (o más si `Retry-After` numérico lo exige); 400/401/403 se marcan para revisión. La ejecución se detiene al primer error en lugar de insistir.
 - **Pendientes antes de producción:** pruebas locales de inicialización/consulta SQLite, pruebas supervisadas de fallos, bloqueo de ejecuciones concurrentes, normalizar actualizaciones temporales y cambios de páginas, compatibilidad de `Retry-After` como fecha HTTP, circuit breaker global, cola de detalles separada, conciliación de cobertura total, persistencia fuera del equipo y políticas de actualización de registros que cambian. Un simple backoff no soluciona los HTTP 504 sistemáticos del detalle.
+
+
+### 17.1 Pruebas de tolerancia a fallos sin consumir ChileCompra (17-10-2026)
+
+Se incorporó `scripts/test_orquestador_v2_sqlite_local.py`, una batería de pruebas con **respuestas HTTP simuladas** mediante mocks de Python y un directorio/SQLite temporales. Ejecutar desde la raíz del repositorio:
+
+```bash
+python3 -m unittest discover -s scripts -p 'test_orquestador_v2_sqlite_local.py' -v
+```
+
+Casos: HTTP 200 con almacenamiento y omisión de páginas ya completadas; HTTP 500/504 con diferimiento sin pérdida del progreso; HTTP 429 con espera mínima de una hora; HTTP 400 con estado de revisión no elegible para nuevos intentos; tareas en espera no seleccionadas antes de vencer su plazo; detección de códigos duplicados entre páginas. **No se consulta la API en estas pruebas, ni se usa el ticket real.**
+
+**Corrección preventiva:** la selección de trabajos en `orquestador_v2_sqlite_local.py` ahora considera únicamente estados `pendiente` y `espera`; una tarea `revision` no se reintenta automáticamente. Las pruebas se incorporaron a GitHub; su ejecución y resultado en Ubuntu deben verificarse antes de declarar validada la recuperación simulada.
