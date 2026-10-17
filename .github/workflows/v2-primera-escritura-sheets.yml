@@ -1,0 +1,38 @@
+name: V2 - primera escritura controlada Sheets
+on:
+  workflow_dispatch:
+    inputs:
+      fecha:
+        description: 'Fecha de publicación (AAAA-MM-DD)'
+        required: true
+        default: '2026-10-15'
+        type: string
+      pagina:
+        description: 'Una página, máximo 10 registros'
+        required: true
+        default: '1'
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: observatorio-v2-pruebas
+  cancel-in-progress: false
+jobs:
+  escribir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Dependencias existentes
+        run: pip install --disable-pip-version-check 'gspread==6.2.1' 'google-auth==2.40.3'
+      - name: Ejecutar una página de Compra Ágil V2 con checkpoint
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SHEET_ID: ${{ vars.GOOGLE_SHEET_ID }}
+          FECHA: ${{ inputs.fecha }}
+          PAGINA: ${{ inputs.pagina }}
+        run: python3 scripts/v2_primera_escritura_sheets.py --fecha "$FECHA" --pagina "$PAGINA" --escribir
