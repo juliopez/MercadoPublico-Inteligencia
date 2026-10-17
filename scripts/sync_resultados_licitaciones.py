@@ -10,7 +10,7 @@ from urllib.request import Request
 from zoneinfo import ZoneInfo
 import gspread
 from google.oauth2.service_account import Credentials
-from api_retry import fetch_json
+from api_retry import fetch_json, RateLimited
 
 RH=["codigo","adjudicatario","monto_adjudicado_clp","fecha_resultado","motivo_seleccion","fuente","validado","id_cotizacion_ganadora","monto_oferta_seleccionada_clp","estado_verificacion_oc"]
 API="https://api.mercadopublico.cl/servicios/v1/publico/licitaciones.json"
@@ -35,10 +35,22 @@ def main():
                  str(p.get("estado") or "").lower() in ("adjudicada","cerrada"))]
     # Estado cerrado puede transformarse después de la fecha de publicación:
     # los pendientes anteriores se revisan nuevamente en cada ejecución.
+    audit=wb.worksheet("Control")
+    headers=["tipo","fecha_consulta","codigo","estado"]
+    header=audit.get("M1:P1")
+    if header and header!=[headers]:raise RuntimeError("Control M:P incompatible")
+    if not header:audit.update(range_name="M1:P1",values=[headers])
+    prior=audit.get("M2:P")
+    done={r[2] for r in prior if len(r)>3 and r[0]=="licitaciones_resultados" and r[3]=="completo"}
+    nextrow=2+len(prior)
+    def checkpoint(code):
+        nonlocal nextrow
+        audit.update(range_name=f"M{nextrow}:P{nextrow}",values=[["licitaciones_resultados",date,code,"completo"]])
+        nextrow+=1
     seen=set(); updates=[]; inserts=[]; failures=[]
     for p in candidates:
         code=str(p.get("codigo") or "").strip()
-        if not code or code in seen:continue
+        if not code or code in seen or code in done:continue
         seen.add(code)
         req=Request(API+"?"+urlencode({"codigo":code,"ticket":os.environ["CHILECOMPRA_TICKET"]}),headers={"Accept":"application/json"})
         try:
@@ -53,24 +65,20 @@ def main():
             org=as_text(a.get("Nombre") or a.get("NombreProveedor") or "")
             amount=as_text(a.get("Monto") or "")
             awarded=bool(a.get("Tipo") or a.get("Numero") or a.get("Fecha") or org or amount)
-            if not awarded:continue
+            if not awarded:\n                checkpoint(code)\n                continue
             new=[code,org,amount,as_text(a.get("Fecha") or ""),"","API ChileCompra V1 - adjudicación","Adjudicación informada por API","","","OC no verificada"]
             if code in existing:
                 i,old=existing[code]
                 # No degradar datos históricos validados; solo completar vacíos.
                 merged=[old[j] or new[j] for j in range(len(RH))]
-                if merged!=old:updates.append({"range":f"Resultados!A{i}:J{i}","values":[merged]})
+                if merged!=old:ws.update(range_name=f"A{i}:J{i}",values=[merged],value_input_option="RAW")
             else:
-                inserts.append(new)
-        except (ValueError,TypeError,KeyError,RuntimeError) as ex:
+                ws.append_rows([new],value_input_option='RAW')\n            checkpoint(code)
+        except RateLimited:\n            print('DETENIDO_429',code,flush=True)\n            raise\n        except (ValueError,TypeError,KeyError,RuntimeError) as ex:
             failures.append(code+":"+type(ex).__name__)
         except Exception as ex:
             failures.append(code+":"+type(ex).__name__)
         time.sleep(float(os.getenv("LICITACION_DETAIL_DELAY","0.2")))
-    for i in range(0,len(updates),100):
-        wb.values_batch_update({"valueInputOption":"RAW","data":updates[i:i+100]})
-    for i in range(0,len(inserts),500):
-        ws.append_rows(inserts[i:i+500],value_input_option="RAW")
     print("DETALLE_LICITACIONES",json.dumps({"fecha":date,"consultadas":len(seen),"insertadas":len(inserts),"actualizadas":len(updates),"errores":len(failures)},ensure_ascii=False))
     if failures:
         print("PENDIENTES",json.dumps(failures[:50],ensure_ascii=False))
