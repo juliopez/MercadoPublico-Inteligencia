@@ -42,13 +42,17 @@ def main():
     if header and header!=[headers]:raise RuntimeError("Control M:P incompatible")
     if not header:audit.update(range_name="M1:P1",values=[headers])
     prior=audit.get("M2:P")
-    done={r[2] for r in prior if len(r)>3 and r[0]=="licitaciones_resultados" and r[1]==date and r[3]=="completo"}
+    # Los checkpoints anteriores no prueban que exista una adjudicación completa.
+    # Solo evitar repetir una adjudicación ya registrada con proveedor y monto.
+    confirmed={code for code,(_,row) in existing.items() if row[1].strip() and row[2].strip()}
+    done={r[2] for r in prior if len(r)>3 and r[0]=="licitaciones_resultados" and r[1]==date
+          and r[3]=="completo" and r[2] in confirmed}
     nextrow=2+len(prior)
-    def checkpoint(code):
+    def checkpoint(code, state):
         nonlocal nextrow
-        audit.update(range_name=f"M{nextrow}:P{nextrow}",values=[["licitaciones_resultados",date,code,"completo"]])
+        audit.update(range_name=f"M{nextrow}:P{nextrow}",values=[["licitaciones_resultados",date,code,state]])
         nextrow+=1
-    seen=set(); updated_count=0; inserted_count=0; failures=[]
+    seen=set(); updated_count=0; inserted_count=0; pending_count=0; failures=[]
     for p in candidates:
         code=str(p.get("codigo") or "").strip()
         if not code or code in seen or code in done:continue
@@ -65,9 +69,11 @@ def main():
             # Contrato/adjudicación deben estar expresamente informados.
             org=as_text(a.get("Nombre") or a.get("NombreProveedor") or "")
             amount=as_text(a.get("Monto") or "")
-            awarded=bool(a.get("Tipo") or a.get("Numero") or a.get("Fecha") or org or amount)
-            if not awarded:
-                checkpoint(code)
+            # Una fecha/tipo/número no bastan para afirmar quién fue adjudicado.
+            # No insertar una adjudicación sin proveedor y monto explícitos.
+            if not org.strip() or not amount.strip():
+                pending_count+=1
+                checkpoint(code,"pendiente_datos")
                 continue
             new=[code,org,amount,as_text(a.get("Fecha") or ""),"","API ChileCompra V1 - adjudicación","Adjudicación informada por API","","","OC no verificada"]
             if code in existing:
@@ -80,7 +86,7 @@ def main():
             else:
                 ws.append_rows([new],value_input_option='RAW')
                 inserted_count+=1
-            checkpoint(code)
+            checkpoint(code,"completo")
         except RateLimited:
             print('DETENIDO_429',code,flush=True)
             raise
@@ -89,7 +95,7 @@ def main():
         except Exception as ex:
             failures.append(code+":"+type(ex).__name__)
         time.sleep(float(os.getenv("LICITACION_DETAIL_DELAY","0.2")))
-    print("DETALLE_LICITACIONES",json.dumps({"fecha":date,"consultadas":len(seen),"insertadas":inserted_count,"actualizadas":updated_count,"errores":len(failures)},ensure_ascii=False))
+    print("DETALLE_LICITACIONES",json.dumps({"fecha":date,"consultadas":len(seen),"insertadas":inserted_count,"actualizadas":updated_count,"pendientes_sin_adjudicacion_completa":pending_count,"errores":len(failures)},ensure_ascii=False))
     if failures:
         print("PENDIENTES",json.dumps(failures[:50],ensure_ascii=False))
         raise SystemExit(2)
