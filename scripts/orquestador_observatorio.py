@@ -4,6 +4,7 @@ import json,os,subprocess,sys
 from datetime import datetime,timedelta,timezone
 from zoneinfo import ZoneInfo
 import gspread
+import v2_global_control as global_api
 from google.oauth2.service_account import Credentials
 
 def ts():return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -39,6 +40,9 @@ def main():
         records[key]=(i,row)
     failures=0
     rate_limited=False
+    if global_api.blocked(ws):
+        print("ORQUESTADOR_BLOQUEO_PERSISTENTE: saltar todas las API; permitir exportación y publicación")
+        return
     for name,cmd,extra in steps:
         selected=None
         day=origin
@@ -53,6 +57,9 @@ def main():
             selected=(label,key,prior);break
         if not selected:
             print("ORQUESTADOR_ETAPA_AL_DIA",name);continue
+        if global_api.blocked(ws):
+            print("ORQUESTADOR_BLOQUEO_PERSISTENTE: no consultar API adicionales")
+            break
         label,key,prior=selected
         count=int(prior[5]) if len(prior)>5 and prior[5] else 0
         env={**os.environ,**extra,"SYNC_FECHA_2026":label,"API_MAX_ATTEMPTS":"1"}
@@ -80,12 +87,16 @@ def main():
             update(key,name,label,"espera",count+1,due,status)
             print("ORQUESTADOR_ETAPA_DIFERIDA",name,label,due)
             if status=="75":
+                global_api.record_global_429(ws)
                 rate_limited=True
                 print("ORQUESTADOR_429: detener consultas adicionales de API en este ciclo")
                 break
     # V2 usa su propia selección de fechas, checkpoints y circuit breaker.
     # Si hay HTTP 429 de V1/OC, se aplaza V2 en esta ejecución.
     else:
+        if global_api.blocked(ws):
+            print("ORQUESTADOR_BLOQUEO_PERSISTENTE: omitir V2")
+            return
         result=subprocess.run([sys.executable,"scripts/v2_ciclo_github.py",
                                 "--fecha","auto","--max-paginas","1","--max-detalles","1"],
                               text=True,capture_output=True,timeout=360)
