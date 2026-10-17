@@ -176,10 +176,39 @@ def execution_lock(root=ROOT):
         finally:
             fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
 
+def reconcile_pages(con, fecha, root=ROOT):
+    '''Recupera un JSON persistido antes del checkpoint; no sobrescribe ni consulta API.'''
+    done={r['pagina'] for r in con.execute("SELECT pagina FROM jobs WHERE fecha=? AND estado='completo'",(fecha,))}
+    seen=set()
+    totals=set()
+    for page in sorted(done):
+        path=file_for(root,fecha,page)
+        count,total,codes=valid_bytes(path.read_bytes(),page)
+        if seen & codes: raise ValueError('duplicados entre páginas completadas')
+        seen.update(codes);totals.add(total)
+    if len(totals)>1: raise ValueError('paginación inconsistente')
+    recovered=0
+    for row in con.execute("SELECT pagina FROM jobs WHERE fecha=? AND estado!='completo' ORDER BY pagina",(fecha,)).fetchall():
+        page=row['pagina']; path=file_for(root,fecha,page)
+        if not path.exists(): continue
+        try:
+            count,total,codes=valid_bytes(path.read_bytes(),page)
+            if (totals and total not in totals) or seen & codes: raise ValueError('página incompatible')
+        except (OSError,ValueError,KeyError,TypeError,UnicodeError) as exc:
+            print(f'Página {page}: archivo no reconciliable ({type(exc).__name__}); detenido')
+            raise
+        with con:
+            con.execute("UPDATE jobs SET estado='completo',archivo=?,registros=?,paginas_total=?,http=200,error=NULL,disponible='',actualizado=? WHERE fecha=? AND pagina=?",(str(path),count,total,stamp(utc()),fecha,page))
+            event(con,fecha,page,'recuperado_desde_archivo',200,0)
+        seen.update(codes);totals.add(total);recovered+=1
+    return recovered
+
 def execute(con,args):
     ticket=os.environ.get("CHILECOMPRA_TICKET","").strip()
     if not ticket:
         raise SystemExit("Falta CHILECOMPRA_TICKET")
+    recovered=reconcile_pages(con,args.fecha)
+    if recovered: print(f'Páginas recuperadas desde disco sin HTTP: {recovered}')
     unique,prior_total=check_done(con,args.fecha)
     print(f"Registros únicos locales validados: {unique}; paginas reportadas: {prior_total}")
     start,end=day_range(args.fecha)
