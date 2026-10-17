@@ -1,0 +1,40 @@
+name: LoBa - consulta puntual de procesos
+on:
+  workflow_dispatch:
+    inputs:
+      codigos:
+        description: "Códigos separados por coma (máximo 20). Vacío: seis procesos de referencia."
+        required: false
+        type: string
+permissions:
+  contents: read
+jobs:
+  consultar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Consultar códigos puntuales sin escribir Google Sheets
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+          CODIGOS: ${{ inputs.codigos }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os, subprocess, sys
+          codes=[x.strip() for x in os.environ.get("CODIGOS","").split(",") if x.strip()]
+          cmd=[sys.executable,"scripts/etl_loba_procesos_puntuales.py","--out","salida_loba"]
+          if codes:cmd+=["--codes",*codes]
+          raise SystemExit(subprocess.call(cmd))
+          PY
+      - name: Guardar resultados de consulta (aunque falle alguna)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: procesos-loba-consulta
+          path: salida_loba/
+          if-no-files-found: warn
+          retention-days: 14
