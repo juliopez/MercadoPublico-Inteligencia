@@ -151,3 +151,18 @@ La nueva versión de `sync_chilecompra_sheets.py` guarda **cada página validada
 **Criterio de finalización:** solo después de recorrer todas las páginas (o reconocer su checkpoint) se informa `COMPRA_AGIL_LISTADO_COMPLETO` y se habilita la etapa de cotizaciones en el workflow. Si hay HTTP 504, los registros de páginas ya confirmadas permanecen en Google Sheets y el workflow no llama al ETL de detalle.
 
 **Advertencias:** las páginas de una API paginada pueden variar si cambia el orden o se agregan registros mientras se consulta. El mecanismo verifica la cantidad de páginas, pero **no garantiza una fotografía transaccional del origen**. Los checkpoints de páginas son marcas de una fecha y no sustituyen la actualización futura de procesos. El cambio está implementado en código y **pendiente de prueba operativa**, sin ejecutarse consultas reales adicionales durante su implementación.
+
+
+## 12. Auditoría preventiva transversal de las cinco opciones (16-10-2026)
+
+Revisión estática del código, **sin ejecutar las API ni modificar las hojas**:
+
+- **Licitaciones:** listado V1 como una sola respuesta validada; los detalles se guardan por código. Se corrigió el tratamiento de HTTP 502/503/504 y fallas de conexión en el complemento: ahora detiene la fase para permitir un reintento controlado, en lugar de seguir recorriendo todos los códigos ante una indisponibilidad.
+- **Compra Ágil:** el listado V2 guarda páginas confirmadas en `Procesos` y su checkpoint en `Control!A:B`; la fase de detalles solo empieza si concluye el listado. Se corrigió además una referencia a variable incorrecta al conservar resultados verificados (`field_idx`).
+- **Órdenes de compra:** si la descarga de un detalle produce HTTP 429 o un error transitorio HTTP 502/503/504, de conexión o de tiempo de espera, conserva en `OrdenesCompra` los ítems ya preparados antes de finalizar con error y deja checkpoints en `Control!U:X`. En la siguiente ejecución se omiten los códigos confirmados.
+- **Publicar:** lee de Sheets sin llamar a ChileCompra. No depende de extracciones de ese mismo día cuando se elige expresamente `publicar`.
+- **Completa:** hereda la condición de fallo temprano del workflow: no empieza otra categoría ni publica tras el error de la anterior.
+
+**Riesgos remanentes:** cada proceso Python tiene su propio control de ritmo; no hay un límite oficialmente confirmado para las API. Las páginas V2 pueden variar si cambia el conjunto de origen. El listado V1 debe recibirse completo antes de guardarlo, por diseño. Los checkpoints de detalles no garantizan que una entidad no cambie después de procesada. Esta auditoría no sustituye pruebas de integración y reconciliación de registros.
+
+**Validación:** cambios confirmados en GitHub; no ejecutados contra las API. Conservar esta distinción antes de declarar exitosa la marcha blanca.
