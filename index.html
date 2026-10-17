@@ -333,7 +333,7 @@ async function loadPublished(){
   $('ocCount').textContent='Órdenes de compra: '+new Intl.NumberFormat('es-CL').format(sets.ordenescompra.length);
   const recent=sets.ordenescompra.slice(-100).reverse();
   $('ocPreview').innerHTML='<table style="width:100%;font-size:.85rem"><thead><tr><th>Código OC</th><th>Proceso</th><th>Proveedor</th><th>Monto CLP</th></tr></thead><tbody>'+
-    recent.map(o=>'<tr><td>'+esc(o.codigo_oc)+'</td><td>'+esc(o.codigo_proceso)+'</td><td>'+esc(o.proveedor)+'</td><td>'+esc(o.monto_total_oc_clp)+'</td></tr>').join('')+'</tbody></table>';
+    recent.map(o=>'<tr><td>'+esc(o.codigo_oc)+'</td><td>'+esc(o.codigo_proceso)+'</td><td>'+esc(o.proveedor)+'</td><td>'+esc(o.monto_total_oc_clp==='' || o.monto_total_oc_clp==null ? 'No informado' : (Number.isFinite(Number(o.monto_total_oc_clp)) ? new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0,minimumFractionDigits:0}).format(Number(o.monto_total_oc_clp)) : 'No informado'))+'</td></tr>').join('')+'</tbody></table>';
   const counts=sets.procesos.length+sets.ofertas.length+sets.resultados.length+sets.ordenescompra.length;
   $('headCount').textContent=new Intl.NumberFormat('es-CL').format(counts);
   $('headBreakdown').textContent=sets.procesos.length+' procesos · '+sets.ofertas.length+' ofertas · '+sets.resultados.length+' resultados';
