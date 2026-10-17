@@ -5,6 +5,8 @@ HEAD=["servicio","fallos_consecutivos","suspendido_hasta_utc","siguiente_solicit
 def now():return datetime.now(timezone.utc)
 def iso(t):return t.isoformat(timespec="seconds")
 def load(ws):
+    if ws.col_count<17:
+        ws.add_cols(17-ws.col_count)
     header=ws.get("L1:Q1")
     if header and header[0] and header[0]!=HEAD:
         raise RuntimeError("ControlV2!L:Q ya ocupado por otra estructura")
