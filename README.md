@@ -17,6 +17,10 @@
 
 ### Reanudación de carga OC por límite de filas — 19/10/2026
 
+**Corrección de compatibilidad gspread (19/10/2026):** una ejecución de recuperación falló antes de insertar nuevos registros por invocar `Worksheet.refresh()`, método inexistente en la versión instalada. Se eliminó esta llamada; tras `add_rows()` la capacidad se comprueba con `fetch_sheet_metadata()`. El archivo preparado permanece reutilizable y no debe reprocesarse el ZIP.
+
+
+
 - Incidente observado en Colab: error HTTP 400 `Range (OrdenesCompra!A1002:J1251) exceeds grid limits`, tras **1.000 órdenes insertadas y verificadas**; pestaña clon con capacidad aproximada de 1.001 filas.
 - Preparación disponible: **153.220 órdenes** en memoria/archivo preparado de Google Drive. No se requiere releer ni transformar el ZIP; la cifra debe verificarse respecto a simulaciones anteriores (151.709) y al archivo fuente utilizado.
 - Corrección: la celda de autorización vuelve a leer claves ya guardadas, descarta las existentes y **amplía filas de la pestaña clon** al total necesario antes de enviar lotes. Mantiene respaldo previo, verificación de lotes y protección por frase de confirmación.
