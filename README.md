@@ -6,6 +6,17 @@
 
 **Enlaces:** [Ver el observatorio](https://juliopez.github.io/MercadoPublico-Inteligencia/) · [Orquestación principal](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/workflows/observatorio-unico.yml) · [Frontend](index.html) · [Instantánea pública](data/observatorio.json)
 
+## Importador histórico multitabla en Google Colab — prototipo
+
+[![Abrir multitabla en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_ChileCompra_Multitabla.ipynb)
+
+- [Notebook multitabla](colab/Importador_Historicos_ChileCompra_Multitabla.ipynb) — versión experimental separada del importador de `Procesos` ya validado. Destino: **exclusivamente el clon** de Sheets; simulación activada por defecto.
+- Seleccionar `TABLA` y `FUENTE`, subir ZIP/CSV y verificar la correspondencia de campos antes de cargar. Soporta `Procesos` (por código), `Ofertas` (por identificador de cotización/oferta), `Resultados` (por código del proceso, solo con proveedor y monto adjudicado explícitos) y `OrdenesCompra` (por código de OC).
+- `Control`, `ControlV2`, `Indicadores` y el resumen histórico de agosto **no son destinos del importador**. Ningún archivo histórico actualiza automáticamente el frontend o los ETL.
+- Exige identificadores y campos mínimos propios de cada tabla. Ausencia de columnas esenciales causa una detención: **no inventar claves, adjudicatarios, ofertas ni montos**. Los nuevos formatos de fuentes históricas deben comprobarse en simulación antes de autorizar escritura.
+- Escritura opcional con `ESCRIBIR=True` y `CONFIRMACION='AUTORIZO CARGA EN CLON'`; hace copia de respaldo y verifica las claves por lotes. No ejecutar sesiones paralelas. Los registros existentes no se sobreescriben.
+- **Estado:** prototipo publicado; la importación de ofertas, adjudicaciones y OC todavía no tiene pruebas de compatibilidad con los ZIP originales. Mantener el importador anterior para cargas de licitaciones ya verificadas.
+
 ## Importador de históricos en Google Colab (pruebas aisladas)
 
 [![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_ChileCompra_Colab.ipynb)
