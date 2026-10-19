@@ -56,6 +56,26 @@
 - Primero ejecutar con `CARGAR='NINGUNA'`. Después, **sin releer el ZIP**, usar `CARGAR='AMBAS'` y `CONFIRMACION='AUTORIZO CARGA EN CLON'`, revisando el informe. Cada destino tiene deduplicación y validación posterior por lote; ampliar filas cuando corresponda y crear respaldo del clon.
 - **Estado:** desarrollo publicado, pendiente de prueba integral en Colab y revisión de volumen/semántica de ofertas. No utilizar para producción hasta validar resultados. No altera ETL de GitHub Actions ni el front.
 
+### Protocolo de validación y cierre — Compra Ágil agosto 2026
+
+**Estado actual:** notebook publicado y ejecución inicial a cargo del usuario en Google Colab; **no se ha acreditado una carga exitosa** en el clon. Ninguna cifra de procesos u ofertas se considera validada hasta recibir el informe de ejecución.
+
+**Secuencia de trabajo**
+
+1. Abrir el notebook desde el botón de Colab, autenticar la cuenta con acceso al **clon** y cargar `COT_2026-08.zip`. En la primera pasada mantener `CARGAR='NINGUNA'` y `CONFIRMACION=''`.
+2. Verificar que se hayan leído ambos CSV, la cantidad de filas originales, los códigos únicos de procesos, las ofertas derivadas, las filas descartadas y las cotizaciones idénticas/indistinguibles.
+3. Conservar `PREPARADO_ID` y la copia SQLite generada en Drive. Son los puntos de recuperación: **no reprocesar el ZIP** ante una interrupción posterior de escritura.
+4. Antes de autorizar inserciones, revisar el significado de `RUTProveedor`, `MontoTotal`, `DetalleCotizacion` y `ProveedorSeleccionado` en muestras del histórico. La huella SHA-256 es una **clave técnica**, no un identificador oficial de oferta; las posibles cotizaciones distintas con atributos iguales no pueden separarse con la fuente disponible.
+5. Solo tras aceptar las verificaciones, activar `CARGAR='AMBAS'` con la frase exacta `AUTORIZO CARGA EN CLON`. El notebook debe crear respaldo, consultar claves existentes, ampliar las hojas cuando sea necesario e insertar bloques con verificación. **Nunca ejecutar dos sesiones de escritura simultáneamente**.
+6. Al terminar, comprobar en cada hoja: total inicial, nuevas filas, total final, claves distintas y ausencia de duplicados. Contrastar códigos de Ofertas con los procesos y registrar diferencias por fuente/granularidad; documentar eventuales excepciones.
+7. La carga del clon **no publica el front** ni autoriza transferencia a producción. Cualquier decisión posterior se toma con el reporte consolidado y autorización específica.
+
+**Criterios de suspensión:** encabezados distintos de los previstos, lectura incompleta, clave de proceso vacía, ausencia de los atributos mínimos para una oferta, discrepancia entre lotes escritos y verificados, errores de cuotas o límites de Google Sheets, o conflicto de identidad de una misma clave. Ante problemas de escritura se conserva el SQLite y se revisa el destino antes de reanudar.
+
+**Evidencia mínima para cierre:** nombre y período de fuente; número de filas por CSV; procesos distintos; ofertas derivadas; repeticiones o descartes; fecha y enlace del respaldo; total inicial/final por pestaña; lote final verificado; errores pendientes. El informe final debe distinguir **procesos históricos** de **ofertas individuales inferidas**.
+
+**Registro de decisiones:** se mantiene la base original y los ETL de GitHub Actions sin modificaciones; toda carga histórica se ejecuta desde Colab sobre el clon. Las hojas `Resultados` y `OrdenesCompra` no forman parte de este ZIP y requieren sus procedimientos propios.
+
 ## Importador histórico multitabla en Google Colab — prototipo
 
 [![Abrir multitabla en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_ChileCompra_Multitabla.ipynb)
