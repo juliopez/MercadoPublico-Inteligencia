@@ -15,6 +15,14 @@
 - Cabeceras de OC contradictorias o el mismo `IDItem` con datos diferentes detienen la preparación para revisión. Los campos sin evidencia se dejan vacíos.
 - Se mantiene `ESCRIBIR=False` por defecto y se exige autorización manual con respaldo previo. Esta versión debe probarse nuevamente con el ZIP real antes de cargar.
 
+### Importación en una sesión y recuperación de datos preparados (19/10/2026)
+
+- El notebook multitabla separa **simulación/preparación** y **autorización/escritura**. El ZIP se lee una sola vez: después de revisar el reporte, se autoriza la carga ejecutando **únicamente la celda de autorización**, sin repetir las anteriores.
+- `CONFIRMAR_AQUI = ''` mantiene desactivada la escritura. La frase `AUTORIZO CARGA EN CLON` activa exclusivamente la carga al clon y crea previamente su respaldo.
+- La preparación se guarda automáticamente como JSON en Google Drive y muestra `PREPARADO_DRIVE_ID`, que permite recuperar registros ya transformados después de reiniciar Colab sin volver a leer el ZIP.
+- Antes de escribir se vuelven a comprobar las claves existentes; cada lote se verifica tras la escritura. Los registros ya cargados no se vuelven a incorporar al reanudar.
+- **No** se cambia la programación de GitHub Actions, la base original ni los archivos históricos. Versión pendiente de ejecución integral de OC en Colab: revisar informe de simulación antes de autorizar.
+
 ## Importador histórico multitabla en Google Colab — prototipo
 
 [![Abrir multitabla en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_ChileCompra_Multitabla.ipynb)
