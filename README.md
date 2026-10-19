@@ -6,6 +6,15 @@
 
 **Enlaces:** [Ver el observatorio](https://juliopez.github.io/MercadoPublico-Inteligencia/) · [Orquestación principal](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/workflows/observatorio-unico.yml) · [Frontend](index.html) · [Instantánea pública](data/observatorio.json)
 
+### Consolidación de Órdenes de Compra — 19/10/2026
+
+- Histórico de prueba: `2026-8 (OC).zip`; simulación previa: 151.709 OC únicas y 279.340 repeticiones de filas por OC, sin escritura al clon. Estas cifras corresponden a la simulación enviada, no a una validación independiente.
+- `codigo_oc` identifica una orden única; el monto total de OC se conserva **una sola vez** por código. Filas adicionales representan detalle y no autorizan sumar el monto total.
+- `cantidad_lineas` se cuenta por `IDItem` distintos **solo si todas las filas de esa OC disponen de identificador**; de lo contrario, se deja vacío.
+- `total_lineas_neto` solo se calcula cuando el CSV dispone de un **importe neto explícito por línea** (`totalLineaNeto`, `montoNetoLinea` o `totalNetoLinea`) y todos los artículos están identificados. **No** se suma `precioNeto` (precio unitario), ni se supone que los descuentos, recargos e impuestos sean cero.
+- Cabeceras de OC contradictorias o el mismo `IDItem` con datos diferentes detienen la preparación para revisión. Los campos sin evidencia se dejan vacíos.
+- Se mantiene `ESCRIBIR=False` por defecto y se exige autorización manual con respaldo previo. Esta versión debe probarse nuevamente con el ZIP real antes de cargar.
+
 ## Importador histórico multitabla en Google Colab — prototipo
 
 [![Abrir multitabla en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_ChileCompra_Multitabla.ipynb)
