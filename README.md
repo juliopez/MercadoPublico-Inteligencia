@@ -6,6 +6,19 @@
 
 **Enlaces:** [Ver el observatorio](https://juliopez.github.io/MercadoPublico-Inteligencia/) · [Orquestación principal](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/workflows/observatorio-unico.yml) · [Frontend](index.html) · [Instantánea pública](data/observatorio.json)
 
+## Importador de históricos en Google Colab (pruebas aisladas)
+
+[![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_ChileCompra_Colab.ipynb)
+
+- **Notebook:** [Importador_Historicos_ChileCompra_Colab.ipynb](colab/Importador_Historicos_ChileCompra_Colab.ipynb).
+- **Objetivo:** importar ZIP/CSV históricos oficiales de licitaciones y Compra Ágil únicamente a la pestaña `Procesos` de la **hoja clonada de pruebas**; no ejecuta los ETL de GitHub Actions, no consulta las API, no modifica archivos históricos ni publica el frontend.
+- **Destino protegido:** identificador fijo del clon `1loeK_IM3RXHaR7CqpjUbz-TsNgOKNrV1ejq8aRC6JyE`. La base productiva queda fuera de alcance.
+- **Ejecución:** abrir el enlace Colab, autenticar Google, elegir `FUENTE` (`licitaciones` o `compra_agil`), subir un ZIP/CSV y ejecutar la simulación. Inspeccionar recuentos y vista previa antes de escribir.
+- **Seguridad:** `EJECUTAR_ESCRITURA=False` por defecto. Para escribir en el clon, cambiar a `True` y fijar `CONFIRMACION='AUTORIZO CARGA EN CLON'`; se crea primero una copia de respaldo en Drive. No ejecutar dos instancias simultáneas.
+- **Idempotencia:** lee códigos existentes, consolida repetidos del origen por código y añade solo códigos ausentes. Una segunda ejecución del mismo archivo debe producir cero inserciones. Los registros existentes **no se actualizan**.
+- **Controles:** valida las 16 cabeceras de `Procesos`, rechaza ausencia de código/nombre, produce CSV de revisión y JSON de simulación, escribe por lotes y verifica los códigos. Comprobar la correspondencia del histórico antes de autorizar escritura.
+- **Limitaciones:** versión inicial para `Procesos`; no incorpora ofertas, adjudicaciones ni órdenes de compra. No se ha validado todavía con una carga real de ZIP en Colab. La publicación del front es otro proceso y requiere autorización separada.
+
 ## Arquitectura de un vistazo
 
 ```mermaid
