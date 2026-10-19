@@ -1,5 +1,5 @@
 {
-  "fecha_actualizacion": "2026-10-18T22:47:16.587447+00:00",
+  "fecha_actualizacion": "2026-10-19T08:31:10.174410+00:00",
   "fuente": "Google Sheets privado, extracto publicado",
   "partes": {
     "procesos": [
@@ -63,7 +63,7 @@
     ]
   },
   "conteos": {
-    "procesos": 82400,
+    "procesos": 82405,
     "ofertas": 398086,
     "resultados": 2,
     "ordenescompra": 30
