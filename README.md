@@ -43,6 +43,19 @@
 - Antes de escribir se vuelven a comprobar las claves existentes; cada lote se verifica tras la escritura. Los registros ya cargados no se vuelven a incorporar al reanudar.
 - **No** se cambia la programación de GitHub Actions, la base original ni los archivos históricos. Versión pendiente de ejecución integral de OC en Colab: revisar informe de simulación antes de autorizar.
 
+## Compra Ágil agosto 2026 — importación de procesos y ofertas en una sola lectura
+
+[![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Compra_Agil_Procesos_Ofertas_Colab.ipynb)
+
+**Archivo oficial:** `COT_2026-08.zip`, con `COT1_2026-08.csv` (708.345.221 bytes) y `COT2_2026-08.csv` (704.207.602 bytes). Ambos contienen 34 columnas idénticas, separados por punto y coma. Destino **exclusivamente el clon**.
+
+- Una sola lectura secuencial de ambos CSV; consolidación incremental mediante SQLite para evitar materializar 1,41 GB en RAM. Se guardan datos preparados en un archivo SQLite de Google Drive para recuperar la ejecución sin volver a cargar el ZIP.
+- `Procesos`: un registro por `CodigoCotizacion`, con nombre, estado, fechas, presupuesto y comprador/region. No asumir que cada fila fuente corresponde a un proceso diferente.
+- `Ofertas`: el histórico **no contiene identificador inequívoco de oferta individual**. Se construye un SHA-256 estable de `CodigoCotizacion`, `RUTProveedor`, `MontoTotal`, `DetalleCotizacion` y `ProveedorSeleccionado`; se guarda en `id_cotizacion` como **clave técnica sintética**, no ID oficial. Las ofertas exactamente indistinguibles se consolidan; se informa el número y permanece la limitación de no poder demostrar que sean dos envíos distintos.
+- No se inventan datos: las filas sin código/proveedor/RUT/monto quedan fuera de `Ofertas`; fechas de oferta desconocidas se dejan vacías. Los valores monetarios se convierten a CLP enteros con `decimal.Decimal`, según el criterio adoptado para este clon.
+- Primero ejecutar con `CARGAR='NINGUNA'`. Después, **sin releer el ZIP**, usar `CARGAR='AMBAS'` y `CONFIRMACION='AUTORIZO CARGA EN CLON'`, revisando el informe. Cada destino tiene deduplicación y validación posterior por lote; ampliar filas cuando corresponda y crear respaldo del clon.
+- **Estado:** desarrollo publicado, pendiente de prueba integral en Colab y revisión de volumen/semántica de ofertas. No utilizar para producción hasta validar resultados. No altera ETL de GitHub Actions ni el front.
+
 ## Importador histórico multitabla en Google Colab — prototipo
 
 [![Abrir multitabla en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_ChileCompra_Multitabla.ipynb)
