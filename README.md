@@ -15,6 +15,14 @@
 - Cabeceras de OC contradictorias o el mismo `IDItem` con datos diferentes detienen la preparación para revisión. Los campos sin evidencia se dejan vacíos.
 - Se mantiene `ESCRIBIR=False` por defecto y se exige autorización manual con respaldo previo. Esta versión debe probarse nuevamente con el ZIP real antes de cargar.
 
+### Reanudación de carga OC por límite de filas — 19/10/2026
+
+- Incidente observado en Colab: error HTTP 400 `Range (OrdenesCompra!A1002:J1251) exceeds grid limits`, tras **1.000 órdenes insertadas y verificadas**; pestaña clon con capacidad aproximada de 1.001 filas.
+- Preparación disponible: **153.220 órdenes** en memoria/archivo preparado de Google Drive. No se requiere releer ni transformar el ZIP; la cifra debe verificarse respecto a simulaciones anteriores (151.709) y al archivo fuente utilizado.
+- Corrección: la celda de autorización vuelve a leer claves ya guardadas, descarta las existentes y **amplía filas de la pestaña clon** al total necesario antes de enviar lotes. Mantiene respaldo previo, verificación de lotes y protección por frase de confirmación.
+- Instrucción de recuperación: abrir notebook actualizado, autenticar, configurar `TABLA='OrdenesCompra'`, `FUENTE='ordenes_compra'`, recuperar `PREPARADO_DRIVE_ID` cuando sea otra sesión, ejecutar solo la celda de autorización; nunca reprocesar el ZIP por este fallo.
+- No se modificó Google Sheets desde ChatGPT. La ampliación se hará únicamente si el usuario ejecuta el código desde Colab.
+
 ### Normalización de montos y autorización única — 19/10/2026
 
 - La versión multitabla utiliza `decimal.Decimal` para interpretar montos, evitando conversiones adicionales por `float`.
