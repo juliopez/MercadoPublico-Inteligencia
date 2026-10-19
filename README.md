@@ -15,6 +15,14 @@
 - Cabeceras de OC contradictorias o el mismo `IDItem` con datos diferentes detienen la preparación para revisión. Los campos sin evidencia se dejan vacíos.
 - Se mantiene `ESCRIBIR=False` por defecto y se exige autorización manual con respaldo previo. Esta versión debe probarse nuevamente con el ZIP real antes de cargar.
 
+### Normalización de montos y autorización única — 19/10/2026
+
+- La versión multitabla utiliza `decimal.Decimal` para interpretar montos, evitando conversiones adicionales por `float`.
+- Antes de cualquier escritura, la **misma celda de autorización** normaliza los campos monetarios a **pesos chilenos enteros** con `ROUND_HALF_UP` y muestra cantidad de ajustes y ejemplos. Puede operar sobre `paquete['registros']` ya preparado, sin otra lectura del ZIP.
+- El redondeo **no recupera** la representación numérica textual exacta del histórico: si se requiere auditar centavos u otros decimales, debe contrastarse el CSV de origen. En el destino se adopta la regla CLP entero.
+- Solo se autoriza con `CONFIRMAR_AQUI='AUTORIZO CARGA EN CLON'`; `ESCRIBIR` de la celda de configuración no controla ya la escritura del notebook actualizado. Una pestaña de Colab abierta con versiones anteriores debe recargarse desde GitHub para ver estas mejoras.
+- No se han cargado datos ni se han alterado el clon, la base productiva o los ETL por este cambio de código.
+
 ### Importación en una sesión y recuperación de datos preparados (19/10/2026)
 
 - El notebook multitabla separa **simulación/preparación** y **autorización/escritura**. El ZIP se lee una sola vez: después de revisar el reporte, se autoriza la carga ejecutando **únicamente la celda de autorización**, sin repetir las anteriores.
