@@ -2,6 +2,22 @@
 
 **Plataforma de inteligencia y seguimiento de compras públicas en Chile.** Integra información de licitaciones, Compra Ágil, ofertas, resultados y órdenes de compra proveniente de ChileCompra, utilizando una base operativa privada en Google Sheets y una visualización pública en GitHub Pages.
 
+## Importador Histórico Unificado MER v2 — prototipo de preparación
+
+[![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_Unificado_MER_v2.ipynb)
+
+**Código fuente:** [`scripts/importador_historicos_v2.py`](scripts/importador_historicos_v2.py) · **Colab:** [`colab/Importador_Historicos_Unificado_MER_v2.ipynb`](colab/Importador_Historicos_Unificado_MER_v2.ipynb).
+
+Versión inicial para **preparar datos, no cargarlos**. Recibe tres ZIP del mismo período: licitaciones, Compra Ágil y órdenes de compra. Lee secuencialmente los CSV oficiales, consolida los datos en SQLite y genera seis CSV (`Procesos`, `Ofertas`, `Resultados`, `OrdenesCompra`, `Proveedores`, `VinculosCOT_OC`) más `informe.json`.
+
+```bash
+python scripts/importador_historicos_v2.py --licitaciones 2026-9.zip --cot COT_2026-09.zip --oc "2026-9 (OC).zip" --out preparado_2026_09
+```
+
+**Alcance y cautelas:** no requiere Google Sheets ni modifica el nuevo MER v2. El mapeo de licitaciones y los atributos de proveedores/OC requieren contraste integral contra datos reales antes de declarar válido el importador. Los ID de ofertas son claves sintéticas; los ID de proveedor están derivados del RUT de origen cuando existe y **no deben promoverse sin verificar conciliación COT `RUTProveedor` ↔ OC `RutSucursal`**. `VinculosCOT_OC.codigo_oc` puede referir una orden fuera del corte; es una relación lógica pendiente, no error. **El programa todavía no implementa respaldo, autorización de escritura, reanudación ni publicación automática.** Los antiguos notebooks siguen siendo el procedimiento de carga hasta completar pruebas y la fase transaccional.
+
+**Plan de aceptación:** validar tres ZIP reales, comparar totales y campos con los históricos auditados, comprobar conservación de selección y vínculos, resolver identidades y revisar PK/FK antes de agregar la carga controlada a la nueva Google Sheet.
+
 ## Inicio rápido: cargar históricos oficiales (ejemplo septiembre 2026)
 
 **Siempre trabajar sobre el clon de Google Sheets.** El histórico se carga manualmente en Colab; los ETL automáticos, el frontend y el libro de producción no se modifican. Descargas oficiales: [ChileCompra — Datos Abiertos](https://datos-abiertos.chilecompra.cl/descargas).
