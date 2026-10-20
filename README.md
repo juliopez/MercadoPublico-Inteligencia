@@ -43,6 +43,26 @@
 - Antes de escribir se vuelven a comprobar las claves existentes; cada lote se verifica tras la escritura. Los registros ya cargados no se vuelven a incorporar al reanudar.
 - **No** se cambia la programación de GitHub Actions, la base original ni los archivos históricos. Versión pendiente de ejecución integral de OC en Colab: revisar informe de simulación antes de autorizar.
 
+### Ejecución completada: Resultados de Compra Ágil agosto 2026
+
+**Fecha:** 19 de octubre de 2026 (hora Chile). El usuario ejecutó la simulación y después autorizó la carga en el **clon** mediante `Resultados_Compra_Agil_Colab.ipynb`.
+
+| Control | Resultado |
+| --- | ---: |
+| Ofertas históricas examinadas | 432.111 |
+| Marcadas explícitamente como seleccionadas | 65.945 |
+| Procesos con una única oferta seleccionada | 65.945 |
+| Procesos con múltiples ofertas seleccionadas | 0 |
+| Candidatos con datos mínimos insuficientes | 0 |
+| Filas insertadas en `Resultados` | **65.945** |
+| Total al finalizar, según Colab | **65.945** |
+
+**Evidencia:** la salida final de Colab fue `CARGA FINALIZADA 65945 registros nuevos; total 65945`, con respaldo previo. Lectura adicional del clon confirmó encabezados y registros de muestra en `Resultados!A1:J4`.
+
+Los campos `monto_adjudicado_clp`, `fecha_resultado` y `motivo_seleccion` permanecen sin acreditar; el importe se almacena en `monto_oferta_seleccionada_clp`, `validado` marca `Pendiente: selección histórica, no adjudicación verificada` y `estado_verificacion_oc` marca `OC no verificada`. **No interpretar las 65.945 selecciones como adjudicaciones oficiales confirmadas.**
+
+**Siguiente control pendiente:** contrastar códigos, proveedores y montos de selecciones con órdenes de compra históricas y registrar concordancias y excepciones; no alterar el front ni la base de producción sin una aprobación específica.
+
 ## Resultados de Compra Ágil desde SQLite histórico — pendiente de verificación
 
 [![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Resultados_Compra_Agil_Colab.ipynb)
