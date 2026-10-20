@@ -14,10 +14,10 @@
 
 | Nº | Tarea | Estado inicial |
 |---:|---|---|
-| 1 | Inventariar todas las Google Sheets existentes del proyecto | Pendiente |
-| 2 | Crear un directorio único en Google Drive para la plataforma | Pendiente |
+| 1 | Inventariar todas las Google Sheets existentes del proyecto | En curso: inventario inicial documentado; resta contrastar totalidad y dependencias |
+| 2 | Crear un directorio único en Google Drive para la plataforma | Completada: carpeta principal y cuatro subcarpetas |
 | 3 | Organizar las Google Sheets y eliminar las versiones obsoletas, previa revisión y respaldo | Pendiente |
-| 4 | Estandarizar los nombres de archivos: MER_2026_06, MER_2026_07, etc. | Pendiente |
+| 4 | Estandarizar los nombres de archivos: MER_2026_06, MER_2026_07, etc. | En curso: MER_2026_09 renombrada; pendientes otros meses |
 | 5 | Validar septiembre de 2026 como primer histórico definitivo | Completada (auditoría de septiembre) |
 | 6 | Crear las Google Sheets históricas de junio, julio y agosto de 2026 | Pendiente |
 | 7 | Cargar y auditar los históricos de junio, julio y agosto de 2026 | Pendiente |
@@ -26,7 +26,7 @@
 | 10 | Implementar actualización incremental diaria y control de errores de API | Pendiente |
 | 11 | Diseñar el procedimiento de cierre mensual y consolidación con históricos oficiales | Pendiente |
 | 12 | Automatizar el traspaso del mes cerrado a una Google Sheets histórica | Pendiente |
-| 13 | Implementar un catálogo central de Google Sheets y períodos disponibles | Pendiente |
+| 13 | Implementar un catálogo central de Google Sheets y períodos disponibles | En curso: catálogo versionado inicial creado; falta integración operativa |
 | 14 | Desarrollar el consolidador Python de datos históricos y operativos | Pendiente |
 | 15 | Adaptar la publicación de JSON al contrato de datos del frontend | Pendiente |
 | 16 | Integrar y validar la consulta de múltiples períodos desde el frontend | Pendiente |
@@ -40,3 +40,10 @@
 
 Cada tarea debe registrar fecha, evidencia (enlace al commit, Sheet o auditoría), responsable de la ejecución, resultado y pendientes. Evitar marcar «completado» por la mera publicación de código cuando falte una prueba real o validación de datos.
 
+
+## Ejecución inicial — 20 de octubre de 2026
+
+- Carpeta central Drive y cuatro subcarpetas creadas. Ver [catálogo](CATALOGO_SHEETS_Y_PERIODOS.md).
+- Archivo auditado de septiembre **movido** a Históricos y **renombrado** como `MER_2026_09`, **sin cambiar el identificador** `1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA`.
+- Producción, clon y respaldos existentes **sin cambios**. Ningún archivo eliminado.
+- La tarea 1 sigue en curso porque el inventario de dependencias y copias debe completarse antes de una depuración.
