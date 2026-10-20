@@ -34,6 +34,16 @@ Se recibió y auditó `preparado_mercado_publico_mer_v2.zip` de la primera ejecu
 
 **Acción ejecutada:** corregido [`scripts/importador_historicos_v2.py`](scripts/importador_historicos_v2.py) e incorporada una comprobación bloqueante de número de atributos en **todas las entidades** y de códigos OC válidos. **Estado:** se requiere regenerar y reauditar el paquete; el ZIP anterior **no debe cargarse**. Ningún dato fue escrito en la base MER v2.
 
+### Auditoría independiente posterior a la carga — MER v2 septiembre 2026
+
+[![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Auditoria_Integridad_MER_v2_Colab.ipynb)
+
+**Notebook:** [`colab/Auditoria_Integridad_MER_v2_Colab.ipynb`](colab/Auditoria_Integridad_MER_v2_Colab.ipynb). Consulta las seis pestañas directamente mediante credenciales **solo lectura**; no requiere ZIP, no modifica Sheets ni dispara los ETL. Comprueba cabeceras, cantidades, PK vacías o duplicadas, FK de ofertas/resultados/OC, correspondencia oferta seleccionada–resultado, unicidad de pares COT–OC y cobertura de vínculos fuera del corte.
+
+La primera revisión remota confirmó exclusivamente la **capacidad de filas de las seis hojas**, equivalente a los 754.318 registros informados más seis encabezados. Esto **no equivale aún a una auditoría de las celdas**.
+
+**Estado:** auditoría completa pendiente de ejecución en Colab y recepción del `auditoria_integridad_mer_v2_septiembre_2026.json`. Solo al analizar ese informe se podrá aprobar el cierre de septiembre. Las OC fuera del corte se contabilizan como **limitación de cobertura**, no como fallo referencial que haya que reparar.
+
 ### Primera carga real MER v2 — septiembre de 2026, completada
 
 **Destino:** [nueva base MER v2](https://docs.google.com/spreadsheets/d/1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA/edit). El usuario ejecutó `colab/Cargar_Paquete_MER_v2_Colab.ipynb` y mostró la salida `CARGA TERMINADA`, con verificación por lotes de las seis pestañas. El informe de simulación previo indicaba 0 registros en cada destino.
