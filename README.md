@@ -63,6 +63,18 @@ Los campos `monto_adjudicado_clp`, `fecha_resultado` y `motivo_seleccion` perman
 
 **Siguiente control pendiente:** contrastar códigos, proveedores y montos de selecciones con órdenes de compra históricas y registrar concordancias y excepciones; no alterar el front ni la base de producción sin una aprobación específica.
 
+### Segunda auditoría COT–OC mediante Código OC oficial
+
+[![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Auditoria_COT_OC_Corregida.ipynb)
+
+**Notebook versionado:** [`colab/Auditoria_COT_OC_Corregida.ipynb`](colab/Auditoria_COT_OC_Corregida.ipynb). Ejecuta comparación **solo lectura** contra `Resultados` y `OrdenesCompra` del clon. Requiere subir el artefacto `vinculos_COT_OC_2026-08_seleccionadas.csv` generado desde el archivo oficial `COT_2026-08.zip`; el CSV de vínculos no se incorpora al repositorio por tamaño, exposición de información de proveedores y carácter de dato histórico derivado.
+
+**Corrección metodológica:** el cruce anterior entre `Resultados.codigo` (`COT`) y `OrdenesCompra.codigo_proceso` reportó 0 coincidencias por incompatibilidad de identificadores. La fuente oficial Compra Ágil sí contiene `CodigoOC` por cotización, que permite asociar cada `CodigoCotizacion` con la orden de compra respectiva. El artefacto de vínculos preparado contiene **65.945 cotizaciones seleccionadas y 68.093 relaciones COT–OC**; algunos procesos tienen más de una OC.
+
+La segunda auditoría compara `CodigoOC` con `OrdenesCompra.codigo_oc`, y luego proveedor y monto, sin asumir que un mismo importe sea obligatorio ni que un estado de selección signifique adjudicación ejecutada. El histórico de OC de agosto incluye órdenes aceptadas ese mes, potencialmente asociadas a procesos antiguos; las COT de agosto pueden producir órdenes aceptadas en meses posteriores. Por ello, **una OC ausente en el corte de agosto no equivale a una compra inexistente**.
+
+**Evidencia y reproducibilidad:** conservar conjuntamente la versión del notebook, el archivo de vínculos usado, sus fechas de generación y los dos informes exportados (detalle CSV y resumen JSON). No se escribe en Google Sheets, no se alteran automatizaciones ni frontend. **Estado:** notebook publicado, auditoría corregida pendiente de ejecución y revisión.
+
 ## Auditoría de Resultados frente a Órdenes de Compra — agosto 2026
 
 [![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Auditoria_Resultados_OrdenesCompra_Colab.ipynb)
