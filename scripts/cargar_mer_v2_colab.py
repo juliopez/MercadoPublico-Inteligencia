@@ -75,3 +75,52 @@ for nombre in TABLAS:
  print(f"{nombre}: destino actual {len(existentes)}; objetivo {ESPERADOS[nombre]}")
 print("SIMULACIÓN REALIZADA: todavía no se escribió ninguna fila.")
 print("Para escribir, ejecuta la última celda con la frase de autorización.")
+
+# SEGUNDA ETAPA: escritura. La autorización queda siempre vacía por defecto.
+AUTORIZACION=""  # escribir: AUTORIZO CARGA MER V2 SEPTIEMBRE EN BASE NUEVA
+if AUTORIZACION!="AUTORIZO CARGA MER V2 SEPTIEMBRE EN BASE NUEVA":
+ print("FIN DE SIMULACIÓN. Para cargar, fija AUTORIZACION en la celda de ejecución del notebook.")
+else:
+ assert book.id==DESTINO
+ # Backup completo previo: no se permiten otras escrituras concurrentes.
+ respaldo=drive.files().copy(fileId=DESTINO,body={"name":"Respaldo MER v2 antes de septiembre "+datetime.datetime.now().isoformat()},fields="id,webViewLink").execute()
+ print("RESPALDO:",respaldo.get("webViewLink",respaldo["id"]))
+ reporte_final={}
+ for nombre,(clave,cab) in TABLAS.items():
+  ws=book.worksheet(nombre)
+  registros=preparar(nombre)
+  pre=verificar_destino(ws,registros)
+  total=len(registros)
+  # Minimizar columnas reservadas para no alcanzar límite de 10M celdas.
+  if ws.row_count<total+1 or ws.col_count!=len(cab):
+   ws.resize(rows=max(total+1,ws.row_count),cols=len(cab))
+  escritos=0
+  for offset in range(pre,total,FRACCION_LOTE):
+   bloque=registros[offset:offset+FRACCION_LOTE]
+   inicio=offset+2;termino=inicio+len(bloque)-1
+   fin_col=gspread.utils.rowcol_to_a1(1,len(cab)).rstrip("1")
+   rango=f"A{inicio}:{fin_col}{termino}"
+   # Tras un fallo/reintento ambiguo, comprobar el bloque antes de reescribir.
+   for intento in range(6):
+    try:
+     actual=ws.get(rango,value_render_option="UNFORMATTED_VALUE")
+     if actual!=bloque:
+      ws.update(range_name=rango,values=bloque,value_input_option="RAW")
+     actual=ws.get(rango,value_render_option="UNFORMATTED_VALUE")
+     assert actual==bloque,f"No se pudo verificar rango {rango}"
+     break
+    except Exception as e:
+     if intento==5:raise
+     espera=min(60,2**intento*3)
+     print("Reintento",nombre,rango,"en",espera,"seg:",str(e)[:100])
+     time.sleep(espera)
+   escritos+=len(bloque)
+   if escritos%6000<FRACCION_LOTE or offset+len(bloque)==total:
+    print(nombre,"verificados",offset+len(bloque),"/",total)
+  # Verificación total de PK, incluye carga preexistente reanudada.
+  actual_pk=ws.col_values(1)[1:]
+  assert actual_pk==[fila[0] for fila in registros],f"Fallo verificación PK final {nombre}"
+  reporte_final[nombre]={"antes":pre,"nuevos":escritos,"final":len(actual_pk)}
+  del registros
+ print("CARGA TERMINADA, resumen:",json.dumps(reporte_final,ensure_ascii=False))
+ print("Respaldo:",respaldo["id"],"SHA256 paquete:",zip_digest)
