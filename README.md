@@ -130,6 +130,20 @@ Se contrastaron las **223 diferencias de monto** de `auditoria_discrepancias_mon
 
 **Siguiente decisión técnica:** antes de actualizar `Resultados`, definir reglas de conciliación por estado OC y campos de importe, conservando cada vínculo COT–OC y diferenciando evidencia oficial de incertidumbre monetaria. No promover automáticamente las 223 diferencias a resultados verificados.
 
+### Ejecución controlada de estados en Resultados — preparada, pendiente de ejecutar
+
+[![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Actualizar_Estado_Resultados_Agosto_Colab.ipynb)
+
+Notebook: [`colab/Actualizar_Estado_Resultados_Agosto_Colab.ipynb`](colab/Actualizar_Estado_Resultados_Agosto_Colab.ipynb).
+
+El notebook recibe `simulacion_actualizacion_resultados_agosto_2026.csv` (65.945 filas), valida el conjunto exacto de códigos con `Resultados` del **clon** y presenta la distribución de cinco estados provisionales. La primera pasada no realiza escrituras. Para ejecutar requiere autorización explícita mediante `AUTORIZACION='AUTORIZO ACTUALIZAR SOLO ESTADO RESULTADOS EN CLON'`.
+
+**Límites de escritura:** solo rango `Resultados!J2:J65946` (`estado_verificacion_oc`), procesado en bloques con verificación por lectura y respaldo completo previo mediante copia de Drive. El notebook rechaza códigos duplicados, conjuntos dispares o estados preexistentes inesperados. Admite reanudación cuando parte de los estados ya coincide con la simulación; no se deben ejecutar dos sesiones concurrentes.
+
+Los estados propuestos documentan evidencia OC, **no acreditan jurídicamente una adjudicación**. Las columnas `A:I` quedan intactas, especialmente `validado`, `monto_adjudicado_clp` y `monto_oferta_seleccionada_clp`. No se modifican producción, front ni ETL automáticos.
+
+**Estado al publicar:** herramienta disponible en GitHub, **ejecución y actualización de Sheets aún pendientes**. Registrar al cierre log de total actualizado, total comprobado, ID del respaldo y excepciones.
+
 ### Simulación previa a actualizar Resultados — agosto 2026
 
 **Estado: simulación concluida, SIN escrituras en Google Sheets.** Se fusionó el detalle de los **68.093 vínculos oficiales COT–OC** con la conciliación de **65.945 procesos** y los **8.586 pares de RUT coincidentes** verificados entre `RUTProveedor` de COT y `RutSucursal` de OC histórica.
