@@ -34,6 +34,24 @@ Se recibió y auditó `preparado_mercado_publico_mer_v2.zip` de la primera ejecu
 
 **Acción ejecutada:** corregido [`scripts/importador_historicos_v2.py`](scripts/importador_historicos_v2.py) e incorporada una comprobación bloqueante de número de atributos en **todas las entidades** y de códigos OC válidos. **Estado:** se requiere regenerar y reauditar el paquete; el ZIP anterior **no debe cargarse**. Ningún dato fue escrito en la base MER v2.
 
+### Primera carga real MER v2 — septiembre de 2026, completada
+
+**Destino:** [nueva base MER v2](https://docs.google.com/spreadsheets/d/1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA/edit). El usuario ejecutó `colab/Cargar_Paquete_MER_v2_Colab.ipynb` y mostró la salida `CARGA TERMINADA`, con verificación por lotes de las seis pestañas. El informe de simulación previo indicaba 0 registros en cada destino.
+
+| Pestaña | Filas incorporadas (log) |
+| --- | ---: |
+| `Procesos` | 79.376 |
+| `Proveedores` | 30.280 |
+| `Ofertas` | 398.018 |
+| `OrdenesCompra` | 147.966 |
+| `VinculosCOT_OC` | 50.041 |
+| `Resultados` | 48.637 |
+| **Total** | **754.318** |
+
+**Trazabilidad de ejecución:** se creó un respaldo antes de escribir; identificador reportado en Colab `1Ry19RiKe87KJLusr7l-oqqtNTZoGzhIIIq_7_og04Tw`. SHA-256 del ZIP preparado `80125cf8e80b77e55d576322421262c291117d4e84e201946b260560bc42c47f`. Una consulta directa de lectura verificó encabezados y ejemplos en las seis hojas. **La verificación completa corresponde al notebook y la lectura externa es una comprobación muestral.**
+
+**Estado:** carga MER v2 de septiembre finalizada; **auditoría estructural/referencial independiente posterior pendiente**. Ninguna adjudicación jurídica se deduce de la carga; las OC fuera del corte siguen siendo una limitación temporal aceptada. El frontend, los ETL automáticos, el clon anterior y producción permanecen fuera del alcance de esta operación.
+
 ## Carga de paquete MER v2 — controlada y reanudable (septiembre de 2026)
 
 [![Abrir cargador en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Cargar_Paquete_MER_v2_Colab.ipynb)
