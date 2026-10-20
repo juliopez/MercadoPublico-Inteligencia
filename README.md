@@ -102,6 +102,16 @@ Las 8.586 discrepancias por proveedor se detectan mediante normalización textua
 
 **Decisión:** la auditoría confirma vínculos oficiales, pero NO acredita automáticamente todas las adjudicaciones. Conservar `Resultados.validado` y `estado_verificacion_oc` como pendientes hasta definir y ejecutar una reconciliación controlada que distinga estados de OC y entidad proveedora, con evidencia trazable. No se modifica Google Sheets, los ETL ni el front durante esta fase.
 
+#### Contraste posterior con histórico OC original — 20/10/2026
+
+Archivo oficial `2026-8 (OC).zip`, miembro `2026-8.csv`, delimitado por punto y coma, con **432.887 filas**. Contiene `Codigo` (OC), `CodigoProveedor` (identificador interno numérico), `NombreProveedor` y `RutSucursal`. No equiparar `CodigoProveedor` con RUT.
+
+Se extrajeron únicamente los **8.586 códigos OC** identificados previamente como discrepancias textuales de razón social; todos se localizaron en el histórico. La comparación exacta de RUT COT versus `RutSucursal` (normalizando puntuación y guion) produjo **8.586 coincidencias, 0 diferencias y 0 ausencias**.
+
+Esto permite reclasificar las discrepancias de nombre como **coincidencias de RUT entre los campos disponibles**, sin afirmar por ello que se verificó la identidad jurídica del proveedor mediante un registro externo: `RutSucursal` refiere literalmente a la sucursal consignada en OC. La coincidencia no resuelve por sí sola los 223 casos con monto diferente ni el estado operativo de cada OC.
+
+Artefactos derivados de solo lectura: `auditoria_rut_cot_vs_sucursal_oc_agosto.csv` y `auditoria_rut_cot_vs_sucursal_oc_resumen.json`. **No se modificaron** la base clon, la base productiva, el frontend ni los ETL automáticos.
+
 ### Verificación de identidad de proveedores por RUT — auditoría agosto 2026
 
 Se auditó el detalle de las **8.586** relaciones con razón social discrepante entre Compra Ágil y `OrdenesCompra`. La fuente COT conserva RUT del proveedor, pero la hoja OC utilizada por el clon carece de RUT de proveedor: **no es posible confirmar identidad tributaria cruzando únicamente las hojas actuales**.
