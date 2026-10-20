@@ -29,7 +29,7 @@
 | Período | Tipo | ID de Google Sheet | Estado |
 |---|---|---|---|
 | 2026-06 | Histórico | `137pknbQIBbm5WAYvFh5bXKTGX9uBVhBYleTwxO6x7PI` | Creado, seis tablas MER v2 vacías; pendiente carga |
-| 2026-07 | Histórico | `1LcVUrWn99deDkgphD8cAn2n4jLxl-HZyzNm0XGffC5w` | 810.333 registros cargados; auditoría independiente pendiente |
+| 2026-07 | Histórico | `1LcVUrWn99deDkgphD8cAn2n4jLxl-HZyzNm0XGffC5w` | 810.333 registros; auditoría estructural/referencial aprobada con observaciones |
 | 2026-08 | Histórico | `1TY41r2eriz3wvvLvHdYxHVrbqk94Lsp1kFtDtxxcXEs` | 834.370 registros; auditoría independiente aprobada con observaciones (20-10-2026) |
 | 2026-09 | Histórico | `1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA` | Cargado y auditado |
 | 2026-10 | Operativo (API) | `1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4` | Creado, seis tablas MER v2 vacías; integración API pendiente |
@@ -68,3 +68,7 @@ Evidencia: `auditoria_integridad_mer_v2_2026-08.json` generado 2026-10-20T21:51:
 ## Julio 2026 — carga verificada
 
 Colab informó `CARGA MER V2 FINALIZADA 2026-07`. Se verificaron dimensiones de las seis pestañas en Google Sheets (80.996 Procesos, 29.827 Proveedores, 437.855 Ofertas, 150.980 OrdenesCompra, 56.149 VinculosCOT_OC y 54.526 Resultados; 810.333 registros). La **auditoría referencial posterior** aún está pendiente. No repetir la carga.
+
+## Cierre estructural de julio — 2026-10-20
+
+Evidencia: `auditoria_integridad_mer_v2_2026-07.json`, 2026-10-20T23:04:32Z, MER v2 julio, solo lectura. Estado: `AUDITORIA_COMPLETADA_CON_OBSERVACIONES`. Procesos 80.996, Proveedores 29.827, Ofertas 437.855, OrdenesCompra 150.980, VinculosCOT_OC 56.149, Resultados 54.526; total **810.333**. Cero claves primarias vacías o duplicadas, cero columnas extra o ausentes; referencias auditadas sin huérfanos, cero pares COT–OC repetidos. Observaciones: 14.080 vínculos con OC fuera del corte (cobertura aceptada), 54.526 resultados OC no verificada, 29.762 proveedores RUT sin contraste y 65 SIN_RUT. **Cierre estructural aprobado;** no es certificación jurídica. Siguiente período: junio 2026.
