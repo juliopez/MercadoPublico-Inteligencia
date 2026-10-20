@@ -16,7 +16,9 @@ SCHEMA={
 "Proveedores":["id_proveedor","rut_canonico","razon_social_canonica","nombre_fantasia","fuente_principal","estado_identidad"],
 "VinculosCOT_OC":["id_vinculo","codigo_cot","codigo_oc","origen_vinculo","estado_oc_historico","fecha_aceptacion_oc","relacion_confiable"]
 }
-def val(r,key):return str(r.get(key) or "").strip()
+def val(r,key):
+ s=str(r.get(key) or "").strip()
+ return "" if s.upper() in ("NA","N/A","NULL","NONE","NAN") else s
 def money(x):
  s=str(x or "").replace("$","").strip().replace(" ","")
  if not s:return ""
@@ -117,12 +119,23 @@ def finish(db,counts,out):
   if n!=1:
    counts["selecciones_ambiguas"]+=1
    continue
-  data=[codigo,ident,prov,"","","Histórico Compra Ágil",
+  data=[codigo,ident,prov,"","","","Histórico Compra Ágil",
    "Pendiente: selección histórica, no adjudicación verificada",
    monto,"OC no verificada"]
   insert(db,"Resultados",codigo,data)
  db.commit()
  out.mkdir(parents=True,exist_ok=True)
+ # Auditoría bloqueante ANTES de generar CSV: preservar contrato MER.
+ counts["validacion_filas"]="OK"
+ for table,cols in SCHEMA.items():
+  for (raw,) in db.execute('SELECT fila FROM "'+table+'"'):
+   row=json.loads(raw)
+   if len(row)!=len(cols):
+    raise ValueError(f"Contrato inválido en {table}: {len(row)} valores para {len(cols)} atributos")
+ for (raw,) in db.execute('SELECT fila FROM "VinculosCOT_OC"'):
+  row=json.loads(raw)
+  if not row[2] or row[2].upper() in ("NA","N/A","NULL","NONE"):
+   raise ValueError("Vínculo sin código OC válido")
  for table,cols in SCHEMA.items():
   path=out/(table+".csv")
   with path.open("w",encoding="utf-8-sig",newline="") as f:
