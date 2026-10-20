@@ -56,3 +56,7 @@
 ## Carga agosto verificada — 20 de octubre de 2026
 
 Consulta directa de MER_2026_08: dimensiones exactas esperadas y última fila con datos en cada pestaña. Procesos 83.937, Proveedores 30.564, Ofertas 432.111, OrdenesCompra 153.221, VinculosCOT_OC 68.592, Resultados 65.945; total 834.370. **Verificación de final de carga por totales y filas; auditoría independiente PK/FK pendiente.** No repetir la carga. Siguiente período a preparar: julio 2026.
+
+## Auditoría posterior a agosto — herramienta lista
+
+Notebook de auditoría MER v2 [generalizado por período](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Auditoria_Integridad_MER_v2_Colab.ipynb), por defecto `PERIODO='2026-08'`, destino restringido a `MER_2026_08`. Conteos esperados agosto: Procesos 83.937; Proveedores 30.564; Ofertas 432.111; OrdenesCompra 153.221; VinculosCOT_OC 68.592; Resultados 65.945. La auditoría es **solo lectura** y produce `auditoria_integridad_mer_v2_2026-08.json`. **Pendiente de ejecución y recepción de informe**, por lo tanto agosto aún no está cerrado formalmente.
