@@ -56,6 +56,23 @@
 - Primero ejecutar con `CARGAR='NINGUNA'`. Después, **sin releer el ZIP**, usar `CARGAR='AMBAS'` y `CONFIRMACION='AUTORIZO CARGA EN CLON'`, revisando el informe. Cada destino tiene deduplicación y validación posterior por lote; ampliar filas cuando corresponda y crear respaldo del clon.
 - **Estado:** desarrollo publicado, pendiente de prueba integral en Colab y revisión de volumen/semántica de ofertas. No utilizar para producción hasta validar resultados. No altera ETL de GitHub Actions ni el front.
 
+### Resultado de ejecución en Colab — Compra Ágil agosto 2026 (19/10/2026)
+
+**Carga finalizada según los logs compartidos por el usuario.** El importador procesó 1.305.119 filas originales (COT1: 663.934; COT2: 641.185), consolidó **75.714 procesos** y **432.111 registros de ofertas derivados** mediante clave técnica SHA-256. En la preparación se identificaron 873.008 filas repetidas o indistinguibles para la definición técnica de oferta.
+
+**Escritura al clon:**
+
+| Destino | Existentes antes de esta carga | Insertados | Total informado al finalizar |
+| --- | ---: | ---: | ---: |
+| `Procesos` — Compra Ágil | 0 coincidencias del lote | 75.714 | 83.937 procesos en la pestaña, incluyendo 8.223 licitaciones previas |
+| `Ofertas` — Compra Ágil | 0 | 432.111 | 432.111 |
+
+Adicionalmente se completó la carga de **153.220 Órdenes de Compra** y previamente **8.223 licitaciones** de agosto. Total de registros de entidades diferentes incorporados al clon: **669.268** (no equivale a número de procesos distintos).
+
+**Alcance de verificación:** los mensajes finales fueron `procesos TERMINADA; total: 83937` y `ofertas TERMINADA; total: 432111`, sin error final visible. El notebook efectuó comprobaciones internas por lote; aún queda pendiente una auditoría independiente de totales, unicidad, correspondencia entre tablas, muestras de importes y completitud semántica de ofertas. Los identificadores de oferta generados **no son IDs oficiales de ChileCompra**, por lo que no se puede afirmar que representen todas las cotizaciones individuales reales.
+
+**Siguiente acción:** comprobar integridad del clon antes de continuar con nuevos períodos o plantear cualquier traspaso a producción. No se altera la base original, GitHub Actions ni el frontend.
+
 ### Protocolo de validación y cierre — Compra Ágil agosto 2026
 
 **Estado actual:** notebook publicado y ejecución inicial a cargo del usuario en Google Colab; **no se ha acreditado una carga exitosa** en el clon. Ninguna cifra de procesos u ofertas se considera validada hasta recibir el informe de ejecución.
