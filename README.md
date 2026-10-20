@@ -2,6 +2,31 @@
 
 **Plataforma de inteligencia y seguimiento de compras públicas en Chile.** Integra información de licitaciones, Compra Ágil, ofertas, resultados y órdenes de compra proveniente de ChileCompra, utilizando una base operativa privada en Google Sheets y una visualización pública en GitHub Pages.
 
+## Inicio rápido: cargar históricos oficiales (ejemplo septiembre 2026)
+
+**Siempre trabajar sobre el clon de Google Sheets.** El histórico se carga manualmente en Colab; los ETL automáticos, el frontend y el libro de producción no se modifican. Descargas oficiales: [ChileCompra — Datos Abiertos](https://datos-abiertos.chilecompra.cl/descargas).
+
+| Paso | Notebook (abrir en Colab) | Archivo de entrada de ejemplo | Salida |
+| --- | --- | --- | --- |
+| 1. Descargar ZIP del mes | Portal oficial anterior | `2026-9.zip`, `COT_2026-09.zip`, `2026-9 (OC).zip` (verificar nombres descargados) | Archivos oficiales |
+| 2. Licitaciones | [Importador de licitaciones](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_ChileCompra_Colab.ipynb) | `2026-9.zip` | `Procesos` |
+| 3. Órdenes de Compra | [Importador multitabla](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_ChileCompra_Multitabla.ipynb) | `2026-9 (OC).zip` | `OrdenesCompra` |
+| 4. Compra Ágil | [Importador Procesos + Ofertas](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Compra_Agil_Procesos_Ofertas_Colab.ipynb) | `COT_2026-09.zip` | `Procesos`, `Ofertas` y SQLite preparado |
+| 5. Resultados | [Importador Resultados](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Resultados_Compra_Agil_Colab.ipynb) | **No subir ZIP**: `PREPARADO_ID` del SQLite del paso 4 (`CompraAgil_preparado_YYYYMMDD_HHMMSS.sqlite` en Drive) | `Resultados` |
+| 6. Auditoría | [Auditoría de integridad](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Auditoria_Integridad_Clon_Agosto_Colab.ipynb) | Ningún archivo; lectura del clon | Informe JSON |
+
+**En cada carga:** (1) comprobar período, tabla y cabecera; (2) ejecutar simulación y revisar cifras; (3) conservar `PREPARADO_ID` cuando corresponda; (4) crear respaldo y autorizar escritura **solo en el clon**; (5) comprobar totales y duplicados; (6) conservar informe y documentar el cierre. **No reprocesar meses previos** para completar vínculos COT–OC fuera del corte: es una limitación temporal aceptada.
+
+**Advertencia para septiembre y otros meses:** los notebooks de Compra Ágil y Resultados tienen etiquetas y fuentes *fijadas a agosto de 2026* y la auditoría lleva agosto en nombre y salida. **Deben parametrizarse y comprobarse antes de reutilizarlos**; cambiar solo el ZIP no garantiza trazabilidad correcta. El procedimiento anterior documenta el flujo, pero **no certifica que los notebooks actuales estén listos para importar septiembre sin ajustes**.
+
+## Decisión de modelo de datos: identificación de proveedores (pendiente de implementación)
+
+La auditoría de agosto encontró que Compra Ágil incluye `RUTProveedor` y el histórico original de OC incluye `RutSucursal` y `CodigoProveedor` (identificador interno, **no es RUT**). Las hojas normalizadas no conservan ambos identificadores; por eso fue necesario acudir a los ZIP originales para contrastar **8.586** discrepancias de razón social, donde coincidieron los valores de RUT COT y `RutSucursal` OC.
+
+**Recomendación:** ampliar la **capa de datos / esquema interno de conciliación**, no el frontend ni el contrato público por defecto. Guardar como atributos separados `rut_proveedor_cot`, `rut_sucursal_oc` y `codigo_proveedor_oc`, con identificador y fuente de origen, y mantener las relaciones oficiales `codigo_cot`–`codigo_oc` en una tabla de vínculos uno-a-muchos. No tratar `RutSucursal` como prueba externa de titularidad jurídica ni sobrescribir la razón social.
+
+**Compatibilidad:** `Procesos`, `Ofertas`, `Resultados` y `OrdenesCompra` mantienen por ahora sus cabeceras actuales. La columna **J** de `Resultados` es `estado_verificacion_oc`, **no** un identificador tributario. Antes de crear columnas o nuevas pestañas: definir esquema y claves, auditar consumidores (importadores, exportador JSON y front), probar migración en clon con respaldo y obtener aprobación específica. **No se ha ejecutado ninguna modificación estructural.**
+
 **Estado del proyecto (17 de octubre de 2026):** orquestación unificada, programada y con recuperación incremental. La extracción V1, el almacenamiento de procesos y la publicación del JSON/Pages han sido comprobados en ejecución integral; algunos detalles de Compra Ágil siguen afectados por respuestas 504/429 y **la inserción real de sus ofertas y resultados aún no está validada**. Las primeras ejecuciones automáticas recurrentes siguen sujetas a observación.
 
 **Enlaces:** [Ver el observatorio](https://juliopez.github.io/MercadoPublico-Inteligencia/) · [Orquestación principal](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/workflows/observatorio-unico.yml) · [Frontend](index.html) · [Instantánea pública](data/observatorio.json)
