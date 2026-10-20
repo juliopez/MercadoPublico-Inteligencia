@@ -19,7 +19,7 @@
 | 3 | Organizar las Google Sheets y eliminar las versiones obsoletas, previa revisión y respaldo | Pendiente |
 | 4 | Estandarizar los nombres de archivos: MER_2026_06, MER_2026_07, etc. | En curso: MER_2026_09 renombrada; pendientes otros meses |
 | 5 | Validar septiembre de 2026 como primer histórico definitivo | Completada (auditoría de septiembre) |
-| 6 | Crear las Google Sheets históricas de junio, julio y agosto de 2026 | Pendiente |
+| 6 | Crear las Google Sheets históricas de junio, julio y agosto de 2026 | Completada: tres archivos creados, seis pestañas y encabezados validados |
 | 7 | Cargar y auditar los históricos de junio, julio y agosto de 2026 | Pendiente |
 | 8 | Crear la Google Sheets operativa del mes en curso con el MER de seis tablas | Pendiente |
 | 9 | Adaptar los ETL de las API ChileCompra para alimentar la hoja operativa | Pendiente |
@@ -47,3 +47,7 @@ Cada tarea debe registrar fecha, evidencia (enlace al commit, Sheet o auditoría
 - Archivo auditado de septiembre **movido** a Históricos y **renombrado** como `MER_2026_09`, **sin cambiar el identificador** `1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA`.
 - Producción, clon y respaldos existentes **sin cambios**. Ningún archivo eliminado.
 - La tarea 1 sigue en curso porque el inventario de dependencias y copias debe completarse antes de una depuración.
+
+## Segunda etapa — 20 de octubre de 2026
+
+Tarea 6 completada. Bases mensuales 2026-06, 2026-07 y 2026-08 creadas vacías y organizadas en carpeta de históricos. Véase [catálogo](CATALOGO_SHEETS_Y_PERIODOS.md). La tarea 7 (carga y auditoría de históricos) permanece pendiente. Sin eliminación de documentos ni cambios a ETL, frontend o producción.
