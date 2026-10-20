@@ -8,10 +8,17 @@ from google.auth import default
 from googleapiclient.discovery import build
 import gspread
 
-DESTINO="1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA"
+DESTINOS_PERIODO={
+ "2026-06":"137pknbQIBbm5WAYvFh5bXKTGX9uBVhBYleTwxO6x7PI",
+ "2026-07":"1LcVUrWn99deDkgphD8cAn2n4jLxl-HZyzNm0XGffC5w",
+ "2026-08":"1TY41r2eriz3wvvLvHdYxHVrbqk94Lsp1kFtDtxxcXEs",
+ "2026-09":"1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA",
+ "2026-10":"1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4"
+}
+DESTINO=None
 PRODUCCION="1y81QaPy37APkBwxlYrKyE66_1ECdhL87GyWNitTfHr4"
 CLON_ANTERIOR="1loeK_IM3RXHaR7CqpjUbz-TsNgOKNrV1ejq8aRC6JyE"
-assert DESTINO not in {PRODUCCION,CLON_ANTERIOR}
+assert not (set(DESTINOS_PERIODO.values()) & {PRODUCCION,CLON_ANTERIOR})
 TABLAS={
 "Procesos":("codigo",["codigo","nombre","estado","convocatoria","fecha_publicacion","fecha_cierre","monto_disponible_clp","organismo_comprador","region","total_ofertas_recibidas","motivo_seleccion","url_detalle","fecha_sincronizacion","categoria","subcategoria","modalidad"]),
 "Proveedores":("id_proveedor",["id_proveedor","rut_canonico","razon_social_canonica","nombre_fantasia","fuente_principal","estado_identidad"]),
@@ -34,7 +41,9 @@ with zipfile.ZipFile(io.BytesIO(BYTES)) as z:
  assert 2020<=ANIO<=2100 and 1<=MES<=12
  PERIODO=f"{ANIO}-{MES:02d}"
  assert MANIFIESTO["periodo"]==PERIODO
- print("Paquete validado:",PERIODO,"SHA256:",HUELLA)
+ DESTINO=DESTINOS_PERIODO.get(PERIODO)
+ assert DESTINO and DESTINO not in {PRODUCCION,CLON_ANTERIOR},"No existe destino autorizado para el período"
+ print("Paquete validado:",PERIODO,"DESTINO:",DESTINO,"SHA256:",HUELLA)
  ESPERADOS={n:int(MANIFIESTO[n]) for n in TABLAS}
  assert all(x>=0 for x in ESPERADOS.values())
 
@@ -99,6 +108,7 @@ def ejecutar(confirmacion):
  assert confirmacion==frase,"Autorización incorrecta; no se escribe"
  assert CAPACIDAD_SUFICIENTE,"Capacidad Sheets insuficiente. No se permite escribir."
  assert libro.id==DESTINO
+ assert DESTINOS_PERIODO[PERIODO]==DESTINO
  respaldo=drive.files().copy(fileId=DESTINO,
    body={"name":"Respaldo MER v2 antes de "+PERIODO+" "+datetime.datetime.now().isoformat()},
    fields="id,webViewLink").execute()
