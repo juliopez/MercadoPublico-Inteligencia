@@ -19,6 +19,12 @@
 
 **Advertencia para septiembre y otros meses:** los notebooks de Compra Ágil y Resultados tienen etiquetas y fuentes *fijadas a agosto de 2026* y la auditoría lleva agosto en nombre y salida. **Deben parametrizarse y comprobarse antes de reutilizarlos**; cambiar solo el ZIP no garantiza trazabilidad correcta. El procedimiento anterior documenta el flujo, pero **no certifica que los notebooks actuales estén listos para importar septiembre sin ajustes**.
 
+### Especificación de claves y entidades nuevas
+
+La definición operativa de **`PROVEEDORES`** y **`VINCULOS_COT_OC`** (atributos, tipos, PK, FK lógicas, reglas de unicidad, RUT faltantes y referencias OC fuera del corte) está en [`docs/Especificacion_Proveedores_Vinculos_COT_OC.md`](docs/Especificacion_Proveedores_Vinculos_COT_OC.md).
+
+**Decisión de implementación:** no crear aún pestañas ni insertar datos; conservar las cabeceras existentes y proteger el contrato con el frontend. El vínculo `codigo_oc` se registra aunque la OC no figure en el corte mensual; se trata de una **referencia oficial pendiente de correspondencia local**, no de una FK físicamente obligatoria. La unicidad de RUT solo aplica a identificadores normalizados y sin conflicto. **Diseño aprobado para preparación de migración, implementación pendiente.**
+
 ## MER lógico propuesto — seis entidades (pendiente de implementación)
 
 El diagrama se renderiza directamente en GitHub y su fuente editable está en [`docs/MER_propuesto.mmd`](docs/MER_propuesto.mmd).
