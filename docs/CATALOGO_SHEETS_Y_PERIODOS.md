@@ -30,7 +30,7 @@
 |---|---|---|---|
 | 2026-06 | Histórico | `137pknbQIBbm5WAYvFh5bXKTGX9uBVhBYleTwxO6x7PI` | Creado, seis tablas MER v2 vacías; pendiente carga |
 | 2026-07 | Histórico | `1LcVUrWn99deDkgphD8cAn2n4jLxl-HZyzNm0XGffC5w` | Creado, seis tablas MER v2 vacías; pendiente carga |
-| 2026-08 | Histórico | `1TY41r2eriz3wvvLvHdYxHVrbqk94Lsp1kFtDtxxcXEs` | 834.370 registros presentes en las seis tablas; auditoría independiente pendiente |
+| 2026-08 | Histórico | `1TY41r2eriz3wvvLvHdYxHVrbqk94Lsp1kFtDtxxcXEs` | 834.370 registros; auditoría independiente aprobada con observaciones (20-10-2026) |
 | 2026-09 | Histórico | `1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA` | Cargado y auditado |
 | 2026-10 | Operativo (API) | `1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4` | Creado, seis tablas MER v2 vacías; integración API pendiente |
 
@@ -60,3 +60,7 @@ Consulta directa de MER_2026_08: dimensiones exactas esperadas y última fila co
 ## Auditoría posterior a agosto — herramienta lista
 
 Notebook de auditoría MER v2 [generalizado por período](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Auditoria_Integridad_MER_v2_Colab.ipynb), por defecto `PERIODO='2026-08'`, destino restringido a `MER_2026_08`. Conteos esperados agosto: Procesos 83.937; Proveedores 30.564; Ofertas 432.111; OrdenesCompra 153.221; VinculosCOT_OC 68.592; Resultados 65.945. La auditoría es **solo lectura** y produce `auditoria_integridad_mer_v2_2026-08.json`. **Pendiente de ejecución y recepción de informe**, por lo tanto agosto aún no está cerrado formalmente.
+
+## Cierre estructural de agosto — 2026-10-20
+
+Evidencia: `auditoria_integridad_mer_v2_2026-08.json` generado 2026-10-20T21:51:20Z sobre `MER_2026_08` (solo lectura). Estado: `AUDITORIA_COMPLETADA_CON_OBSERVACIONES`. Procesos 83.937, Proveedores 30.564, Ofertas 432.111, OrdenesCompra 153.221, VinculosCOT_OC 68.592, Resultados 65.945; **total 834.370**. PK vacías 0, duplicadas 0, campos extra/ausentes 0 en todas las tablas. FK auditadas sin huérfanos; 0 pares COT–OC duplicados. **Observaciones**: 24.097 vínculos OC fuera del corte (aceptados por cobertura), 65.945 resultados `OC no verificada`, proveedores `RUT_SIN_CONTRASTE` 30.516 y `SIN_RUT` 48. Cierre de integridad estructural/referencial **aprobado**, sin certificar adjudicaciones jurídicas ni identidades tributarias. Siguiente período julio 2026.
