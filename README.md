@@ -19,6 +19,102 @@
 
 **Advertencia para septiembre y otros meses:** los notebooks de Compra Ágil y Resultados tienen etiquetas y fuentes *fijadas a agosto de 2026* y la auditoría lleva agosto en nombre y salida. **Deben parametrizarse y comprobarse antes de reutilizarlos**; cambiar solo el ZIP no garantiza trazabilidad correcta. El procedimiento anterior documenta el flujo, pero **no certifica que los notebooks actuales estén listos para importar septiembre sin ajustes**.
 
+## MER lógico propuesto — seis entidades (pendiente de implementación)
+
+El diagrama se renderiza directamente en GitHub y su fuente editable está en [`docs/MER_propuesto.mmd`](docs/MER_propuesto.mmd).
+
+```mermaid
+erDiagram
+    direction TB
+    PROCESOS ||--o{ OFERTAS : recibe
+    PROCESOS ||--o| RESULTADOS : tiene
+    OFERTAS ||--o| RESULTADOS : seleccionada_en
+    PROVEEDORES o|--o{ OFERTAS : presenta
+    PROVEEDORES o|--o{ ORDENES_COMPRA : suministra
+    PROCESOS ||--o{ VINCULOS_COT_OC : origina
+    ORDENES_COMPRA ||--o{ VINCULOS_COT_OC : se_vincula
+
+    PROCESOS {
+        string codigo PK
+        string nombre
+        string estado
+        string convocatoria
+        date fecha_publicacion
+        date fecha_cierre
+        decimal monto_disponible_clp
+        string organismo_comprador
+        string region
+        int total_ofertas_recibidas
+        string motivo_seleccion
+        string url_detalle
+        date fecha_sincronizacion
+        string categoria
+        string subcategoria
+        string modalidad
+    }
+    OFERTAS {
+        string id_cotizacion PK
+        string codigo FK
+        string id_proveedor FK
+        string proveedor
+        decimal monto_ofertado_clp
+        date fecha_oferta
+        string fuente
+        string seleccionado
+        string rut_proveedor_cot
+    }
+    RESULTADOS {
+        string codigo PK,FK
+        string id_cotizacion_ganadora FK
+        string adjudicatario
+        decimal monto_adjudicado_clp
+        date fecha_resultado
+        string motivo_seleccion
+        string fuente
+        string validado
+        decimal monto_oferta_seleccionada_clp
+        string estado_verificacion_oc
+    }
+    PROVEEDORES {
+        string id_proveedor PK
+        string rut_canonico UK
+        string razon_social_canonica
+        string nombre_fantasia
+        string fuente_principal
+        string estado_identidad
+    }
+    ORDENES_COMPRA {
+        string codigo_oc PK
+        string codigo_proceso
+        string id_proveedor FK
+        date fecha_creacion
+        date fecha_aceptacion
+        string estado
+        string proveedor
+        decimal monto_total_oc_clp
+        string tipo_oc
+        int cantidad_lineas
+        decimal total_lineas_neto
+        string rut_sucursal_oc
+        string codigo_proveedor_oc
+    }
+    VINCULOS_COT_OC {
+        string id_vinculo PK
+        string codigo_cot FK
+        string codigo_oc FK
+        string origen_vinculo
+        string estado_oc_historico
+        date fecha_aceptacion_oc
+        string relacion_confiable
+    }
+```
+
+**Criterios de diseño:** `PROCESOS` 1:N `OFERTAS`; `PROCESOS` 1:0..1 `RESULTADOS` en el modelo actual; un resultado referencia una oferta seleccionada, sin duplicar `id_proveedor` en `RESULTADOS`. `PROVEEDORES` se relaciona directamente con ofertas y OC, no con resultados. `VINCULOS_COT_OC` registra asociaciones oficiales, incluyendo múltiples OC por COT. Las referencias a proveedor pueden permanecer vacías mientras su identidad no esté resuelta.
+
+**PK y restricciones pendientes de definir:** `id_cotizacion` es actualmente una clave sintética de oferta; `id_proveedor` sería una clave interna estable. `rut_canonico` es candidato a unicidad **solo cuando esté normalizado y verificado**, permitiendo desconocidos. En `VINCULOS_COT_OC` deberá aplicarse además unicidad a la pareja (`codigo_cot`, `codigo_oc`) dentro de la fuente/granularidad apropiada.
+
+**Compatibilidad:** diagrama de **modelo objetivo**, no refleja una migración ya realizada. Los encabezados actuales de las cuatro hojas siguen intactos; `PROVEEDORES` y `VINCULOS_COT_OC` aún no se han creado. La notación FK expresa integridad lógica propuesta, no una restricción física ejecutada por Google Sheets. Frontend y ETL automáticos sin cambios.
+
 ## Decisión de modelo de datos: identificación de proveedores (pendiente de implementación)
 
 La auditoría de agosto encontró que Compra Ágil incluye `RUTProveedor` y el histórico original de OC incluye `RutSucursal` y `CodigoProveedor` (identificador interno, **no es RUT**). Las hojas normalizadas no conservan ambos identificadores; por eso fue necesario acudir a los ZIP originales para contrastar **8.586** discrepancias de razón social, donde coincidieron los valores de RUT COT y `RutSucursal` OC.
