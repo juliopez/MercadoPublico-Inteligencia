@@ -34,6 +34,26 @@ Se recibió y auditó `preparado_mercado_publico_mer_v2.zip` de la primera ejecu
 
 **Acción ejecutada:** corregido [`scripts/importador_historicos_v2.py`](scripts/importador_historicos_v2.py) e incorporada una comprobación bloqueante de número de atributos en **todas las entidades** y de códigos OC válidos. **Estado:** se requiere regenerar y reauditar el paquete; el ZIP anterior **no debe cargarse**. Ningún dato fue escrito en la base MER v2.
 
+#### Auditoría ejecutada y cerrada — 20 de octubre de 2026
+
+**Evidencia:** `auditoria_integridad_mer_v2_septiembre_2026.json`, generado el 20/10/2026 a las 11:53:30 UTC sobre la **base MER v2** en modo solo lectura. Estado del informe: `AUDITORIA_COMPLETADA_CON_OBSERVACIONES`.
+
+| Tabla | Filas | PK vacías | PK duplicadas | Campos extra/ausentes |
+| --- | ---: | ---: | ---: | ---: |
+| Procesos | 79.376 | 0 | 0 | 0 |
+| Proveedores | 30.280 | 0 | 0 | 0 |
+| Ofertas | 398.018 | 0 | 0 | 0 |
+| OrdenesCompra | 147.966 | 0 | 0 | 0 |
+| VinculosCOT_OC | 50.041 | 0 | 0 | 0 |
+| Resultados | 48.637 | 0 | 0 | 0 |
+| **Total** | **754.318** | **0** | **0** | **0** |
+
+**Referencias:** 0 ofertas sin proceso/proveedor, 0 resultados sin proceso/oferta, 0 resultados asociados a oferta de otro proceso, 0 OC con proveedor inexistente, 0 vínculos sin proceso y 0 pares duplicados COT–OC.
+
+**Observaciones aceptadas:** 8.275 vínculos OC fuera del corte mensual son limitaciones temporales, no errores a reparar retroactivamente. `Resultados.estado_verificacion_oc` permanece `OC no verificada` para 48.637 filas. En `Proveedores`, 30.268 registros están `RUT_SIN_CONTRASTE` y 12 `SIN_RUT`. No confundir integridad con adjudicación formal ni identidad tributaria acreditada.
+
+**Decisión:** **cierre de auditoría estructural/referencial de septiembre MER v2 aprobado** para los controles ejecutados. No se alteraron registros durante esta auditoría. Queda pendiente parametrizar el importador unificado para períodos futuros y planificar de forma separada cualquier cambio en frontend/exportación/API.
+
 ### Auditoría independiente posterior a la carga — MER v2 septiembre 2026
 
 [![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Auditoria_Integridad_MER_v2_Colab.ipynb)
