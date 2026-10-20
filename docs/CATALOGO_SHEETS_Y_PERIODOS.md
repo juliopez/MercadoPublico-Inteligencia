@@ -30,7 +30,7 @@
 |---|---|---|---|
 | 2026-06 | Histórico | `137pknbQIBbm5WAYvFh5bXKTGX9uBVhBYleTwxO6x7PI` | Creado, seis tablas MER v2 vacías; pendiente carga |
 | 2026-07 | Histórico | `1LcVUrWn99deDkgphD8cAn2n4jLxl-HZyzNm0XGffC5w` | Creado, seis tablas MER v2 vacías; pendiente carga |
-| 2026-08 | Histórico | `1TY41r2eriz3wvvLvHdYxHVrbqk94Lsp1kFtDtxxcXEs` | Creado, seis tablas MER v2 vacías; pendiente carga |
+| 2026-08 | Histórico | `1TY41r2eriz3wvvLvHdYxHVrbqk94Lsp1kFtDtxxcXEs` | 834.370 registros presentes en las seis tablas; auditoría independiente pendiente |
 | 2026-09 | Histórico | `1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA` | Cargado y auditado |
 | 2026-10 | Operativo (API) | `1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4` | Creado, seis tablas MER v2 vacías; integración API pendiente |
 
@@ -52,3 +52,7 @@
 - [MER_2026_10_OPERATIVO](https://docs.google.com/spreadsheets/d/1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4/edit) creado y ubicado en [02_Operativo_API](https://drive.google.com/drive/folders/1m3feqWXUNtur6v17qvhZ9bQrB38-ruVS), con las seis pestañas MER v2 y encabezados idénticos al histórico. **Sin registros; sin integración API activada**.
 - Archivos adicionales identificados para revisión, no eliminar: `149_YB64BfW22rKnfAkrNxrUB8dQVV4GS3YK7lGIs1Z8` (Compra Ágil septiembre preparada), `1In5DsxX5BB1Z20U7tQi0WbXXybrE3lNuK8K1y-z0AUM` (respaldo Indicadores), `14HSCjPvPCJJtAhf9Mi8t59TiGI4FzEpo_zxBbVSVzYU` (respaldo Control), `13CUdwUHkFXN_gmOCv3q4tNrCq-4FBn5_bvhYgaRXgx0` (respaldo Resultados), `1h32aq-keyo_Qg-QWUqbBSLNtDSJHiAuyJqMaNQcBKgo` (respaldo Ofertas).
 - Archivos originales de producción, clon y respaldos no se borraron ni movieron. El inventario completo de dependencias sigue en curso.
+
+## Carga agosto verificada — 20 de octubre de 2026
+
+Consulta directa de MER_2026_08: dimensiones exactas esperadas y última fila con datos en cada pestaña. Procesos 83.937, Proveedores 30.564, Ofertas 432.111, OrdenesCompra 153.221, VinculosCOT_OC 68.592, Resultados 65.945; total 834.370. **Verificación de final de carga por totales y filas; auditoría independiente PK/FK pendiente.** No repetir la carga. Siguiente período a preparar: julio 2026.
