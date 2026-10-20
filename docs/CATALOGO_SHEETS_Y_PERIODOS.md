@@ -32,7 +32,7 @@
 | 2026-07 | Histórico | `1LcVUrWn99deDkgphD8cAn2n4jLxl-HZyzNm0XGffC5w` | Creado, seis tablas MER v2 vacías; pendiente carga |
 | 2026-08 | Histórico | `1TY41r2eriz3wvvLvHdYxHVrbqk94Lsp1kFtDtxxcXEs` | Creado, seis tablas MER v2 vacías; pendiente carga |
 | 2026-09 | Histórico | `1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA` | Cargado y auditado |
-| 2026-10 | Operativo (API) | Pendiente de creación | Pendiente |
+| 2026-10 | Operativo (API) | `1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4` | Creado, seis tablas MER v2 vacías; integración API pendiente |
 
 ## Reglas de preservación
 1. No eliminar recursos por su nombre aparente: confirmar identificador, rol, dependencias y respaldo.
@@ -46,3 +46,9 @@
 - Creados y verificados en `01_Historicos_MER`: [MER_2026_06](https://docs.google.com/spreadsheets/d/137pknbQIBbm5WAYvFh5bXKTGX9uBVhBYleTwxO6x7PI/edit), [MER_2026_07](https://docs.google.com/spreadsheets/d/1LcVUrWn99deDkgphD8cAn2n4jLxl-HZyzNm0XGffC5w/edit) y [MER_2026_08](https://docs.google.com/spreadsheets/d/1TY41r2eriz3wvvLvHdYxHVrbqk94Lsp1kFtDtxxcXEs/edit).
 - Cada una contiene las seis pestañas con encabezados del contrato MER v2: `Procesos`, `Proveedores`, `Ofertas`, `OrdenesCompra`, `VinculosCOT_OC` y `Resultados`. No se incorporaron históricos ni se modificaron otras bases.
 - Copias antiguas de trabajo, staging y respaldos siguen identificadas para revisión de dependencias; no se eliminaron ni trasladaron preventivamente.
+
+## Tercera etapa — 20 de octubre de 2026
+
+- [MER_2026_10_OPERATIVO](https://docs.google.com/spreadsheets/d/1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4/edit) creado y ubicado en [02_Operativo_API](https://drive.google.com/drive/folders/1m3feqWXUNtur6v17qvhZ9bQrB38-ruVS), con las seis pestañas MER v2 y encabezados idénticos al histórico. **Sin registros; sin integración API activada**.
+- Archivos adicionales identificados para revisión, no eliminar: `149_YB64BfW22rKnfAkrNxrUB8dQVV4GS3YK7lGIs1Z8` (Compra Ágil septiembre preparada), `1In5DsxX5BB1Z20U7tQi0WbXXybrE3lNuK8K1y-z0AUM` (respaldo Indicadores), `14HSCjPvPCJJtAhf9Mi8t59TiGI4FzEpo_zxBbVSVzYU` (respaldo Control), `13CUdwUHkFXN_gmOCv3q4tNrCq-4FBn5_bvhYgaRXgx0` (respaldo Resultados), `1h32aq-keyo_Qg-QWUqbBSLNtDSJHiAuyJqMaNQcBKgo` (respaldo Ofertas).
+- Archivos originales de producción, clon y respaldos no se borraron ni movieron. El inventario completo de dependencias sigue en curso.
