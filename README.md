@@ -82,6 +82,20 @@ La primera revisión remota confirmó exclusivamente la **capacidad de filas de 
 
 **Estado:** carga MER v2 de septiembre finalizada; **auditoría estructural/referencial independiente posterior pendiente**. Ninguna adjudicación jurídica se deduce de la carga; las OC fuera del corte siguen siendo una limitación temporal aceptada. El frontend, los ETL automáticos, el clon anterior y producción permanecen fuera del alcance de esta operación.
 
+## Procedimiento unificado MER v2 — independiente del año y mes
+
+**Preparador actualizado:** [Abrir en Colab](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_Unificado_MER_v2.ipynb) · [script Python](scripts/importador_historicos_v2.py).
+
+**Cargador actualizado:** [Abrir en Colab](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Cargar_Paquete_MER_v2_Colab.ipynb) · [script genérico](scripts/cargar_mer_v2_general.py).
+
+**Pasos:** (1) configurar `ANIO` y `MES` en Colab, revisar nombres de los tres ZIP oficiales; (2) ejecutar el preparador, que produce `preparado_mercado_publico_mer_v2_AAAA-MM.zip` con seis CSV y `informe.json` (período, fuentes, totales); (3) subir ese único ZIP al cargador, que obtiene automáticamente año, mes y cantidades; (4) examinar simulación, claves ya registradas, registros nuevos y proyección de celdas; (5) solo si se cumplen los controles, autorizar mediante `AUTORIZO CARGA MER V2 AAAA-MM EN BASE NUEVA` y verificar resultado.
+
+**Cambios de esta versión:** elimina conteos fijos de septiembre y nombres fijos de salida; conserva las PK de meses ya cargados, sin sobrescribirlas, y añade registros nuevos por lotes. Ante una interrupción es posible volver a presentar el mismo paquete; no iniciar sesiones concurrentes. La clave sintética de oferta y las identidades de proveedores mantienen las limitaciones de origen documentadas.
+
+**Limitación decisiva:** Google Sheets admite **10 millones de celdas por archivo**. MER v2 ya contiene 754.318 registros de septiembre en seis tablas y su capacidad se encuentra comprometida para agregar otro período completo. El cargador calcula la proyección y **bloquea la escritura cuando supera el límite**, sin intentar redimensionar. En ese caso se requiere diseñar **partición física por períodos** o trasladar el almacenamiento histórico a una base de datos de mayor capacidad. No cambiar automáticamente el front, el exportador ni ETL hasta resolver esa arquitectura.
+
+**Estado:** preparador y cargador generalizados y publicados; todavía no probados integralmente con un segundo período. La carga de septiembre ya completada y auditada queda intacta. El cargador anterior [`scripts/cargar_mer_v2_colab.py`](scripts/cargar_mer_v2_colab.py) permanece como referencia específica de septiembre y no debe reutilizarse para otros meses.
+
 ## Carga de paquete MER v2 — controlada y reanudable (septiembre de 2026)
 
 [![Abrir cargador en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Cargar_Paquete_MER_v2_Colab.ipynb)
