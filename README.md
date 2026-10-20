@@ -2,6 +2,26 @@
 
 **Plataforma de inteligencia y seguimiento de compras públicas en Chile.** Integra información de licitaciones, Compra Ágil, ofertas, resultados y órdenes de compra proveniente de ChileCompra, utilizando una base operativa privada en Google Sheets y una visualización pública en GitHub Pages.
 
+### Segunda preparación MER v2 — auditoría de septiembre de 2026 (20/10/2026)
+
+Se recibió y auditó `preparado_mercado_publico_mer_v2 (1).zip` generado tras corregir `Resultados` y el tratamiento de `CodigoOC=NA`. **No se ha escrito en Google Sheets.**
+
+| Entidad | Registros | PK duplicadas | PK vacías |
+| --- | ---: | ---: | ---: |
+| Procesos | 79.376 | 0 | 0 |
+| Ofertas | 398.018 | 0 | 0 |
+| Resultados | 48.637 | 0 | 0 |
+| OrdenesCompra | 147.966 | 0 | 0 |
+| Proveedores | 30.280 | 0 | 0 |
+| VinculosCOT_OC | 50.041 | 0 | 0 |
+| **Total** | **754.318** | **0** | **0** |
+
+Comprobaciones adicionales del paquete: `Resultados` tiene **10 atributos por fila**; **0** referencias de oferta inexistentes; **0** discrepancias entre código de resultado y código de la oferta referenciada; **0** referencias de proveedor inexistentes desde Ofertas/OC; **0** vínculos con literal `NA` u otro código vacío. Existen **8.275 referencias a OC no localizadas en el corte**; esta diferencia temporal ya fue aceptada metodológicamente.
+
+**Identidad de proveedores:** `estado_identidad=RUT_SIN_CONTRASTE` en **30.268** registros y `SIN_RUT` en **12**. Esto revela que la versión actual crea identidades consistentes por clave técnica, pero aún **no audita la conciliación del RUT entre COT y `RutSucursal` OC**, ni constituye verificación externa. `Resultados.estado_verificacion_oc` permanece como `OC no verificada` en **48.637** filas. Estas limitaciones deben figurar en informes y no deben interpretarse como resultados verificados.
+
+**Conclusión:** defectos de estructura y marcadores `NA` corregidos; auditoría estructural satisfactoria. La **carga masiva a MER v2 sigue pendiente** hasta completar controles semánticos y habilitar escritura controlada con respaldo, autorización explícita, comprobación por lotes y recuperación.
+
 ### Auditoría de primera preparación MER v2 — septiembre de 2026
 
 Se recibió y auditó `preparado_mercado_publico_mer_v2.zip` de la primera ejecución: `Procesos` 79.376, `Ofertas` 398.018, `Resultados` 48.637, `OrdenesCompra` 147.966, `Proveedores` 30.280 y `VinculosCOT_OC` 73.571. Las PK estaban presentes y sin duplicados. Se comprobaron referencias entre procesos, ofertas, resultados y proveedores, sin registros huérfanos en los campos evaluados.
