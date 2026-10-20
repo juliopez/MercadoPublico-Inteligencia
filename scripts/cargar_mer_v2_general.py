@@ -75,6 +75,21 @@ for name in TABLAS:
  assert len(vistos)==ESPERADOS[name],f"Cantidad incorrecta en {name}"
  ESTADO[name]={"paquete":len(vistos),"existentes":len(actual),"ya_registrados":solapados,"nuevos":nuevos}
  print(name,ESTADO[name])
+# Google Sheets tiene un límite por archivo: comprobar capacidad antes de reservar filas.
+MAX_CELDAS=10_000_000
+def proyectar_celdas():
+ actual=0;futuro=0
+ for name,(_,cab) in TABLAS.items():
+  ws=libro.worksheet(name)
+  actual+=ws.row_count*ws.col_count
+  filas=max(ws.row_count,ESTADO[name]["existentes"]+ESTADO[name]["nuevos"]+1)
+  futuro+=filas*len(cab)
+ return actual,futuro
+CELDAS_ACTUALES,CELDAS_PROYECTADAS=proyectar_celdas()
+print("Capacidad Sheets actual:",CELDAS_ACTUALES,"celdas; proyección de carga:",CELDAS_PROYECTADAS,"de",MAX_CELDAS)
+CAPACIDAD_SUFICIENTE=CELDAS_PROYECTADAS<=MAX_CELDAS
+if not CAPACIDAD_SUFICIENTE:
+ print("BLOQUEO POR CAPACIDAD: se requiere particionar por períodos o migrar a una base de mayor capacidad; sin escrituras.")
 print("SIMULACIÓN OK, sin escrituras. Período:",PERIODO)
 print("ATENCIÓN: las PK coincidentes se conservan, sin sobrescribirlas; se documentan como solapamientos.")
 
@@ -82,6 +97,7 @@ print("ATENCIÓN: las PK coincidentes se conservan, sin sobrescribirlas; se docu
 def ejecutar(confirmacion):
  frase=f"AUTORIZO CARGA MER V2 {PERIODO} EN BASE NUEVA"
  assert confirmacion==frase,"Autorización incorrecta; no se escribe"
+ assert CAPACIDAD_SUFICIENTE,"Capacidad Sheets insuficiente. No se permite escribir."
  assert libro.id==DESTINO
  respaldo=drive.files().copy(fileId=DESTINO,
    body={"name":"Respaldo MER v2 antes de "+PERIODO+" "+datetime.datetime.now().isoformat()},
