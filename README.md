@@ -130,6 +130,25 @@ Se contrastaron las **223 diferencias de monto** de `auditoria_discrepancias_mon
 
 **Siguiente decisión técnica:** antes de actualizar `Resultados`, definir reglas de conciliación por estado OC y campos de importe, conservando cada vínculo COT–OC y diferenciando evidencia oficial de incertidumbre monetaria. No promover automáticamente las 223 diferencias a resultados verificados.
 
+### Simulación previa a actualizar Resultados — agosto 2026
+
+**Estado: simulación concluida, SIN escrituras en Google Sheets.** Se fusionó el detalle de los **68.093 vínculos oficiales COT–OC** con la conciliación de **65.945 procesos** y los **8.586 pares de RUT coincidentes** verificados entre `RUTProveedor` de COT y `RutSucursal` de OC histórica.
+
+| Estado provisional propuesto para `estado_verificacion_oc` | Procesos |
+| --- | ---: |
+| `OC_ACEPTADA_MONTO_COINCIDE` | 35.134 |
+| `OC_ACEPTADA_RUT_COINCIDE_NOMBRE_DIFIERE` | 8.461 |
+| `OC_ACEPTADA_MONTO_DIFIERE` | 221 |
+| `OC_ACEPTADA_FUERA_CORTE` | 16.471 |
+| `SIN_OC_ACEPTADA` | 5.658 |
+| **Total** | **65.945** |
+
+**Regla conservadora de selección por proceso:** entre las OC enlazadas cuya condición histórica sea `Aceptada` o `Recepción conforme`, escoger primero (1) código OC y monto/proveedor coincidentes, (2) código OC con RUT COT=`RutSucursal` pese al nombre diferente, (3) mismo proveedor con importe distinto, (4) OC oficial no presente en el corte de agosto. Si ninguna OC reúne el estado exigido, registrar (5) sin OC aceptada. Se mantienen los vínculos uno-a-muchos en el archivo de auditoría original; la categoría agregada no debe interpretarse como una relación única.
+
+Artefactos: `simulacion_actualizacion_resultados_agosto_2026.csv` y `simulacion_actualizacion_resultados_agosto_2026_resumen.json`. Su generación requiere las fuentes `auditoria_cot_oc_corregida_2026_08_detalle.csv`, `conciliacion_COT_OC_agosto_2026_procesos.csv` y `auditoria_rut_cot_vs_sucursal_oc_agosto.csv`.
+
+**No cambiar automáticamente** `validado`, `monto_adjudicado_clp`, `fecha_resultado`, `monto_oferta_seleccionada_clp` ni `id_cotizacion_ganadora`. El estado propuesto es **evidencia operacional**, no certificación jurídica de adjudicación. Antes de una futura carga deberá comprobarse que no existan cambios desde la simulación, crear respaldo, auditar claves y solicitar autorización específica.
+
 ### Verificación de identidad de proveedores por RUT — auditoría agosto 2026
 
 Se auditó el detalle de las **8.586** relaciones con razón social discrepante entre Compra Ágil y `OrdenesCompra`. La fuente COT conserva RUT del proveedor, pero la hoja OC utilizada por el clon carece de RUT de proveedor: **no es posible confirmar identidad tributaria cruzando únicamente las hojas actuales**.
