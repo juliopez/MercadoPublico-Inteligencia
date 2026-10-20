@@ -21,7 +21,7 @@
 | 5 | Validar septiembre de 2026 como primer histórico definitivo | Completada (auditoría de septiembre) |
 | 6 | Crear las Google Sheets históricas de junio, julio y agosto de 2026 | Completada: tres archivos creados, seis pestañas y encabezados validados |
 | 7 | Cargar y auditar los históricos de junio, julio y agosto de 2026 | Pendiente |
-| 8 | Crear la Google Sheets operativa del mes en curso con el MER de seis tablas | Pendiente |
+| 8 | Crear la Google Sheets operativa del mes en curso con el MER de seis tablas | Completada: MER_2026_10_OPERATIVO vacía y ubicada en 02_Operativo_API |
 | 9 | Adaptar los ETL de las API ChileCompra para alimentar la hoja operativa | Pendiente |
 | 10 | Implementar actualización incremental diaria y control de errores de API | Pendiente |
 | 11 | Diseñar el procedimiento de cierre mensual y consolidación con históricos oficiales | Pendiente |
@@ -51,3 +51,8 @@ Cada tarea debe registrar fecha, evidencia (enlace al commit, Sheet o auditoría
 ## Segunda etapa — 20 de octubre de 2026
 
 Tarea 6 completada. Bases mensuales 2026-06, 2026-07 y 2026-08 creadas vacías y organizadas en carpeta de históricos. Véase [catálogo](CATALOGO_SHEETS_Y_PERIODOS.md). La tarea 7 (carga y auditoría de históricos) permanece pendiente. Sin eliminación de documentos ni cambios a ETL, frontend o producción.
+
+## Tercera etapa — 20 de octubre de 2026
+
+- Tarea 8 completada: [MER_2026_10_OPERATIVO](https://docs.google.com/spreadsheets/d/1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4/edit) creado vacío con seis entidades. La tarea 9, conexión a API, queda pendiente.
+- Inventario de hojas y respaldos ampliado; tarea 1 todavía parcial. Ninguna depuración destructiva ejecutada.
