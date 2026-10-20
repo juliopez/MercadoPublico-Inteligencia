@@ -3,7 +3,7 @@
 No escribe Google Sheets. No consulta API. Python estándar, SQLite y CSV.
 Uso: python importador_historicos_v2.py --licitaciones 2026-9.zip --cot COT_2026-09.zip --oc "2026-9 (OC).zip" --out ./preparado_2026_09
 """
-import argparse,csv,hashlib,io,json,sqlite3,zipfile,re
+import argparse,csv,hashlib,io,json,sqlite3,zipfile,re,datetime
 from decimal import Decimal,InvalidOperation,ROUND_HALF_UP
 from pathlib import Path
 from collections import Counter
@@ -151,10 +151,23 @@ def finish(db,counts,out):
  (out/"informe.json").write_text(json.dumps(counts,ensure_ascii=False,indent=2),encoding="utf-8")
  print(json.dumps(counts,ensure_ascii=False,indent=2))
 def main():
- pa=argparse.ArgumentParser()
+ pa=argparse.ArgumentParser(description="Prepara seis entidades del MER v2 para cualquier mes")
  for k in ("licitaciones","cot","oc"):pa.add_argument("--"+k,required=True,type=Path)
  pa.add_argument("--out",required=True,type=Path)
+ pa.add_argument("--anio",required=True,type=int)
+ pa.add_argument("--mes",required=True,type=int)
  a=pa.parse_args()
+ if not 2020<=a.anio<=2100 or not 1<=a.mes<=12:pa.error("Año/mes inválido")
+ # Validación de período según etiquetas oficiales, no basarse en mes de fechas de OC.
+ etiquetas={
+  "licitaciones":rf"(?<!\d){a.anio}[-_](?:0?{a.mes})(?!\d)",
+  "cot":rf"COT[_-]{a.anio}[-_](?:0?{a.mes})(?!\d)",
+  "oc":rf"(?<!\d){a.anio}[-_](?:0?{a.mes})(?!\d)"
+ }
+ for tipo in etiquetas:
+  archivo=getattr(a,tipo)
+  if not re.search(etiquetas[tipo],archivo.name,re.IGNORECASE):
+   pa.error(f"Archivo {tipo} no identifica el período {a.anio}-{a.mes:02d}: {archivo.name}")
  for x in (a.licitaciones,a.cot,a.oc):
   if not x.is_file():pa.error("Archivo no encontrado: "+str(x))
  a.out.mkdir(parents=True,exist_ok=True)
@@ -164,4 +177,14 @@ def main():
  process_cot(db,a.cot,counts)
  process_oc(db,a.oc,counts)
  finish(db,counts,a.out);db.close()
+ informe_path=a.out/"informe.json"
+ informe=json.loads(informe_path.read_text(encoding="utf-8"))
+ informe.update({
+  "esquema":"MER_V2", "anio":a.anio, "mes":a.mes,
+  "periodo":f"{a.anio}-{a.mes:02d}",
+  "fecha_preparacion_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+  "fuentes":{tipo:getattr(a,tipo).name for tipo in etiquetas}
+ })
+ informe_path.write_text(json.dumps(informe,ensure_ascii=False,indent=2),encoding="utf-8")
+ print("PAQUETE PREPARADO:",informe["periodo"],"seis tablas, sin escritura a Sheets")
 if __name__=="__main__":main()
