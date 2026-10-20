@@ -103,10 +103,13 @@ else:
    # Tras un fallo/reintento ambiguo, comprobar el bloque antes de reescribir.
    for intento in range(6):
     try:
-     actual=ws.get(rango,value_render_option="UNFORMATTED_VALUE")
+     # Sheets omite celdas vacías al final de cada fila en las respuestas.
+     def normalizar_respuesta(valores):
+      return [(list(fila)+[""]*len(cab))[:len(cab)] for fila in valores]
+     actual=normalizar_respuesta(ws.get(rango,value_render_option="UNFORMATTED_VALUE"))
      if actual!=bloque:
       ws.update(range_name=rango,values=bloque,value_input_option="RAW")
-     actual=ws.get(rango,value_render_option="UNFORMATTED_VALUE")
+     actual=normalizar_respuesta(ws.get(rango,value_render_option="UNFORMATTED_VALUE"))
      assert actual==bloque,f"No se pudo verificar rango {rango}"
      break
     except Exception as e:
