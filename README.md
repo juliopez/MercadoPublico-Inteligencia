@@ -112,6 +112,24 @@ Esto permite reclasificar las discrepancias de nombre como **coincidencias de RU
 
 Artefactos derivados de solo lectura: `auditoria_rut_cot_vs_sucursal_oc_agosto.csv` y `auditoria_rut_cot_vs_sucursal_oc_resumen.json`. **No se modificaron** la base clon, la base productiva, el frontend ni los ETL automáticos.
 
+#### Auditoría monetaria de OC originales — 20/10/2026
+
+Se contrastaron las **223 diferencias de monto** de `auditoria_discrepancias_montos_agosto.csv` con `2026-8 (OC).zip`, usando exclusivamente `Codigo` de OC y los campos `MontoTotalOC_PesosChilenos`, `TotalNetoOC`, `Impuestos`, `Descuentos`, `Cargos` y `PorcentajeIva`. Se localizaron **223 de 223 códigos OC**.
+
+| Clasificación exploratoria | Vínculos |
+| --- | ---: |
+| Monto de oferta igual a `TotalNetoOC` original | 8 |
+| Proporción aproximada 1,19 (candidato IVA, no causal comprobada) | 1 |
+| Proporción cercana a ±5 % (sin causal acreditada) | 4 |
+| Sin explicación directa por reglas anteriores | 210 |
+| **Total** | **223** |
+
+**Observaciones:** 38 montos de oferta contienen fracciones decimales; las diferencias no autorizan por sí mismas correcciones, sustituciones de monto ni cambios de `validado`. Las 8 igualdades con `TotalNetoOC` ponen de manifiesto que el esquema OC contiene bases monetarias diferentes; comparar el importe ofertado directamente con el total final de la orden puede inducir interpretaciones incorrectas. `Aceptada`/`Recepción conforme`: 221 vínculos; otros estados: 2.
+
+**Evidencia de análisis:** `auditoria_montos_OC_agosto_ampliada.csv` (223 casos con montos/campos OC originales) y `auditoria_montos_OC_agosto_resumen.json`. Procedimiento: lectura secuencial del CSV oficial en ZIP y extracción solo de los códigos en discrepancia; base clon y ETL intactos.
+
+**Siguiente decisión técnica:** antes de actualizar `Resultados`, definir reglas de conciliación por estado OC y campos de importe, conservando cada vínculo COT–OC y diferenciando evidencia oficial de incertidumbre monetaria. No promover automáticamente las 223 diferencias a resultados verificados.
+
 ### Verificación de identidad de proveedores por RUT — auditoría agosto 2026
 
 Se auditó el detalle de las **8.586** relaciones con razón social discrepante entre Compra Ágil y `OrdenesCompra`. La fuente COT conserva RUT del proveedor, pero la hoja OC utilizada por el clon carece de RUT de proveedor: **no es posible confirmar identidad tributaria cruzando únicamente las hojas actuales**.
