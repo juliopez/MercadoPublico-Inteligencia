@@ -63,6 +63,28 @@ Los campos `monto_adjudicado_clp`, `fecha_resultado` y `motivo_seleccion` perman
 
 **Siguiente control pendiente:** contrastar códigos, proveedores y montos de selecciones con órdenes de compra históricas y registrar concordancias y excepciones; no alterar el front ni la base de producción sin una aprobación específica.
 
+#### Resultado de ejecución corregida — 20 de octubre de 2026 (UTC)
+
+Archivos de evidencia entregados por el usuario: `auditoria_cot_oc_corregida_2026_08_resumen.json` y `auditoria_cot_oc_corregida_2026_08_detalle.csv`.
+
+| Indicador | Cantidad |
+| --- | ---: |
+| Cotizaciones seleccionadas distintas | 65.945 |
+| Vínculos oficiales COT–OC | 68.093 |
+| Cotizaciones con múltiples OC | 1.979 |
+| Máximo de OC por COT | 11 |
+| OC con código oficial localizado en hoja histórica | 44.495 |
+| Código OC, proveedor y monto coincidentes | 35.686 |
+| Código OC coincide, razón social distinta | 8.586 |
+| Código OC y proveedor coinciden, monto distinto | 223 |
+| Código OC ausente de la hoja OC histórica de agosto | 23.598 |
+
+**Interpretación metodológica:** el primer cruce por `Resultados.codigo = OrdenesCompra.codigo_proceso` dio 0 relaciones porque la identificación COT no estaba presente en ese campo; la segunda auditoría utilizó el campo `CodigoOC` de la fuente oficial. La ausencia de 23.598 OC en la hoja de agosto puede corresponder a diferencias temporales, procesos no aceptados o estados no finales; **no es evidencia de que dichas órdenes no existan**.
+
+Las 8.586 discrepancias por proveedor se detectan mediante normalización textual estricta (mayúsculas, tildes y puntuación); el archivo de vínculo contiene RUT de proveedor COT, pero el esquema de OC no lo conserva. Algunas razones sociales pueden ser variantes jurídicas o denominaciones comerciales de la misma entidad. No validar automáticamente sin identidad tributaria contrastada. Los montos diferentes requieren analizar composición e impuestos.
+
+**Decisión:** la auditoría confirma vínculos oficiales, pero NO acredita automáticamente todas las adjudicaciones. Conservar `Resultados.validado` y `estado_verificacion_oc` como pendientes hasta definir y ejecutar una reconciliación controlada que distinga estados de OC y entidad proveedora, con evidencia trazable. No se modifica Google Sheets, los ETL ni el front durante esta fase.
+
 ### Segunda auditoría COT–OC mediante Código OC oficial
 
 [![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Auditoria_COT_OC_Corregida.ipynb)
