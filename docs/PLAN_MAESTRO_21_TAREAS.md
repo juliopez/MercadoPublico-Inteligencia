@@ -24,7 +24,7 @@
 | 8 | Crear la Google Sheets operativa del mes en curso con el MER de seis tablas | Completada: MER_2026_10_OPERATIVO vacía y ubicada en 02_Operativo_API |
 | 9 | Adaptar los ETL de las API ChileCompra para alimentar la hoja operativa | Pendiente |
 | 10 | Implementar actualización incremental diaria y control de errores de API | Pendiente |
-| 11 | Diseñar el procedimiento de cierre mensual y consolidación con históricos oficiales | Pendiente |
+| 11 | Diseñar el procedimiento de cierre mensual y consolidación con históricos oficiales | Completada: documento técnico de cierre y conciliación |
 | 12 | Automatizar el traspaso del mes cerrado a una Google Sheets histórica | Pendiente |
 | 13 | Implementar un catálogo central de Google Sheets y períodos disponibles | En curso: catálogo versionado inicial creado; falta integración operativa |
 | 14 | Desarrollar el consolidador Python de datos históricos y operativos | Pendiente |
@@ -56,3 +56,5 @@ Tarea 6 completada. Bases mensuales 2026-06, 2026-07 y 2026-08 creadas vacías y
 
 - Tarea 8 completada: [MER_2026_10_OPERATIVO](https://docs.google.com/spreadsheets/d/1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4/edit) creado vacío con seis entidades. La tarea 9, conexión a API, queda pendiente.
 - Inventario de hojas y respaldos ampliado; tarea 1 todavía parcial. Ninguna depuración destructiva ejecutada.
+
+- Tarea 11 completada como **diseño**: [procedimiento de cierre mensual](PROCEDIMIENTO_CIERRE_MENSUAL.md). No se ha desarrollado ni activado el disparador automático de la tarea 12.
