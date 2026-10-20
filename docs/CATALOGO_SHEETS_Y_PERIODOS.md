@@ -29,7 +29,7 @@
 | Período | Tipo | ID de Google Sheet | Estado |
 |---|---|---|---|
 | 2026-06 | Histórico | `137pknbQIBbm5WAYvFh5bXKTGX9uBVhBYleTwxO6x7PI` | Creado, seis tablas MER v2 vacías; pendiente carga |
-| 2026-07 | Histórico | `1LcVUrWn99deDkgphD8cAn2n4jLxl-HZyzNm0XGffC5w` | Creado, seis tablas MER v2 vacías; pendiente carga |
+| 2026-07 | Histórico | `1LcVUrWn99deDkgphD8cAn2n4jLxl-HZyzNm0XGffC5w` | 810.333 registros cargados; auditoría independiente pendiente |
 | 2026-08 | Histórico | `1TY41r2eriz3wvvLvHdYxHVrbqk94Lsp1kFtDtxxcXEs` | 834.370 registros; auditoría independiente aprobada con observaciones (20-10-2026) |
 | 2026-09 | Histórico | `1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA` | Cargado y auditado |
 | 2026-10 | Operativo (API) | `1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4` | Creado, seis tablas MER v2 vacías; integración API pendiente |
@@ -64,3 +64,7 @@ Notebook de auditoría MER v2 [generalizado por período](https://colab.research
 ## Cierre estructural de agosto — 2026-10-20
 
 Evidencia: `auditoria_integridad_mer_v2_2026-08.json` generado 2026-10-20T21:51:20Z sobre `MER_2026_08` (solo lectura). Estado: `AUDITORIA_COMPLETADA_CON_OBSERVACIONES`. Procesos 83.937, Proveedores 30.564, Ofertas 432.111, OrdenesCompra 153.221, VinculosCOT_OC 68.592, Resultados 65.945; **total 834.370**. PK vacías 0, duplicadas 0, campos extra/ausentes 0 en todas las tablas. FK auditadas sin huérfanos; 0 pares COT–OC duplicados. **Observaciones**: 24.097 vínculos OC fuera del corte (aceptados por cobertura), 65.945 resultados `OC no verificada`, proveedores `RUT_SIN_CONTRASTE` 30.516 y `SIN_RUT` 48. Cierre de integridad estructural/referencial **aprobado**, sin certificar adjudicaciones jurídicas ni identidades tributarias. Siguiente período julio 2026.
+
+## Julio 2026 — carga verificada
+
+Colab informó `CARGA MER V2 FINALIZADA 2026-07`. Se verificaron dimensiones de las seis pestañas en Google Sheets (80.996 Procesos, 29.827 Proveedores, 437.855 Ofertas, 150.980 OrdenesCompra, 56.149 VinculosCOT_OC y 54.526 Resultados; 810.333 registros). La **auditoría referencial posterior** aún está pendiente. No repetir la carga.
