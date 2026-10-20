@@ -144,6 +144,21 @@ Se verificaron los lotes durante la ejecución y la totalidad de la columna J al
 
 **Estado:** carga de estados de evidencia finalizada; auditoría jurídica de adjudicaciones y conciliación con períodos fuera de agosto siguen pendientes. No se alteraron deliberadamente las columnas A:I, ni el libro de producción, ETL o frontend.
 
+### Decisión metodológica: cobertura temporal de órdenes de compra — octubre 2026
+
+**Decisión del proyecto:** no reconstruir retroactivamente todos los vínculos entre las COT de un mes y las órdenes de compra registradas en otros meses. Es una **limitación estructural de cobertura por período**, no un defecto de carga que deba repararse en cada incorporación histórica.
+
+El histórico mensual de COT identifica procesos publicados en un período, mientras el histórico mensual de OC incluye órdenes generadas o aceptadas bajo otros criterios temporales. La relación entre ambas fuentes es por tanto **asimétrica en el tiempo**: incluso ampliando los meses históricos seguirá habiendo procesos anteriores y posteriores que trasciendan el corte.
+
+**Consecuencias operativas acordadas:**
+- Mantener `OC_ACEPTADA_FUERA_CORTE` como categoría informativa cuando el histórico COT aporte el vínculo y estado; **no tratarlo como inconsistencia ni como OC inexistente**.
+- No ejecutar ciclos de búsqueda o descarga de meses adicionales con el solo objetivo de resolver esta categoría.
+- Conservar fechas, fuente y códigos originales; no imputar fecha, adjudicación ni monto ausentes.
+- En indicadores, distinguir `OC no observada en el corte` de `OC sin aceptación acreditada`; evitar métricas que equiparen cobertura mensual con completitud longitudinal.
+- Pasar a **auditoría de integridad de las cuatro pestañas** del clon antes de cualquier decisión respecto de producción o frontend.
+
+Esta decisión no modifica datos ya escritos en `Resultados`, no altera ETL automáticos y se aplica a futuras cargas históricas.
+
 ### Ejecución controlada de estados en Resultados — preparada, pendiente de ejecutar
 
 [![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Actualizar_Estado_Resultados_Agosto_Colab.ipynb)
