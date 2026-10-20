@@ -63,6 +63,16 @@ Los campos `monto_adjudicado_clp`, `fecha_resultado` y `motivo_seleccion` perman
 
 **Siguiente control pendiente:** contrastar códigos, proveedores y montos de selecciones con órdenes de compra históricas y registrar concordancias y excepciones; no alterar el front ni la base de producción sin una aprobación específica.
 
+## Auditoría de Resultados frente a Órdenes de Compra — agosto 2026
+
+[![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Auditoria_Resultados_OrdenesCompra_Colab.ipynb)
+
+**Estado:** auditoría publicada, **pendiente de ejecución y revisión de su informe**. No se ha verificado aún la correspondencia general entre los 65.945 resultados pendientes y las 153.220 órdenes de compra de agosto.
+
+La auditoría es **estrictamente de solo lectura** y consulta el clon directamente; no relee ZIP/SQLite ni usa API de ChileCompra. Obtiene los campos de `Resultados` y `OrdenesCompra` por bloques; reporta: (1) sin OC asociada al código; (2) OC con proveedor distinto; (3) código + proveedor coincidentes, importe OC diferente; (4) código + proveedor + monto de oferta y OC coincidentes. Identifica códigos duplicados y órdenes sin correspondencia en `Resultados`. Descarga resumen JSON y detalle CSV de los procesos examinados.
+
+**Criterio de cautela:** la razón social se compara por nombre normalizado al no existir RUT del proveedor en el esquema de ambas pestañas. Una coincidencia de nombre y monto **no certifica una adjudicación oficial**: los montos pueden diferir por líneas, impuestos o modificaciones. El script no marca `validado` ni modifica el estado de verificación de OC. El cierre requiere revisar categorías, excepciones y evidencia antes de promover registros a validados.
+
 ## Resultados de Compra Ágil desde SQLite histórico — pendiente de verificación
 
 [![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Resultados_Compra_Agil_Colab.ipynb)
