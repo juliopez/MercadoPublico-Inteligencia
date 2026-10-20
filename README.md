@@ -34,6 +34,20 @@ Se recibió y auditó `preparado_mercado_publico_mer_v2.zip` de la primera ejecu
 
 **Acción ejecutada:** corregido [`scripts/importador_historicos_v2.py`](scripts/importador_historicos_v2.py) e incorporada una comprobación bloqueante de número de atributos en **todas las entidades** y de códigos OC válidos. **Estado:** se requiere regenerar y reauditar el paquete; el ZIP anterior **no debe cargarse**. Ningún dato fue escrito en la base MER v2.
 
+## Carga de paquete MER v2 — controlada y reanudable (septiembre de 2026)
+
+[![Abrir cargador en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Cargar_Paquete_MER_v2_Colab.ipynb)
+
+**Código:** [`scripts/cargar_mer_v2_colab.py`](scripts/cargar_mer_v2_colab.py). **Lanzador:** [`colab/Cargar_Paquete_MER_v2_Colab.ipynb`](colab/Cargar_Paquete_MER_v2_Colab.ipynb). **Único destino:** [base MER v2 nueva](https://docs.google.com/spreadsheets/d/1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA/edit); no utiliza producción ni el clon anterior.
+
+1. Subir **exclusivamente** el ZIP preparado y corregido de septiembre `preparado_mercado_publico_mer_v2 (1).zip`; contiene exactamente `Procesos.csv`, `Proveedores.csv`, `Ofertas.csv`, `OrdenesCompra.csv`, `VinculosCOT_OC.csv`, `Resultados.csv` e `informe.json`.
+2. Ejecutar autenticación y simulación: comprobar esquemas, cifras esperadas, códigos y destino. No escribe durante esta fase.
+3. Si todo es correcto, ejecutar solo la celda final con `CONFIRMACION = "AUTORIZO CARGA MER V2 SEPTIEMBRE EN BASE NUEVA"`. Antes de la primera escritura se crea una copia de respaldo de la base nueva en Drive.
+4. La escritura usa exclusivamente las seis hojas previstas, conserva cabeceras y carga por lotes con lectura posterior; si Colab se interrumpe, volver a ejecutar con **el mismo ZIP** para reanudar desde el prefijo de códigos ya almacenados. Nunca ejecutar dos sesiones simultáneas.
+5. Registrar el informe de filas iniciales, añadidas y finales y realizar una auditoría referencial independiente. No confundir la validez estructural con adjudicación oficialmente verificada.
+
+**Estado actual:** código y lanzador publicados, **carga no ejecutada aún**. No se habilita publicación de frontend ni ETL automáticos. La implementación usa el paquete validado de septiembre con conteos fijos; antes de otros meses habrá que parametrizar el período y los conteos esperados. Las OC fuera del corte mensual siguen siendo limitación temporal aceptada.
+
 ## Importador Histórico Unificado MER v2 — prototipo de preparación
 
 [![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_Unificado_MER_v2.ipynb)
