@@ -102,6 +102,17 @@ Las 8.586 discrepancias por proveedor se detectan mediante normalización textua
 
 **Decisión:** la auditoría confirma vínculos oficiales, pero NO acredita automáticamente todas las adjudicaciones. Conservar `Resultados.validado` y `estado_verificacion_oc` como pendientes hasta definir y ejecutar una reconciliación controlada que distinga estados de OC y entidad proveedora, con evidencia trazable. No se modifica Google Sheets, los ETL ni el front durante esta fase.
 
+### Verificación de identidad de proveedores por RUT — auditoría agosto 2026
+
+Se auditó el detalle de las **8.586** relaciones con razón social discrepante entre Compra Ágil y `OrdenesCompra`. La fuente COT conserva RUT del proveedor, pero la hoja OC utilizada por el clon carece de RUT de proveedor: **no es posible confirmar identidad tributaria cruzando únicamente las hojas actuales**.
+
+- **2.424 RUT COT distintos**, todos los **8.586 registros con dígito verificador matemáticamente válido**. El dígito verificador válido no certifica existencia ni titularidad del RUT.
+- **8.545** relaciones tienen nombre diferente, pero montos de oferta y OC idénticos; **41** difieren tanto en nombre como en monto. Estas concordancias monetarias son indicios, no prueba de identidad.
+- **0 identidades tributarias OC certificadas**, porque falta el RUT de la contraparte OC.
+- Se generaron `auditoria_identidad_rut_cot_agosto.csv`, `auditoria_rut_denominaciones_agosto.csv` y `auditoria_identidad_rut_resumen.json`. Son evidencias locales de auditoría, no cargas a Google Sheets.
+
+**Próximo insumo necesario:** histórico oficial de OC agosto 2026 con encabezados originales para verificar si dispone de RUT proveedor. Si existe, realizar unión por `CodigoOC` y comparar los RUT de ambas fuentes; si no, documentar la imposibilidad de confirmación y no modificar `Resultados.validado`. No se han modificado las hojas, el front ni los ETL automáticos.
+
 ### Segunda auditoría COT–OC mediante Código OC oficial
 
 [![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Auditoria_COT_OC_Corregida.ipynb)
