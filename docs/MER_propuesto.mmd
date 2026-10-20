@@ -1,0 +1,83 @@
+erDiagram
+    direction TB
+    PROCESOS ||--o{ OFERTAS : recibe
+    PROCESOS ||--o| RESULTADOS : tiene
+    OFERTAS ||--o| RESULTADOS : seleccionada_en
+    PROVEEDORES o|--o{ OFERTAS : presenta
+    PROVEEDORES o|--o{ ORDENES_COMPRA : suministra
+    PROCESOS ||--o{ VINCULOS_COT_OC : origina
+    ORDENES_COMPRA ||--o{ VINCULOS_COT_OC : se_vincula
+
+    PROCESOS {
+        string codigo PK
+        string nombre
+        string estado
+        string convocatoria
+        date fecha_publicacion
+        date fecha_cierre
+        decimal monto_disponible_clp
+        string organismo_comprador
+        string region
+        int total_ofertas_recibidas
+        string motivo_seleccion
+        string url_detalle
+        date fecha_sincronizacion
+        string categoria
+        string subcategoria
+        string modalidad
+    }
+    OFERTAS {
+        string id_cotizacion PK
+        string codigo FK
+        string id_proveedor FK
+        string proveedor
+        decimal monto_ofertado_clp
+        date fecha_oferta
+        string fuente
+        string seleccionado
+        string rut_proveedor_cot
+    }
+    RESULTADOS {
+        string codigo PK,FK
+        string id_cotizacion_ganadora FK
+        string adjudicatario
+        decimal monto_adjudicado_clp
+        date fecha_resultado
+        string motivo_seleccion
+        string fuente
+        string validado
+        decimal monto_oferta_seleccionada_clp
+        string estado_verificacion_oc
+    }
+    PROVEEDORES {
+        string id_proveedor PK
+        string rut_canonico UK
+        string razon_social_canonica
+        string nombre_fantasia
+        string fuente_principal
+        string estado_identidad
+    }
+    ORDENES_COMPRA {
+        string codigo_oc PK
+        string codigo_proceso
+        string id_proveedor FK
+        date fecha_creacion
+        date fecha_aceptacion
+        string estado
+        string proveedor
+        decimal monto_total_oc_clp
+        string tipo_oc
+        int cantidad_lineas
+        decimal total_lineas_neto
+        string rut_sucursal_oc
+        string codigo_proveedor_oc
+    }
+    VINCULOS_COT_OC {
+        string id_vinculo PK
+        string codigo_cot FK
+        string codigo_oc FK
+        string origen_vinculo
+        string estado_oc_historico
+        date fecha_aceptacion_oc
+        string relacion_confiable
+    }
