@@ -43,6 +43,16 @@
 - Antes de escribir se vuelven a comprobar las claves existentes; cada lote se verifica tras la escritura. Los registros ya cargados no se vuelven a incorporar al reanudar.
 - **No** se cambia la programación de GitHub Actions, la base original ni los archivos históricos. Versión pendiente de ejecución integral de OC en Colab: revisar informe de simulación antes de autorizar.
 
+## Resultados de Compra Ágil desde SQLite histórico — pendiente de verificación
+
+[![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Resultados_Compra_Agil_Colab.ipynb)
+
+- **Notebook:** [Resultados_Compra_Agil_Colab.ipynb](colab/Resultados_Compra_Agil_Colab.ipynb). Trabaja sobre el **SQLite ya preparado** desde `COT_2026-08.zip`; requiere el `PREPARADO_ID` conservado en Google Drive. No solicita procesar otra vez el ZIP ni consulta las API.
+- La hoja `Resultados` del clon estaba vacía al comienzo de esta etapa. Solo se propone una fila por proceso cuando exactamente **una** oferta del SQLite posee una marca explícita de selección. Si hay múltiples seleccionadas, el proceso queda excluido y contabilizado como ambiguo.
+- **Límite semántico fundamental:** una oferta marcada como seleccionada no acredita por sí misma una adjudicación formal. Por eso `monto_adjudicado_clp` y `fecha_resultado` permanecen vacíos; `monto_oferta_seleccionada_clp` preserva el importe de la oferta, `id_cotizacion_ganadora` guarda el identificador sintético existente, y `estado_verificacion_oc` es `OC no verificada`. El campo `validado` consigna claramente `Pendiente: selección histórica, no adjudicación verificada`.
+- El notebook genera un reporte de cantidades de selecciones, ambigüedades y candidatos; comienza en **simulación**. Solo después de revisar el informe se permite cargar al clon con `AUTORIZACION='AUTORIZO RESULTADOS PENDIENTES EN CLON'`, creando respaldo previo, comparando códigos existentes y verificando inserciones por lotes.
+- **Estado:** código y documentación preparados, **sin ejecución validada todavía**. No modifica el libro productivo ni los ETL automáticos. La relación con OC se deja pendiente de comprobación independiente; no se equipara `RazonSocialProveedor` con adjudicatario verificado sin respaldo oficial.
+
 ## Compra Ágil agosto 2026 — importación de procesos y ofertas en una sola lectura
 
 [![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Compra_Agil_Procesos_Ofertas_Colab.ipynb)
