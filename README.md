@@ -144,6 +144,26 @@ Se verificaron los lotes durante la ejecución y la totalidad de la columna J al
 
 **Estado:** carga de estados de evidencia finalizada; auditoría jurídica de adjudicaciones y conciliación con períodos fuera de agosto siguen pendientes. No se alteraron deliberadamente las columnas A:I, ni el libro de producción, ETL o frontend.
 
+### Cierre de auditoría integral del clon — agosto de 2026
+
+**Ejecución:** 20/10/2026 02:36:24 UTC, notebook `colab/Auditoria_Integridad_Clon_Agosto_Colab.ipynb` en modo solo lectura. Evidencia: `auditoria_integridad_clon_agosto_2026.json` entregado por el usuario.
+
+| Entidad | Filas | Claves vacías | Duplicados |
+| --- | ---: | ---: | ---: |
+| Procesos | 83.937 | 0 | 0 |
+| Ofertas | 432.111 | 0 | 0 |
+| Resultados | 65.945 | 0 | 0 |
+| OrdenesCompra | 153.220 | 0 | 0 |
+| **Total** | **735.213** | **0** | **0** |
+
+Los controles adicionales reportaron **0 ofertas sin proceso**, **0 resultados sin proceso**, **0 referencias de oferta seleccionada inexistentes** y **0 diferencias entre proveedor seleccionado y proveedor de la oferta referenciada**.
+
+Se detectaron **92.522 filas de OrdenesCompra con `codigo_proceso` vacío**. Se registra como limitación de completitud del campo, no como falla comprobada de importación, dada la heterogeneidad de identificadores COT/AG/licitaciones y la decisión de no reconstruir retrospectivamente vínculos fuera del corte mensual.
+
+Distribución de `Resultados.estado_verificacion_oc`: `SIN_OC_ACEPTADA` 5.658; `OC_ACEPTADA_FUERA_CORTE` 16.471; `OC_ACEPTADA_MONTO_COINCIDE` 35.134; `OC_ACEPTADA_RUT_COINCIDE_NOMBRE_DIFIERE` 8.461; `OC_ACEPTADA_MONTO_DIFIERE` 221.
+
+**Conclusión:** auditoría estructural y referencial **superada para los controles ejecutados**. No equivale a certificación de adjudicaciones, integridad longitudinal ni validación semántica exhaustiva de las ofertas. No se modificó ninguna hoja durante la auditoría. Se puede continuar con planificación de nuevos períodos, manteniendo la base de producción, ETL y frontend intactos salvo autorización específica.
+
 ### Decisión metodológica: cobertura temporal de órdenes de compra — octubre 2026
 
 **Decisión del proyecto:** no reconstruir retroactivamente todos los vínculos entre las COT de un mes y las órdenes de compra registradas en otros meses. Es una **limitación estructural de cobertura por período**, no un defecto de carga que deba repararse en cada incorporación histórica.
