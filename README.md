@@ -23,7 +23,24 @@
 
 La definición operativa de **`PROVEEDORES`** y **`VINCULOS_COT_OC`** (atributos, tipos, PK, FK lógicas, reglas de unicidad, RUT faltantes y referencias OC fuera del corte) está en [`docs/Especificacion_Proveedores_Vinculos_COT_OC.md`](docs/Especificacion_Proveedores_Vinculos_COT_OC.md).
 
-**Decisión de implementación:** no crear aún pestañas ni insertar datos; conservar las cabeceras existentes y proteger el contrato con el frontend. El vínculo `codigo_oc` se registra aunque la OC no figure en el corte mensual; se trata de una **referencia oficial pendiente de correspondencia local**, no de una FK físicamente obligatoria. La unicidad de RUT solo aplica a identificadores normalizados y sin conflicto. **Diseño aprobado para preparación de migración, implementación pendiente.**
+**Decisión de implementación:** las seis pestañas vacías de MER v2 ya están creadas; no insertar todavía datos sin plan de migración y auditoría y proteger el contrato con el frontend. El vínculo `codigo_oc` se registra aunque la OC no figure en el corte mensual; se trata de una **referencia oficial pendiente de correspondencia local**, no de una FK físicamente obligatoria. La unicidad de RUT solo aplica a identificadores normalizados y sin conflicto. **Diseño aprobado para preparación de migración, implementación pendiente.**
+
+## Google Sheets — nueva base MER v2 (creada, sin históricos cargados)
+
+**Archivo nuevo:** [Observatorio Mercado Público — Modelo MER v2 (Base nueva)](https://docs.google.com/spreadsheets/d/1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA/edit). Se creó desde cero; **no es** el clon anterior ni la base de producción. La creación no ejecutó ningún ETL ni transfirió registros.
+
+| Hoja nueva | Atributos | PK |
+| --- | ---: | --- |
+| `Procesos` | 16 | `codigo` |
+| `Ofertas` | 9 | `id_cotizacion` |
+| `Resultados` | 10 | `codigo` |
+| `OrdenesCompra` | 13 | `codigo_oc` |
+| `Proveedores` | 6 | `id_proveedor` |
+| `VinculosCOT_OC` | 7 | `id_vinculo` |
+
+Las seis pestañas están vacías excepto por encabezados; se inmovilizó la primera fila y se incorporaron notas a las claves principales y referencias. Las FK y la unicidad de RUT deberán validarse mediante scripts antes de poblar la nueva base; Sheets no las impone por sí mismo.
+
+**Plan siguiente (pendiente):** definir migración desde el clon histórico hacia esta nueva base, con mapeo exacto de columnas y resolución de PK/FK; poblar y auditar antes de considerar cambiar frontend, exportador o automatizaciones. **Producción, clon anterior y GitHub Actions permanecen sin cambios.**
 
 ## MER lógico propuesto — seis entidades (pendiente de implementación)
 
@@ -119,7 +136,7 @@ erDiagram
 
 **PK y restricciones pendientes de definir:** `id_cotizacion` es actualmente una clave sintética de oferta; `id_proveedor` sería una clave interna estable. `rut_canonico` es candidato a unicidad **solo cuando esté normalizado y verificado**, permitiendo desconocidos. En `VINCULOS_COT_OC` deberá aplicarse además unicidad a la pareja (`codigo_cot`, `codigo_oc`) dentro de la fuente/granularidad apropiada.
 
-**Compatibilidad:** diagrama de **modelo objetivo**, no refleja una migración ya realizada. Los encabezados actuales de las cuatro hojas siguen intactos; `PROVEEDORES` y `VINCULOS_COT_OC` aún no se han creado. La notación FK expresa integridad lógica propuesta, no una restricción física ejecutada por Google Sheets. Frontend y ETL automáticos sin cambios.
+**Compatibilidad:** diagrama de **modelo objetivo**, no refleja una migración ya realizada. Los encabezados actuales de las cuatro hojas siguen intactos; `PROVEEDORES` y `VINCULOS_COT_OC` se han creado únicamente como pestañas vacías en la nueva base MER v2. La notación FK expresa integridad lógica propuesta, no una restricción física ejecutada por Google Sheets. Frontend y ETL automáticos sin cambios.
 
 ## Decisión de modelo de datos: identificación de proveedores (pendiente de implementación)
 
