@@ -2,6 +2,18 @@
 
 **Plataforma de inteligencia y seguimiento de compras públicas en Chile.** Integra información de licitaciones, Compra Ágil, ofertas, resultados y órdenes de compra proveniente de ChileCompra, utilizando una base operativa privada en Google Sheets y una visualización pública en GitHub Pages.
 
+### Auditoría de primera preparación MER v2 — septiembre de 2026
+
+Se recibió y auditó `preparado_mercado_publico_mer_v2.zip` de la primera ejecución: `Procesos` 79.376, `Ofertas` 398.018, `Resultados` 48.637, `OrdenesCompra` 147.966, `Proveedores` 30.280 y `VinculosCOT_OC` 73.571. Las PK estaban presentes y sin duplicados. Se comprobaron referencias entre procesos, ofertas, resultados y proveedores, sin registros huérfanos en los campos evaluados.
+
+**Fallos bloqueantes detectados antes de cargar a Sheets:**
+
+1. `Resultados.csv` tenía 10 encabezados, pero **9 valores por fila**. Los campos desde `fuente` aparecían desplazados: `estado_verificacion_oc` resultaba nulo en las 48.637 filas. **Corregido en el código fuente**, no en el ZIP generado previamente.
+2. Se trataron como códigos oficiales **23.530 valores literales `NA`** de `CodigoOC` y se incorporaron erróneamente a `VinculosCOT_OC`. Se modificó la función de lectura de atributos para interpretar marcadores conocidos de ausencia y no generar vínculos ficticios.
+3. La diferencia restante entre OC de la fuente COT y la pestaña OC del corte puede ser temporal: **no se debe forzar integridad física** en la referencia externa de `VinculosCOT_OC.codigo_oc`. Se mantiene la decisión metodológica acordada.
+
+**Acción ejecutada:** corregido [`scripts/importador_historicos_v2.py`](scripts/importador_historicos_v2.py) e incorporada una comprobación bloqueante de número de atributos en **todas las entidades** y de códigos OC válidos. **Estado:** se requiere regenerar y reauditar el paquete; el ZIP anterior **no debe cargarse**. Ningún dato fue escrito en la base MER v2.
+
 ## Importador Histórico Unificado MER v2 — prototipo de preparación
 
 [![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Importador_Historicos_Unificado_MER_v2.ipynb)
