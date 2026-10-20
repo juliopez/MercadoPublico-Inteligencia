@@ -63,6 +63,23 @@ Los campos `monto_adjudicado_clp`, `fecha_resultado` y `motivo_seleccion` perman
 
 **Siguiente control pendiente:** contrastar códigos, proveedores y montos de selecciones con órdenes de compra históricas y registrar concordancias y excepciones; no alterar el front ni la base de producción sin una aprobación específica.
 
+#### Conciliación adicional por proceso COT — clasificación sin modificar Sheets
+
+A partir del CSV de detalle de la segunda auditoría, se consolidaron los **68.093 vínculos en 65.945 procesos COT**, clasificando cada proceso según su mejor evidencia de OC. Estado `Aceptada` o `Recepción conforme` se considera señal de aceptación operativa, no adjudicación formal certificada.
+
+| Clasificación a nivel de COT | Procesos |
+| --- | ---: |
+| OC aceptada/en recepción conforme en el clon, proveedor y monto coinciden | 35.134 |
+| OC aceptada/en recepción conforme fuera del corte de OC agosto | 16.471 |
+| OC aceptada/en recepción conforme en clon, nombre de proveedor distinto | 8.461 |
+| Ninguna OC aceptada ni con recepción conforme | 5.658 |
+| OC aceptada/en recepción conforme en clon, proveedor coincide y monto difiere | 221 |
+| **Total** | **65.945** |
+
+En total, **60.287 COT distintas** poseen al menos una OC `Aceptada` o en `Recepción conforme`; **5.658** no poseen ninguna con esos estados en el archivo de vínculos. La cifra 60.287 coincide incidentalmente con el número de vínculos con estado positivo, pero el reporte también incluye COT con múltiples OC: no eliminar el detalle de vínculos.
+
+**Limitaciones:** el cruce entre proveedores usa sus nombres normalizados, no identificadores tributarios en ambas fuentes; la categoría de 8.461 requiere contrastar RUT por fuente oficial. Para las 16.471 OC fuera del corte histórico de agosto, consultar el histórico del período que corresponda antes de declarar ausencia. No se ha modificado ningún estado de `Resultados`.
+
 #### Resultado de ejecución corregida — 20 de octubre de 2026 (UTC)
 
 Archivos de evidencia entregados por el usuario: `auditoria_cot_oc_corregida_2026_08_resumen.json` y `auditoria_cot_oc_corregida_2026_08_detalle.csv`.
