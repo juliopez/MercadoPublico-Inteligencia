@@ -130,6 +130,20 @@ Se contrastaron las **223 diferencias de monto** de `auditoria_discrepancias_mon
 
 **Siguiente decisión técnica:** antes de actualizar `Resultados`, definir reglas de conciliación por estado OC y campos de importe, conservando cada vínculo COT–OC y diferenciando evidencia oficial de incertidumbre monetaria. No promover automáticamente las 223 diferencias a resultados verificados.
 
+#### Ejecución confirmada — 19 de octubre de 2026 (Chile)
+
+El usuario ejecutó el notebook `colab/Actualizar_Estado_Resultados_Agosto_Colab.ipynb` contra el **clon**. El log terminó con:
+
+```text
+ACTUALIZACION FINALIZADA: 65945 estados modificados; total comprobado: 65945
+```
+
+Se verificaron los lotes durante la ejecución y la totalidad de la columna J al finalizar. Respaldo previo registrado en Drive con ID `1kwAh_lrxFDdO78MqbKh-ry4A6qxatrTjUXHL-fXJuZw`.
+
+**Comprobación independiente por lectura puntual del clon:** `Resultados!A1:J5` muestra valores de `estado_verificacion_oc` como `SIN_OC_ACEPTADA`, `OC_ACEPTADA_FUERA_CORTE` y `OC_ACEPTADA_MONTO_COINCIDE`, manteniendo `validado` como `Pendiente: selección histórica, no adjudicación verificada` y sin rellenar `monto_adjudicado_clp` ni `fecha_resultado`. Esto confirma una muestra, no reemplaza la verificación global ejecutada por el notebook.
+
+**Estado:** carga de estados de evidencia finalizada; auditoría jurídica de adjudicaciones y conciliación con períodos fuera de agosto siguen pendientes. No se alteraron deliberadamente las columnas A:I, ni el libro de producción, ETL o frontend.
+
 ### Ejecución controlada de estados en Resultados — preparada, pendiente de ejecutar
 
 [![Abrir en Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juliopez/MercadoPublico-Inteligencia/blob/main/colab/Actualizar_Estado_Resultados_Agosto_Colab.ipynb)
