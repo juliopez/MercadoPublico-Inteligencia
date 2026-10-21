@@ -7,6 +7,7 @@ on:
       - 'frontend-v2/index.html'
       - 'frontend-v2/css/**'
       - 'frontend-v2/js/**'
+      - 'frontend-v2/data/catalogo-publico.json'
       - '.github/workflows/preview-frontend-v2.yml'
 permissions:
   contents: read
