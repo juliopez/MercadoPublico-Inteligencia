@@ -78,7 +78,7 @@ async function search(){
   if(!Array.isArray(parts)||parts.length!==catalogue.fragmentos)throw Error('Índice desactualizado');
   const keys=[...new Set(tokens.map(t=>t.slice(0,2)))];
   const groups=new Map();
-  for(const key of keys){groups.set(key,await read('data/busqueda/'+period+'/'+entity+'/'+key+'.json'));if(seq!==request)return}
+  for(const key of keys){try{groups.set(key,await read('data/busqueda/'+period+'/'+entity+'/'+key+'.json'))}catch{groups.set(key,{})}if(seq!==request)return}
   const lists=tokens.map(token=>groups.get(token.slice(0,2))?.[token.slice(0,3)]||[]);
   lists.sort((a,b)=>a.length-b.length);
   if(!lists.length||!lists[0].length){references=[]}else{
