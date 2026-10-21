@@ -144,6 +144,49 @@ def preparar_carga_conciliada(db,schemas,estado,politica):
   propuestas[tab]=result
  return propuestas,counts
 
+
+def ejecutar_carga_conciliada(book,db,schemas,periodo,politica,registrar,confirmacion=None):
+ """Ruta única conciliación->respaldo->escritura->lectura, sin exponer CLI.
+ Requiere bloqueo externo flock y autorización validada por orquestador.
+ """
+ if confirmacion!="CIERRE_SUPERVISADO_AUTORIZADO":
+  raise PermissionError("Falta autorización supervisada")
+ etl=importar("etl_conciliado","etl_zip_dos_fuentes.py")
+ estado={t:etl.worksheet_rows(book.worksheet(t),schemas[t]) for t in TABLAS}
+ propuestas,resumen=preparar_carga_conciliada(db,schemas,estado,politica)
+ necesarios=sum(v["altas"]*len(schemas[t]) for t,v in resumen.items())
+ if sum(w.row_count*w.col_count for w in book.worksheets())+necesarios>10_000_000:
+  raise ValueError("Capacidad Google Sheets insuficiente")
+ respaldo=etl.respaldo_local(book,schemas,periodo)
+ if not respaldo.get("sha256") or not respaldo.get("archivo"):
+  raise ValueError("Respaldo no verificable")
+ registrar("RESPALDO_CONCILIADO_VERIFICADO",{"periodo":periodo,"respaldo":respaldo})
+ try:
+  for t in TABLAS:
+   ws=book.worksheet(t)
+   presente=etl.worksheet_rows(ws,schemas[t])
+   # Optimistic concurrency: entre preparación y escritura no puede variar
+   # ninguna PK preexistente, incluso las exclusivas del operativo.
+   if presente!=estado[t]:
+    raise ValueError("Destino cambió desde preflight: "+t)
+   aplicado=etl.aplicar_tabla(ws,schemas[t],propuestas[t],presente)
+   posterior=etl.worksheet_rows(ws,schemas[t])
+   for pk,row in propuestas[t]:
+    if pk not in posterior or posterior[pk][1]!=row:
+     raise ValueError("Verificación de escritura falló: "+t+" "+pk)
+   # No descartar filas que solo existían en el operativo.
+   for pk in set(presente)-{k for k,_ in propuestas[t]}:
+    if pk not in posterior or posterior[pk][1]!=presente[pk][1]:
+     raise ValueError("Registro operativo alterado: "+t+" "+pk)
+   registrar("TABLA_CONCILIADA_VERIFICADA:"+t,{"periodo":periodo,"tabla":t,"aplicado":aplicado})
+ except BaseException as exc:
+  registrar("CARGA_CONCILIADA_INCOMPLETA",{"periodo":periodo,"error":repr(exc)})
+  raise
+ result={"periodo":periodo,"estado":"CARGA_CONCILIADA_VERIFICADA_PENDIENTE_AUDITORIA",
+         "respaldo":respaldo,"tablas":resumen,"traslado_autorizado":False}
+ registrar("CARGA_CONCILIADA_VERIFICADA",result)
+ return result
+
 def main():
  p=argparse.ArgumentParser(description="Preflight del cargador: sin escrituras ni autorización de cierre")
  p.add_argument("--paquete",type=Path,required=True)
