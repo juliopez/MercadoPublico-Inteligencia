@@ -33,3 +33,11 @@ Se inspeccionó código/documentación y se corrigió la serialización de salto
 Se revisaron nuevamente README, índice, decisiones y documentación de búsqueda antes de intervenir. Se añadió `.github/workflows/validar-busqueda-v2.yml` (commit `d0ba59f0`) para ejecutar comprobación de sintaxis y las dos pruebas unitarias del generador directamente sobre el checkout real en GitHub Actions. El workflow se inicia por cambios en sus propios archivos o manualmente.
 
 **Verificación pendiente:** la herramienta de consulta no permitió obtener la lista de ejecuciones del workflow. No se afirma que las pruebas hayan pasado ni se publica un índice sin esa evidencia. Tampoco se ha medido tamaño con los históricos. Se mantienen intactos frontend V1, JavaScript de V2, carga fragmentada, Sheets y ETL.
+
+
+## Comprobación adicional — 21-10-2026
+- Se consultó documentación vigente antes de continuar.
+- Se comprobaron los estados asociados al commit del workflow `d0ba59f0`; las consultas de estado devolvieron `statuses: []` y `workflow_runs: []`. **No hay evidencia obtenida de una ejecución CI satisfactoria.**
+- La red del contenedor no logró resolver GitHub. Se ejecutó **una reproducción local aislada de la lógica principal** con dos registros sintéticos: normalización de tildes, creación de prefijos, acceso a los registros por prefijo, validación de rutas y detección de discordancia de recuentos; el ensayo finalizó correctamente. Esto **no sustituye la ejecución del test original del repositorio**.
+- No se ejecutó una medición real de tamaño o consumo de memoria con el conjunto histórico completo; el navegador V2 sigue con búsqueda por bloque. No se habilitó nueva funcionalidad ni se modificó el sistema de carga.
+- Antes de desplegar índices globales, confirmar éxito de CI y establecer límites para prefijos frecuentes que podrían generar archivos muy grandes.
