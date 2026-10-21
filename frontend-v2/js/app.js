@@ -332,7 +332,7 @@ async function readJsonPublic(path){
 function renderLinkedRecords(target,items,kind){
  const container=$(target);container.replaceChildren();
  const description=document.createElement('p');description.className='muted';
- description.textContent=items.length.toLocaleString('es-CL')+' registros relacionados por código de proceso.';
+ description.textContent=items.length?items.length.toLocaleString('es-CL')+' registros relacionados por código de proceso.':kind==='ordenescompra'?'No se encontraron órdenes con coincidencia exacta del código de proceso en los históricos publicados. Una OC podría existir con referencia de proceso vacía o diferente.':'No se encontraron registros relacionados por código de proceso en los históricos publicados.';
  container.append(description);
  if(!items.length)return;
  const table=document.createElement('table'),head=document.createElement('tr'),body=document.createElement('tbody');
