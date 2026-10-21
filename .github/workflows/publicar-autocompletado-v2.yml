@@ -1,0 +1,40 @@
+name: Publicar sugerencias de proveedores V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/publicar-autocompletado-v2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: autocompletado-v2
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar sintaxis
+        run: |
+          python -m py_compile scripts/generar_autocompletado_proveedores_v2.py
+          node --check frontend-v2/js/comparar-proveedores.js
+      - name: Generar y publicar sugerencias mensuales
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for period in 2026-06 2026-07 2026-08 2026-09 2026-10; do
+            python scripts/generar_autocompletado_proveedores_v2.py --periodo "$period"
+            git add "frontend-v2/data/autocompletar/$period/"
+            if ! git diff --cached --quiet; then
+              git commit -m "data(v2): autocompletado de proveedores $period"
+              git pull --rebase origin main
+              git push origin main
+            fi
+          done
