@@ -131,8 +131,8 @@ def preparar_carga_conciliada(db,schemas,estado,politica):
    if actual is None:
     nuevos+=1;result.append((pk,official));continue
    prior=actual[1]
-   # Valor no vacío oficial prevalece; si falta dato oficial conservar operativo.
-   merged=[prior[i] if i>0 and not str(official[i]).strip() else official[i] for i in range(len(cols))]
+   # El histórico oficial mensual reemplaza íntegramente la fila equivalente.
+   merged=official
    if merged!=prior:actualizados+=1
    else:preservados+=1
    result.append((pk,merged))
