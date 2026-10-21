@@ -1,0 +1,17 @@
+{
+  "version": 3,
+  "periodo": "2026-08",
+  "entidad": "procesos",
+  "conteo": 83937,
+  "fragmentos": 84,
+  "tipo": "prefijo_palabra_agrupado",
+  "longitud_prefijo": 3,
+  "particiones": 6937,
+  "grupos": 961,
+  "formato": "referencias_fragmento_fila",
+  "campos": [
+    "codigo",
+    "nombre",
+    "organismo_comprador"
+  ]
+}
