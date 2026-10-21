@@ -100,3 +100,15 @@ Las **2 pruebas unitarias también aprobaron** en esta ejecución. Benchmark sin
 - Generador: versión de contrato de índice **3**, metadatos `grupos` y `particiones`; commit `041a71be`. Prueba unitaria ajustada: commit `8a9c00a0`.
 - GitHub Actions lanzó automáticamente la ejecución [#39659762031](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39659762031). **En progreso en la última consulta de esta anotación**; obtener conclusión y métricas antes de hablar de mejora cuantitativa.
 - Restricción: agrupar reduce el número de archivos pero puede aumentar el tamaño máximo de una descarga; medir especialmente el mayor grupo en la muestra real de Ofertas antes de integrar el navegador.
+
+
+## Resultado verificado del índice agrupado — ejecución #39659762031
+Se consultaron los logs del trabajo `119429401700` en la ejecución [#39659762031](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39659762031): `success`, dos pruebas unitarias correctas.
+
+**Muestra histórica real:** Ofertas junio 2026, 50 fragmentos, 50.000 registros. Nuevo formato v3: 3.115 prefijos consolidados en 519 grupos (520 archivos incluyendo `meta.json`); 0,951 segundos; 2.676.631 bytes totales; mayor archivo 553.545 bytes; memoria máxima 46.960 KB.
+
+**Comparación misma muestra formato v2 anterior:** 3.116 archivos, 1,133 segundos, 2.656.877 bytes, archivo mayor 434.502 bytes, 46.932 KB de memoria. Reducción de archivos de aproximadamente **83,3 %** a cambio de leve aumento de bytes, tamaño máximo y memoria. Son mediciones de runners CI diferentes, no benchmarks controlados repetidos, y no se extrapolan a toda la historia.
+
+Benchmark sintético del nuevo formato: 20.000 registros; 0,622 segundos; 100 archivos; 1.852.046 bytes; máximo 176.684 bytes; 38.180 KB.
+
+**Decisión operativa:** índice agrupado v3 validado en muestra real, sin publicación masiva ni activación del buscador. Siguiente hito: probar tamaño del grupo más frecuente y cobertura de la entidad completa, y después integrar búsqueda selectiva al frontend sin sustituir `loadChunk()`. La V1 y los datos/ETL/Sheets se mantuvieron intactos.
