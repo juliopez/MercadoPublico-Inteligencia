@@ -106,3 +106,10 @@ Los cuatro períodos previstos **2026-06, 2026-07, 2026-08 y 2026-09** están ca
 **Archivos críticos excluidos de movimientos y depuración:** producción antigua `1y81QaPy37APkBwxlYrKyE66_1ECdhL87GyWNitTfHr4` y clon histórico `1loeK_IM3RXHaR7CqpjUbz-TsNgOKNrV1ejq8aRC6JyE`. Deben mantenerse disponibles hasta comprobar dependencias de ETL y publicación vigente.
 
 **Depuración pendiente:** la carpeta de revisión no significa que sus contenidos puedan eliminarse. Identificar dependencias, verificar respaldo y presentar una lista exacta de ID para autorización explícita antes de enviar a papelera. Los respaldos se conservan por precaución. El inventario abarca los recursos identificados en búsquedas del proyecto, no certifica una enumeración exhaustiva de cualquier archivo cuyo nombre no aluda al proyecto.
+
+## Preparación del cambio octubre–noviembre 2026
+
+- Creada [MER_2026_11_OPERATIVO](https://docs.google.com/spreadsheets/d/1faLUhyB13Qty7dSNqbRHLCmpq-cxgW8bIOgPN0KCWnE/edit) en `02_Operativo_MER` (ID `1faLUhyB13Qty7dSNqbRHLCmpq-cxgW8bIOgPN0KCWnE`). Seis pestañas MER v2 y encabezados del contrato; sin registros.
+- Cuenta de servicio GCP con permiso de edición compartido; **no se ha probado desde Ubuntu la conexión con esta hoja nueva**.
+- Catálogo `config/catalogo_sheets.json` incorpora `2026-11` como `operativo`. Al cambiar fecha local a noviembre, `ubuntu_cron_etl.sh` selecciona automáticamente noviembre. Octubre conserva su ID y registros y **no se renombra ni archiva automáticamente**.
+- Limitación estructural: las cuentas de servicio usadas en Ubuntu no pueden crear libremente nuevas hojas en My Drive por cuota de almacenamiento (`storageQuotaExceeded`). Se aprovisionó noviembre desde la conexión de Google Drive autorizada por el usuario. Para diciembre y posteriores se requiere preaprovisionar/registrar la nueva hoja o implementar un método OAuth autorizado; el bloqueo mensual impide cargar en una hoja errónea.
