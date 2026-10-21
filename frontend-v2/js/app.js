@@ -62,12 +62,49 @@ function render(){
    if(key.endsWith('_clp'))td.classList.add('amount-cell');
    row.append(td);
   }
-  const action=document.createElement('td');const button=document.createElement('button');button.textContent='Ver detalle';button.className='detail-button';button.addEventListener('click',()=>showDetail(record));action.append(button);row.append(action);$('rows').append(row);
+  const action=document.createElement('td');const button=document.createElement('button');button.textContent='Ver detalle';button.className='detail-button';button.addEventListener('click',()=>showDetail(record));action.append(button);
+  const actorKey=entity==='procesos'?'organismo_comprador':entity==='resultados'?'adjudicatario':'proveedor';
+  if(record[actorKey]&&String(record[actorKey]).trim()){
+   const profile=document.createElement('button');profile.type='button';profile.className='secondary profile-button';
+   profile.textContent=entity==='procesos'?'Perfil organismo':'Perfil proveedor';
+   profile.addEventListener('click',()=>showContextProfile(actorKey,String(record[actorKey])));
+   action.append(' ',profile);
+  }
+  row.append(action);$('rows').append(row);
  }
  if(!current.length){const row=document.createElement('tr');const cell=textCell('No hay registros para la consulta.');cell.colSpan=fields.length+1;row.append(cell);$('rows').append(row)}
  $('counter').textContent=selected.length.toLocaleString('es-CL')+' registros encontrados en el bloque';
  $('page').textContent='Bloque '+(state.chunkIndex+1)+'/'+Math.max(state.parts.length,1)+' · Página '+(pages?state.page+1:0)+'/'+pages;
  $('prev').disabled=state.page===0&&state.chunkIndex===0;$('next').disabled=state.page+1>=pages&&state.chunkIndex>=state.parts.length-1;
+}
+function closeContextProfile(){
+ $('perfil-contextual').hidden=true;
+ $('perfil-resumen').replaceChildren();
+ $('perfil-columnas').replaceChildren();
+ $('perfil-filas').replaceChildren();
+}
+function showContextProfile(field,name){
+ const period=$('periodo').value,entity=$('entidad').value;
+ const rows=state.records.filter(record=>String(record[field]??'').trim()===name);
+ const area=$('perfil-contextual'),header=$('perfil-resumen');
+ $('perfil-titulo').textContent=(field==='organismo_comprador'?'Organismo comprador':'Proveedor')+' · '+name;
+ header.replaceChildren();
+ const p=document.createElement('p');
+ p.textContent=rows.length.toLocaleString('es-CL')+' registro(s) de '+name+' encontrados en el bloque '+(state.chunkIndex+1)+' de '+state.parts.length+' del período '+period+'. Estos datos no representan el total del período.';
+ header.append(p);
+ const relevant=tableColumns[entity]?.slice(0,5)||[];
+ const head=document.createElement('tr');
+ for(const [,label] of relevant){const th=document.createElement('th');th.textContent=label;head.append(th)}
+ $('perfil-columnas').replaceChildren(head);
+ const body=document.createDocumentFragment();
+ for(const record of rows.slice(0,25)){
+  const tr=document.createElement('tr');
+  for(const [key] of relevant)tr.append(textCell(formatTableValue(record,key)));
+  body.append(tr);
+ }
+ $('perfil-filas').replaceChildren(body);
+ if(rows.length>25){const more=document.createElement('p');more.className='muted';more.textContent='Se muestran los primeros 25 registros del bloque.';header.append(more)}
+ area.hidden=false;area.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function showDetail(record){
  const area=$('detalle'), body=$('detalle-campos');
@@ -212,7 +249,7 @@ async function loadChunk(index){
   state.cache.set(index,rows);
   // Cache acotada a los bloques cercanos.
   while(state.cache.size>3)state.cache.delete(state.cache.keys().next().value);
-  state.chunkIndex=index;state.records=rows;state.page=0;refreshLocalFilters();render();
+  state.chunkIndex=index;state.records=rows;state.page=0;closeContextProfile();refreshLocalFilters();render();
   $('stat-registros').textContent=Number(state.total).toLocaleString('es-CL');
   status('Bloque '+(index+1)+' de '+parts.length+' cargado. Búsqueda limitada al bloque visible; '+Number(state.total).toLocaleString('es-CL')+' registros publicados en este período.');
  }catch(e){if(token===state.token){state.records=[];render();status('Error al cargar: '+e.message)}}
@@ -223,7 +260,7 @@ async function consult(){
  const info=state.manifest.periodos.find(p=>p.periodo===period);
  const parts=info?.partes?.[entity];
  if(!Array.isArray(parts)){status('Entidad no publicada para este período.');return}
- ++state.token;state.cache.clear();state.parts=parts;state.total=info.conteos?.[entity]??0;state.records=[];state.page=0;refreshLocalFilters();closeDetail();render();
+ ++state.token;state.cache.clear();state.parts=parts;state.total=info.conteos?.[entity]??0;state.records=[];state.page=0;refreshLocalFilters();closeDetail();closeContextProfile();render();
  $('stat-registros').textContent=Number(state.total).toLocaleString('es-CL');
  $('consultar').disabled=false;
  if(!parts.length){status('La entidad está publicada, pero no registra filas en este período.');return}
@@ -248,11 +285,12 @@ async function init(){
 }
 $('periodo').addEventListener('change',()=>{$('stat-periodo').textContent=$('periodo').value||'—';++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;refreshLocalFilters();closeDetail();render()});
 $('detalle-cerrar').addEventListener('click',closeDetail);
+$('perfil-cerrar').addEventListener('click',closeContextProfile);
 $('buscar').addEventListener('input',()=>{state.page=0;render()});
 for(const id of ['filtro-estado','filtro-modalidad'])$(id).addEventListener('change',()=>{state.page=0;render()});
 $('limpiar-filtros').addEventListener('click',()=>{$('buscar').value='';$('filtro-estado').value='';$('filtro-modalidad').value='';state.page=0;render()});
 $('consultar').addEventListener('click',consult);
-$('entidad').addEventListener('change',()=>{++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;closeDetail();render()});
+$('entidad').addEventListener('change',()=>{++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;closeDetail();closeContextProfile();render()});
 $('prev').addEventListener('click',()=>{if(state.page===0&&state.chunkIndex>0)loadChunk(state.chunkIndex-1);else{state.page--;render()}});
 $('next').addEventListener('click',()=>{const count=filteredBlock().length;if((state.page+1)*state.perPage>=count&&state.chunkIndex<state.parts.length-1)loadChunk(state.chunkIndex+1);else{state.page++;render()}});
 // API mínima para abrir resultados indexados sin duplicar el lector de fragmentos.
