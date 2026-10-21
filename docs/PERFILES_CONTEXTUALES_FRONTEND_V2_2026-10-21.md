@@ -34,3 +34,9 @@ Se incorporó `scripts/generar_perfiles_v2.py`: agrega registros y suma los mont
 Se amplió `frontend-v2/js/app.js` para consultar bajo demanda el resumen mensual del actor desde `data/perfiles/AAAA-MM/entidad/hash.json`, manteniendo tabla contextual del bloque y cierre ante cambios de período/bloque. `.github/workflows/publicar-perfiles-v2.yml` genera y valida por mes/entidad, omite entidades con cero registros y publica mensualmente.
 
 **Incidencia detectada y reparada:** primera ejecución [#39664483681](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39664483681) falló por error de sintaxis en `app.js` antes de la generación. Se corrigió la línea de texto y se restauró `showDetail` y el cierre del módulo (commit `31d8b9db`). La ejecución siguiente es [#39664667269](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39664667269), que se debe comprobar antes de declarar la publicación completada. No se modificó V1, los históricos originales, Sheets ni ETL.
+
+
+## Resultado comprobado de publicación de perfiles agregados
+GitHub Actions [#39664667269](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39664667269) completó `success` tras la corrección de sintaxis. Se consultaron directamente los `meta.json` de las **18 combinaciones** con registros publicables, junio–octubre 2026. En cada caso la cifra `registros` coincide con el catálogo público; octubre Ofertas y Resultados siguen sin registros ni agregados.
+
+La interfaz conserva los botones de perfiles ya validados por el usuario y añade un resumen agregado mensual recuperado por hash bajo demanda. **Pendiente:** prueba manual de visualización y concordancia del actor concreto en navegador, y validación semántica de montos/campos con casos representativos. La ejecución de CI demuestra generación/publicación, no esas comprobaciones manuales.
