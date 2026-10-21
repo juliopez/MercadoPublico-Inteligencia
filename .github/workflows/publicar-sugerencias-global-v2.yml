@@ -1,0 +1,62 @@
+name: Publicar sugerencias globales V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/publicar-sugerencias-global-v2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: publicar-sugerencias-global-v2
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verificar sintaxis
+        run: |
+          node --check frontend-v2/js/sugerencias-global.js
+          node --check frontend-v2/js/busqueda-global.js
+          python -m py_compile scripts/generar_sugerencias_busqueda_v2.py
+      - name: Generar sugerencias y publicar mensualmente
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for period in 2026-06 2026-07 2026-08 2026-09 2026-10; do
+            for entity in procesos ofertas resultados ordenescompra; do
+              export PERIOD="$period" ENTITY="$entity"
+              count=$(python - <<'PY'
+          import json,os
+          data=json.load(open('frontend-v2/data/catalogo-publico.json'))
+          info=next(p for p in data['periodos'] if p['periodo']==os.environ['PERIOD'])
+          print(info['conteos'][os.environ['ENTITY']])
+          PY
+              )
+              if [ "$count" = 0 ]; then continue; fi
+              python scripts/generar_sugerencias_busqueda_v2.py --periodo "$period" --entidad "$entity"
+              python - <<'PY'
+          import json,os,pathlib
+          base=pathlib.Path('frontend-v2/data')
+          m=json.loads((base/'sugerencias'/os.environ['PERIOD']/os.environ['ENTITY']/'meta.json').read_text())
+          cat=json.loads((base/'catalogo-publico.json').read_text())
+          n=next(p for p in cat['periodos'] if p['periodo']==os.environ['PERIOD'])['conteos'][os.environ['ENTITY']]
+          assert m['version']==1 and m['registros']==n
+          assert (base/'sugerencias'/os.environ['PERIOD']/os.environ['ENTITY']/'facetas.json').is_file()
+          print('SUGERENCIAS_VERIFICADAS',os.environ['PERIOD'],os.environ['ENTITY'],n)
+          PY
+            done
+            git add "frontend-v2/data/sugerencias/$period/"
+            if ! git diff --cached --quiet; then
+              git commit -m "data(v2): sugerencias de filtros y texto $period"
+              git pull --rebase origin main
+              git push origin main
+            fi
+          done
