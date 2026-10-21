@@ -27,3 +27,9 @@ Se inspeccionó código/documentación y se corrigió la serialización de salto
 - **Pruebas aún no ejecutadas contra el código del repositorio:** la conexión de red del entorno local de verificación no permitió obtener el archivo remoto. Los nuevos casos de prueba quedan disponibles para ejecución en CI o en entorno de desarrollo.
 - No se generaron índices masivos ni se modificó el JavaScript de carga y búsqueda actual. La interfaz continúa utilizando búsqueda local por bloque.
 - Riesgos pendientes: volumen y tamaño de prefijos frecuentes, uso de memoria durante indexación, duplicación de texto por clave y latencia. No activar búsqueda global antes de medirlos.
+
+
+## Continuación — incorporación de CI
+Se revisaron nuevamente README, índice, decisiones y documentación de búsqueda antes de intervenir. Se añadió `.github/workflows/validar-busqueda-v2.yml` (commit `d0ba59f0`) para ejecutar comprobación de sintaxis y las dos pruebas unitarias del generador directamente sobre el checkout real en GitHub Actions. El workflow se inicia por cambios en sus propios archivos o manualmente.
+
+**Verificación pendiente:** la herramienta de consulta no permitió obtener la lista de ejecuciones del workflow. No se afirma que las pruebas hayan pasado ni se publica un índice sin esa evidencia. Tampoco se ha medido tamaño con los históricos. Se mantienen intactos frontend V1, JavaScript de V2, carga fragmentada, Sheets y ETL.
