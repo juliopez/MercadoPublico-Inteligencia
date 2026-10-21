@@ -91,7 +91,9 @@ async function draw(s,t){
   const verified=t.found;
   const amountField={procesos:'monto_disponible_clp',ofertas:'monto_ofertado_clp',resultados:'monto_adjudicado_clp',ordenescompra:'monto_total_oc_clp'}[t.entity];
   const numbers=verified.map(x=>String(x.record[amountField]??'').replaceAll('.','').replace(',','.')).filter(Boolean).map(Number).filter(Number.isFinite);
-  el('global-analitica').textContent=(completed?'Total verificado del período: ':'Avance de verificación: ')+verified.length.toLocaleString('es-CL')+' registros · '+numbers.length.toLocaleString('es-CL')+' con monto · suma informada +' coincidencias exactas':t.found.length.toLocaleString('es-CL')+' coincidencias exactas verificadas hasta ahora')+' · '+t.period+' · '+t.entity+'.');
+   el('global-analitica').textContent=(completed?'Total verificado del período: ':'Avance de verificación: ')+verified.length.toLocaleString('es-CL')+' registros · '+numbers.length.toLocaleString('es-CL')+' con monto · suma informada $'+Math.round(numbers.reduce((a,b)=>a+b,0)).toLocaleString('es-CL')+'. Los montos son descriptivos.';
+   el('global-csv').disabled=verified.length===0;
+   message((completed?t.found.length.toLocaleString('es-CL')+' coincidencias exactas':t.found.length.toLocaleString('es-CL')+' coincidencias exactas verificadas hasta ahora')+' · '+t.period+' · '+t.entity+'.');
  }catch(e){if(valid(s,t))message('No se pudo completar la búsqueda: '+e.message)}
 }
 async function search(){
@@ -163,7 +165,7 @@ async function search(){
   const others=lists.slice(1).map(list=>new Set(list.map(v=>v.join(':'))));
   const refs=(lists[0]||[]).filter(ref=>others.every(set=>set.has(ref.join(':'))));
   refs.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
-  const t={period,entity,parts,tokens:query,refs,cursor:0,found:[],page:0};
+  const t={period,entity,parts,tokens:query,filters:{status:norm(el('global-estado').value.trim()),type:norm(el('global-modalidad').value.trim())},refs,cursor:0,found:[],page:0};
   session=t;
   await draw(now,t);
  }catch(e){if(now===seq)clear('No fue posible consultar el índice: '+e.message+'. La consulta por bloques sigue disponible.')}
