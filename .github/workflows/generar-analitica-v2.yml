@@ -1,0 +1,61 @@
+name: Generar analítica mensual V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/generar-analitica-v2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: analitica-v2
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Comprobar sintaxis
+        run: |
+          python -m py_compile scripts/generar_analitica_v2.py
+          node --check frontend-v2/js/analitica-interactiva.js
+          node --check frontend-v2/js/app.js
+      - name: Generar y publicar agregados verificables
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for period in 2026-06 2026-07 2026-08 2026-09 2026-10; do
+            for entity in procesos ofertas resultados ordenescompra; do
+              export PERIOD="$period" ENTITY="$entity"
+              n=$(python - <<'PY'
+          import os,json
+          d=json.load(open('frontend-v2/data/catalogo-publico.json'))
+          p=next(p for p in d['periodos'] if p['periodo']==os.environ['PERIOD'])
+          print(p['conteos'][os.environ['ENTITY']])
+          PY
+              )
+              if [ "$n" = 0 ]; then continue; fi
+              python scripts/generar_analitica_v2.py --periodo "$period" --entidad "$entity"
+              python - <<'PY'
+          import os,json,pathlib
+          p=os.environ['PERIOD'];e=os.environ['ENTITY']
+          d=json.load(open('frontend-v2/data/catalogo-publico.json'))
+          count=next(r for r in d['periodos'] if r['periodo']==p)['conteos'][e]
+          a=json.loads((pathlib.Path('frontend-v2/data/analitica')/p/(e+'.json')).read_text())
+          assert a['registros']==count and a['version']==1
+          print('ANALITICA_VERIFICADA',p,e,count)
+          PY
+            done
+            git add "frontend-v2/data/analitica/$period/"
+            if ! git diff --cached --quiet; then
+              git commit -m "data(v2): publicar agregados analíticos $period"
+              git pull --rebase origin main
+              git push origin main
+            fi
+          done
