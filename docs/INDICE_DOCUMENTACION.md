@@ -15,9 +15,10 @@
 - [Diagrama MER](MER_propuesto.mmd).
 - [Auditoría de consolidador/frontend — tarea 14](AUDITORIA_T14_CONSOLIDADOR_FRONTEND.md).
 
-## 2. Frontend V2 — arquitectura, implementación y UX
+## 2. Frontend V2 — funcionamiento y mejoras
 
-**Referencias principales:**
+**Leer en este orden (vigencia primero):**
+- **[Manual actual de V2](../frontend-v2/README.md)** — funcionalidades y mapa de módulos.
 - [Línea base de rendimiento](BASELINE_FRONTEND_V2_2026-10-21.md).
 - [Auditoría comparativa V1–V2](AUDITORIA_FRONTEND_V1_V2_2026-10-21.md).
 - [Búsqueda global indexada](BUSQUEDA_GLOBAL_V2_2026-10-21.md).
@@ -25,7 +26,7 @@
 - [Analítica interactiva y vínculos entre meses](ANALITICA_INTERACTIVA_RELACIONES_HISTORICAS_V2_2026-10-21.md).
 - [Mejoras integrales de experiencia](MEJORAS_UX_INTEGRALES_V2_2026-10-21.md).
 
-**Registros de implementaciones específicas (hitos técnicos, no estado vigente):**
+**Hitos técnicos y evidencias históricas (no sustituyen el manual vigente):**
 - [Presentación visual](MEJORA_VISUAL_FRONTEND_V2_2026-10-21.md); [Tablas](MEJORA_TABLAS_FRONTEND_V2_2026-10-21.md); [Filtros locales](FILTROS_LOCALES_FRONTEND_V2_2026-10-21.md).
 - [Perfiles contextuales y agregados](PERFILES_CONTEXTUALES_FRONTEND_V2_2026-10-21.md); [Comparación de proveedores y sugerencias](COMPARACION_PROVEEDORES_FRONTEND_V2_2026-10-21.md).
 - [Favoritos y exportación CSV](FAVORITOS_CSV_FRONTEND_V2_2026-10-21.md).
@@ -55,7 +56,13 @@ Referencias conservadas para trazabilidad; **no sustituyen** el MER v2 vigente.
 - [Contrato de datos V1](contrato-datos-v1.md).
 - [Esquema objetivo histórico](esquema-objetivo.md).
 
-## 5. Archivo histórico
+## 5. Mantenimiento y calidad documental
+
+- **[Mantenimiento del repositorio y limpieza segura](MANTENIMIENTO_REPOSITORIO_2026-10-21.md)** — inventario de ramas y workflows, archivos protegidos y política para futuras bajas.
+- [Decisiones técnicas vigentes](DECISIONES_TECNICAS.md) — restricciones de cambio.
+- [Pruebas automatizadas](../tests/) y [workflows GitHub Actions](../.github/workflows/) — evidencia comprobable; no confundir con pruebas visuales.
+
+## 6. Archivo histórico
 
 - **[README anterior completo](historial/README_LEGADO_2026-10-21.md)** — referencia íntegra previa, no instrucciones vigentes.
 - Historial de decisiones y fallos: Git y documentos fechados; mantener información probatoria antes de pensar en eliminación.
