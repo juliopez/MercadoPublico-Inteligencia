@@ -25,6 +25,16 @@
 - Si faltan ZIP, respaldo, permisos, autorización o verificaciones, **detener el cierre y registrar bloqueo**, sin traslado.
 - El cron **mensual no está instalado**. Solo se habilitará si el cierre manual resulta satisfactorio; primer ciclo previsto el **10 de diciembre de 2026**. No modificar el cron diario vigente por esta tarea.
 
+## Frontend V2 — decisiones de arquitectura vigentes (21-10-2026)
+
+- V2 se publica en `frontend-v2/` sin reemplazar ni alterar V1 (`index.html` y `data/` de raíz). El frontend no consulta directamente Google Sheets ni muestra campos operativos privados.
+- Períodos públicos **junio–octubre de 2026**, con octubre parcial. La cobertura real debe leerse de `frontend-v2/data/catalogo-publico.json`. Cuatro entidades públicas: Procesos, Ofertas, Resultados y Órdenes de compra. No confundirlas con las seis tablas del MER.
+- Rendimiento prioritario: fragmentos de hasta 1.000 registros, paginación de 10, índices y agregados públicos para búsqueda/perfiles/analítica y relaciones multimes. No restaurar carga masiva del histórico en cliente.
+- Búsqueda global y vínculos entre meses usan códigos y filtros informativos; la coincidencia no equivale a adjudicación verificada. Montos descriptivos en CLP, no necesariamente pago. El ordenamiento global solo aplica a resultados examinados progresivamente.
+- Interfaces analíticas, comparador, favoritos y exportación deben conservar sus límites visibles: períodos incompletos, nombres de empresas no necesariamente unívocos por RUT, y CSV global con límite de consulta completa.
+- Pruebas automatizadas y validación visual son hitos diferentes. **Auditoría integral V2 pendiente como tarea independiente**, aunque numerosas mejoras puntuales ya fueron comprobadas.
+- La publicación de JSON agregados debe activar el despliegue de Pages y tener reconciliación contra el catálogo. Mantener por separado exportadores, generación de índices y frontend.
+
 ## Protocolo documental
 
 1. Antes de cualquier tarea: leer README e índice, luego la decisión vigente y el documento específico. Contrastar con el código real y resultados de ejecución.
