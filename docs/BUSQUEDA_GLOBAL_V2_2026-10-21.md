@@ -120,3 +120,15 @@ La ejecución [GitHub Actions #39660049638](https://github.com/juliopez/MercadoP
 La medición se realizó en directorio temporal sin publicar índices o modificar los fragmentos originales, Sheets ni V1/V2. **Se considera cerrada la prueba de escalabilidad de generación para un mes completo de Ofertas**. La validación no mide aún latencia de búsqueda por navegador, y el archivo más pesado (~5 MB) requiere descarga selectiva, límites y manejo de errores.
 
 **Siguiente fase:** integración funcional de la búsqueda indexada con manejo de consulta, límites de resultados, paginación y accesos a fragmentos. No generar más experimentos de tamaño por incrementos; pasar a entrega visible tras pruebas funcionales.
+
+
+## Primera integración visible de búsqueda global — 21-10-2026
+Documentación base consultada antes de intervenir: README, índice, decisiones, este documento y código real del frontend y del indexador.
+
+**Implementado:** nuevo panel `#busqueda-global` en `frontend-v2/index.html`, y módulo aislado `frontend-v2/js/busqueda-global.js`. Selecciona período y entidad del formulario existente, consulta `meta.json` y solo los grupos necesarios según los prefijos de las palabras buscadas; cruza referencias `[fragmento,fila]`, pagina de a 10 y obtiene únicamente fragmentos de la página abierta. La acción Ver detalle usa `window.openIndexedRecord` de `app.js`, que reutiliza `loadChunk` y `showDetail` de V2. El lector, la caché, los reintentos y la lista normal no fueron reemplazados. Se utiliza nomenclatura **candidatos por prefijo**: búsquedas largas pueden incluir candidatos no idénticos a la palabra completa; no afirmar coincidencia exacta.
+
+**Primer índice publicado:** workflow `.github/workflows/publicar-busqueda-v2-inicial.yml`, ejecución [#39660703685](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39660703685), `success`. Archivo verificado en repositorio: `frontend-v2/data/busqueda/2026-06/procesos/meta.json`, versión 3, **80.898 registros**, **81 fragmentos**, **961 grupos**. Se verificó adicionalmente el contenido del grupo `ca.json`. La publicación no altera datos fuente, Sheets ni V1.
+
+**Alcance habilitado:** Procesos junio 2026; en períodos/entidades sin índice el módulo informa indisponibilidad y mantiene la consulta ordinaria por bloques. No se han desplegado índices para otras entidades/meses. No se ha confirmado interacción real en navegador ni rendimiento de búsqueda desde cliente. Registro de cambios: interfaz `e65e4e65`, módulo `68097430`, conexión con detalle `812a2fbe`, correcciones `62302360`, `766b043c`, `c67548a8`, workflow `2e6cc9d6`.
+
+**Siguiente verificación funcional:** seleccionar junio 2026 y Procesos; buscar `capacitación` y código específico; abrir detalle, paginar, comprobar cambio de entidad/mes, observar tiempo de carga y verificar ausencia de regresión del listado local. Si funciona, ampliar gradualmente índices publicados.
