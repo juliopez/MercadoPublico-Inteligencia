@@ -30,7 +30,7 @@ async function consult(){
  try{
   const all=[];for(const path of parts){
    if(!safePart(path,period,entity))throw Error('Ruta JSON no permitida');
-   const response=await fetch('../'+path,{cache:'no-store'});
+   const response=await fetch('./'+path,{cache:'no-store'});
    if(!response.ok)throw Error('No se pudo leer el fragmento de '+period);
    const rows=await response.json();if(!Array.isArray(rows))throw Error('Formato incorrecto');
    if(token!==state.token)return;
