@@ -26,3 +26,9 @@ La ficha contextual permite lanzar una consulta global del actor: organismos en 
 
 ## Evidencia y pendientes
 Workflow: https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39668529243 . Consultar su estado antes de afirmar resultado. La prueba automatizada revisa sintaxis, lógica de filtrado, elementos y enlaces; no sustituye pruebas completas de usuario en navegador. La auditoría integral de V2 se reserva como quinta tarea autónoma, sin iniciarse en esta entrega. Sin cambios a V1, ETL, Sheets ni datos históricos.
+
+
+## Validación de la intervención conjunta
+La primera ejecución [#39668529243](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39668529243) detectó un error de sintaxis en el nuevo módulo global. Tras corregir el mensaje de indicadores y eliminar un bloque duplicado, la ejecución [#39668903402](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39668903402) terminó **completed/success**. Se verificaron sintaxis de los tres módulos JavaScript y pruebas de coincidencias positivas/negativas para estado y modalidad, además de la presencia de controles y lógica principal de CSV, evolución y enlaces de perfiles.
+
+**Limitaciones que permanecen:** filtros globales requieren término de búsqueda (no hay navegación por faceta independiente); suma y cantidad son acumulados de coincidencias verificadas hasta esa página, a menos que la búsqueda se recorra completamente; exportación global rechaza más de 20.000 filas en lugar de producir un fichero incompleto; enlaces de perfiles por nombre normalizado, no por RUT; y no se ha ejecutado prueba visual final para estas cuatro funciones. La **auditoría integral (prioridad 5) queda explícitamente pendiente para una intervención separada**.
