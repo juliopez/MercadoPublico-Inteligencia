@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """ETL operativo MER v2: ZIP de licitaciones y OC, sin Compra Ágil.
-Solo escribe con --aplicar; exige credencial de servicio local y respaldo Drive.
+Solo escribe con --aplicar; exige credencial local y respaldo verificable ZIP de las seis pestañas.
 """
 import argparse,csv,datetime as dt,hashlib,importlib.util,io,json,os,sqlite3,sys,tempfile,urllib.request,zipfile
 from pathlib import Path
@@ -30,6 +30,56 @@ def worksheet_rows(ws,cols):
   if arr[0] in result:raise ValueError("PK duplicada en destino "+ws.title)
   result[arr[0]]=(i,(arr+[""]*len(cols))[:len(cols)])
  return result
+def respaldo_local(book,schemas,periodo):
+ """Copia completa verificable de las seis pestañas antes de toda escritura."""
+ destino=Path.home()/".local"/"share"/"mercadopublico"/"respaldos"
+ destino.mkdir(parents=True,exist_ok=True,mode=0o700)
+ os.chmod(destino,0o700)
+ ts=dt.datetime.now(ZONE).strftime("%Y%m%d_%H%M%S_%f")
+ final=destino/f"MER_{periodo.replace('-','_')}_ANTES_ETL_{ts}.zip"
+ temporal=destino/(final.name+".tmp")
+ manifest={"periodo":periodo,"spreadsheet_id":book.id,
+           "creado_utc":dt.datetime.now(dt.timezone.utc).isoformat(),"tablas":{}}
+ try:
+  with zipfile.ZipFile(temporal,"w",compression=zipfile.ZIP_DEFLATED,compresslevel=6) as archive:
+   for tabla,cols in schemas.items():
+    ws=book.worksheet(tabla)
+    valores=ws.get_all_values()
+    if not valores or valores[0]!=cols:
+     raise ValueError("Respaldo bloqueado: cabeceras incompatibles en "+tabla)
+    # Proteger contra PK duplicadas y filas parcialmente cargadas.
+    vistas=set()
+    for row in valores[1:]:
+     if not row or not row[0]:raise ValueError("Fila sin PK en "+tabla)
+     if row[0] in vistas:raise ValueError("PK repetida en respaldo "+tabla)
+     vistas.add(row[0])
+     if len(row)>len(cols):raise ValueError("Columnas excedentes en "+tabla)
+    buf=io.StringIO(newline="")
+    wr=csv.writer(buf);wr.writerow(cols)
+    for row in valores[1:]:wr.writerow((row+[""]*len(cols))[:len(cols)])
+    contenido=buf.getvalue().encode("utf-8-sig")
+    archive.writestr(tabla+".csv",contenido)
+    manifest["tablas"][tabla]={"registros":len(valores)-1,"sha256":hashlib.sha256(contenido).hexdigest()}
+   archive.writestr("manifiesto.json",json.dumps(manifest,ensure_ascii=False,indent=2))
+  with zipfile.ZipFile(temporal) as check:
+   if check.testzip():raise ValueError("Respaldo ZIP CRC incorrecto")
+   m=json.loads(check.read("manifiesto.json"))
+   if set(check.namelist())!=set(schemas)|{"manifiesto.json"}:
+    # ZIP contiene nombres tabla.csv, no los nombres de tabla a secas.
+    if set(check.namelist())!={x+".csv" for x in schemas}|{"manifiesto.json"}:
+     raise ValueError("Respaldo incompleto")
+   for tabla in schemas:
+    raw=check.read(tabla+".csv")
+    if hashlib.sha256(raw).hexdigest()!=m["tablas"][tabla]["sha256"]:
+     raise ValueError("Huella de respaldo inválida: "+tabla)
+  os.chmod(temporal,0o600)
+  os.replace(temporal,final)
+  return {"archivo":str(final),"bytes":final.stat().st_size,
+          "sha256":hashlib.sha256(final.read_bytes()).hexdigest(),
+          "registros":{k:v["registros"] for k,v in manifest["tablas"].items()}}
+ finally:
+  if temporal.exists():temporal.unlink()
+
 def load_rows(db,table,cols):
  for pk,raw in db.execute('SELECT pk,fila FROM "'+table+'" ORDER BY pk'):
   row=json.loads(raw)
@@ -100,11 +150,10 @@ def main():
    try:
     import gspread
     from google.oauth2.service_account import Credentials
-    from googleapiclient.discovery import build
    except ImportError as e:raise RuntimeError("Instala gspread google-auth google-api-python-client") from e
    credfile=os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
    if not credfile or not Path(credfile).is_file():raise RuntimeError("GOOGLE_APPLICATION_CREDENTIALS no está definido o no existe")
-   creds=Credentials.from_service_account_file(credfile,scopes=["https://www.googleapis.com/auth/spreadsheets","https://www.googleapis.com/auth/drive"])
+   creds=Credentials.from_service_account_file(credfile,scopes=["https://www.googleapis.com/auth/spreadsheets"])
    gc=gspread.authorize(creds)
    book=gc.open_by_key(dest["id"])
    tables={}
@@ -119,9 +168,8 @@ def main():
    projected=sum(x.row_count*x.col_count for x in sheets)
    growth=sum(tables[t]["nuevos"]*len(expected[t]) for t in expected)
    if projected+growth>10_000_000:raise ValueError("Límite de 10 millones de celdas: bloqueada escritura")
-   drive=build("drive","v3",credentials=creds,cache_discovery=False)
-   backup=drive.files().copy(fileId=dest["id"],body={"name":"Respaldo operativo antes ETL "+periodo+" "+dt.datetime.now(ZONE).strftime("%Y%m%d_%H%M%S")},fields="id").execute()
-   report["respaldo_id"]=backup["id"]
+   report["respaldo_local"]=respaldo_local(book,mod.SCHEMA,periodo)
+   print("RESPALDO LOCAL VERIFICADO:",report["respaldo_local"]["archivo"],flush=True)
    report["aplicados"]={}
    for table,cols in expected.items():
     ws=book.worksheet(table);current=worksheet_rows(ws,cols)
@@ -130,6 +178,9 @@ def main():
     after=worksheet_rows(ws,cols)
     expected_size=len(current)+report["aplicados"][table]["nuevos"]
     if len(after)!=expected_size:raise ValueError("Verificación de PK falló en "+table)
+    for key,row in load_rows(db,table,cols):
+     if key not in after or after[key][1]!=row:
+      raise ValueError("Verificación de contenido falló en "+table+" PK "+key)
    report["estado"]="CARGA_VERIFICADA"
   else:
    report["estado"]="PREPARADO_SIN_ESCRITURAS"
