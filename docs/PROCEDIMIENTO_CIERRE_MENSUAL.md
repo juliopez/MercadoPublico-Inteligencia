@@ -393,3 +393,20 @@ No rediseñar ni replicar la ingeniería ya utilizada en las cargas de junio–s
 Lo pendiente no es rehacer la validación de archivos base, sino **decidir precedencia por columna y por entidad** cuando un registro operativo difiere del histórico, probar un ciclo de carga y lectura posterior sobre un destino de ensayo, y completar el traslado autorizado con recuperación. La política de diferencias debe preservar el estado jurídico de adjudicación y la procedencia de los datos. No asumir que ZIP oficiales pueden sobrescribir incondicionalmente todos los campos, ni que datos operativos sin correspondencia son falsos.
 
 Próximo desarrollo concentrado: adaptador del cierre que use directamente las funciones de escritura y respaldo existentes, asociado a una política explícita para filas modificadas. Se rechaza agregar más capas de simulación que no aporten un riesgo nuevo. Solo volver a ejecutar pruebas cuando se alcance un hito de integración significativo.
+
+## Política explícita de precedencia por campo (21/10/2026)
+
+Se agregó `scripts/politica_conciliacion_cierre.py`. Aprovecha los esquemas y los SQLite del procedimiento histórico, y **no modifica Sheets**. Para un mismo identificador PK:
+
+| Operativo | Histórico oficial | Resolución |
+|---|---|---|
+| vacío | no vacío | completar desde el histórico |
+| no vacío | vacío | conservar operativo |
+| igual | igual | no intervenir |
+| valor A no vacío | valor B no vacío y diferente | **conflicto, no sobrescribir** |
+
+Las PK divergentes y las filas incompatibles son bloqueantes. Los registros solo operativos se conservan, y los nuevos históricos se consideran candidatos a inserción. Para valores distintos no vacíos se produce un informe por campo, recuento y ejemplos de PK, con estado `BLOQUEADO_CONFLICTOS` si hay al menos uno. Incluso sin conflicto, la propuesta no autoriza escrituras ni traslado hasta auditoría completa y aprobación supervisada.
+
+**Punto crítico:** completar un campo vacío solo es seguro si el dato tiene la misma semántica entre fuentes; el informe aún requiere contrastar esa compatibilidad, especialmente monto, identidad y estados. No elevar una selección histórica a adjudicación verificada. Para las columnas conflictivas se decidirá precedencia por entidad/campo usando la muestra real de octubre. Sin esos datos, codificar reglas específicas sería inventar equivalencias.
+
+El programa recibe `preparado.sqlite` oficial y `operativo_snapshot.sqlite` de solo lectura, ambos reutilizados de las etapas existentes. Hay cuatro pruebas nuevas en `tests/test_politica_conciliacion_cierre.py`, todavía no ejecutadas. La última cifra verificada por el usuario fue 34 pruebas; hay código de pruebas posterior pendiente de la próxima ronda de integración.
