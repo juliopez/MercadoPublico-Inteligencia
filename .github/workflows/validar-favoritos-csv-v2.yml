@@ -1,0 +1,29 @@
+name: Validar favoritos y CSV V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/validar-favoritos-csv-v2.yml'
+      - 'frontend-v2/js/app.js'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Revisar sintaxis
+        run: node --check frontend-v2/js/app.js
+      - name: Verificar controles y límites
+        run: |
+          node - <<'JS'
+          const fs=require('fs'),assert=require('node:assert/strict');
+          const html=fs.readFileSync('frontend-v2/index.html','utf8');
+          const js=fs.readFileSync('frontend-v2/js/app.js','utf8');
+          for(const id of ['exportar-csv','favoritos-lista','favoritos-estado'])assert(html.includes('id="'+id+'"'));
+          for(const token of ['function exportBlockCSV()','filteredBlock()','FAVORITES_KEY','favorites.length>=200','toggleFavorite(record)','URL.createObjectURL','localStorage.setItem'])assert(js.includes(token),token);
+          console.log('FAVORITOS_CSV_ESTRUCTURA_OK');
+          JS
