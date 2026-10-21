@@ -48,7 +48,7 @@ async function compare(){
   }
   byId('comparar-cabecera').replaceChildren(head);byId('comparar-cuerpo').replaceChildren(body);
   // Ordena las filas del cuadro comparativo por indicador o valor mostrado.
-  const headers=[...head.children],tbody=byId('comparar-cuerpo');let activeSort=null,direction=1;
+  const headers=[...head.children],labels=headers.map(th=>th.textContent),tbody=byId('comparar-cuerpo');let activeSort=null,direction=1;
   headers.forEach((th,index)=>{
    const text=th.textContent;
    const button=document.createElement('button');button.type='button';button.className='sort-heading';button.textContent=text+' ⇅';
@@ -61,7 +61,7 @@ async function compare(){
      return direction*(index>0&&Number.isFinite(na)&&Number.isFinite(nb)?na-nb:v(a).localeCompare(v(b),'es',{numeric:true}));
     });
     tbody.replaceChildren(...sorted);
-    headers.forEach((other,j)=>{const control=other.firstChild;if(control)control.textContent=other===th?text+(direction===1?' ↑':' ↓'):(j===index?text:text.replace(/ ↑| ↓/g,'')+' ⇅')});
+    headers.forEach((other,j)=>{const control=other.firstChild;if(control)control.textContent=labels[j]+(j===index?(direction===1?' ↑':' ↓'):' ⇅')});
    });
    th.replaceChildren(button);
   });
