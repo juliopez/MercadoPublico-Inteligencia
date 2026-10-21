@@ -43,7 +43,7 @@ async function analytics(){
    }
   }else{
    const tr=document.createElement('p');
-   tr.textContent=datas.map(d=>d.periodo+': '+pesos(d.monto_total_clp)+' ('+nfmt(d.registros_con_monto)+' registros con monto)').join(' · ')+'. Importes informados, no pagos ni adjudicaciones acreditadas.';
+   tr.textContent=datas.map(d=>d.periodo+': '+(d.registros_con_monto?pesos(d.monto_total_clp):'Sin montos informados')+' ('+nfmt(d.registros_con_monto)+' registros con monto)').join(' · ')+'. Importes informados, no pagos ni adjudicaciones acreditadas.';
    area.append(tr);
   }
  }catch(e){
