@@ -1,0 +1,25 @@
+name: Validar analítica e históricos V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/validar-analitica-historicos-v2.yml'
+      - 'frontend-v2/js/app.js'
+      - 'frontend-v2/js/analitica-interactiva.js'
+      - 'tests/test_analitica_historicos_v2.cjs'
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sintaxis JavaScript
+        run: |
+          node --check frontend-v2/js/app.js
+          node --check frontend-v2/js/analitica-interactiva.js
+      - name: Prueba de integración
+        run: node tests/test_analitica_historicos_v2.cjs
