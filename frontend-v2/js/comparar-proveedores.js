@@ -47,6 +47,24 @@ async function compare(){
    }
   }
   byId('comparar-cabecera').replaceChildren(head);byId('comparar-cuerpo').replaceChildren(body);
+  // Ordena las filas del cuadro comparativo por indicador o valor mostrado.
+  const headers=[...head.children],tbody=byId('comparar-cuerpo');let activeSort=null,direction=1;
+  headers.forEach((th,index)=>{
+   const text=th.textContent;
+   const button=document.createElement('button');button.type='button';button.className='sort-heading';button.textContent=text+' ⇅';
+   button.addEventListener('click',()=>{
+    direction=activeSort===index?-direction:1;activeSort=index;
+    const sorted=[...tbody.children].sort((a,b)=>{
+     const v=node=>node.children[index]?.textContent??'';
+     const numeric=node=>Number(v(node).replace(/[^0-9,-]/g,'').replaceAll('.','').replace(',','.'));
+     const na=numeric(a),nb=numeric(b);
+     return direction*(index>0&&Number.isFinite(na)&&Number.isFinite(nb)?na-nb:v(a).localeCompare(v(b),'es',{numeric:true}));
+    });
+    tbody.replaceChildren(...sorted);
+    headers.forEach((other,j)=>{const control=other.firstChild;if(control)control.textContent=other===th?text+(direction===1?' ↑':' ↓'):(j===index?text:text.replace(/ ↑| ↓/g,'')+' ⇅')});
+   });
+   th.replaceChildren(button);
+  });
   byId('comparar-estado').textContent='Comparación de '+names.length+' proveedores · '+period+'. Coincidencia por nombre normalizado; variaciones de razón social pueden figurar separadas.';
  }catch(error){
   if(seq===comparisonSeq)byId('comparar-estado').textContent='Error al consultar agregados: '+error.message+'. Intente nuevamente.';
