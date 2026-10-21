@@ -115,3 +115,11 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
  .quicknav a{flex:none;scroll-snap-align:start}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+
+#consulta-avanzada{margin:15px 0 8px;border:1px solid #d6e4ee;border-radius:9px;padding:11px 14px;background:#f8fafc}
+#consulta-avanzada summary{font-weight:650;color:#1b597c;cursor:pointer;margin:2px 0 12px}
+#consulta-avanzada .filters{grid-template-columns:minmax(180px,1fr) auto;margin:12px 0}
+#consulta .filters:has(#ir-busqueda-global){grid-template-columns:1fr 1fr auto}
+#ir-busqueda-global{white-space:nowrap}
+#busqueda-global .global-filters input:disabled{background:#edf1f5;color:#697b86}
+@media(max-width:700px){#consulta .filters:has(#ir-busqueda-global){grid-template-columns:1fr}#ir-busqueda-global{white-space:normal}}
