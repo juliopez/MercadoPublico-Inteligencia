@@ -364,3 +364,21 @@ Se incorporó `scripts/auditar_diferencias_campos_cierre.py` para comparar **dos
 **Decisión técnica:** no se habilitará el cargador real mientras no haya una política explícita para campos divergentes, en particular estado del proceso, selección histórica frente a adjudicación jurídica, proveedor y fechas. No todas las diferencias representan mejoras; se documentarán por fuente y campo. Las 34 pruebas previamente aprobadas constituyen cobertura unitaria de funciones específicas, no evidencia de integración real.
 
 **Disciplina de validación:** las pruebas unitarias deben seguir aumentando con nuevos riesgos, pero se ejecutarán en CI o localmente de forma agrupada, en hitos de integración, no mediante captura manual del usuario por cada commit. Las rondas pendientes son integración local, prueba con una hoja de prueba independiente y cierre supervisado el 10/11/2026. La fase de pruebas no ha sido reducida ni abandonada.
+
+## Exportador de operativo a SQLite para auditoría campo a campo — 21/10/2026
+
+Se incorporó `scripts/exportar_operativo_sqlite.py`: selecciona el mes anterior desde `config/catalogo_sheets.json` (desde el día 10), abre Google Sheets **exclusivamente con scope `spreadsheets.readonly`**, lee las seis pestañas MER v2 y crea una instantánea SQLite local con la misma estructura `(pk,fila)` que el paquete oficial. Verifica cabeceras, PK obligatorias y únicas, longitudes de filas y `PRAGMA integrity_check`. Escribe a fichero temporal y lo reemplaza atómicamente solo después de completar las seis tablas. Un fallo no debe sobrescribir un snapshot previo válido. El SQLite y el informe permanecen **locales**, sin publicación al repositorio.
+
+Uso previsto después de preparar los ZIP de octubre, **a partir del 10 de noviembre**:
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/mercadopublico/servicio-google.json"
+.venv/bin/python scripts/exportar_operativo_sqlite.py --periodo 2026-10 \
+ --salida "$HOME/.local/share/mercadopublico/cierres/2026-10/operativo_snapshot.sqlite"
+.venv/bin/python scripts/auditar_diferencias_campos_cierre.py \
+ --oficial "$HOME/.local/share/mercadopublico/cierres/2026-10/preparados/preparado.sqlite" \
+ --operativo-snapshot "$HOME/.local/share/mercadopublico/cierres/2026-10/operativo_snapshot.sqlite" \
+ --salida "$HOME/.local/share/mercadopublico/cierres/2026-10/diferencias_por_campo.json"
+```
+
+Se añadieron pruebas offline en `tests/test_exportar_operativo_sqlite.py`, que ensayan seis tablas y protección de un snapshot previo ante PK duplicada. Se esperan **38 pruebas unitarias** en total (34 previas + 2 diferencias por campo + 2 exportador), no ejecutadas todavía en Ubuntu. El exportador no reemplaza el control de concurrencia ni garantiza que el contenido remoto no cambie durante una lectura larga: sigue siendo obligatorio cotejar las huellas inmediatamente antes de aplicar y mantener el `flock` local. El cierre real, el traslado y el cron mensual continúan inactivos.
