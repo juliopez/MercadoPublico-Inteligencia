@@ -21,7 +21,7 @@
 | 5 | Validar septiembre de 2026 como primer histórico definitivo | Completada (auditoría de septiembre) |
 | 6 | Crear las Google Sheets históricas de junio, julio y agosto de 2026 | Completada: tres archivos creados, seis pestañas y encabezados validados |
 | 7 | Cargar y auditar los históricos de junio, julio y agosto de 2026 | **Completada**: junio, julio y agosto cargados y auditados; septiembre ya cerrado |
-| 8 | Crear la Google Sheets operativa del mes en curso con el MER de seis tablas | Completada: MER_2026_10_OPERATIVO vacía y ubicada en 02_Operativo_API |
+| 8 | Crear la Google Sheets operativa del mes en curso con el MER de seis tablas | Completada: MER_2026_10_OPERATIVO vacía y ubicada en 02_Operativo_MER |
 | 9 | Adaptar los ETL de las API ChileCompra para alimentar la hoja operativa | Pendiente |
 | 10 | Implementar actualización incremental diaria y control de errores de API | Pendiente |
 | 11 | Diseñar el procedimiento de cierre mensual y consolidación con históricos oficiales | Completada: documento técnico de cierre y conciliación |
