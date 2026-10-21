@@ -20,6 +20,29 @@ def digest(p):
 def url_mes(template,period):
     yyyy,mm=period.split("-")
     return template.format(yyyy=yyyy,mm=mm)
+def preflight(url):
+    """Revisa disponibilidad sin descargar el ZIP completo."""
+    try:
+        req=urllib.request.Request(url,method="HEAD",headers={"User-Agent":"MER-v2-monthly-downloader/1.0"})
+        with urllib.request.urlopen(req,timeout=25) as res:
+            return {"disponible":res.status in (200,206),"http":res.status,
+                    "bytes_declarados":res.headers.get("Content-Length"),
+                    "ultima_modificacion":res.headers.get("Last-Modified")}
+    except urllib.error.HTTPError as e:
+        if e.code not in (403,405,501):
+            return {"disponible":False,"http":e.code,"error":str(e.reason)}
+        # Algunos servidores no permiten HEAD. Solicitar un byte como alternativa.
+        try:
+            req=urllib.request.Request(url,headers={"Range":"bytes=0-0","User-Agent":"MER-v2-monthly-downloader/1.0"})
+            with urllib.request.urlopen(req,timeout=25) as res:
+                if res.status==200:
+                    return {"disponible":False,"http":200,"error":"Servidor ignora Range: no efectuar descarga de prueba completa"}
+                return {"disponible":res.status==206,"http":res.status}
+        except urllib.error.HTTPError as e2:
+            return {"disponible":False,"http":e2.code,"error":str(e2.reason)}
+    except Exception as e:
+        return {"disponible":False,"error":str(e)}
+
 def descargar(url,path):
     req=urllib.request.Request(url,headers={"User-Agent":"MER-v2-monthly-downloader/1.0"})
     with urllib.request.urlopen(req,timeout=120) as res, path.open("wb") as out:
@@ -98,6 +121,21 @@ def main():
     if args.comparar_sheets and args.solo_local:ap.error("Elegir un modo de comparación")
     out=Path(args.salida).resolve()
     out.mkdir(parents=True,exist_ok=True)
+    # Verificar LAS TRES fuentes primero: evita descargar archivos grandes para
+    # descubrir al final que un ZIP de Compra Ágil todavía no fue publicado.
+    disponibilidad={}
+    for k,template in config["fuentes"].items():
+        url=url_mes(template,period)
+        disponibilidad[k]={"url":url,**preflight(url)}
+        print("PREFLIGHT",k,json.dumps(disponibilidad[k],ensure_ascii=False),flush=True)
+    if not all(x["disponible"] for x in disponibilidad.values()):
+        diagnostico={"periodo":period,"estado":"FUENTES_INCOMPLETAS_SIN_ESCRITURA",
+                     "fecha_utc":dt.datetime.now(dt.timezone.utc).isoformat(),
+                     "fuentes":disponibilidad}
+        report=out/("diagnostico_fuentes_"+period+".json")
+        report.write_text(json.dumps(diagnostico,ensure_ascii=False,indent=2),encoding="utf8")
+        print("DESCARGA POSPUESTA: fuentes incompletas. Informe:",report,flush=True)
+        return 2
     with tempfile.TemporaryDirectory(prefix="mer_mes_") as tmp:
         t=Path(tmp);sources={}
         for k,template in config["fuentes"].items():
@@ -121,4 +159,4 @@ def main():
         if args.comparar_sheets:summary["comparacion"]=comparar_sheets(dest,period,cat)
         (out/("simulacion_"+period+".json")).write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding="utf8")
         print(json.dumps(summary,ensure_ascii=False,indent=2))
-if __name__=="__main__":main()
+if __name__=="__main__":sys.exit(main() or 0)
