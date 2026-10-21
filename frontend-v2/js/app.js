@@ -67,8 +67,7 @@ async function readJsonPublic(path){
  throw last;
 }
 function renderLinkedRecords(target,items,kind){
- const container=$(target);
- container.replaceChildren();
+ const container=$(target);container.replaceChildren();
  const description=document.createElement('p');description.className='muted';
  description.textContent=items.length.toLocaleString('es-CL')+' registros relacionados por código de proceso.';
  container.append(description);
@@ -78,14 +77,27 @@ function renderLinkedRecords(target,items,kind){
   kind==='resultados'?['adjudicatario','monto_adjudicado_clp','validado','estado_verificacion_oc']:
   ['codigo_oc','proveedor','monto_total_oc_clp','estado'];
  for(const col of fields){const th=document.createElement('th');th.textContent=col.replaceAll('_',' ');head.append(th)}
- const thead=document.createElement('thead');thead.append(head);table.append(thead);
- for(const item of items.slice(0,30)){
-  const tr=document.createElement('tr');
-  for(const field of fields)tr.append(textCell(item[field]));
-  body.append(tr);
+ const thead=document.createElement('thead');thead.append(head);table.append(thead,body);
+ container.append(table);
+ const nav=document.createElement('div');nav.className='pagination';
+ const prev=document.createElement('button');prev.textContent='Anterior';
+ const pageText=document.createElement('span');
+ const next=document.createElement('button');next.textContent='Siguiente';
+ nav.append(prev,pageText,next);container.append(nav);
+ let page=0;const perPage=10,pages=Math.ceil(items.length/perPage);
+ function draw(){
+  body.replaceChildren();
+  for(const item of items.slice(page*perPage,(page+1)*perPage)){
+   const tr=document.createElement('tr');
+   for(const field of fields)tr.append(textCell(item[field]));
+   body.append(tr);
+  }
+  prev.disabled=page===0;next.disabled=page===pages-1;
+  pageText.textContent='Página '+(page+1)+' de '+pages;
  }
- table.append(body);container.append(table);
- if(items.length>30){const n=document.createElement('p');n.className='muted';n.textContent='Se muestran 30 registros. Hay más relaciones disponibles.';container.append(n)}
+ prev.addEventListener('click',()=>{if(page>0){page--;draw()}});
+ next.addEventListener('click',()=>{if(page+1<pages){page++;draw()}});
+ draw();
 }
 async function loadRelated(code,period){
  const seq=++detailRequest;
