@@ -75,3 +75,5 @@ Referencias conservadas para trazabilidad; **no sustituyen** el MER v2 vigente.
 5. La auditoría integral del frontend V2, distinta de pruebas visuales puntuales, sigue pendiente y deberá planificarse independientemente.
 
 - [Búsqueda de participantes históricos: proveedores y organismos](PARTICIPANTES_HISTORICOS_V2_2026-10-21.md) — consulta transversal, métricas y límites metodológicos.
+
+- [Auditoría de vínculo Compra Ágil–OC (839-4-COT26)](AUDITORIA_VINCULO_CA_OC_2026-10-21.md): diagnóstico de 693.688 OC, referencia incompleta y candidata aún no confirmada.
