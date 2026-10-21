@@ -175,3 +175,24 @@ Prueba offline: `python -m unittest discover -s tests -p 'test_vincular_evidenci
 **Pendiente crítico:** falta implementar y probar una segunda comprobación de estas mismas huellas inmediatamente ANTES de cualquier escritura real y de una autorización explícita e independiente. Asimismo, el contenido operativo de Sheets puede cambiar después de la conciliación: se requiere relectura remota o sello verificable de estado previo. Hasta resolverlo, no activar un cargador remoto ni un cierre desatendido. Este módulo es un avance de seguridad, no un cierre completo.
 
 No se ejecutaron las pruebas en Ubuntu, no se habilitó cron mensual y no se modificó frontend, Drive ni Sheets.
+
+## Séptima etapa: revalidación del contenido operativo antes del cierre
+
+El conciliador `scripts/conciliar_cierre_mensual.py` registra ahora `sha256_operativo` por tabla. La huella se calcula sobre **todas las filas y todos los campos**, ordenando las PK para ser insensible al orden de filas. El nuevo `scripts/revalidar_operativo_cierre.py` vuelve a leer las seis pestañas con permisos de **solo lectura**, verifica el Sheet ID del catálogo, los conteos y las huellas contra la conciliación original.
+
+El cierre se **bloquea** si una tabla cambia, si falta su huella porque el informe procede de una versión antigua o si una pestaña presenta encabezados o PK incompatibles. Una coincidencia de conteos no sustituye la coincidencia de contenido. No se eliminan datos, no se escribe en Sheets y no se mueve ni renombra ninguna hoja.
+
+### Pruebas locales
+```bash
+.venv/bin/python -m unittest discover -s tests -p 'test_revalidar_operativo_cierre.py'
+```
+
+### Uso previsto después del 10 de noviembre
+```bash
+.venv/bin/python scripts/revalidar_operativo_cierre.py \
+ --conciliacion "$HOME/.local/share/mercadopublico/cierres/2026-10/conciliacion.json"
+```
+
+La lectura remota debe realizarse inmediatamente antes de una carga autorizada. **No equivale a una transacción**: otro escritor aún podría modificar Sheets después de la comprobación. Antes de habilitar el cargador real falta implantar exclusión mutua con el flujo de escritura, auditoría final, respaldo de las seis tablas, política para registros modificados, restauración y verificación posterior.
+
+**Estado:** código publicado sin prueba de integración sobre octubre; cron diario sin cambios y cron mensual sin instalar. Primera validación supervisada el 10 de noviembre.
