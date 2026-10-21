@@ -88,6 +88,25 @@ def _ejecutar_tablas(book,db,schemas,readback,aplicar,registrar,resultado):
  resultado["estado"]="DATOS_CARGADOS_Y_VERIFICADOS_PENDIENTES_DE_AUDITORIA"
  registrar("CARGA_VERIFICADA",resultado)
 
+
+def cargar_con_adaptadores_etl(book,db,schemas,periodo,registrar,confirmacion=None):
+ """Adaptador real del motor al ETL diario; solo llamable desde orquestador autorizado.
+
+ ¡No autoriza por sí mismo la escritura! El llamador debe asegurar flock,
+ informe de cierre validado, credenciales, aprobación externa y lectura coherente.
+ El adaptador mantiene política segura de SOLO ALTAS; toda divergencia bloquea.
+ """
+ if confirmacion!="CIERRE_SUPERVISADO_AUTORIZADO":
+  raise PermissionError("Sin autorización supervisada del cierre")
+ etl=importar("etl_operativo_cierre","etl_zip_dos_fuentes.py")
+ return cargar_con_respaldo(
+  book=book,db=db,schemas=schemas,periodo=periodo,
+  readback=etl.worksheet_rows,
+  aplicar=etl.aplicar_tabla,
+  backup=etl.respaldo_local,
+  registrar=registrar,
+ )
+
 def main():
  p=argparse.ArgumentParser(description="Preflight del cargador: sin escrituras ni autorización de cierre")
  p.add_argument("--paquete",type=Path,required=True)
