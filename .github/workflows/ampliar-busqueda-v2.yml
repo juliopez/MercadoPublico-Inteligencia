@@ -1,0 +1,68 @@
+name: Ampliar índices búsqueda V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/ampliar-busqueda-v2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: publicar-indice-busqueda-v2
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generar y comprobar índices históricos faltantes por mes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for periodo in 2026-06 2026-07 2026-08 2026-09 2026-10; do
+            echo "PERIODO_INICIO $periodo"
+            for entidad in procesos ofertas resultados ordenescompra; do
+              export PERIODO="$periodo" ENTIDAD="$entidad"
+              if [ -f "frontend-v2/data/busqueda/$periodo/$entidad/meta.json" ]; then
+                echo "INDICE_EXISTENTE $periodo $entidad"
+                continue
+              fi
+              n=$(python - <<'PY'
+          import json,os
+          d=json.load(open('frontend-v2/data/catalogo-publico.json'))
+          p=next(x for x in d['periodos'] if x['periodo']==os.environ['PERIODO'])
+          print(p['conteos'].get(os.environ['ENTIDAD'],0))
+          PY
+              )
+              if [ "$n" = 0 ]; then
+                echo "ENTIDAD_VACIA $periodo $entidad"
+                continue
+              fi
+              python scripts/indexar_busqueda_frontend_v2.py --periodo "$periodo" --entidad "$entidad"
+              python - <<'PY'
+          import json,os,pathlib
+          base=pathlib.Path('frontend-v2/data')
+          catalog=json.loads((base/'catalogo-publico.json').read_text())
+          period=os.environ['PERIODO'];entity=os.environ['ENTIDAD']
+          entry=next(p for p in catalog['periodos'] if p['periodo']==period)
+          meta=json.loads((base/'busqueda'/period/entity/'meta.json').read_text())
+          assert meta['version']==3 and meta['conteo']==entry['conteos'][entity]
+          assert meta['fragmentos']==len(entry['partes'][entity])
+          assert meta['formato']=='referencias_fragmento_fila'
+          print('INDICE_VALIDADO',period,entity,meta['conteo'],meta['grupos'])
+          PY
+            done
+            git add "frontend-v2/data/busqueda/$periodo/"
+            if ! git diff --cached --quiet; then
+              git commit -m "data(v2): ampliar índices de búsqueda $periodo"
+              git push
+            fi
+            echo "PERIODO_PUBLICADO $periodo"
+          done
