@@ -301,3 +301,20 @@ git pull --ff-only
 ```
 
 Se agregaron cuatro pruebas nuevas de preservación de ID, bloqueo ante cierre incompleto, exclusiones y permisos inesperados. **Se esperan 23 pruebas en total, aún no ejecutadas en Ubuntu.** El simulador solo será ejecutable contra evidencia favorable posterior al cierre verificado; en octubre presente aún no existe tal evidencia. No se ha movido ninguna hoja.
+
+## Decimocuarta etapa — protocolo recuperable Drive → GitHub (sin ejecución real)
+
+El módulo `scripts/protocolo_traslado_drive_github.py` interpreta una instantánea de metadatos Drive (ID, nombre y carpeta) y el catálogo GitHub para decidir el **siguiente paso lógico**. No contiene llamadas a servicios externos ni comandos capaces de mover archivos.
+
+| Estado observado | Siguiente acción (solo planificada) |
+|---|---|
+| Drive origen / catálogo operativo | Mover y renombrar mismo ID en Drive, tras aprobación |
+| Drive destino / catálogo operativo | Verificar Drive y actualizar exclusivamente el catálogo |
+| Drive destino / catálogo histórico | Marcar finalizado, después de comprobaciones |
+| Drive origen / catálogo histórico | Inconsistencia: bloquear y reparar supervisadamente |
+
+Ante interrupciones, el protocolo reevalúa los estados externos en vez de confiar en una marca local; así evita repetir ciegamente un traslado ya completado. `autorizado_para_ejecutar=false` en todos los resultados. No existe todavía el adaptador transaccional real, ni aprobación independiente, ni validación de permisos del actor que moverá Drive.
+
+`tests/test_protocolo_traslado_drive_github.py` cubre cinco escenarios de origen, traslado parcial, finalización, catálogo adelantado y finalización falsa. Se esperan **28 pruebas locales en total**, pendientes de ejecución en Ubuntu.
+
+**Condición de activación:** prueba integral supervisada en noviembre y aprobación expresa antes de habilitar cambios Drive/GitHub. El cron mensual sigue sin instalar.
