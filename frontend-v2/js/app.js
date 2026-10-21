@@ -186,6 +186,7 @@ function showDetail(record){
  const area=$('detalle'), body=$('detalle-campos');
  body.replaceChildren();
  for(const [key,value] of Object.entries(record)){
+  if($('entidad').value==='resultados'&&['validado','estado_verificacion_oc'].includes(key))continue;
   const dt=document.createElement('dt');dt.textContent=key.replaceAll('_',' ');
   const dd=document.createElement('dd');
   const isOC=$('entidad').value==='ordenescompra';
@@ -202,7 +203,7 @@ function showDetail(record){
    const a=document.createElement('a');a.href='https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion='+encodeURIComponent(code);
    a.target='_blank';a.rel='noopener noreferrer';a.textContent='Abrir ficha oficial';a.className='detail-official-link';
    dd.append(b,' ',a);
-  }else dd.textContent=String(value??'');
+  }else dd.textContent=formatTableValue(record,key);
   body.append(dt,dd);
  }
  const external=$('detalle-enlace');
