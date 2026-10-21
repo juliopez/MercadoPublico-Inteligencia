@@ -132,3 +132,11 @@ Documentación base consultada antes de intervenir: README, índice, decisiones,
 **Alcance habilitado:** Procesos junio 2026; en períodos/entidades sin índice el módulo informa indisponibilidad y mantiene la consulta ordinaria por bloques. No se han desplegado índices para otras entidades/meses. No se ha confirmado interacción real en navegador ni rendimiento de búsqueda desde cliente. Registro de cambios: interfaz `e65e4e65`, módulo `68097430`, conexión con detalle `812a2fbe`, correcciones `62302360`, `766b043c`, `c67548a8`, workflow `2e6cc9d6`.
 
 **Siguiente verificación funcional:** seleccionar junio 2026 y Procesos; buscar `capacitación` y código específico; abrir detalle, paginar, comprobar cambio de entidad/mes, observar tiempo de carga y verificar ausencia de regresión del listado local. Si funciona, ampliar gradualmente índices publicados.
+
+
+## Expansión de cobertura aprobada tras validación del usuario
+El usuario confirmó expresamente que la búsqueda global inicial de **Procesos junio 2026 funcionó correctamente en el navegador**. Esta validación funcional es reportada por la persona usuaria y no equivale a medición automática de latencia.
+
+Se releyeron README, índice, decisiones, este documento, catálogo público y workflow inicial antes de intervenir. Se creó `.github/workflows/ampliar-busqueda-v2.yml` (commit `8073bc41`) que genera y valida índices restantes por entidad y período (junio–octubre 2026) directamente de fragmentos JSON públicos, omite entidades con cero registros y publica por períodos en commits separados; no modifica Sheets, ETL, fragmentos, ni V1 o lector V2. Cada índice se verifica contra conteos y número de fragmentos del catálogo.
+
+**Ejecución iniciada:** [GitHub Actions #39661477081](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39661477081). Al redactar este registro el trabajo estaba `in_progress`. **Solo períodos con índices efectivamente confirmados en repositorio deben comunicarse como disponibles.** Tras finalizar, revisar logs, cobertura por entidad y eventual impacto de archivos publicados sobre GitHub Pages.
