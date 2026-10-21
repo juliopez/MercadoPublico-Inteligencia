@@ -498,6 +498,10 @@ $('perfil-cerrar').addEventListener('click',closeContextProfile);
 $('buscar').addEventListener('input',()=>{state.page=0;render()});
 for(const id of ['filtro-estado','filtro-modalidad'])$(id).addEventListener('change',()=>{state.page=0;render()});
 $('limpiar-filtros').addEventListener('click',()=>{$('buscar').value='';$('filtro-estado').value='';$('filtro-modalidad').value='';state.page=0;render()});
+$('ir-busqueda-global').addEventListener('click',()=>{
+ $('busqueda-global').scrollIntoView({behavior:'smooth',block:'start'});
+ $('busqueda-global-texto').focus({preventScroll:true});
+});
 $('consultar').addEventListener('click',consult);
 $('entidad').addEventListener('change',()=>{renderMonthlyEvolution();++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;closeDetail();closeContextProfile();render()});
 $('prev').addEventListener('click',()=>{if(state.page===0&&state.chunkIndex>0)loadChunk(state.chunkIndex-1);else{state.page--;render()}});
