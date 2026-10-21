@@ -1,56 +1,69 @@
-# Índice de documentación — Observatorio Mercado Público
+# Índice documental — Observatorio de Mercado Público
 
-> **Punto de entrada:** [README](../README.md) → este índice → documento de la tarea → código/configuración real.
-> Los documentos antiguos describen etapas históricas; **no prevalecen sobre las decisiones vigentes** recogidas en [DECISIONES_TECNICAS.md](DECISIONES_TECNICAS.md).
+**Revisión:** 21-10-2026. Ruta recomendada: [README del proyecto](../README.md) → **este índice** → [decisiones técnicas](DECISIONES_TECNICAS.md) → documento especializado → código/evidencias.
 
-## 01. Arquitectura, catálogo y modelo
+> Los documentos fechados conservan el contexto de una etapa y pueden contener pendientes ya resueltos. **No deben usarse como estado actual** sin contrastarlos con el README y el código. No borrar evidencia histórica ni credenciales operativas locales.
 
-- [Consolidador MER v2](CONSOLIDADOR_MER_V2.md) — arquitectura por catálogo, carpetas y frontend.
-- **[Auditoría tarea 14: consolidador y frontend](AUDITORIA_T14_CONSOLIDADOR_FRONTEND.md)** — compatibilidad efectiva, riesgos y condiciones para implementar consolidación por período.
-- [Catálogo Sheets y períodos](CATALOGO_SHEETS_Y_PERIODOS.md) — inventario, estructura y decisiones de preservación.
-- [Especificación de Proveedores y Vínculos COT–OC](Especificacion_Proveedores_Vinculos_COT_OC.md) — definición de dos entidades del MER v2.
-- [Modelo MER propuesto](MER_propuesto.mmd) — diagrama fuente Mermaid.
-- [Esquema objetivo](esquema-objetivo.md) — diseño histórico del contrato; contrastar con MER v2 vigente.
-- [Contrato de datos v1](contrato-datos-v1.md) — versión anterior, referencia histórica, **no especificación vigente**.
+## 1. Estado, arquitectura y decisiones
 
-## 02. Fuentes e integraciones
+- **[README vigente](../README.md)** — estado del sistema, accesos y operación.
+- **[Decisiones técnicas vigentes](DECISIONES_TECNICAS.md)** — restricciones aprobadas, integridad de MER, cierre mensual y límites de frontend.
+- **[Frontend V2 — guía funcional](../frontend-v2/README.md)** — uso, componentes, cobertura y restricciones reales.
+- [Consolidador MER v2](CONSOLIDADOR_MER_V2.md) — arquitectura privada y publicación.
+- [Catálogo de Sheets y períodos](CATALOGO_SHEETS_Y_PERIODOS.md) — identificadores y cobertura interna.
+- [Especificación Proveedores y Vínculos COT–OC](Especificacion_Proveedores_Vinculos_COT_OC.md).
+- [Diagrama MER](MER_propuesto.mmd).
+- [Auditoría de consolidador/frontend — tarea 14](AUDITORIA_T14_CONSOLIDADOR_FRONTEND.md).
 
-- [Integración ChileCompra](03-integracion-chilecompra.md) — verificación histórica API Compra Ágil v2.
-- [Diccionario API-first](diccionario-api-first.md) — diseño API previo; no confundir con ETL actual por ZIP.
-- [Integración Compra Ágil–OC](integracion-compra-agil-ordenes-compra-20261016.md) — antecedentes y criterios del diseño.
-- [Sincronización con Google Sheets](sincronizacion-google-sheets.md) — documentación original de sincronización.
+## 2. Frontend V2 — arquitectura, implementación y UX
 
-## 03. Procesamiento ETL e históricos
+**Referencias principales:**
+- [Línea base de rendimiento](BASELINE_FRONTEND_V2_2026-10-21.md).
+- [Auditoría comparativa V1–V2](AUDITORIA_FRONTEND_V1_V2_2026-10-21.md).
+- [Búsqueda global indexada](BUSQUEDA_GLOBAL_V2_2026-10-21.md).
+- [Relaciones y detalle indexado](DETALLE_RELACIONADO_FRONTEND_V2.md).
+- [Analítica interactiva y vínculos entre meses](ANALITICA_INTERACTIVA_RELACIONES_HISTORICAS_V2_2026-10-21.md).
+- [Mejoras integrales de experiencia](MEJORAS_UX_INTEGRALES_V2_2026-10-21.md).
 
-- [ETL de descargas masivas](ETL_OPERATIVO_DESCARGAS_MASIVAS.md) — fuentes ZIP y antecedentes de implementación.
-- [Operación Ubuntu con dos fuentes](UBUNTU_ETL_DOS_FUENTES.md) — ETL diario operativo, respaldo y cron.
-- [Cierre de carga histórica](cierre-carga-historica.md) — evidencia del trabajo histórico anterior.
+**Registros de implementaciones específicas (hitos técnicos, no estado vigente):**
+- [Presentación visual](MEJORA_VISUAL_FRONTEND_V2_2026-10-21.md); [Tablas](MEJORA_TABLAS_FRONTEND_V2_2026-10-21.md); [Filtros locales](FILTROS_LOCALES_FRONTEND_V2_2026-10-21.md).
+- [Perfiles contextuales y agregados](PERFILES_CONTEXTUALES_FRONTEND_V2_2026-10-21.md); [Comparación de proveedores y sugerencias](COMPARACION_PROVEEDORES_FRONTEND_V2_2026-10-21.md).
+- [Favoritos y exportación CSV](FAVORITOS_CSV_FRONTEND_V2_2026-10-21.md).
+- [Mejoras analíticas y filtros globales](MEJORAS_ANALITICAS_V2_2026-10-21.md).
+- [Ajustes visuales consolidados](LOTE_AJUSTES_VISUALES_V2_2026-10-21.md).
+- [Corrección de tablas y detalle OC](CORRECCION_TABLAS_Y_DETALLE_OC_V2_2026-10-21.md).
+- [Validación del detalle](VALIDACION_DETALLE_V2_2026-10-21.md).
 
-## 04. Operación y cierre mensual
+## 3. Operación MER v2 y ETL
 
-- **[Runbook del 10 de noviembre de 2026](RUNBOOK_CIERRE_2026_10.md)** — guía principal de ejecución manual supervisada de octubre.
-- [Procedimiento de cierre mensual](PROCEDIMIENTO_CIERRE_MENSUAL.md) — especificaciones y bitácora técnica extensa. **Las decisiones recientes prevalecen sobre apartados históricos contradictorios.**
+- **[Runbook: cierre de octubre, 10-11-2026](RUNBOOK_CIERRE_2026_10.md)** — pasos manuales supervisados.
+- **[Procedimiento de cierre mensual](PROCEDIMIENTO_CIERRE_MENSUAL.md)** — operación, respaldo, conciliación y recuperación.
+- [ETL diario Ubuntu](UBUNTU_ETL_DOS_FUENTES.md) — cron y dos fuentes principales.
+- [Carga histórica y descargas oficiales](ETL_OPERATIVO_DESCARGAS_MASIVAS.md).
+- [Cierre de carga histórica](cierre-carga-historica.md).
+- [Plan maestro de 21 tareas](PLAN_MAESTRO_21_TAREAS.md) — antecedente de planificación; no es lista de pendientes actual.
+- [Bitácora de orden y mantenimiento del repositorio](MANTENIMIENTO_REPOSITORIO_2026-10-21.md).
 
-## 05. Validación, seguridad y decisiones
+## 4. Fuentes, integraciones y contratos anteriores
 
-- **[Decisiones técnicas vigentes](DECISIONES_TECNICAS.md)** — criterios aprobados, jerarquía de fuentes, permisos, límites y próximos hitos.
-- Los controles del cierre y recuperación se documentan en [procedimiento mensual](PROCEDIMIENTO_CIERRE_MENSUAL.md).
-- La validación automática está en [GitHub Actions](../.github/workflows/validacion-mer.yml).
+Referencias conservadas para trazabilidad; **no sustituyen** el MER v2 vigente.
 
-- **[Línea base estable frontend v2 (21-10-2026)](BASELINE_FRONTEND_V2_2026-10-21.md)** — validación del usuario, conteos, límites y siguiente fase: recuperar detalle vinculado de v1.
+- [Integración ChileCompra](03-integracion-chilecompra.md).
+- [Diccionario API-first](diccionario-api-first.md).
+- [Compra Ágil y órdenes de compra](integracion-compra-agil-ordenes-compra-20261016.md).
+- [Sincronización original Google Sheets](sincronizacion-google-sheets.md).
+- [Contrato de datos V1](contrato-datos-v1.md).
+- [Esquema objetivo histórico](esquema-objetivo.md).
 
-- **[Detalle relacionado frontend v2](DETALLE_RELACIONADO_FRONTEND_V2.md)** — vínculos por código y período, índices compactos, publicación y verificación requerida.
+## 5. Archivo histórico
 
-## 06. Plan e historial
+- **[README anterior completo](historial/README_LEGADO_2026-10-21.md)** — referencia íntegra previa, no instrucciones vigentes.
+- Historial de decisiones y fallos: Git y documentos fechados; mantener información probatoria antes de pensar en eliminación.
 
-- [Plan maestro de 21 tareas](PLAN_MAESTRO_21_TAREAS.md) — planificación histórica; **no equivale al estado actual**.
-- La cronología técnica del cierre está preservada en [procedimiento mensual](PROCEDIMIENTO_CIERRE_MENSUAL.md).
-- [README original y evolución](../README.md) — incorpora antecedentes históricos acumulados; consultar primero su sección inicial de orientación.
+## Política editorial
 
-## Regla editorial
-
-La información se consulta en este orden: **README vigente → decisiones vigentes → runbook/procedimiento específico → código y configuración comprobados → historial**. No afirmar «ejecutado» por tener solo código o CI aprobado. Al modificar documentación, revisar enlaces y no borrar material histórico sin conservar una copia íntegra.
-
-- [Mejoras integrales de experiencia V2 — 21-10-2026](MEJORAS_UX_INTEGRALES_V2_2026-10-21.md): nueve mejoras aprobadas (búsqueda, filtros, navegación, progreso, fichas, contexto, accesibilidad, moneda CLP y códigos) y sus límites de validación.
-
-- [Analítica interactiva y relaciones históricas multimes V2 — 21-10-2026](ANALITICA_INTERACTIVA_RELACIONES_HISTORICAS_V2_2026-10-21.md): comparación de meses, perspectivas analíticas y vínculos completos del catálogo publicado.
+1. Cada README es **punto de entrada**, no bitácora. Estado actualizado, arquitectura y enlaces esenciales.
+2. Las decisiones aprobadas se mantienen en [DECISIONES_TECNICAS.md](DECISIONES_TECNICAS.md); procedimientos de operación en sus propios documentos; evidencias fechadas en los informes correspondientes.
+3. Distinguir claramente **codificado → CI aprobado → probado visualmente → ejecutado con datos operativos**.
+4. Los JSON públicos de gran volumen, scripts con dependencias, credenciales locales (nunca versionadas), workflows en uso y V1/V2 no se eliminan en una limpieza editorial.
+5. La auditoría integral del frontend V2, distinta de pruebas visuales puntuales, sigue pendiente y deberá planificarse independientemente.
