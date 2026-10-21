@@ -20,3 +20,11 @@ Se presentan para cada entidad tres indicadores: número de registros, registros
 ## Evidencia
 Archivos: `frontend-v2/index.html`, `frontend-v2/js/comparar-proveedores.js`, `frontend-v2/css/styles.css`.
 Workflow: https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39665354319. El resultado debe confirmarse en GitHub Actions. Pruebas manuales de nombres reales y maquetación quedan pendientes. V1, Sheets, ETL y fragmentos publicados permanecen intactos.
+
+
+## Mejora: selección asistida de razones sociales — 21-10-2026
+Se revisó README, índice documental, decisiones y esta documentación antes de intervenir. Se incorporó `scripts/generar_autocompletado_proveedores_v2.py`, que recorre **únicamente los agregados públicos ya publicados** de Ofertas, Resultados y Órdenes de compra; fusiona proveedores por nombre normalizado, construye archivos de sugerencias por las dos primeras letras y publica un metadato mensual. No lee fragmentos históricos ni fuentes privadas.
+
+Se añadieron campos con `datalist` al comparador y se conectó `frontend-v2/js/comparar-proveedores.js` para cargar sugerencias a demanda según período y prefijo, con debounce de 200 ms, máximo 40 opciones y caché de 12 grupos. La entrada manual sigue siendo posible. Solo se sugieren coincidencias al **inicio** de la razón social normalizada; no se resuelven RUT ni alias.
+
+Workflow `.github/workflows/publicar-autocompletado-v2.yml`, ejecución [#39665786022](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39665786022), iniciada; verificar conclusión y existencia de metadatos de todos los meses antes de dar por publicada la función. La validación visual de las sugerencias en el navegador queda pendiente.
