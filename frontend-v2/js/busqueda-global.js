@@ -77,7 +77,7 @@ async function draw(s,t){
   const frag=document.createDocumentFragment();
   for(const item of visible){
    const tr=document.createElement('tr');
-   for(const [key] of fields[t.entity]){const td=document.createElement('td');td.textContent=String(item.record[key]??'')||'No informado';tr.append(td)}
+   for(const [key] of fields[t.entity]){const value=item.record[key];const td=document.createElement('td');td.textContent=window.MPV2?.moneyField(key)?window.MPV2.moneyCLP(value):String(value??'')||'No informado';if(window.MPV2?.codeField(key)&&value){const link=document.createElement('button');link.className='code-link';link.textContent=String(value);link.addEventListener('click',()=>window.MPV2.openCode(value,key));td.replaceChildren(link)}tr.append(td)}
    const td=document.createElement('td'),btn=document.createElement('button');
    btn.textContent='Ver detalle';
    btn.addEventListener('click',()=>window.openIndexedRecord?.(item.part,item.pos,t.period,t.entity));
@@ -152,7 +152,7 @@ async function exportGlobal(){
   const cols=fields[t.entity].map(([key])=>key);
   const safe=x=>'"'+String(x??'').replaceAll('"','""').replace(/^[=+@\-\t\r]/,m=>"'"+m)+'"';
   const all=globalSort.key?[...t.found].sort((a,b)=>globalSort.direction*String(a.record[globalSort.key]??'').localeCompare(String(b.record[globalSort.key]??''),'es',{numeric:true})):t.found;
-  const csv='\uFEFF'+[cols.join(';'),...all.map(x=>cols.map(key=>safe(x.record[key])).join(';'))].join('\r\n');
+  const csv='\uFEFF'+[cols.join(';'),...all.map(x=>cols.map(key=>safe(window.MPV2?.moneyField(key)?window.MPV2.moneyCLP(x.record[key]):x.record[key])).join(';'))].join('\r\n');
   const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   const a=document.createElement('a');a.href=url;a.download='busqueda-global-'+t.entity+'-'+t.period+'.csv';
   document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
