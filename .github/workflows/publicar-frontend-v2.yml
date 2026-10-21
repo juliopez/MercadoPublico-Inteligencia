@@ -1,0 +1,71 @@
+name: Frontend MER v2 - exportación aislada por período
+on:
+  workflow_dispatch:
+    inputs:
+      periodo:
+        description: "Mes AAAA-MM; histórico auditado o mes operativo vigente"
+        required: true
+        default: "2026-10"
+        type: string
+      entidad:
+        description: "Tabla pública MER v2"
+        required: true
+        default: "procesos"
+        type: choice
+        options:
+          - procesos
+          - ofertas
+          - resultados
+          - ordenescompra
+permissions:
+  contents: write
+concurrency:
+  group: frontend-mer-v2-exportacion
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar dependencias de lectura privada
+        run: pip install --disable-pip-version-check 'gspread==6.2.1' 'google-auth==2.40.3'
+      - name: Exportar UNA entidad de UN mes; no modificar v1
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          PERIODO: ${{ inputs.periodo }}
+          ENTIDAD: ${{ inputs.entidad }}
+        run: python scripts/exportar_frontend_v2.py --periodo "$PERIODO" --entidad "$ENTIDAD"
+      - name: Verificar manifiesto y fragmentos referenciados
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          root=pathlib.Path('frontend-v2')
+          data=json.loads((root/'data/catalogo-publico.json').read_text())
+          for item in data['periodos']:
+              for entity,parts in item['partes'].items():
+                  total=0
+                  for part in parts:
+                      file=root/part
+                      assert file.is_file(),part
+                      rows=json.loads(file.read_text())
+                      assert isinstance(rows,list)
+                      total+=len(rows)
+                  assert total==item['conteos'][entity],(item['periodo'],entity,total)
+          print('MANIFIESTO_V2_VERIFICADO')
+          PY
+      - name: Publicar únicamente JSON de la v2
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A frontend-v2/data
+          if ! git diff --cached --quiet; then
+            git commit -m "data(v2): extracto público ${{ inputs.periodo }} ${{ inputs.entidad }}"
+            git pull --rebase
+            git push
+          fi
