@@ -74,3 +74,19 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 #resultados .table-scroll td:last-child button{white-space:nowrap}
 .detail-process-link{margin:3px 12px 3px 0;font-size:.86rem}
 .detail-official-link{display:inline-block;white-space:nowrap;color:#176b92;font-weight:600;margin:4px 0}
+
+/* Revisión de landing: separadores funcionales y lectura de indicadores. */
+.landing-group{border-top:2px solid #cadcea;padding:20px 4px 10px;margin:26px 0 8px}
+.landing-group h2{font-size:1rem;color:#1a557b;margin:0 0 6px}
+.landing-group p{font-size:.88rem;color:#52697a;margin:0}
+.stat strong{overflow-wrap:anywhere;word-break:normal;line-height:1.35;font-size:clamp(.95rem,1.35vw,1.35rem)}
+.evolution-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 20px}
+.evolution-metric{background:#f1f6fa;border:1px solid #dce9f2;border-radius:9px;padding:12px;min-width:0}
+.evolution-metric small{display:block;color:#52697a;font-size:.8rem}
+.evolution-metric strong{display:block;font-size:1.25rem;color:#174d74;font-variant-numeric:tabular-nums;margin-top:5px}
+.evolution-row{grid-template-columns:90px minmax(80px,1fr) 105px 78px}
+.evolution-row>span:last-child{text-align:right;font-variant-numeric:tabular-nums;font-size:.8rem}
+.sort-heading{display:inline-flex;align-items:center;gap:4px;border:0;padding:3px 0;background:transparent;color:inherit;font-weight:700;text-align:left;font-size:inherit;white-space:nowrap}
+.sort-heading:hover,.sort-heading:focus-visible{background:transparent;color:#176b92;text-decoration:underline;outline-offset:3px}
+@media(max-width:850px){.evolution-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:550px){.evolution-summary{grid-template-columns:1fr}.evolution-row{grid-template-columns:65px minmax(65px,1fr) 75px 60px}}
