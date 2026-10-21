@@ -3,7 +3,7 @@
 ## Directorio central (creado)
 - [Plataforma Mercado Público](https://drive.google.com/drive/folders/1R5SDUh5n7XWxMYWWCRyIYqByMrAoPJ-H)
 - [01_Historicos_MER](https://drive.google.com/drive/folders/1YC-1MT1QCnAvpKgDACCH-NKnV9caIFyW)
-- [02_Operativo_API](https://drive.google.com/drive/folders/1m3feqWXUNtur6v17qvhZ9bQrB38-ruVS)
+- [02_Operativo_MER](https://drive.google.com/drive/folders/1m3feqWXUNtur6v17qvhZ9bQrB38-ruVS)
 - [03_Respaldos](https://drive.google.com/drive/folders/1TQAxQUPsDPACmTBhh3HR7OMyCemC8NAZ)
 - [04_Revision_y_Obsoletos](https://drive.google.com/drive/folders/1R2g284moDJOeCsVH8Wf-yiQwgGXBX8je)
 
@@ -49,7 +49,7 @@
 
 ## Tercera etapa — 20 de octubre de 2026
 
-- [MER_2026_10_OPERATIVO](https://docs.google.com/spreadsheets/d/1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4/edit) creado y ubicado en [02_Operativo_API](https://drive.google.com/drive/folders/1m3feqWXUNtur6v17qvhZ9bQrB38-ruVS), con las seis pestañas MER v2 y encabezados idénticos al histórico. **Sin registros; sin integración API activada**.
+- [MER_2026_10_OPERATIVO](https://docs.google.com/spreadsheets/d/1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4/edit) creado y ubicado en [02_Operativo_MER](https://drive.google.com/drive/folders/1m3feqWXUNtur6v17qvhZ9bQrB38-ruVS), con las seis pestañas MER v2 y encabezados idénticos al histórico. **Sin registros; sin integración API activada**.
 - Archivos adicionales identificados para revisión, no eliminar: `149_YB64BfW22rKnfAkrNxrUB8dQVV4GS3YK7lGIs1Z8` (Compra Ágil septiembre preparada), `1In5DsxX5BB1Z20U7tQi0WbXXybrE3lNuK8K1y-z0AUM` (respaldo Indicadores), `14HSCjPvPCJJtAhf9Mi8t59TiGI4FzEpo_zxBbVSVzYU` (respaldo Control), `13CUdwUHkFXN_gmOCv3q4tNrCq-4FBn5_bvhYgaRXgx0` (respaldo Resultados), `1h32aq-keyo_Qg-QWUqbBSLNtDSJHiAuyJqMaNQcBKgo` (respaldo Ofertas).
 - Archivos originales de producción, clon y respaldos no se borraron ni movieron. El inventario completo de dependencias sigue en curso.
 
@@ -101,7 +101,7 @@ Los cuatro períodos previstos **2026-06, 2026-07, 2026-08 y 2026-09** están ca
 
 **Registro de lectura automática:** [`config/catalogo_sheets.json`](../config/catalogo_sheets.json), fuente de referencia de los cinco períodos, carpetas y exclusiones. La nomenclatura operativa es `MER_AAAA_MM_OPERATIVO` y la histórica `MER_AAAA_MM`.
 
-**Verificación de carpetas:** `01_Historicos_MER` contiene cuatro documentos (junio–septiembre); `02_Operativo_API` contiene octubre. Cuatro respaldos MER v2 (uno por mes cargado) fueron movidos a `03_Respaldos`. También se organizaron respaldos previos del clon y producción identificados por nombre. Los archivos auxiliares de Compra Ágil, OC y staging pasaron a `04_Revision_y_Obsoletos` **sin borrarlos**. Los movimientos conservaron los ID de Google Drive.
+**Verificación de carpetas:** `01_Historicos_MER` contiene cuatro documentos (junio–septiembre); `02_Operativo_MER` contiene octubre. Cuatro respaldos MER v2 (uno por mes cargado) fueron movidos a `03_Respaldos`. También se organizaron respaldos previos del clon y producción identificados por nombre. Los archivos auxiliares de Compra Ágil, OC y staging pasaron a `04_Revision_y_Obsoletos` **sin borrarlos**. Los movimientos conservaron los ID de Google Drive.
 
 **Archivos críticos excluidos de movimientos y depuración:** producción antigua `1y81QaPy37APkBwxlYrKyE66_1ECdhL87GyWNitTfHr4` y clon histórico `1loeK_IM3RXHaR7CqpjUbz-TsNgOKNrV1ejq8aRC6JyE`. Deben mantenerse disponibles hasta comprobar dependencias de ETL y publicación vigente.
 
