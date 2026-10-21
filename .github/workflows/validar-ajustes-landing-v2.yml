@@ -6,6 +6,7 @@ on:
       - '.github/workflows/validar-ajustes-landing-v2.yml'
       - 'frontend-v2/js/app.js'
       - 'frontend-v2/js/busqueda-global.js'
+      - 'frontend-v2/js/comparar-proveedores.js'
       - 'frontend-v2/index.html'
 permissions:
   contents: read
@@ -36,6 +37,9 @@ jobs:
           assert(html.includes('evolucion-resumen'));
           assert(app.includes("America/Santiago")&&app.includes("Intl.DateTimeFormat"));
           assert(app.includes('function sortLocal(')&&app.includes("function ordered("));
+          assert(app.includes('function paintProfile()')&&app.includes('relatedSort'));
+          assert(fs.readFileSync('frontend-v2/js/comparar-proveedores.js','utf8').includes('activeSort'));
+          assert(!html.includes('Funciones de la versión 1'));
           assert(search.includes("let globalSort=")&&search.includes("sort-heading"));
           assert(css.includes('.evolution-summary')&&css.includes('.landing-group'));
           console.log('CINCO_AJUSTES_ESTRUCTURA_OK');
