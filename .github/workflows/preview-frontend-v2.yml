@@ -10,6 +10,12 @@ on:
       - 'frontend-v2/data/catalogo-publico.json'
       - 'frontend-v2/data/partes/**'
       - 'frontend-v2/data/indices/**'
+      - 'frontend-v2/data/relaciones-procesos/**'
+      - 'frontend-v2/data/busqueda/**'
+      - 'frontend-v2/data/perfiles/**'
+      - 'frontend-v2/data/autocompletar/**'
+      - 'frontend-v2/data/analitica/**'
+      - 'frontend-v2/data/sugerencias/**'
       - '.github/workflows/preview-frontend-v2.yml'
 permissions:
   contents: read
