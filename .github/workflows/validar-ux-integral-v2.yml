@@ -8,6 +8,7 @@ on:
       - 'frontend-v2/js/busqueda-global.js'
       - 'frontend-v2/css/styles.css'
       - 'tests/test_ux_integral_v2.cjs'
+      - 'tests/test_accion_consulta_v2.cjs'
       - '.github/workflows/validar-ux-integral-v2.yml'
 permissions:
   contents: read
@@ -27,4 +28,6 @@ jobs:
           node --check frontend-v2/js/comparar-proveedores.js
           node --check frontend-v2/js/sugerencias-global.js
       - name: Probar nueve mejoras UX
-        run: node tests/test_ux_integral_v2.cjs
+        run: |
+          node tests/test_ux_integral_v2.cjs
+          node tests/test_accion_consulta_v2.cjs
