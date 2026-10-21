@@ -102,7 +102,8 @@ async function loadRelated(code,period){
   if(seq!==detailRequest)return;
   let loaded=0;
   for(const [entity,target,key] of [['ofertas','detalle-ofertas','codigo'],['resultados','detalle-resultados','codigo'],['ordenescompra','detalle-oc','codigo_proceso']]){
-   const paths=index.entidades?.[entity]?.[code]||[];
+   const refs=index.entidades?.[entity]?.[code]||[];
+   const paths=refs.map(ref=>typeof ref==='number'?index.archivos?.[entity]?.[ref]:ref);
    const records=[];
    for(const path of paths){
     if(!safePart(path,period,entity))throw Error('Ruta vinculada no válida');
