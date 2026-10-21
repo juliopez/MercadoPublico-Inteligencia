@@ -12,6 +12,8 @@ assert(app.includes('for(const month of periods)'),'Debe buscar en todos los mes
 assert(app.includes("state.manifest?.periodos"),'Períodos deben venir del catálogo');
 assert(app.includes("_periodo_fuente:month"),'Debe identificar mes fuente');
 assert(app.includes("sourceEntity==='ordenescompra'"),'Debe buscar desde una OC');
+assert(app.includes('data/relaciones-procesos/'),'Debe consultar índices exactos de Procesos');
+assert(html.includes('id="detalle-procesos"'),'Debe incluir panel de procesos vinculados');
 assert(app.includes('cobertura parcial')===false||true);
 assert(css.includes('.evolution-row.selected'));
 console.log('ANALITICA_HISTORICOS_ESTRUCTURA_OK');
