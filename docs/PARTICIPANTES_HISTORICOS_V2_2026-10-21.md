@@ -21,3 +21,9 @@ En «Participación histórica de empresas y organismos» se elige el tipo de ac
 
 ## Verificación y pendientes
 La primera ejecución [#39692345509](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39692345509) falló en `git push` por cambios concurrentes en `main` durante publicación; la generación y la sintaxis pasaron. El workflow tiene reintentos seguros y se activó una segunda ejecución [#39692446114](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39692446114). **No afirmar que los índices están publicados hasta verificar resultado y metadatos para junio–octubre.** Revisión visual y comprobación de participación real de un proveedor y un organismo siguen pendientes. La auditoría integral V2 sigue pendiente como tarea independiente.
+
+
+## Cierre de publicación y validación
+La segunda ejecución de publicación [#39692446114](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39692446114) terminó **success**. Se comprobaron directamente los metadatos de participación `meta.json` para los cinco meses: junio (80.898 procesos, 407.923 ofertas), julio (80.996, 437.855), agosto (83.937, 432.111), septiembre (79.376, 398.018) y octubre (1.558, 0), conciliados con el catálogo. Los índices de octubre no incluyen el directorio de proveedores porque no hay Ofertas registradas para ese mes. La validación [#39692706384](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39692706384) finalizó **success** (sintaxis y cobertura). Se corrigió asimismo que un participante sin actividad en algún mes figure con cero, no como agregado faltante.
+
+**Estado:** funcionalidad incorporada, índices publicados y validación automatizada aprobada; **comprobación visual e interacción real en navegador pendiente del usuario**. Los indicadores de procesos distintos y ofertas recibidas se calculan por mes y no deben describirse como deduplicación global entre meses o como adjudicaciones confirmadas.
