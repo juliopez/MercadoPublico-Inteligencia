@@ -111,7 +111,7 @@ async function showContextProfile(field,name){
  const extra=document.createElement('p');extra.className='muted';
  extra.textContent='Consultando resumen del período…';header.prepend(extra);
  try{
-  const normalized=name.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().trim().replace(/\\s+/g,' ');
+  const normalized=name.normalize('NFD').replace(/\p{M}/gu,'').toLowerCase().trim().replace(/\s+/g,' ');
   const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(normalized));
   const shard=Array.from(new Uint8Array(digest)).slice(0,1).map(v=>v.toString(16).padStart(2,'0')).join('');
   const location='data/perfiles/'+period+'/'+entity+'/'+shard+'.json';
