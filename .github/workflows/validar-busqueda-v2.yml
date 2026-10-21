@@ -1,0 +1,22 @@
+name: Validar índice búsqueda frontend V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/indexar_busqueda_frontend_v2.py'
+      - 'tests/test_indexar_busqueda_frontend_v2.py'
+      - '.github/workflows/validar-busqueda-v2.yml'
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Revisar sintaxis
+        run: python -m py_compile scripts/indexar_busqueda_frontend_v2.py tests/test_indexar_busqueda_frontend_v2.py
+      - name: Pruebas unitarias
+        run: python -m unittest discover -s tests -p 'test_indexar_busqueda_frontend_v2.py' -v
