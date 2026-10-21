@@ -39,3 +39,21 @@ Antes de ejecutar: verificar que el mes en curso está registrado como **operati
 - Publicados el código de simulación y esta especificación.
 - **No se ha podido verificar mediante ejecución real** HTTP/CRC/tiempos/tamaño de las tres descargas en esta fase. Tampoco se han ejecutado pruebas con Sheets.
 - Próxima aprobación técnica requerida: ensayo real de descarga+simulación, contraste de PK sintéticas entre dos versiones y diseño de upsert seguro.
+
+## Prueba reproducible en Ubuntu (sin cron ni credenciales)
+
+Requisitos: Ubuntu con `git`, `python3 >=3.9`, paquete del sistema `python3-venv`, `flock` (util-linux), red para descargar ZIP grandes y espacio temporal local. Ejecutar:
+
+```bash
+# Primera vez, en una carpeta de trabajo elegida por el usuario:
+git clone https://github.com/juliopez/MercadoPublico-Inteligencia.git
+cd MercadoPublico-Inteligencia
+bash scripts/ubuntu_preparar_prueba.sh
+bash scripts/ubuntu_probar_descargas.sh
+```
+
+Si el repositorio ya existe: entrar a su directorio, `git pull --ff-only` y ejecutar los dos scripts. Si `python3 -m venv` informa falta de `ensurepip`, instalar `python3-venv` con APT; no subir credenciales al repositorio.
+
+La segunda instrucción descarga y valida los ZIP oficiales del mes local en Santiago y ejecuta la conversión MER v2. Resultados: `salida_operativa/simulacion_AAAA-MM.json`, `salida_operativa/preparado_AAAA-MM/informe.json` y `logs/prueba_descargas_*.log`. Si falla, el código de salida es no-cero y el log conserva el mensaje. Archivo de bloqueo `logs/.prueba_etl.lock` impide dos ejecuciones simultáneas. La primera ejecución puede tardar y consumir gigabytes temporales según el tamaño de los ZIP. **No programar cron ni activar carga en esta fase.**
+
+El simulador completo todavía requiere validación empírica; si los tres ZIP descargan pero el parser rechaza un CSV, conservar el log para corregir la compatibilidad. El futuro servicio tendrá que implementar reintentos, autenticación Google, escritura incremental y cierre mensual por separado.
