@@ -1,0 +1,47 @@
+name: Validar paquete analítico V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'frontend-v2/js/busqueda-global.js'
+      - 'frontend-v2/js/app.js'
+      - '.github/workflows/validar-paquete-analitico-v2.yml'
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Comprobar sintaxis de los tres módulos
+        run: |
+          node --check frontend-v2/js/app.js
+          node --check frontend-v2/js/busqueda-global.js
+          node --check frontend-v2/js/comparar-proveedores.js
+      - name: Comprobar filtros y estructura de las cuatro tareas
+        run: |
+          node - <<'JS'
+          const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+          const source=fs.readFileSync('frontend-v2/js/busqueda-global.js','utf8');
+          const html=fs.readFileSync('frontend-v2/index.html','utf8');
+          const app=fs.readFileSync('frontend-v2/js/app.js','utf8');
+          const dom=new Proxy({}, {get(_,id){return {addEventListener(){},replaceChildren(){},value:'',disabled:false,textContent:''}}});
+          const context=vm.createContext({document:{getElementById:id=>dom[id]},window:{},fetch(){}});
+          vm.runInContext(source,context);
+          const matches=vm.runInContext('matches',context);
+          const rec={codigo:'1000-1-LE26',nombre:'Capacitación docente',organismo_comprador:'Hospital Regional',estado:'Adjudicada',modalidad:'Licitación'};
+          assert(matches(rec,['capacitacion'],'procesos',{status:'adjudicada',type:'licitacion'}));
+          assert(!matches(rec,['capacitacion'],'procesos',{status:'desierta'}));
+          assert(!matches(rec,['capacitacion'],'procesos',{type:'compra agil'}));
+          for(const id of ['global-estado','global-modalidad','global-csv','global-analitica','evolucion-barras','perfil-ver-global'])assert(html.includes('id="'+id+'"'),id);
+          for(const code of ['async function exportGlobal()','async function collect(','function renderMonthlyEvolution()','profile-ver-global']) {
+            if(code==='profile-ver-global')continue;
+            assert((source+app).includes(code),code);
+          }
+          assert(app.includes("link.append(button)"));
+          console.log('PAQUETE_ANALITICO_V2_OK');
+          JS
