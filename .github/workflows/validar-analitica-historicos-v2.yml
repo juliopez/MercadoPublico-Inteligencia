@@ -7,6 +7,8 @@ on:
       - 'frontend-v2/js/app.js'
       - 'frontend-v2/js/analitica-interactiva.js'
       - 'tests/test_analitica_historicos_v2.cjs'
+      - 'frontend-v2/index.html'
+      - 'frontend-v2/css/styles.css'
 permissions:
   contents: read
 jobs:
@@ -23,3 +25,17 @@ jobs:
           node --check frontend-v2/js/analitica-interactiva.js
       - name: Prueba de integración
         run: node tests/test_analitica_historicos_v2.cjs
+      - name: Comprobar índices de relaciones históricos
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('frontend-v2/data')
+          catalog=json.loads((root/'catalogo-publico.json').read_text())
+          for period in catalog['periodos']:
+           path=root/'indices'/(period['periodo']+'.json')
+           data=json.loads(path.read_text())
+           assert data['periodo']==period['periodo']
+           entities=data['entidades']
+           assert all(k in entities for k in ['ofertas','resultados','ordenescompra']), (period['periodo'],entities.keys())
+           print('INDICE_RELACIONES_OK',period['periodo'],sorted(entities))
+          PY
