@@ -450,3 +450,29 @@ Se incorporó `preparar_carga_conciliada` en `scripts/cargador_cierre_mer_v2.py`
 `ejecutar_carga_conciliada` en `scripts/cargador_cierre_mer_v2.py` integra: lectura de las seis hojas, propuesta conservadora por PK/campo, validación de capacidad, respaldo ZIP real, relectura previa a cada tabla, escritura con `aplicar_tabla`, verificación de cada fila y de los registros exclusivamente operativos y bitácora. La función solo puede llamarse desde Python con confirmación supervisada explícita. La CLI continúa sin `--aplicar`; no se escribieron datos de producción.
 
 **Advertencias críticas:** esta ruta NO es una transacción entre las seis hojas (pueden quedar tablas completadas cuando falle otra); registra interrupciones para recuperación supervisada. La comprobación de cambios es optimista y por tabla; depende además del `flock` que debe adquirir el orquestador de ejecución real. El tratamiento de diferencias entre valores existentes es conservador: se bloquea ante cualquier valor conflictivo, y completar valores vacíos requiere acreditar equivalencia semántica antes de aprobar cierre. Todavía faltan la ejecución sobre hoja de prueba, el orquestador de autorización real y el traslado Drive–GitHub. No considerar la nueva función lista para el cierre del 10/11 sin validación integrada.
+
+## EJECUCIÓN DEL 10/11/2026 — COMANDOS DE OPERACIÓN (SIN DESARROLLO NUEVO)
+
+**Alcance:** cierre manual octubre 2026 sobre MER_2026_10_OPERATIVO. Se reutiliza el importador histórico de junio–septiembre, las seis pestañas MER v2, los respaldos ZIP y `flock` del ETL diario. No instalar cron antes del resultado favorable.
+
+Código operativo preparado: `scripts/ubuntu_cierre_supervisado.sh` (fases `diagnosticar`, `cargar`, `trasladar`) y `scripts/ejecutar_cierre_supervisado.py`. Ejecutar desde la raíz del repositorio Ubuntu después de `git pull --ff-only`, con `.venv` y credencial de servicio existente.
+
+```bash
+bash scripts/ubuntu_cierre_supervisado.sh diagnosticar --periodo 2026-10
+# Revisar resumen y conflictos locales en ~/.local/share/mercadopublico/cierres/2026-10
+bash scripts/ubuntu_cierre_supervisado.sh cargar --periodo 2026-10
+# Revisar respaldo y constancia_carga_real.json antes de aprobar el traslado
+bash scripts/ubuntu_cierre_supervisado.sh trasladar --periodo 2026-10
+```
+
+El traslado requiere un archivo de aprobación **generado tras la revisión supervisada** en `~/.local/share/mercadopublico/cierres/2026-10/APROBACION_CIERRE.json` con:
+```json
+{"periodo":"2026-10","spreadsheet_id":"1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4","aprobar_traslado":true}
+```
+No crearlo antes de confirmar resultados de carga. Se requieren, para operar Drive/GitHub desde Ubuntu: token OAuth **del propietario** con alcance Drive en la variable de entorno `DRIVE_ACCESS_TOKEN` y autorización de GitHub vía `gh auth login` (o `GH_TOKEN`). No almacenar estos secretos en Git, informes o capturas. **Es un prerrequisito operativo todavía no acreditado en Ubuntu**, no se puede afirmar que el traslado esté listo sin él. La cuenta de servicio de Sheets existente puede escribir la hoja, pero no necesariamente moverla entre carpetas del propietario.
+
+Controles: las operaciones rechazan un mes distinto del anterior, inicio antes del día 10, ausencia de los tres ZIP, conflictos no resueltos, falta de respaldo, cambios concurrentes detectados, falta de confirmaciones, archivo de aprobación ausente o respuesta de Drive/GitHub no verificable. Los tres comandos adquieren el candado `logs/.mer_escritura_compartida.lock` compartido con ETL diario. Drive mueve **el mismo ID** y GitHub se actualiza **solo después** de confirmar Drive. Si falla GitHub, repetir exclusivamente la fase `trasladar`, que detecta Drive ya trasladado; el catálogo conserva el ID.
+
+**Límite no negociable:** si existen diferencias de campos no vacíos entre las fuentes, la conciliación se bloqueará. No intentar resolverlas programando reglas apresuradas durante el cierre; revisar informe y adoptar resolución documentada. El motor puede dejar un resultado parcial de tablas ante un error remoto (no hay transacción de seis hojas); el reintento supervisado vuelve a validar el estado. Esta preparación de código no equivale a evidencia de una prueba real sobre las hojas. No hay cron mensual instalado.
+
+**Resultado esperado:** el 10/11 es jornada de ejecución y auditoría, no de programación. Si los prerrequisitos de identidad y política de conflictos no están resueltos, el procedimiento **se detiene sin archivar** y se registra el bloqueo, en vez de cerrar incorrectamente. Después de aprobar la primera operación completa se programará el primer cron mensual, previsto para el 10/12/2026.
