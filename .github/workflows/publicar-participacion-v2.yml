@@ -34,7 +34,11 @@ jobs:
             git add "frontend-v2/data/participacion/$p/"
             if ! git diff --cached --quiet; then
               git commit -m "data(v2): índices de participación $p"
-              git pull --rebase origin main
-              git push origin main
+              for attempt in 1 2 3 4 5; do
+                git pull --rebase origin main
+                if git push origin main; then break; fi
+                if [ "$attempt" -eq 5 ]; then exit 1; fi
+                sleep 3
+              done
             fi
           done
