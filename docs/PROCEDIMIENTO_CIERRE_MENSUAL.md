@@ -212,3 +212,9 @@ bash scripts/ubuntu_preflight_cierre.sh 2026-10
 **Errores y recuperación:** ante cualquier fallo de revalidación o validación de archivos, el shell devuelve un código distinto de cero, libera el bloqueo al finalizar y **no habilita el archivado**. Un archivo `.lock` persistente no representa por sí mismo un proceso activo; `flock` se libera al cerrarse su descriptor. No se debe borrar manualmente el archivo de lock. En una futura carga interrumpida, habrá que revisar el respaldo íntegro y repetir reconciliación/read-back, sin sobrescribir a ciegas. Se documentará un mecanismo de recuperación específico antes de permitir escrituras del cierre.
 
 **Estado:** bloqueo implementado en código; todavía requiere prueba de concurrencia sobre Ubuntu. No se ha ejecutado ni autorizado cargador de escritura o traslado. La cuenta de servicio tampoco puede impedir modificaciones de terceros mediante `flock`.
+
+## Validación en Ubuntu — 21 de octubre de 2026
+
+El usuario ejecutó las pruebas locales con `.venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v`: **10 pruebas completadas, 10 OK, 0 fallas**. Después ejecutó dos adquisiciones concurrentes del archivo `logs/.mer_escritura_compartida.lock` mediante `flock -n`. La consola registró `BLOQUEO ADQUIRIDO` en el primer proceso y `CORRECTO: SEGUNDO PROCESO BLOQUEADO` para el segundo; ambos finalizaron sin intervención manual. **Esto prueba exclusivamente el comportamiento local del mecanismo flock**, no el cierre integral, ni una carga de Google Sheets, ni protección frente a editores externos.
+
+Próximos controles: prueba de integración del lock en el ejecutor diario, cargador seguro con respaldo y verificación, y cierre supervisado de octubre a partir del 10 de noviembre. El cron mensual continúa deshabilitado.
