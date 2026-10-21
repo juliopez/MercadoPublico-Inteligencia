@@ -1,13 +1,28 @@
-// Búsqueda global V2 independiente: no sustituye ni modifica la carga por bloques de app.js.
+// Búsqueda global V2: verifica las palabras completas sobre fragmentos selectivos.
 const el=id=>document.getElementById(id);
-let request=0, references=[], page=0, context=null;
-const columns={
+const fields={
  procesos:[['codigo','Código'],['nombre','Proceso'],['organismo_comprador','Organismo'],['estado','Estado']],
  ofertas:[['codigo','Proceso'],['proveedor','Proveedor'],['monto_ofertado_clp','Monto CLP']],
  resultados:[['codigo','Proceso'],['adjudicatario','Proveedor informado'],['validado','Verificación']],
  ordenescompra:[['codigo_oc','Orden de compra'],['codigo_proceso','Proceso'],['proveedor','Proveedor']]
 };
-function normalize(s){return String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
+const searchable={procesos:['codigo','nombre','organismo_comprador'],ofertas:['codigo','proveedor'],resultados:['codigo','adjudicatario'],ordenescompra:['codigo_oc','codigo_proceso','proveedor']};
+const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const terms=s=>norm(s).match(/[a-z0-9]+/g)||[];
+function matches(record,query,entity){
+ const words=new Set(searchable[entity].flatMap(key=>terms(record[key])));
+ return query.every(term=>words.has(term));
+}
+let seq=0,session=null;
+function message(text){el('busqueda-global-estado').textContent=text}
+function clear(text){
+ seq++;session=null;
+ el('busqueda-global-columnas').replaceChildren();
+ el('busqueda-global-filas').replaceChildren();
+ el('busqueda-global-pagina').textContent='Sin resultados';
+ el('busqueda-global-anterior').disabled=true;el('busqueda-global-siguiente').disabled=true;
+ message(text);
+}
 async function read(path){
  if(!/^data\/(busqueda|partes)\/[a-z0-9_\/-]+\.json$/.test(path))throw Error('Ruta no permitida');
  let last;
@@ -16,83 +31,89 @@ async function read(path){
  }
  throw last;
 }
-function reset(message){
- request++;references=[];page=0;context=null;
- el('busqueda-global-filas').replaceChildren();el('busqueda-global-columnas').replaceChildren();
- el('busqueda-global-anterior').disabled=true;el('busqueda-global-siguiente').disabled=true;
- el('busqueda-global-pagina').textContent='Sin resultados';
- el('busqueda-global-estado').textContent=message;
+function valid(s,t){return seq===s&&session===t&&el('periodo').value===t.period&&el('entidad').value===t.entity}
+async function collect(s,t,target){
+ // Explorar solo los fragmentos requeridos para las páginas solicitadas.
+ while(valid(s,t)&&t.found.length<target&&t.cursor<t.refs.length){
+  const part=t.refs[t.cursor][0];
+  if(!Number.isInteger(part)||part<0||part>=t.parts.length)throw Error('Fragmento indexado inválido');
+  const group=[];
+  while(t.cursor<t.refs.length&&t.refs[t.cursor][0]===part)group.push(t.refs[t.cursor++]);
+  if(!/^data\/partes\/[a-z]+\/20\d{2}-\d{2}\/[a-z0-9_-]+\.json$/.test(t.parts[part]))throw Error('Ruta de datos inválida');
+  const rows=await read(t.parts[part]);
+  if(!valid(s,t))return;
+  if(!Array.isArray(rows))throw Error('Fragmento inválido');
+  for(const [,pos] of group){
+   if(!Number.isInteger(pos)||pos<0||pos>=rows.length)throw Error('Referencia inválida');
+   if(matches(rows[pos],t.tokens,t.entity))t.found.push({part,pos,record:rows[pos]});
+  }
+ }
 }
-async function paint(seq){
- if(!context||seq!==request)return;
- const {period,entity,parts}=context;
- const start=page*10,refs=references.slice(start,start+10);
- el('busqueda-global-estado').textContent='Cargando resultados indexados…';
+async function draw(s,t){
+ if(!valid(s,t))return;
+ const limit=(t.page+1)*10+1;
+ message('Comprobando coincidencias exactas en fragmentos públicos…');
+ el('busqueda-global-anterior').disabled=true;el('busqueda-global-siguiente').disabled=true;
  try{
-  const chunks=new Map();
-  for(const [part] of refs){
-   if(!Number.isInteger(part)||part<0||part>=parts.length)throw Error('Referencia de fragmento inválida');
-   if(!chunks.has(part)){
-    const rows=await read(parts[part]);
-    if(!Array.isArray(rows))throw Error('Fragmento no válido');
-    chunks.set(part,rows);
-   }
-  }
-  if(seq!==request||el('periodo').value!==period||el('entidad').value!==entity)return;
-  const head=document.createElement('tr'),body=document.createDocumentFragment();
-  const fields=columns[entity];
-  for(const [,label] of fields){const th=document.createElement('th');th.textContent=label;head.append(th)}
+  await collect(s,t,limit);
+  if(!valid(s,t))return;
+  const visible=t.found.slice(t.page*10,(t.page+1)*10);
+  const head=document.createElement('tr');
+  for(const [,label] of fields[t.entity]){const th=document.createElement('th');th.textContent=label;head.append(th)}
   const action=document.createElement('th');action.textContent='Acción';head.append(action);
-  for(const [part,index] of refs){
-   const rowData=chunks.get(part)?.[index];if(!rowData)throw Error('Fila referenciada ausente');
+  const frag=document.createDocumentFragment();
+  for(const item of visible){
    const tr=document.createElement('tr');
-   for(const [key] of fields){const td=document.createElement('td');td.textContent=String(rowData[key]??'')||'No informado';tr.append(td)}
-   const td=document.createElement('td'),button=document.createElement('button');
-   button.textContent='Ver detalle';
-   button.addEventListener('click',()=>window.openIndexedRecord?.(part,index,period,entity));
-   td.append(button);tr.append(td);body.append(tr);
+   for(const [key] of fields[t.entity]){const td=document.createElement('td');td.textContent=String(item.record[key]??'')||'No informado';tr.append(td)}
+   const td=document.createElement('td'),btn=document.createElement('button');
+   btn.textContent='Ver detalle';
+   btn.addEventListener('click',()=>window.openIndexedRecord?.(item.part,item.pos,t.period,t.entity));
+   td.append(btn);tr.append(td);frag.append(tr);
   }
+  if(!visible.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=fields[t.entity].length+1;td.textContent='No se encontraron coincidencias exactas.';tr.append(td);frag.append(tr)}
   el('busqueda-global-columnas').replaceChildren(head);
-  el('busqueda-global-filas').replaceChildren(body);
-  el('busqueda-global-pagina').textContent='Página '+(page+1)+' de '+Math.ceil(references.length/10);
-  el('busqueda-global-anterior').disabled=page===0;
-  el('busqueda-global-siguiente').disabled=start+10>=references.length;
-  el('busqueda-global-estado').textContent=references.length.toLocaleString('es-CL')+' candidatos por prefijo · '+period+' · '+entity+'.';
- }catch(error){if(seq===request)el('busqueda-global-estado').textContent='Error al leer resultados: '+error.message}
+  el('busqueda-global-filas').replaceChildren(frag);
+  const completed=t.cursor>=t.refs.length;
+  el('busqueda-global-pagina').textContent='Página '+(visible.length?t.page+1:0)+(completed?' de '+Math.max(1,Math.ceil(t.found.length/10)):' · más resultados por comprobar');
+  el('busqueda-global-anterior').disabled=t.page===0;
+  el('busqueda-global-siguiente').disabled=t.found.length<limit&&completed;
+  message((completed?t.found.length.toLocaleString('es-CL')+' coincidencias exactas':t.found.length.toLocaleString('es-CL')+' coincidencias exactas verificadas hasta ahora')+' · '+t.period+' · '+t.entity+'.');
+ }catch(e){if(valid(s,t))message('No se pudo completar la búsqueda: '+e.message)}
 }
 async function search(){
- const seq=++request;references=[];page=0;context=null;
- const period=el('periodo').value,entity=el('entidad').value;
- const query=normalize(el('busqueda-global-texto').value).trim();
- const tokens=[...new Set(query.match(/[a-z0-9]+/g)||[])];
- if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period)||!columns[entity]){reset('Seleccione un período y una entidad.');return}
- if(!tokens.length||tokens.some(t=>t.length<3)){reset('Escriba palabras de al menos 3 caracteres.');return}
- const info=Array.isArray(window.__unused)?null:null; // No depende del estado interno de app.js.
- el('busqueda-global-estado').textContent='Consultando índice público…';
+ const now=++seq,period=el('periodo').value,entity=el('entidad').value;
+ session=null;
+ const query=[...new Set(terms(el('busqueda-global-texto').value))];
+ if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period)||!fields[entity]){clear('Seleccione un período y una entidad.');return}
+ if(!query.length||query.some(t=>t.length<3)){clear('Escriba palabras de al menos 3 caracteres.');return}
+ message('Consultando índice de '+period+'…');
  try{
-  const catalogue=await read('data/busqueda/'+period+'/'+entity+'/meta.json');
-  if(seq!==request)return;
-  if(catalogue.version!==3||catalogue.periodo!==period||catalogue.entidad!==entity)throw Error('Índice incompatible');
-  const source=await (await fetch('./data/catalogo-publico.json')).json();
-  const parts=source.periodos?.find(x=>x.periodo===period)?.partes?.[entity];
-  if(!Array.isArray(parts)||parts.length!==catalogue.fragmentos)throw Error('Índice desactualizado');
-  const keys=[...new Set(tokens.map(t=>t.slice(0,2)))];
-  const groups=new Map();
-  for(const key of keys){try{groups.set(key,await read('data/busqueda/'+period+'/'+entity+'/'+key+'.json'))}catch{groups.set(key,{})}if(seq!==request)return}
-  const lists=tokens.map(token=>groups.get(token.slice(0,2))?.[token.slice(0,3)]||[]);
-  lists.sort((a,b)=>a.length-b.length);
-  if(!lists.length||!lists[0].length){references=[]}else{
-   const sets=lists.slice(1).map(a=>new Set(a.map(r=>r.join(':'))));
-   references=lists[0].filter(r=>sets.every(set=>set.has(r.join(':'))));
+  const meta=await read('data/busqueda/'+period+'/'+entity+'/meta.json');
+  if(now!==seq)return;
+  if(meta.version!==3||meta.periodo!==period||meta.entidad!==entity)throw Error('Índice incompatible');
+  const response=await fetch('./data/catalogo-publico.json');
+  if(!response.ok)throw Error('No se pudo consultar el catálogo');
+  const catalogue=await response.json();
+  const parts=catalogue.periodos?.find(p=>p.periodo===period)?.partes?.[entity];
+  if(!Array.isArray(parts)||parts.length!==meta.fragmentos)throw Error('Índice desactualizado');
+  const grouped=new Map();
+  for(const key of [...new Set(query.map(t=>t.slice(0,2)))]){
+   try{grouped.set(key,await read('data/busqueda/'+period+'/'+entity+'/'+key+'.json'))}
+   catch(e){if(String(e.message).includes('404'))grouped.set(key,{});else throw e}
+   if(now!==seq)return;
   }
-  // Seguridad del cliente: no descargar más de 10 filas de resultados por página.
-  context={period,entity,parts};page=0;
-  if(!references.length){el('busqueda-global-filas').replaceChildren();el('busqueda-global-columnas').replaceChildren();el('busqueda-global-pagina').textContent='Sin resultados';el('busqueda-global-estado').textContent='Sin coincidencias en el índice del período.';return}
-  await paint(seq);
- }catch(error){if(seq===request)reset('Índice no disponible o consulta fallida: '+error.message+'. La búsqueda por bloque sigue disponible.')}
+  const lists=query.map(token=>grouped.get(token.slice(0,2))?.[token.slice(0,3)]||[]);
+  lists.sort((a,b)=>a.length-b.length);
+  const others=lists.slice(1).map(list=>new Set(list.map(v=>v.join(':'))));
+  const refs=(lists[0]||[]).filter(ref=>others.every(set=>set.has(ref.join(':'))));
+  refs.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  const t={period,entity,parts,tokens:query,refs,cursor:0,found:[],page:0};
+  session=t;
+  await draw(now,t);
+ }catch(e){if(now===seq)clear('No fue posible consultar el índice: '+e.message+'. La consulta por bloques sigue disponible.')}
 }
 el('busqueda-global-boton').addEventListener('click',search);
 el('busqueda-global-texto').addEventListener('keydown',e=>{if(e.key==='Enter')search()});
-el('busqueda-global-anterior').addEventListener('click',()=>{if(page>0){page--;paint(request)}});
-el('busqueda-global-siguiente').addEventListener('click',()=>{if((page+1)*10<references.length){page++;paint(request)}});
-for(const id of ['periodo','entidad'])el(id).addEventListener('change',()=>reset('Seleccione Buscar en el período para ejecutar una nueva consulta.'));
+el('busqueda-global-anterior').addEventListener('click',()=>{if(session&&session.page>0){session.page--;draw(seq,session)}});
+el('busqueda-global-siguiente').addEventListener('click',()=>{if(session){session.page++;draw(seq,session)}});
+for(const id of ['periodo','entidad'])el(id).addEventListener('change',()=>clear('Seleccione Buscar en el período para iniciar una consulta.'));
