@@ -14,6 +14,7 @@ STAMP="$(date +%Y%m%d_%H%M%S)"
 LOG="$ROOT/logs/etl_dos_fuentes_$STAMP.log"
 exec 9>"$ROOT/logs/.etl_dos_fuentes.lock"
 flock -n 9 || { echo "Otra ejecución activa; no se superpone"; exit 3; }
+INICIO_EPOCH="$(date +%s)"
 echo "INICIO $(date --iso-8601=seconds) MODO=$MODE" | tee "$LOG"
 if [[ "$MODE" == "--aplicar" ]]; then
  test -n "${GOOGLE_APPLICATION_CREDENTIALS:-}" && test -r "$GOOGLE_APPLICATION_CREDENTIALS" || { echo "Faltan credenciales Google localmente" | tee -a "$LOG"; exit 4; }
@@ -25,5 +26,8 @@ set +e
 "$ROOT/.venv/bin/python" scripts/etl_zip_dos_fuentes.py "${ARGS[@]}" --salida "$ROOT/salida_operativa" 2>&1 | tee -a "$LOG"
 STATUS=${PIPESTATUS[0]}
 set -e
+if [[ "$MODE" == "--aplicar" ]]; then
+  "$ROOT/.venv/bin/python" scripts/registrar_sincronizacion.py --salida "$ROOT/salida_operativa" --inicio-epoch "$INICIO_EPOCH" --codigo "$STATUS" | tee -a "$LOG" || true
+fi
 echo "FIN $(date --iso-8601=seconds) CODIGO=$STATUS" | tee -a "$LOG"
 exit "$STATUS"
