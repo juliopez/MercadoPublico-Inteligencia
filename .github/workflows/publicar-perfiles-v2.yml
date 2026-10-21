@@ -1,0 +1,59 @@
+name: Publicar perfiles agregados V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/publicar-perfiles-v2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: perfiles-v2
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar sintaxis
+        run: |
+          python -m py_compile scripts/generar_perfiles_v2.py
+          node --check frontend-v2/js/app.js
+      - name: Generar y verificar perfiles por período y entidad
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for period in 2026-06 2026-07 2026-08 2026-09 2026-10; do
+            for entity in procesos ofertas resultados ordenescompra; do
+              export PERIOD="$period" ENTITY="$entity"
+              n=$(python - <<'PY'
+          import json,os
+          d=json.load(open('frontend-v2/data/catalogo-publico.json'))
+          print(next(p for p in d['periodos'] if p['periodo']==os.environ['PERIOD'])['conteos'][os.environ['ENTITY']])
+          PY
+              )
+              if [ "$n" = 0 ]; then continue; fi
+              python scripts/generar_perfiles_v2.py --periodo "$period" --entidad "$entity"
+              python - <<'PY'
+          import os,json,pathlib
+          root=pathlib.Path('frontend-v2/data')
+          period=os.environ['PERIOD'];entity=os.environ['ENTITY']
+          n=next(p for p in json.loads((root/'catalogo-publico.json').read_text())['periodos'] if p['periodo']==period)['conteos'][entity]
+          meta=json.loads((root/'perfiles'/period/entity/'meta.json').read_text())
+          assert meta['version']==1 and meta['registros']==n
+          print('PERFIL_VALIDADO',period,entity,n,meta['actores'])
+          PY
+            done
+            git add "frontend-v2/data/perfiles/$period/"
+            if ! git diff --cached --quiet; then
+              git commit -m "data(v2): publicar perfiles agregados $period"
+              git pull --rebase origin main
+              git push origin main
+            fi
+          done
