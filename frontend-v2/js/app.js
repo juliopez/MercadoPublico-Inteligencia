@@ -307,8 +307,8 @@ function showDetail(record){
  area.hidden=false;area.scrollIntoView({behavior:'smooth',block:'start'});
  const linked=$('detalle-relaciones');
  const sourceEntity=$('entidad').value;
- const relationshipCode=sourceEntity==='ordenescompra'?String(record.codigo_proceso||'').trim():code;
- linked.hidden=!(sourceEntity==='procesos'||(sourceEntity==='ordenescompra'&&relationshipCode));
+ const relationshipCode=sourceEntity==='ordenescompra'?String(record.codigo_proceso||'').trim():String(record.codigo||'').trim();
+ linked.hidden=!relationshipCode;
  if(!linked.hidden)loadRelated(relationshipCode,$('periodo').value);
 }
 function closeDetail(){detailRequest++;$('detalle-resumen').replaceChildren();$('detalle').hidden=true;$('detalle-campos').replaceChildren();$('detalle-relaciones').hidden=true;}
