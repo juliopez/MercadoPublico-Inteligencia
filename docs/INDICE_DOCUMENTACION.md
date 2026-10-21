@@ -18,7 +18,6 @@
 ## 2. Frontend V2 — funcionamiento y mejoras
 
 **Leer en este orden (vigencia primero):**
-- **[Manual actual de V2](../frontend-v2/README.md)** — funcionalidades y mapa de módulos.
 - [Línea base de rendimiento](BASELINE_FRONTEND_V2_2026-10-21.md).
 - [Auditoría comparativa V1–V2](AUDITORIA_FRONTEND_V1_V2_2026-10-21.md).
 - [Búsqueda global indexada](BUSQUEDA_GLOBAL_V2_2026-10-21.md).
