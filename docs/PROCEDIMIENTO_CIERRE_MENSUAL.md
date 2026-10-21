@@ -245,3 +245,27 @@ Se añadió `tests/test_recuperacion_cargador_cierre.py` con dos casos simulados
 Ejecutar localmente: `.venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v`. Se esperan **14 pruebas**, sujeto a verificación desde Ubuntu. Todavía no está resuelto el rollback físico automático de escrituras parcialmente confirmadas por Google, la auditoría de modificaciones campo por campo ni la integración de permiso real de escritura. La CLI del cargador sigue sin opción de aplicar, y no se activa el cron mensual.
 
 **Regla de recuperación:** una carga interrumpida no equivale a cierre; impedir todo traslado mientras falte read-back completo, respaldo y auditoría de seis tablas. Si hay diferencias inexplicadas, bloquear y revisar, no borrar ni reemplazar información automáticamente.
+
+## Undécima etapa: auditoría referencial del paquete histórico
+
+Se incorporó `scripts/auditar_referencias_cierre.py`. Examina exclusivamente el SQLite preparado de las seis entidades MER v2, contrastándolo contra los esquemas y conteos del importador. No accede a Google ni escribe. Los controles se dividen explícitamente en dos categorías:
+
+- **Bloqueantes:** filas que contradicen cabeceras/PK MER v2, resultado asociado a una oferta existente de otro proceso, resultado histórico marcado como verificado jurídicamente sin la validación requerida, o vínculo sin código OC. El informe queda `AUDITORIA_BLOQUEADA` y termina con código distinto de cero.
+- **Observaciones:** oferta o resultado sin proceso presente en el mismo corte, OC asociada a proceso de otro mes, proveedor no resuelto, vínculo cuya OC no figura en la fuente mensual, o divergencia de vínculo/proceso que requiere examinar otros meses. No bloquear de inmediato por estos casos, ya que los cortes oficiales pueden diferir temporalmente. **No equivale a aprobación automática**: corresponde evaluar y documentar su volumen y justificación.
+
+El estado sin errores estructurales es `AUDITORIA_ESTRUCTURAL_SIN_ERRORES_CON_OBSERVACIONES`, pero conserva siempre `cierre_autorizado=false` y `traslado_autorizado=false`. La conciliación remota, carga final auditada y traslado requieren decisiones posteriores.
+
+### Pruebas
+```bash
+.venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v
+```
+
+Se añadieron dos escenarios de auditoría en `tests/test_auditar_referencias_cierre.py`: una OC fuera de corte se clasifica como observación y un resultado enlazado a una oferta de otro proceso bloquea el cierre. Se esperan **16 pruebas** en total, pendientes de ejecución en Ubuntu.
+
+### Uso supervisado después de preparar los ZIP
+```bash
+.venv/bin/python scripts/auditar_referencias_cierre.py \
+  --paquete "$HOME/.local/share/mercadopublico/cierres/2026-10/preparados"
+```
+
+Salida: `~/.local/share/mercadopublico/cierres/2026-10/auditoria_referencial.json`. El código no modifica datos ni activa el cron mensual.
