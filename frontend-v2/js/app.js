@@ -336,7 +336,8 @@ function renderLinkedRecords(target,items,kind){
  container.append(description);
  if(!items.length)return;
  const table=document.createElement('table'),head=document.createElement('tr'),body=document.createElement('tbody');
- const fields=kind==='ofertas'?['_periodo_fuente','proveedor','monto_ofertado_clp','seleccionado']:
+ const fields=kind==='procesos'?['_periodo_fuente','codigo','nombre','estado']:
+  kind==='ofertas'?['_periodo_fuente','proveedor','monto_ofertado_clp','seleccionado']:
   kind==='resultados'?['_periodo_fuente','adjudicatario','monto_adjudicado_clp','monto_oferta_seleccionada_clp']:
   ['_periodo_fuente','codigo_oc','proveedor','monto_total_oc_clp','estado'];
  let relatedSort={key:null,direction:1};
@@ -366,12 +367,12 @@ function renderLinkedRecords(target,items,kind){
 }
 async function loadRelated(code,period){
  const seq=++detailRequest;
- for(const target of ['detalle-ofertas','detalle-resultados','detalle-oc'])$(target).replaceChildren();
+ for(const target of ['detalle-procesos','detalle-ofertas','detalle-resultados','detalle-oc'])$(target).replaceChildren();
  $('detalle-relaciones-estado').textContent='Buscando relaciones en todos los períodos publicados…';
  if(!code){$('detalle-relaciones-estado').textContent='Sin código de proceso para relacionar.';return}
  try{
   const periods=(state.manifest?.periodos||[]).map(p=>p.periodo);
-  const accum={ofertas:[],resultados:[],ordenescompra:[]};
+  const accum={procesos:[],ofertas:[],resultados:[],ordenescompra:[]};
   let checked=0,issues=[];
   for(const month of periods){
    if(seq!==detailRequest)return;
@@ -383,7 +384,7 @@ async function loadRelated(code,period){
      indexCache.set(month,index);
     }catch(e){issues.push(month);continue}
    }
-   for(const [entity,key] of [['ofertas','codigo'],['resultados','codigo'],['ordenescompra','codigo_proceso']]){
+   for(const [entity,key] of [['procesos','codigo'],['ofertas','codigo'],['resultados','codigo'],['ordenescompra','codigo_proceso']]){
     const refs=index.entidades?.[entity]?.[code]||[];
     const paths=[...new Set(refs.map(ref=>typeof ref==='number'?index.archivos?.[entity]?.[ref]:ref))];
     for(const path of paths){
@@ -400,7 +401,7 @@ async function loadRelated(code,period){
    if(seq===detailRequest)$('detalle-relaciones-estado').textContent='Revisados '+checked+' de '+periods.length+' períodos públicos…';
   }
   if(seq!==detailRequest)return;
-  for(const [entity,target] of [['ofertas','detalle-ofertas'],['resultados','detalle-resultados'],['ordenescompra','detalle-oc']])
+  for(const [entity,target] of [['procesos','detalle-procesos'],['ofertas','detalle-ofertas'],['resultados','detalle-resultados'],['ordenescompra','detalle-oc']])
    renderLinkedRecords(target,accum[entity],entity);
   const total=Object.values(accum).reduce((n,rows)=>n+rows.length,0);
   $('detalle-relaciones-estado').textContent=total.toLocaleString('es-CL')+' registros vinculados al código '+code+' en '+checked+' períodos consultados'+(issues.length?'; '+issues.length+' fuentes no disponibles (cobertura parcial)':'')+'.';
