@@ -20,7 +20,7 @@
 | 4 | Estandarizar los nombres de archivos: MER_2026_06, MER_2026_07, etc. | En curso: MER_2026_09 renombrada; pendientes otros meses |
 | 5 | Validar septiembre de 2026 como primer histórico definitivo | Completada (auditoría de septiembre) |
 | 6 | Crear las Google Sheets históricas de junio, julio y agosto de 2026 | Completada: tres archivos creados, seis pestañas y encabezados validados |
-| 7 | Cargar y auditar los históricos de junio, julio y agosto de 2026 | Pendiente |
+| 7 | Cargar y auditar los históricos de junio, julio y agosto de 2026 | **Completada**: junio, julio y agosto cargados y auditados; septiembre ya cerrado |
 | 8 | Crear la Google Sheets operativa del mes en curso con el MER de seis tablas | Completada: MER_2026_10_OPERATIVO vacía y ubicada en 02_Operativo_API |
 | 9 | Adaptar los ETL de las API ChileCompra para alimentar la hoja operativa | Pendiente |
 | 10 | Implementar actualización incremental diaria y control de errores de API | Pendiente |
@@ -58,3 +58,7 @@ Tarea 6 completada. Bases mensuales 2026-06, 2026-07 y 2026-08 creadas vacías y
 - Inventario de hojas y respaldos ampliado; tarea 1 todavía parcial. Ninguna depuración destructiva ejecutada.
 
 - Tarea 11 completada como **diseño**: [procedimiento de cierre mensual](PROCEDIMIENTO_CIERRE_MENSUAL.md). No se ha desarrollado ni activado el disparador automático de la tarea 12.
+
+## Cierre de la tarea 7 — 20 de octubre de 2026
+
+**Completada:** cuatro Google Sheets independientes `MER_2026_06`, `MER_2026_07`, `MER_2026_08` y `MER_2026_09`, con sus seis entidades; todos con auditoría estructural/referencial independiente satisfactoria con observaciones. Totales de filas de las seis entidades por archivo: junio 798.094; julio 810.333; agosto 834.370; septiembre 754.318. **Total acumulado de filas mensuales**: 3.197.115 (no equivale a identidades o procesos únicos entre meses). Detalles en [catálogo](CATALOGO_SHEETS_Y_PERIODOS.md). OC fuera de corte, resultados no verificados e identidad de proveedores son salvedades documentadas. No se modifica producción ni frontend.
