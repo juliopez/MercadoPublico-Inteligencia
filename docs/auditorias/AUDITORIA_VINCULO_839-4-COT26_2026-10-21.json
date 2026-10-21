@@ -82,6 +82,23 @@
     "coincidencia_nombre_oferente_resultado": []
   },
   "otros_codigos_referencia": 57478,
+  "ofertas_marcadas_seleccionadas": [
+    "capacitaciones atrévete spa"
+  ],
+  "resultados_adjudicatarios_informados": [
+    "capacitaciones atrévete spa"
+  ],
+  "oc_ag26_misma_unidad_compradora": 7,
+  "candidatas_por_misma_unidad_y_proveedor": [
+    {
+      "periodo": "2026-08",
+      "codigo_oc": "839-10-AG26",
+      "proveedor": "CAPACITACIONES ATRÉVETE SPA",
+      "codigo_proceso": "",
+      "monto_total_oc_clp": "1650000"
+    }
+  ],
+  "nota_candidatas": "Las candidatas por unidad/proveedor NO prueban vínculo ni adjudicación; deben compararse fechas, montos y registro oficial.",
   "conclusion": "NO se encontró coincidencia exacta en codigo_proceso; no demuestra ausencia de OC oficial",
   "limitaciones": [
     "Solo períodos publicados en V2",
