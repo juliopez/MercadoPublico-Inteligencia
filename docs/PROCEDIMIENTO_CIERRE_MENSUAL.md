@@ -338,3 +338,11 @@ Tras autorización del propietario para restringir permisos de los archivos de M
 Es imprescindible auditar separadamente los respaldos y hojas en revisión, y la carpeta raíz. Tras restringir, ejecutar comprobación de acceso de solo lectura desde Ubuntu y validar una ejecución del ETL diario a las 16:00; no dar por cerrada la incidencia hasta eso.
 
 **Actualización de acceso ETL (21/10/2026):** se concedió y verificó permiso Editor explícito a la cuenta de servicio en `MER_2026_10_OPERATIVO`. También consta permiso Editor específico en noviembre. El permiso general `anyone:writer` permanece vigente hasta su revocación por el propietario.
+
+## Decimosexta etapa — núcleo de integración Drive/GitHub con dependencias inyectables
+
+`scripts/adaptadores_traslado_cierre.py` integra la máquina de estados del traslado con operaciones abstractas de lectura Drive, lectura GitHub, movimiento Drive y actualización del catálogo. **La interfaz ejecutable está desactivada**: no contiene credenciales ni conectores reales. En ensayos controlados, requiere aprobación pasada explícitamente como parámetro y vuelve a leer Drive y el catálogo tras cada transición.
+
+`tests/test_adaptadores_traslado_cierre.py` simula: (1) una interrupción después de mover la hoja, seguida de recuperación que cambia solamente el catálogo sin repetir el traslado; (2) rechazo de toda operación sin autorización. Se esperan **34 pruebas** tras incorporar estas dos; pendientes de ejecución desde Ubuntu.
+
+**Controles pendientes antes de operación real:** aprobación de cierre con evidencia verificada y autorización fuerte (no basta un booleano de código), adaptador Drive con permisos comprobados, adaptación de actualización GitHub con SHA de versión y prevención de cambios concurrentes, catálogo del período con conteos y estado real de auditoría (el núcleo actual usa `auditado_con_observaciones` como etiqueta provisional, no decisión final), bitácora persistente y reintentos seguros. El traslado no se realizará antes de la prueba supervisada del 10 de noviembre. El cron mensual sigue sin instalar y el ETL diario permanece intacto.
