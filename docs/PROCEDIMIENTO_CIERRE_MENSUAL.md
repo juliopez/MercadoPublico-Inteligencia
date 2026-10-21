@@ -42,3 +42,28 @@ Ejecutar en Ubuntu **a partir de noviembre**:
 El resultado `FUENTES_DISPONIBLES_REVISION_MANUAL_PENDIENTE` significa únicamente que las tres URL responden 200. **No significa que el mes esté conciliado ni cerrado.** Deben descargarse y auditarse los seis CSV de la última versión oficial, revisar claves y discrepancias, obtener aprobación y recién entonces convertir la hoja a histórico. Si falta COT, reporta `ESPERANDO_FUENTES` sin bloquear la operación del mes nuevo. Evitar ejecutar el monitor antes de noviembre porque la fuente histórica anterior de septiembre ya está cerrada.
 
 El monitor no está agregado al cron aún. La automatización de conciliación/archivado está pendiente; esta separación deliberada impide cerrar a ciegas o borrar los registros de octubre cuando aún falten ofertas.
+
+## Orquestador de preparación — ejecución el día 10
+
+**Implementado:** `scripts/orquestar_cierre_mensual.py`. Inicio previsto **el día 10 de cada mes, para el mes anterior**, con zona horaria America/Santiago. No se ha instalado un nuevo cron ni se ha ejecutado la descarga de cierre. No se ha ejecutado un traslado real.
+
+### Etapas del nuevo script
+
+1. **Precondiciones:** fecha a partir del día 10, período inmediatamente anterior registrado como `operativo`, mes vigente con su propia hoja, sin referencias excluidas.
+2. **Descarga oficial:** tres URLs del catálogo `config/fuentes_descarga_mensual.json`. Se usan `*.partial` temporales y solo se conservan ZIP completos con CRC válido, SHA-256 y al menos un CSV; se reutilizan ZIP previos verificados en reintentos.
+3. **Importación histórica:** reutiliza `scripts/importador_historicos_v2.py`, que genera seis CSV, staging SQLite e `informe.json` con recuentos y controles básicos, incluidas observaciones de vínculos fuera del corte.
+4. **Estado persistente:** `~/.local/share/mercadopublico/cierres/AAAA-MM/estado_cierre.json`. Registra `DESCARGANDO`, `IMPORTANDO`, `BLOQUEADO` o `LISTO_PARA_CONCILIAR`; no marca `CERRADO`.
+5. **Barrera obligatoria:** `LISTO_PARA_CONCILIAR` **no autoriza escrituras ni traslado**. Faltan reconciliar diferencias frente a la Google Sheets operativa, auditar PK/FK y coberturas, comprobar espacio disponible para 10 millones de celdas, respaldar los seis contenidos, cargar de manera recuperable, verificar lectura posterior y autorizar cierre.
+6. **Traslado futuro:** tras las condiciones anteriores, mover el MISMO archivo por API Drive (sin clonarlo), renombrar, verificar nuevo directorio y permisos, cambiar catálogo de `operativo` a `historico` y registrar evidencia. Se debe poder recuperar una actualización parcial entre Drive y GitHub. La cuenta de servicio de Ubuntu podría carecer de permisos Drive para mover archivos; eso debe resolverse explícitamente.
+
+### Invocación manual a partir del 10 de noviembre de 2026
+
+```bash
+.venv/bin/python scripts/orquestar_cierre_mensual.py
+```
+
+Este comando efectúa descargas y procesamiento local **pero nunca escribe en Sheets ni altera carpetas**. Los ZIP podrían no estar todavía publicados el día 10; entonces el proceso queda `BLOQUEADO`, conserva descargas verificadas y permite reintento. La publicación de una URL HTTP 200 no asegura completitud semántica ni resultados definitivos: se mantienen las validaciones de auditoría anteriores.
+
+**Decisión pendiente de calendario:** hora concreta de lanzamiento (el usuario especificó día 10, no hora) y política de reintentos tras fallos. No programar el script hasta disponer de pruebas offline y del cargador conciliado seguro. El cron diario del ETL vigente permanece independiente.
+
+**Actualización del diseño de materialización:** el procedimiento inicial proponía crear una nueva hoja histórica. Se prioriza ahora, conforme a la decisión del proyecto, **consolidar la hoja operativa existente y trasladarla conservando su ID**, siempre que las seis tablas sean auditables y la carga reconciliada. Si no cabe en los límites de Sheets o no se cumple una validación, detener y revisar alternativa sin perder el origen.
