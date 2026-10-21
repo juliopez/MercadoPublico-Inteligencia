@@ -61,3 +61,16 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 .evolution-track{height:14px;border-radius:8px;background:#e8eff6;overflow:hidden}
 .evolution-fill{height:100%;background:#357da7;border-radius:8px}
 @media(max-width:600px){.evolution-row{grid-template-columns:70px 1fr 85px;gap:6px;font-size:.78rem}}
+
+/* Correcciones de legibilidad: la tabla de Procesos se desplaza horizontalmente,
+   en vez de comprimir estados y botones a columnas ilegibles. */
+#resultados.process-table .table-scroll table{min-width:1560px;table-layout:auto}
+#resultados .table-scroll td{overflow-wrap:normal;word-break:normal}
+#resultados.process-table .table-scroll td:nth-child(2){min-width:260px;max-width:340px;overflow-wrap:break-word}
+#resultados.process-table .table-scroll td:nth-child(4){min-width:230px;max-width:300px;overflow-wrap:break-word}
+#resultados.process-table .table-scroll td:nth-child(5){min-width:135px}
+#resultados .table-scroll .state-pill{display:inline-block;max-width:none;white-space:normal;overflow-wrap:normal;word-break:normal}
+#resultados .table-scroll td:last-child{min-width:330px;white-space:nowrap}
+#resultados .table-scroll td:last-child button{white-space:nowrap}
+.detail-process-link{margin:3px 12px 3px 0;font-size:.86rem}
+.detail-official-link{display:inline-block;white-space:nowrap;color:#176b92;font-weight:600;margin:4px 0}
