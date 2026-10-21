@@ -1,6 +1,9 @@
 # Frontend MER v2 — desarrollo independiente
 
-**Inicio:** 2026-10-21. **Estado:** base visual y lector por período preparados. **Primera exportación real de octubre publicada en el repositorio** y verificada por GitHub Actions; **sitio v2 todavía sin despliegue independiente ni prueba de navegador**.
+> **ESTADO VIGENTE Y VALIDADO POR EL USUARIO (21-10-2026):** la navegación de la v2 carga las entidades históricas y el usuario informó que su velocidad es muy buena. La línea base y los próximos pasos están documentados en [BASELINE_FRONTEND_V2_2026-10-21.md](../docs/BASELINE_FRONTEND_V2_2026-10-21.md). Las secciones fechadas que siguen son **historial de desarrollo**, por lo que sus afirmaciones de «pendiente» anteriores no deben tomarse como estado vigente.
+
+
+**Inicio:** 2026-10-21. **Estado actual:** MER v2 desplegado en ruta independiente, cuatro entidades históricas junio–septiembre publicadas, navegación por fragmentos y paginación de 10 registros; usuario confirmó funcionamiento y buena velocidad. **Pendiente:** búsqueda global y detalle relacionado equivalente a v1.
 
 ## Reglas obligatorias de convivencia
 
