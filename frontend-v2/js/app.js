@@ -86,7 +86,7 @@ async function loadChunk(index){
 }
 async function consult(){
  const period=$('periodo').value,entity=$('entidad').value;
- if(!/^20\\d{2}-(0[1-9]|1[0-2])$/.test(period)||!allowed.includes(entity))return;
+ if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period)||!allowed.includes(entity))return;
  const info=state.manifest.periodos.find(p=>p.periodo===period);
  const parts=info?.partes?.[entity];
  if(!Array.isArray(parts)){status('Entidad no publicada para este período.');return}
@@ -117,7 +117,7 @@ $('periodo').addEventListener('change',()=>{$('stat-periodo').textContent=$('per
 $('detalle-cerrar').addEventListener('click',closeDetail);
 $('buscar').addEventListener('input',()=>{state.page=0;render()});
 $('consultar').addEventListener('click',consult);
-$('entidad').addEventListener('change',()=>{++state.token;state.records=[];state.page=0;render()});
+$('entidad').addEventListener('change',()=>{++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;closeDetail();render()});
 $('prev').addEventListener('click',()=>{if(state.page===0&&state.chunkIndex>0)loadChunk(state.chunkIndex-1);else{state.page--;render()}});
 $('next').addEventListener('click',()=>{const count=state.records.filter(r=>!$('buscar').value.trim()||Object.values(r).some(v=>String(v??'').toLocaleLowerCase('es').includes($('buscar').value.trim().toLocaleLowerCase('es')))).length;if((state.page+1)*state.perPage>=count&&state.chunkIndex<state.parts.length-1)loadChunk(state.chunkIndex+1);else{state.page++;render()}});
 init();
