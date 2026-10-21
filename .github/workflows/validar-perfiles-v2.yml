@@ -1,0 +1,37 @@
+name: Validar perfiles contextuales V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'frontend-v2/js/app.js'
+      - 'frontend-v2/index.html'
+      - '.github/workflows/validar-perfiles-v2.yml'
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validar sintaxis de ambos módulos
+        run: |
+          node --check frontend-v2/js/app.js
+          node --check frontend-v2/js/busqueda-global.js
+      - name: Verificar elementos y acceso a fichas
+        run: |
+          node - <<'JS'
+          const fs=require('fs'),assert=require('node:assert/strict');
+          const html=fs.readFileSync('frontend-v2/index.html','utf8');
+          const js=fs.readFileSync('frontend-v2/js/app.js','utf8');
+          for(const id of ['perfil-contextual','perfil-titulo','perfil-resumen','perfil-columnas','perfil-filas','perfil-cerrar'])assert(html.includes('id="'+id+'"'));
+          assert(js.includes('function showContextProfile('));
+          assert(js.includes('rows.slice(0,25)'));
+          assert(js.includes('closeContextProfile();'));
+          assert(js.includes("profile.addEventListener('click'"));
+          assert(js.includes('state.records.filter'));
+          assert(js.includes('No informado'));
+          console.log('PERFILES_CONTEXTO_ESTRUCTURA_OK');
+          JS
