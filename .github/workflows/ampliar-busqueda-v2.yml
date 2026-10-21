@@ -62,7 +62,8 @@ jobs:
             git add "frontend-v2/data/busqueda/$periodo/"
             if ! git diff --cached --quiet; then
               git commit -m "data(v2): ampliar índices de búsqueda $periodo"
-              git push
+              git pull --rebase origin main
+              git push origin main
             fi
             echo "PERIODO_PUBLICADO $periodo"
           done
