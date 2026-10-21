@@ -44,6 +44,15 @@ def build(period,root=ROOT):
     value={'procesos_publicados':org_counts[name],'ofertas_recibidas_vinculadas':org_received[name],'procesos_con_ofertas_vinculadas':len(org_offer_codes[name])}
    shard=hashlib.sha256(name.encode('utf8')).hexdigest()[:2]
    shards[shard][name]=value
+  # Sugerencias de nombres reales por prefijo normalizado; archivos acotados.
+  names=collections.defaultdict(list)
+  for actor in keys:
+   if len(actor)<2:continue
+   prefix=hashlib.sha256(actor[:2].encode('utf8')).hexdigest()[:2]
+   names[prefix].append(actor)
+  suggestions=out/'sugerencias'/entity;suggestions.mkdir(parents=True,exist_ok=True)
+  for group,values in names.items():
+   (suggestions/(group+'.json')).write_text(json.dumps(sorted(values)[:500],ensure_ascii=False,separators=(',',':')),encoding='utf8')
   dest=out/entity;dest.mkdir(parents=True,exist_ok=True)
   for shard,items in shards.items():
    (dest/(shard+'.json')).write_text(json.dumps(items,ensure_ascii=False,separators=(',',':')),encoding='utf8')
