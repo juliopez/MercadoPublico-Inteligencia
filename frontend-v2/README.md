@@ -80,3 +80,7 @@ V2 es un **frontend paralelo** que publica extractos autorizados de Mercado Púb
 Las pruebas de sintaxis e integración GitHub Actions **no equivalen a validación de navegador en todos los casos**. La auditoría integral de UX, rendimiento, seguridad y compatibilidad con V1 sigue pendiente como tarea independiente.
 
 La cronología completa de implementación se conserva en documentos especializados de `../docs/` y en el historial Git; no repetirla en este README.
+
+## Búsqueda transversal por participantes
+
+La sección **Participación histórica de empresas y organismos** permite consultar por nombre normalizado todos los meses publicados (junio–octubre de 2026), con sugerencias, totales, gráfico mensual y accesos a las ofertas o procesos del mes. Incluye métricas de **procesos distintos por proveedor dentro de cada mes** y de **ofertas recibidas vinculadas por código al organismo dentro del mismo mes**, siempre que los índices generados estén disponibles. No equivale a identificación única por RUT ni a una deduplicación de procesos entre meses. Referencia: [documentación de participantes históricos](../docs/PARTICIPANTES_HISTORICOS_V2_2026-10-21.md).
