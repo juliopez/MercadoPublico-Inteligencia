@@ -53,11 +53,23 @@ async function searchParticipant(){
   for(const p of c.periodos){
    if(req!==seq)return;
    const record=await profile(p.periodo,entity,name);
-   rows.push({period:p.periodo,count:record?.registros||0,monto:record?.monto_total_clp||0,coverage:record?.registros_con_monto||0});
+   const actor=normalizeActor(name),group=await shard(actor),path='data/participacion/'+p.periodo+'/'+type+'/'+group+'.json';
+   let extra=null;
+   try{
+    if(!cache.has(path))cache.set(path,await fetchPublic(path));
+    extra=cache.get(path)[actor]||null;
+   }catch(error){if(!String(error).includes('404'))throw error}
+   rows.push({period:p.periodo,count:record?.registros||0,monto:record?.monto_total_clp||0,coverage:record?.registros_con_monto||0,extra});
   }
   if(req!==seq)return;
   const total=rows.reduce((s,r)=>s+r.count,0),months=rows.filter(r=>r.count).length;
+  const counted=rows.filter(r=>r.extra!==null);
   const metrics=[['Registros de '+(type==='proveedor'?'ofertas':'procesos'),total.toLocaleString('es-CL')],['Meses con actividad',String(months)],['Montos informados',new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(rows.reduce((s,r)=>s+r.monto,0))]];
+  if(type==='proveedor'){
+   metrics.push(['Participaciones por proceso/mes',counted.length===rows.length?counted.reduce((sum,r)=>sum+(r.extra.procesos_distintos||0),0).toLocaleString('es-CL'):'En preparación']);
+  }else{
+   metrics.push(['Ofertas recibidas vinculadas',counted.length===rows.length?counted.reduce((sum,r)=>sum+(r.extra.ofertas_recibidas_vinculadas||0),0).toLocaleString('es-CL'):'En preparación']);
+  }
   for(const [label,val] of metrics){const card=document.createElement('div');card.className='evolution-metric';const caption=document.createElement('small');caption.textContent=label;const number=document.createElement('strong');number.textContent=val;card.append(caption,number);ph('participante-resumen').append(card)}
   const max=Math.max(1,...rows.map(r=>r.count));
   for(const row of rows){
@@ -77,7 +89,7 @@ async function searchParticipant(){
    line.append(label,track,number);ph('participante-evolucion').append(line);
    ph('participante-enlaces').append(action);
   }
-  ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. La búsqueda detallada permite identificar códigos, pero este resumen no certifica procesos únicos para proveedores.':'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
+  ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. Los conteos de procesos distintos se calculan por mes; un mismo código en meses diferentes podría contarse nuevamente. Las ofertas recibidas se vinculan solo cuando el proceso aparece en el mismo período de la oferta.':'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
  }catch(e){if(req===seq)ph('participante-estado').textContent='No fue posible consultar los índices: '+e.message}
 }
 ph('participante-buscar').addEventListener('click',searchParticipant);
