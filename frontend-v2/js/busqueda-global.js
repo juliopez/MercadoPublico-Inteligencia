@@ -9,9 +9,18 @@ const fields={
 const searchable={procesos:['codigo','nombre','organismo_comprador'],ofertas:['codigo','proveedor'],resultados:['codigo','adjudicatario'],ordenescompra:['codigo_oc','codigo_proceso','proveedor']};
 const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const terms=s=>norm(s).match(/[a-z0-9]+/g)||[];
-function matches(record,query,entity){
+const facetFields={procesos:['estado','modalidad'],ofertas:['seleccionado',null],resultados:['validado',null],ordenescompra:['estado','tipo_oc']};
+function matches(record,query,entity,filters={}){
  const words=new Set(searchable[entity].flatMap(key=>terms(record[key])));
- return query.every(term=>words.has(term));
+ if(!query.every(term=>words.has(term)))return false;
+ const [statusField,typeField]=facetFields[entity];
+ return (!filters.status||norm(record[statusField]).includes(filters.status))&&
+        (!filters.type||norm(record[typeField]).includes(filters.type));
+}
+function controls(){
+ const keys=facetFields[el('entidad').value]||[null,null];
+ el('global-estado').disabled=!keys[0];el('global-modalidad').disabled=!keys[1];
+ if(!keys[1])el('global-modalidad').value='';
 }
 let seq=0,session=null;
 function message(text){el('busqueda-global-estado').textContent=text}
@@ -21,6 +30,8 @@ function clear(text){
  el('busqueda-global-filas').replaceChildren();
  el('busqueda-global-pagina').textContent='Sin resultados';
  el('busqueda-global-anterior').disabled=true;el('busqueda-global-siguiente').disabled=true;
+ el('global-csv').disabled=true;
+ el('global-analitica').textContent='Indicadores de consulta: sin ejecutar.';
  message(text);
 }
 async function read(path){
@@ -45,7 +56,7 @@ async function collect(s,t,target){
   if(!Array.isArray(rows))throw Error('Fragmento inválido');
   for(const [,pos] of group){
    if(!Number.isInteger(pos)||pos<0||pos>=rows.length)throw Error('Referencia inválida');
-   if(matches(rows[pos],t.tokens,t.entity))t.found.push({part,pos,record:rows[pos]});
+   if(matches(rows[pos],t.tokens,t.entity,t.filters))t.found.push({part,pos,record:rows[pos]});
   }
  }
 }
@@ -77,6 +88,51 @@ async function draw(s,t){
   el('busqueda-global-pagina').textContent='Página '+(visible.length?t.page+1:0)+(completed?' de '+Math.max(1,Math.ceil(t.found.length/10)):' · más resultados por comprobar');
   el('busqueda-global-anterior').disabled=t.page===0;
   el('busqueda-global-siguiente').disabled=t.found.length<limit&&completed;
+  const verified=t.found;
+  const amountField={procesos:'monto_disponible_clp',ofertas:'monto_ofertado_clp',resultados:'monto_adjudicado_clp',ordenescompra:'monto_total_oc_clp'}[t.entity];
+  const numbers=verified.map(x=>String(x.record[amountField]??'').replaceAll('.','').replace(',','.')).filter(Boolean).map(Number).filter(Number.isFinite);
+  el('global-analitica').textContent=(completed?'Total verificado del período: ':'Avance de verificación: ')+verified.length.toLocaleString('es-CL')+' registros · '+numbers.length.toLocaleString('es-CL')+' con monto · suma informada +' coincidencias exactas':t.found.length.toLocaleString('es-CL')+' coincidencias exactas verificadas hasta ahora')+' · '+t.period+' · '+t.entity+'.');
+ }catch(e){if(valid(s,t))message('No se pudo completar la búsqueda: '+e.message)}
+}
+async function search(){
+ const now=++seq,period=el('periodo').value,entity=el('entidad').value;
+ session=null;
+ const query=[...new Set(terms(el('busqueda-global-texto').value))];
+ if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period)||!fields[entity]){clear('Seleccione un período y una entidad.');return}
+ if(!query.length||query.some(t=>t.length<3)){clear('Escriba palabras de al menos 3 caracteres.');return}
+ message('Consultando índice de '+period+'…');
+ try{
+  const meta=await read('data/busqueda/'+period+'/'+entity+'/meta.json');
+  if(now!==seq)return;
+  if(meta.version!==3||meta.periodo!==period||meta.entidad!==entity)throw Error('Índice incompatible');
+  const response=await fetch('./data/catalogo-publico.json');
+  if(!response.ok)throw Error('No se pudo consultar el catálogo');
+  const catalogue=await response.json();
+  const parts=catalogue.periodos?.find(p=>p.periodo===period)?.partes?.[entity];
+  if(!Array.isArray(parts)||parts.length!==meta.fragmentos)throw Error('Índice desactualizado');
+  const grouped=new Map();
+  for(const key of [...new Set(query.map(t=>t.slice(0,2)))]){
+   try{grouped.set(key,await read('data/busqueda/'+period+'/'+entity+'/'+key+'.json'))}
+   catch(e){if(String(e.message).includes('404'))grouped.set(key,{});else throw e}
+   if(now!==seq)return;
+  }
+  const lists=query.map(token=>grouped.get(token.slice(0,2))?.[token.slice(0,3)]||[]);
+  lists.sort((a,b)=>a.length-b.length);
+  const others=lists.slice(1).map(list=>new Set(list.map(v=>v.join(':'))));
+  const refs=(lists[0]||[]).filter(ref=>others.every(set=>set.has(ref.join(':'))));
+  refs.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  const t={period,entity,parts,tokens:query,filters:{status:norm(el('global-estado').value.trim()),type:norm(el('global-modalidad').value.trim())},refs,cursor:0,found:[],page:0};
+  session=t;
+  await draw(now,t);
+ }catch(e){if(now===seq)clear('No fue posible consultar el índice: '+e.message+'. La consulta por bloques sigue disponible.')}
+}
+el('busqueda-global-boton').addEventListener('click',search);
+el('busqueda-global-texto').addEventListener('keydown',e=>{if(e.key==='Enter')search()});
+el('busqueda-global-anterior').addEventListener('click',()=>{if(session&&session.page>0){session.page--;draw(seq,session)}});
+el('busqueda-global-siguiente').addEventListener('click',()=>{if(session){session.page++;draw(seq,session)}});
+for(const id of ['periodo','entidad'])el(id).addEventListener('change',()=>clear('Seleccione Buscar en el período para iniciar una consulta.'));
++Math.round(numbers.reduce((a,b)=>a+b,0)).toLocaleString('es-CL')+'. Los montos son descriptivos, no operaciones únicas.';
+  el('global-csv').disabled=verified.length===0;
   message((completed?t.found.length.toLocaleString('es-CL')+' coincidencias exactas':t.found.length.toLocaleString('es-CL')+' coincidencias exactas verificadas hasta ahora')+' · '+t.period+' · '+t.entity+'.');
  }catch(e){if(valid(s,t))message('No se pudo completar la búsqueda: '+e.message)}
 }
@@ -117,3 +173,31 @@ el('busqueda-global-texto').addEventListener('keydown',e=>{if(e.key==='Enter')se
 el('busqueda-global-anterior').addEventListener('click',()=>{if(session&&session.page>0){session.page--;draw(seq,session)}});
 el('busqueda-global-siguiente').addEventListener('click',()=>{if(session){session.page++;draw(seq,session)}});
 for(const id of ['periodo','entidad'])el(id).addEventListener('change',()=>clear('Seleccione Buscar en el período para iniciar una consulta.'));
+
+async function exportGlobal(){
+ const t=session,s=seq;
+ if(!t)return;
+ const button=el('global-csv');button.disabled=true;
+ try{
+  const limit=20001;
+  message('Completando verificación de coincidencias para la exportación CSV…');
+  await collect(s,t,limit);
+  if(!valid(s,t))return;
+  if(t.found.length>20000||t.cursor<t.refs.length){
+   message('La consulta excede 20.000 coincidencias o aún requiere demasiados registros. Refina las palabras clave antes de exportar para evitar un CSV incompleto.');
+   return;
+  }
+  const cols=fields[t.entity].map(([key])=>key);
+  const safe=x=>'"'+String(x??'').replaceAll('"','""').replace(/^[=+@\-\t\r]/,m=>"'"+m)+'"';
+  const csv='\uFEFF'+[cols.join(';'),...t.found.map(x=>cols.map(key=>safe(x.record[key])).join(';'))].join('\r\n');
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const a=document.createElement('a');a.href=url;a.download='busqueda-global-'+t.entity+'-'+t.period+'.csv';
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  message('CSV completo exportado: '+t.found.length.toLocaleString('es-CL')+' registros verificados de '+t.period+'.');
+ }catch(e){if(valid(s,t))message('No fue posible exportar: '+e.message)}
+ finally{if(valid(s,t))button.disabled=t.found.length===0}
+}
+el('global-csv').addEventListener('click',exportGlobal);
+for(const id of ['global-estado','global-modalidad'])el(id).addEventListener('change',()=>clear('Filtros modificados. Ejecute nuevamente la búsqueda global.'));
+el('entidad').addEventListener('change',controls);
+controls();
