@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "codigo_proceso": "839-4-COT26",
+  "periodos_consultados": [
+    "2026-06",
+    "2026-07",
+    "2026-08",
+    "2026-09",
+    "2026-10"
+  ],
+  "registros_oc_escaneados": 693688,
+  "oc_codigo_proceso_vacio_por_mes": {
+    "2026-06": 90948,
+    "2026-07": 90378,
+    "2026-08": 92522,
+    "2026-09": 89909,
+    "2026-10": 55204
+  },
+  "distribucion_sufijo_oc": [
+    [
+      "SE26",
+      283547
+    ],
+    [
+      "AG26",
+      280521
+    ],
+    [
+      "CM26",
+      79710
+    ],
+    [
+      "TD26",
+      43428
+    ],
+    [
+      "CC26",
+      5495
+    ],
+    [
+      "SE25",
+      788
+    ],
+    [
+      "TD25",
+      47
+    ],
+    [
+      "CT26",
+      44
+    ],
+    [
+      "AG25",
+      40
+    ],
+    [
+      "SE24",
+      32
+    ],
+    [
+      "CM25",
+      23
+    ],
+    [
+      "SE23",
+      6
+    ]
+  ],
+  "caso": {
+    "procesos": [
+      {
+        "periodo": "2026-07",
+        "codigo": "839-4-COT26",
+        "proveedor": null,
+        "estado": "Proveedor seleccionado"
+      }
+    ],
+    "ofertas": 16,
+    "resultados": 1,
+    "ordenes_compra_enlazadas_exactamente": [],
+    "proveedores_ofertantes_distintos": 15,
+    "coincidencia_nombre_oferente_resultado": []
+  },
+  "otros_codigos_referencia": 57478,
+  "conclusion": "NO se encontró coincidencia exacta en codigo_proceso; no demuestra ausencia de OC oficial",
+  "limitaciones": [
+    "Solo períodos publicados en V2",
+    "No se verificó estado externo ni API oficial de OC",
+    "La selección de proveedor no confirma emisión de OC",
+    "Identificación por nombres no identifica legalmente a una empresa",
+    "No se examinan documentos PDF ni notas descriptivas fuera de los campos públicos"
+  ],
+  "acciones_recomendadas": [
+    "Consultar ficha Compra Ágil en portal oficial para identificar código OC público o id_oc",
+    "Buscar OC por código oficial y contrastar proveedor, organismo, importe y fechas",
+    "Si OC está en históricos con otra referencia, corregir mapeo en transformador y regenerar índice conservando respaldo; no crear enlaces por similitud sin evidencia",
+    "En UI preferir 'No encontrada en históricos consultados' a 'No existe OC'"
+  ]
+}
