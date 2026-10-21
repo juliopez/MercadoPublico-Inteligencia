@@ -6,6 +6,7 @@
 ## 01. Arquitectura, catálogo y modelo
 
 - [Consolidador MER v2](CONSOLIDADOR_MER_V2.md) — arquitectura por catálogo, carpetas y frontend.
+- **[Auditoría tarea 14: consolidador y frontend](AUDITORIA_T14_CONSOLIDADOR_FRONTEND.md)** — compatibilidad efectiva, riesgos y condiciones para implementar consolidación por período.
 - [Catálogo Sheets y períodos](CATALOGO_SHEETS_Y_PERIODOS.md) — inventario, estructura y decisiones de preservación.
 - [Especificación de Proveedores y Vínculos COT–OC](Especificacion_Proveedores_Vinculos_COT_OC.md) — definición de dos entidades del MER v2.
 - [Modelo MER propuesto](MER_propuesto.mmd) — diagrama fuente Mermaid.
