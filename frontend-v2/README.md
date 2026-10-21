@@ -87,3 +87,17 @@ URL **prevista**, no verificada todavía: `https://juliopez.github.io/MercadoPub
 **Control de permisos:** ejecución inicial de [GitHub Actions 39641670544](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39641670544) devolvió 403 por no compartir los históricos con la identidad de servicio. Se concedió permiso **reader**, exclusivamente, a `observatorio-mercadopublico@mercadopublico-inteligencia.iam.gserviceaccount.com` en las cuatro Sheets. No se alteraron sus datos. En el segundo intento se leyeron todos los Procesos de junio (80.898), julio (80.996) y agosto (83.937), pero la lectura de la cabecera de septiembre recibió 429 por cuota de Sheets. Al ser una publicación transaccional al final del job, ese intento **no incorporó esos registros a GitHub**. Se agregó reintento también a la lectura de cabeceras y se inició una nueva ejecución.
 
 **Advertencia:** 10 filas por página es una paginación visual; el lector v2 aún descarga todos los fragmentos de la entidad seleccionada. La carga completa de Ofertas (aproximadamente 1,7 millones de registros entre junio y septiembre) requiere índice/búsqueda selectiva y evaluación del tamaño final antes de publicar. No declarar históricas todas las entidades publicadas si el catálogo solo refleja Procesos.
+
+## Resultado confirmado del piloto histórico — 21/10/2026
+
+La exportación de la entidad **Procesos** concluyó exitosamente para los cuatro históricos, [run GitHub Actions #39642284420, intento posterior](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39642284420):
+
+| Período | Procesos publicados | Fragmentos |
+|---|---:|---:|
+| 2026-06 | 80.898 | 81 |
+| 2026-07 | 80.996 | 81 |
+| 2026-08 | 83.937 | 84 |
+| 2026-09 | 79.376 | 80 |
+| **Total** | **325.207** | **326** |
+
+Los documentos se obtuvieron directamente de las cuatro hojas MER v2 con **permiso reader** de la cuenta de servicio; Sheets históricos y datos v1 permanecieron sin escrituras. [Catálogo publicado](data/catalogo-publico.json). Las otras tres entidades visibles de esos meses **no están publicadas todavía**, y el lector actual acumula todos los fragmentos de un período y entidad en la memoria del navegador. El despliegue Pages tras cada cambio del catálogo está incorporado al flujo [preview](../.github/workflows/preview-frontend-v2.yml). Antes de exportar Ofertas a gran escala se debe abordar rendimiento y estrategia de entrega; no interpretar la paginación de 10 filas como paginación de red.
