@@ -1,0 +1,1 @@
+{"version": 1, "periodo": "2026-06", "entidad": "procesos", "registros": 80898, "grupos": 740, "campos_texto": ["codigo", "nombre", "organismo_comprador"], "campos_facetas": ["estado", "modalidad"]}
