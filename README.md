@@ -1,74 +1,68 @@
-# Plataforma Mercado Público — Observatorio de Inteligencia
+# Observatorio de Inteligencia — Mercado Público (Chile)
 
-Proyecto de análisis de licitaciones, Compra Ágil y órdenes de compra de ChileCompra, con frontend en GitHub Pages, carga de datos desde fuentes oficiales y almacenamiento mensual MER v2 en Google Sheets privadas.
+Plataforma de análisis de licitaciones, Compra Ágil, ofertas, resultados y órdenes de compra. Código, procedimientos y extractos públicos en GitHub; fuentes operativas y MER v2 en **Google Sheets privadas**. Fecha de revisión documental: **21 de octubre de 2026**.
 
-> **Regla de continuidad (21-10-2026):** antes de cualquier tarea, leer este README, consultar el [índice documental](docs/INDICE_DOCUMENTACION.md), verificar las [decisiones vigentes](docs/DECISIONES_TECNICAS.md) y revisar el código y los resultados realmente ejecutados. Evitar repetir decisiones y soluciones ya validadas. No considerar «probado en producción» lo que solo superó pruebas offline.
+> **Regla de continuidad:** leer primero este README, después el [índice documental](docs/INDICE_DOCUMENTACION.md), las [decisiones técnicas](docs/DECISIONES_TECNICAS.md) y el documento de la tarea. Contrastar siempre con código, catálogo, ejecución de CI y validaciones reales; distinguir **implementado**, **validado técnicamente** y **probado visualmente**.
 
-## Estado del proyecto
+## Accesos
 
-| Componente | Situación |
+- **[Observatorio V2 — consulta y análisis](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)** (desarrollo paralelo con datos públicos).
+- [Frontend V1 — versión original](https://juliopez.github.io/MercadoPublico-Inteligencia/) (se mantiene independiente).
+- [Manual y estado funcional V2](frontend-v2/README.md).
+- [Documentación ordenada por temas](docs/INDICE_DOCUMENTACION.md).
+- [Decisiones técnicas vigentes](docs/DECISIONES_TECNICAS.md).
+
+## Estado actual y cobertura
+
+| Subsistema | Estado comprobado / restricción |
 |---|---|
-| Frontend de consulta | Publicado en GitHub Pages; verificar publicación tras cambios de datos |
-| MER v2 por mes, seis entidades | Implementado |
-| Históricos de junio a septiembre de 2026 | Cargados y auditados con observaciones documentadas |
-| ETL operativo diario de licitaciones y OC | Configurado en Ubuntu, separado del cierre mensual |
-| Hoja octubre 2026 | Operativa; pendiente de cierre |
-| Hoja noviembre 2026 | Preparada como destino operativo del nuevo mes |
-| Cierre mensual | Scripts y runbook preparados; **no ejecutado todavía en producción** |
-| Cron del cierre mensual | **No instalado** |
+| Frontend V2 | Publicado en su ruta propia; selección por mes/entidad, bloques de hasta 1.000, paginación de 10, búsqueda global indexada y fichas relacionadas |
+| Datos públicos V2 | Cinco períodos **2026-06 a 2026-10**; junio–septiembre históricos, octubre **parcial** |
+| Entidades V2 visibles | Procesos, Ofertas, Resultados y Órdenes de compra (no confundir con las seis tablas internas del MER) |
+| Funciones V2 | Indicadores interactivos por mes, perspectivas y comparación, perfiles, comparador con sugerencias, favoritos locales, CSV y enlaces entre registros |
+| Relaciones multimes | Índices por código para Procesos, Ofertas, Resultados y OC, limitados a períodos publicados |
+| V1 | Mantener `index.html` y `data/` aislados de `frontend-v2/` |
+| ETL diario Ubuntu | Flujo operacional separado; no alterar por mejoras visuales |
+| Cierre mensual MER | **Programado para supervisión manual el 10-11-2026**; no ejecutado a la fecha de este documento |
+| Auditoría integral de V2 | **Pendiente**, separada de la validación funcional y de CI |
 
-La configuración de períodos e identificadores vigente está en [`config/catalogo_sheets.json`](config/catalogo_sheets.json). Los documentos anteriores pueden conservar información histórica desactualizada: usar el registro de decisiones y el código actual para resolver dudas.
+Los datos reales disponibles y su fecha se consultan en [el catálogo público V2](frontend-v2/data/catalogo-publico.json), no en cifras copiadas en documentos.
 
-## Desarrollo paralelo del frontend MER v2
+**Importante:** las cuatro entidades son conjuntos distintos. Ofertas informadas, resultados históricos, órdenes de compra y procesos no equivalen necesariamente a adjudicaciones jurídicas, operaciones únicas o pagos. Octubre no es comparable a meses cerrados sin advertencia de cobertura.
 
-Se inició una versión independiente en [`frontend-v2/`](frontend-v2/README.md) para consulta por período con MER v2. **La versión 1 publicada (`index.html` y `data/`) se conserva intacta.** El catálogo público de v2 está vacío hasta generar extractos reales validados; no sustituir ni redirigir la publicación principal sin aprobación. Consulta el [inventario de funcionalidades heredadas de v1](frontend-v2/README.md).
-
-## Línea base validada — frontend MER v2 (21-10-2026)
-
-El usuario validó la navegación por períodos y entidades históricas y reportó **muy buena velocidad de carga** con lectura por fragmentos y **10 registros por página**. La referencia estable, cobertura y secuencia para recuperar las funciones de la versión 1 se registran en [BASELINE_FRONTEND_V2_2026-10-21.md](docs/BASELINE_FRONTEND_V2_2026-10-21.md). **Conservar este comportamiento antes de incorporar el detalle vinculado de ofertas, resultados y órdenes de compra.**
-
-El detalle vinculado por código de proceso está documentado en [DETALLE_RELACIONADO_FRONTEND_V2.md](docs/DETALLE_RELACIONADO_FRONTEND_V2.md): incorpora Ofertas, Resultados y Órdenes de Compra indexadas sin perder la carga por bloques. La verificación final en navegador sigue siendo necesaria.
-
-## Próximo hito — 10 de noviembre de 2026
-
-**Primer cierre manual y supervisado de octubre**, sin desarrollar código nuevo durante la operación. Se requieren tres ZIP oficiales del **mes de octubre** (licitaciones, Compra Ágil/COT y órdenes de compra), conciliación con prioridad de la versión histórica oficial de ese mes, respaldo y verificación de seis entidades. Después se moverá **la misma hoja** desde Operativo a Históricos manteniendo su ID y se actualizará el catálogo GitHub.
-
-**Guía de ejecución obligatoria:** [RUNBOOK_CIERRE_2026_10.md](docs/RUNBOOK_CIERRE_2026_10.md). **Procedimiento detallado:** [PROCEDIMIENTO_CIERRE_MENSUAL.md](docs/PROCEDIMIENTO_CIERRE_MENSUAL.md).
-
-La cuenta de servicio dispone de JSON local en Ubuntu; **sus permisos efectivos para mover archivos Drive aún deben comprobarse**. Si falta una fuente, autorización o validación, detener el proceso sin archivar. Solo si el cierre manual es satisfactorio, configurar el cron mensual para el **10 de diciembre de 2026**. El cron diario no se altera.
-
-## Arquitectura
+## Arquitectura y límites
 
 ```text
-Archivos ZIP oficiales ChileCompra / APIs según flujo específico
-            ↓
-Importador MER v2 + ETL diario Ubuntu
-            ↓
-Google Sheets privadas por mes — catálogo de períodos
-            ↓
-Exportación y publicación autorizada
-            ↓
-Frontend GitHub Pages
+ZIP históricos oficiales y flujos operativos ChileCompra
+           │
+  Importación / ETL Ubuntu
+           │
+  Google Sheets privadas MER v2 (seis entidades)
+           │ exportación pública controlada
+           ▼
+frontend-v2/data/catalogo-publico.json
+ ├─ partes/                 JSON mensuales de hasta 1.000 filas
+ ├─ busqueda/               índices de búsqueda global
+ ├─ indices/ + relaciones-procesos/  vínculos multimes
+ ├─ perfiles/ + autocompletar/      resúmenes y sugerencias
+ └─ analitica/ + sugerencias/      agregados y controles
+           │
+    GitHub Pages V2 (sin acceso directo a Sheets)
 ```
 
-La base MER v2 usa **Procesos, Ofertas, Resultados, OrdenesCompra, Proveedores y VinculosCOT_OC**. El esquema ejecutable está en [`scripts/importador_historicos_v2.py`](scripts/importador_historicos_v2.py). La arquitectura conceptual se describe en [CONSOLIDADOR_MER_V2.md](docs/CONSOLIDADOR_MER_V2.md).
+El navegador **no debe descargar todos los históricos** para mostrar una página. La búsqueda por término y las relaciones utilizan índices y fragmentos públicos selectivos; los gráficos consultan agregados JSON. En la consulta por bloques, filtros y orden se aplican al bloque actual. El ordenamiento global afecta los resultados **ya comprobados**, no registros aún sin cargar. Los CSV de consulta global requieren completar la verificación y están limitados para evitar exportaciones parciales engañosas.
 
-## Procesos operativos
+## Operación y próximo hito
 
-- **ETL diario Ubuntu:** [UBUNTU_ETL_DOS_FUENTES.md](docs/UBUNTU_ETL_DOS_FUENTES.md). Usa licitaciones y OC sin asumir que COT faltante equivale a cero.
-- **Importación histórica:** [ETL_OPERATIVO_DESCARGAS_MASIVAS.md](docs/ETL_OPERATIVO_DESCARGAS_MASIVAS.md) y [cierre de carga histórica](docs/cierre-carga-historica.md). Reutilizar la experiencia de junio–septiembre.
-- **Cierre mensual:** [runbook octubre](docs/RUNBOOK_CIERRE_2026_10.md) y [procedimiento técnico](docs/PROCEDIMIENTO_CIERRE_MENSUAL.md).
-- **Validación del código:** [GitHub Actions](.github/workflows/validacion-mer.yml). Las pruebas offline no equivalen a ejecuciones reales contra Drive/Sheets.
-- **Seguridad:** credenciales solo locales, respaldo verificable, bloqueo de concurrencia con el ETL diario, permisos generales restringidos y cierre condicionado a auditoría.
+**10 de noviembre de 2026:** cierre manual supervisado de octubre usando **tres ZIP oficiales** (licitaciones, Compra Ágil/COT y OC), respaldo previo, conciliación por PK, verificación de seis tablas y traslado de **la misma hoja** conservando su ID. Si falta fuente, permiso, respaldo o validación, detener el cierre. No configurar el cron mensual hasta aprobar este primer ciclo. No alterar el cron diario de Ubuntu.
 
-## Instalación y configuración
+Guías de referencia: [Runbook del cierre de octubre](docs/RUNBOOK_CIERRE_2026_10.md), [Procedimiento técnico de cierre](docs/PROCEDIMIENTO_CIERRE_MENSUAL.md), [ETL Ubuntu diario](docs/UBUNTU_ETL_DOS_FUENTES.md), [Modelo MER](docs/CONSOLIDADOR_MER_V2.md) y [Catálogo Sheets](docs/CATALOGO_SHEETS_Y_PERIODOS.md).
 
-La operación supervisada se realiza sobre el entorno Ubuntu ya configurado en el proyecto. Antes de ejecutar cualquier comando, consultar las instrucciones del [runbook](docs/RUNBOOK_CIERRE_2026_10.md); no volver a descargar credenciales ni instalar componentes sin verificar primero la configuración existente. Los secretos no se publican en GitHub.
+## Desarrollo y documentación
 
-## Guía de documentación
+- **Frontend y UX V2:** [manual funcional](frontend-v2/README.md) y [analítica + relaciones históricas](docs/ANALITICA_INTERACTIVA_RELACIONES_HISTORICAS_V2_2026-10-21.md).
+- **Validación automatizada:** consultar [workflows de GitHub Actions](.github/workflows/) y sus ejecuciones. CI no sustituye la prueba real en navegador ni operaciones contra Sheets.
+- **Scripts:** `scripts/`; **pruebas:** `tests/`; **configuración:** `config/`. No publicar credenciales.
+- **Archivo histórico:** [README legado íntegro](docs/historial/README_LEGADO_2026-10-21.md). Los documentos fechados describen hitos, **no prevalecen** sobre este estado actual y las decisiones vigentes.
 
-**[Índice completo por temas](docs/INDICE_DOCUMENTACION.md)** · **[Decisiones técnicas vigentes](docs/DECISIONES_TECNICAS.md)** · [Catálogo y períodos](docs/CATALOGO_SHEETS_Y_PERIODOS.md) · [Plan maestro histórico](docs/PLAN_MAESTRO_21_TAREAS.md).
-
-Los antecedentes extensos del README previo fueron conservados íntegros en [`docs/historial/README_LEGADO_2026-10-21.md`](docs/historial/README_LEGADO_2026-10-21.md). Son un **archivo histórico, no instrucciones vigentes**.
-
-**Criterio editorial:** estado actual y próximos pasos en este README; decisiones estables en `DECISIONES_TECNICAS.md`; procedimientos en sus respectivos documentos; historial y detalles extensos en archivos especializados. Cambios relevantes requieren comprobar coherencia y enlaces.
+Para buscar un documento, utilizar [el índice temático](docs/INDICE_DOCUMENTACION.md). No duplicar aquí bitácoras, fallos resueltos ni procedimientos extensos.
