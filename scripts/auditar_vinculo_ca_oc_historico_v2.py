@@ -9,7 +9,7 @@ ROOT=Path(__file__).resolve().parents[1]/"frontend-v2"
 def audit(code,root=ROOT):
  if not re.fullmatch(r"[A-Za-z0-9-]{5,80}",code):raise ValueError("Código inválido")
  catalog=json.loads((root/"data/catalogo-publico.json").read_text(encoding="utf8"))
- processes=[];offers=[];results=[];ocs=[];empty_refs=collections.Counter()
+ processes=[];offers=[];results=[];ocs=[];empty_refs=collections.Counter();same_unit=[];selected_names=set();award_names=set()
  order_codes=collections.Counter();total_oc=0;oc_by_process=collections.Counter()
  for item in catalog["periodos"]:
   period=item["periodo"]
@@ -28,7 +28,11 @@ def audit(code,root=ROOT):
       if ref:oc_by_process[ref]+=1
       oc_code=str(rec.get("codigo_oc") or "")
       if oc_code:order_codes[oc_code.split("-")[-1]]+=1
+      if oc_code.startswith(code.split('-')[0]+'-') and oc_code.endswith('-AG26'):
+       same_unit.append({'periodo':period,'codigo_oc':oc_code,'proveedor':rec.get('proveedor'),'codigo_proceso':rec.get('codigo_proceso'),'monto_total_oc_clp':rec.get('monto_total_oc_clp')})
      if str(rec.get(field) or "").strip()==code:
+      if entity=='resultados' and rec.get('adjudicatario'):award_names.add(str(rec['adjudicatario']).strip().casefold())
+      if entity=='ofertas' and str(rec.get('seleccionado') or '').lower() in ('si','sí','true','1'):selected_names.add(str(rec.get('proveedor') or '').strip().casefold())
       sample={"periodo":period,"codigo":rec.get("codigo_oc") if entity=="ordenescompra" else rec.get("codigo"),"proveedor":rec.get("proveedor") if entity in ("ofertas","ordenescompra") else None,"estado":rec.get("estado") if entity in ("procesos","ordenescompra") else None}
       dest.append(sample)
    if count!=item["conteos"][entity]:raise ValueError(f"Conteo distinto: {period} {entity}: {count}")
@@ -42,6 +46,10 @@ def audit(code,root=ROOT):
   "distribucion_sufijo_oc":order_codes.most_common(12),
   "caso":{"procesos":processes,"ofertas":len(offers),"resultados":len(results),"ordenes_compra_enlazadas_exactamente":ocs,"proveedores_ofertantes_distintos":len(selected),"coincidencia_nombre_oferente_resultado":matched_exact},
   "otros_codigos_referencia":len(oc_by_process),
+  "ofertas_marcadas_seleccionadas":sorted(selected_names),"resultados_adjudicatarios_informados":sorted(award_names),
+  "oc_ag26_misma_unidad_compradora":len(same_unit),
+  "candidatas_por_misma_unidad_y_proveedor": [x for x in same_unit if str(x['proveedor'] or '').strip().casefold() in (selected_names|award_names)][:40],
+  "nota_candidatas":"Las candidatas por unidad/proveedor NO prueban vínculo ni adjudicación; deben compararse fechas, montos y registro oficial.",
   "conclusion":("Vinculación exacta en históricos" if ocs else "NO se encontró coincidencia exacta en codigo_proceso; no demuestra ausencia de OC oficial"),
   "limitaciones":["Solo períodos publicados en V2","No se verificó estado externo ni API oficial de OC","La selección de proveedor no confirma emisión de OC","Identificación por nombres no identifica legalmente a una empresa","No se examinan documentos PDF ni notas descriptivas fuera de los campos públicos"],
   "acciones_recomendadas":["Consultar ficha Compra Ágil en portal oficial para identificar código OC público o id_oc","Buscar OC por código oficial y contrastar proveedor, organismo, importe y fechas","Si OC está en históricos con otra referencia, corregir mapeo en transformador y regenerar índice conservando respaldo; no crear enlaces por similitud sin evidencia","En UI preferir 'No encontrada en históricos consultados' a 'No existe OC'"]
