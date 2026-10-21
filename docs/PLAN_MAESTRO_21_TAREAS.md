@@ -69,3 +69,16 @@ Tarea 6 completada. Bases mensuales 2026-06, 2026-07 y 2026-08 creadas vacías y
 - Se publicó [catálogo central JSON](../config/catalogo_sheets.json) para uso posterior por ETL y consolidador. Tarea 13 completada **como registro versionado**, sin afirmar que los consumidores actuales lo utilicen.
 - Se organizaron respaldos, archivos de staging y hojas auxiliares identificados en Drive, conservando los IDs. Producción antigua y clon permanecen fuera de la migración. Ver [inventario](CATALOGO_SHEETS_Y_PERIODOS.md).
 - **No se ejecutó eliminación** de documentos. Tarea 3 continúa parcial. Tarea 1 sigue pendiente de auditoría final de dependencias/alcance de búsqueda para cerrarla sin afirmar exhaustividad no acreditada.
+
+## Decisión arquitectónica posterior — 20 de octubre de 2026: sin API
+
+**Esta decisión sustituye la alimentación mediante API, sin cambiar la numeración de las 21 tareas.** Junio–septiembre de 2026 permanecen históricos cerrados y auditados. El mes en curso usa descargas masivas mensuales oficiales, actualizadas periódicamente, y Google Sheets MER operativo. No se actualizan retrospectivamente meses históricos anteriores.
+
+- **9 (redefinición):** adaptar el ETL de descargas masivas de licitaciones, Compra Ágil y OC del mes corriente a MER operativo, no utilizar API ChileCompra.
+- **10 (redefinición):** programar descarga periódica, validación y actualización de la instantánea del mes actual; registrar fecha/hora y origen; reintentar sin borrar datos válidos ante fallas.
+- **11 (ajuste del diseño ya completado):** conservar cierre mensual y conciliación con descargas oficiales; eliminar dependencia obligatoria de API.
+- **12 (ajuste):** archivar al cierre del mes la copia operativa conciliada, manteniendo MER histórico.
+- **13–19:** consolidador y publicación deben mostrar última sincronización exitosa y aviso explícito de posible desfase frente al portal, sin afirmar tiempo real.
+- **Criterio horario inicial propuesto:** después de las 14:00 de Chile continental, por ejemplo 16:00; confirmar acceso directo, integridad y formato de las tres fuentes antes de activar el programa.
+- **Advertencia:** la documentación oficial indica actualización diaria de las descargas masivas y desfase de un día, pero no certifica que los tres archivos tengan siempre idéntica cobertura u hora de disponibilidad. No registrar una sincronización como exitosa hasta verificar las fuentes pertinentes y publicar la instantánea atómicamente.
+- **Estado:** cambio de arquitectura acordado; automatización todavía **no implementada ni activada**. No tocar históricos cerrados, frontend ni producción antigua durante la transición.
