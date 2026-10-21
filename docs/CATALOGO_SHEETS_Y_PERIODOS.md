@@ -28,7 +28,7 @@
 
 | Período | Tipo | ID de Google Sheet | Estado |
 |---|---|---|---|
-| 2026-06 | Histórico | `137pknbQIBbm5WAYvFh5bXKTGX9uBVhBYleTwxO6x7PI` | 798.094 registros cargados; auditoría independiente pendiente |
+| 2026-06 | Histórico | `137pknbQIBbm5WAYvFh5bXKTGX9uBVhBYleTwxO6x7PI` | 798.094 registros; auditoría estructural/referencial aprobada con observaciones |
 | 2026-07 | Histórico | `1LcVUrWn99deDkgphD8cAn2n4jLxl-HZyzNm0XGffC5w` | 810.333 registros; auditoría estructural/referencial aprobada con observaciones |
 | 2026-08 | Histórico | `1TY41r2eriz3wvvLvHdYxHVrbqk94Lsp1kFtDtxxcXEs` | 834.370 registros; auditoría independiente aprobada con observaciones (20-10-2026) |
 | 2026-09 | Histórico | `1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA` | Cargado y auditado |
@@ -76,3 +76,23 @@ Evidencia: `auditoria_integridad_mer_v2_2026-07.json`, 2026-10-20T23:04:32Z, MER
 ## Junio 2026 — carga verificada
 
 Colab informó `CARGA MER V2 FINALIZADA 2026-06`. Verificación directa de dimensiones y presencia de datos en las últimas filas de MER_2026_06: Procesos 80.898, Proveedores 29.741, Ofertas 407.923, OrdenesCompra 150.451, VinculosCOT_OC 65.867, Resultados 63.214; total **798.094**. Queda pendiente **auditoría independiente estructural/referencial**, antes de marcar la tarea 7 completa. No volver a insertar el paquete de junio.
+
+## Cierre estructural de junio — 2026-10-20
+
+Evidencia: `auditoria_integridad_mer_v2_2026-06.json` generado 2026-10-21T00:06:46Z sobre `MER_2026_06`, en modo solo lectura. Estado: `AUDITORIA_COMPLETADA_CON_OBSERVACIONES`.
+
+| Tabla | Registros | PK vacías | PK duplicadas |
+|---|---:|---:|---:|
+| Procesos | 80.898 | 0 | 0 |
+| Proveedores | 29.741 | 0 | 0 |
+| Ofertas | 407.923 | 0 | 0 |
+| OrdenesCompra | 150.451 | 0 | 0 |
+| VinculosCOT_OC | 65.867 | 0 | 0 |
+| Resultados | 63.214 | 0 | 0 |
+| **Total** | **798.094** | **0** | **0** |
+
+Todas las tablas: cero campos extra/ausentes; integridad referencial evaluada sin huérfanos; cero pares COT–OC repetidos. Observaciones aceptadas: 21.634 vínculos OC fuera del corte; 63.214 resultados `OC no verificada`; 29.698 proveedores `RUT_SIN_CONTRASTE` y 43 `SIN_RUT`. **Junio queda cerrado en integridad estructural y referencial**, sin acreditar adjudicaciones ni identidades tributarias.
+
+### Fin de carga histórica extraordinaria
+
+Los cuatro períodos previstos **2026-06, 2026-07, 2026-08 y 2026-09** están cargados en cuatro Google Sheets separados y cuentan con auditoría estructural/referencial independiente aprobada con observaciones. El alcance de esta carga extraordinaria termina en junio; no se incorporarán más meses históricos anteriores sin un nuevo acuerdo.
