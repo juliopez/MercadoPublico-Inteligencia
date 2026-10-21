@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "periodo": "2026-06",
+  "oc_examinadas": 150451,
+  "oc_candidatas_ag_sin_referencia": 61782,
+  "shards": 256,
+  "clave": "unidad|proveedor_normalizado",
+  "estado": "candidata_no_verificada"
+}
