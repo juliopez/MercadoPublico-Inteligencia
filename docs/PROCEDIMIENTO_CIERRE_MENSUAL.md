@@ -346,3 +346,13 @@ Es imprescindible auditar separadamente los respaldos y hojas en revisión, y la
 `tests/test_adaptadores_traslado_cierre.py` simula: (1) una interrupción después de mover la hoja, seguida de recuperación que cambia solamente el catálogo sin repetir el traslado; (2) rechazo de toda operación sin autorización. Se esperan **34 pruebas** tras incorporar estas dos; pendientes de ejecución desde Ubuntu.
 
 **Controles pendientes antes de operación real:** aprobación de cierre con evidencia verificada y autorización fuerte (no basta un booleano de código), adaptador Drive con permisos comprobados, adaptación de actualización GitHub con SHA de versión y prevención de cambios concurrentes, catálogo del período con conteos y estado real de auditoría (el núcleo actual usa `auditado_con_observaciones` como etiqueta provisional, no decisión final), bitácora persistente y reintentos seguros. El traslado no se realizará antes de la prueba supervisada del 10 de noviembre. El cron mensual sigue sin instalar y el ETL diario permanece intacto.
+
+## Plan de validación consolidado — 21/10/2026
+
+El usuario confirmó 34/34 pruebas locales satisfactorias. **No se solicitará ejecutar manualmente las pruebas tras cada commit.** Se agrupan en tres rondas con criterios de aceptación:
+
+1. **Integración local (durante desarrollo):** ejecutar las pruebas existentes y un ensayo de extremo a extremo con datos sintéticos; comprobar carga parcial, recuperación, validación final, política de cambios y protocolo Drive–GitHub con dobles. Criterio: ningún duplicado ni cierre prematuro, resultados reproducibles.
+2. **Integración con servicios sobre hoja desechable:** autenticación autorizada y permisos mínimos, carga/verificación/recuperación con una Google Sheets exclusiva de pruebas, sin tocar MER operativas ni históricos; comprobar límites y errores API. Criterio: respaldo verificable, seis tablas consistentes y controles de idempotencia. Requiere disponer o crear hoja de pruebas y autorización explícita de escritura.
+3. **Prueba integral supervisada el 10/11/2026:** tres ZIP oficiales de octubre, importación, conciliación de diferencias campo a campo, auditoría, respaldo, carga real verificada y traslado autorizado conservando mismo ID. El cierre se detiene si faltan fuentes o quedan discrepancias sin resolver. Solo si se aprueba, instalar cron para iniciar el 10/12/2026.
+
+**Bloqueantes de implementación**: el cargador operativo del cierre aún no está conectado a Google Sheets; la política de cambios de valores existentes está sin definir; el motor de traslado solo usa adaptadores simulados; no hay orquestación real transaccional ni credenciales resueltas para mover desde Ubuntu. Un resultado 34/34 no significa que el cierre integral esté aprobado.
