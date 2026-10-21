@@ -1,0 +1,1 @@
+{"version": 1, "periodo": "2026-10", "entidad": "ordenescompra", "registros": 91070, "grupos": 515, "campos_texto": ["codigo_oc", "codigo_proceso", "proveedor"], "campos_facetas": ["estado", "tipo_oc"]}
