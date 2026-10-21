@@ -51,7 +51,7 @@ def main():
    save()
   polic=json.loads((home/"politica_conciliacion.json").read_text(encoding="utf8"))
   report["conflictos_totales"]=polic.get("conflictos_totales")
-  report["estado"]="DIAGNOSTICO_LISTO_REQUIERE_DECISIONES" if polic.get("conflictos_totales",0) else "DIAGNOSTICO_SIN_CONFLICTOS_PENDIENTE_CARGA"
+  report["estado"]="BLOQUEADO_CONFLICTOS_REQUIERE_RESOLUCION" if polic.get("conflictos_totales",0) else "DIAGNOSTICO_SIN_CONFLICTOS_PENDIENTE_CARGA"\n  report["carga_autorizada"]=False\n  report["traslado_autorizado"]=False
  except subprocess.CalledProcessError as exc:
   report["estado"]="BLOQUEADO"
   report["etapas"].append({"etapa":Path(exc.cmd[1]).stem if len(exc.cmd)>1 else "desconocida","resultado":"ERROR","codigo":exc.returncode})
