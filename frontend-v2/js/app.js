@@ -342,6 +342,22 @@ async function consult(){
  await loadChunk(0);
 }
 
+function renderMonthlyEvolution(){
+ const container=$('evolucion-barras');container.replaceChildren();
+ if(!state.manifest)return;
+ const entity=$('entidad').value;
+ const items=state.manifest.periodos.map(p=>({period:p.periodo,n:Number(p.conteos?.[entity]||0)}));
+ const max=Math.max(1,...items.map(p=>p.n));
+ for(const item of items){
+  const row=document.createElement('div');row.className='evolution-row';
+  const label=document.createElement('span');label.textContent=item.period;
+  const track=document.createElement('div');track.className='evolution-track';
+  const bar=document.createElement('div');bar.className='evolution-fill';bar.style.width=(item.n/max*100).toFixed(1)+'%';
+  track.append(bar);
+  const count=document.createElement('strong');count.textContent=item.n.toLocaleString('es-CL');
+  row.append(label,track,count);container.append(row);
+ }
+}
 async function init(){
  try{
   const response=await fetch('./data/catalogo-publico.json',{cache:'no-store'});
@@ -349,6 +365,7 @@ async function init(){
   const payload=await response.json();
   if(!Array.isArray(payload.periodos))throw Error('Catálogo incompatible');
   state.manifest=payload;
+  renderMonthlyEvolution();
   for(const item of payload.periodos){
    if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(item.periodo))continue;
    const option=document.createElement('option');option.value=item.periodo;option.textContent=item.periodo+' · '+(item.tipo==='historico'?'Histórico':'Operativo');$('periodo').append(option)
@@ -367,7 +384,7 @@ $('buscar').addEventListener('input',()=>{state.page=0;render()});
 for(const id of ['filtro-estado','filtro-modalidad'])$(id).addEventListener('change',()=>{state.page=0;render()});
 $('limpiar-filtros').addEventListener('click',()=>{$('buscar').value='';$('filtro-estado').value='';$('filtro-modalidad').value='';state.page=0;render()});
 $('consultar').addEventListener('click',consult);
-$('entidad').addEventListener('change',()=>{++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;closeDetail();closeContextProfile();render()});
+$('entidad').addEventListener('change',()=>{renderMonthlyEvolution();++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;closeDetail();closeContextProfile();render()});
 $('prev').addEventListener('click',()=>{if(state.page===0&&state.chunkIndex>0)loadChunk(state.chunkIndex-1);else{state.page--;render()}});
 $('next').addEventListener('click',()=>{const count=filteredBlock().length;if((state.page+1)*state.perPage>=count&&state.chunkIndex<state.parts.length-1)loadChunk(state.chunkIndex+1);else{state.page++;render()}});
 // API mínima para abrir resultados indexados sin duplicar el lector de fragmentos.
