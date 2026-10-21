@@ -64,18 +64,19 @@ def respaldo_local(book,schemas,periodo):
   with zipfile.ZipFile(temporal) as check:
    if check.testzip():raise ValueError("Respaldo ZIP CRC incorrecto")
    m=json.loads(check.read("manifiesto.json"))
-   if set(check.namelist())!=set(schemas)|{"manifiesto.json"}:
-    # ZIP contiene nombres tabla.csv, no los nombres de tabla a secas.
-    if set(check.namelist())!={x+".csv" for x in schemas}|{"manifiesto.json"}:
-     raise ValueError("Respaldo incompleto")
+   if set(check.namelist())!=({x+".csv" for x in schemas}|{"manifiesto.json"}):
+    raise ValueError("Respaldo incompleto")
    for tabla in schemas:
     raw=check.read(tabla+".csv")
     if hashlib.sha256(raw).hexdigest()!=m["tablas"][tabla]["sha256"]:
      raise ValueError("Huella de respaldo inválida: "+tabla)
   os.chmod(temporal,0o600)
   os.replace(temporal,final)
+  with final.open("rb") as fh:
+   dig=hashlib.sha256()
+   for bloque in iter(lambda:fh.read(1048576),b""):dig.update(bloque)
   return {"archivo":str(final),"bytes":final.stat().st_size,
-          "sha256":hashlib.sha256(final.read_bytes()).hexdigest(),
+          "sha256":dig.hexdigest(),
           "registros":{k:v["registros"] for k,v in manifest["tablas"].items()}}
  finally:
   if temporal.exists():temporal.unlink()
