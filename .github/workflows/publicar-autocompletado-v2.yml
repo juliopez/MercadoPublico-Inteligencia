@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - '.github/workflows/publicar-autocompletado-v2.yml'
+      - 'scripts/generar_autocompletado_proveedores_v2.py'
+      - 'frontend-v2/js/comparar-proveedores.js'
 permissions:
   contents: write
 concurrency:
