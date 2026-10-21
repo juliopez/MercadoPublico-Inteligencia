@@ -1,0 +1,56 @@
+name: Observatorio - vista previa frontend MER v2
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend-v2/index.html'
+      - 'frontend-v2/css/**'
+      - 'frontend-v2/js/**'
+      - '.github/workflows/preview-frontend-v2.yml'
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: observatorio-operacion-unica
+  cancel-in-progress: false
+jobs:
+  vista-previa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}frontend-v2/
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar catálogo, integridad de partes y aislamiento de v1
+        run: |
+          python3 - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('frontend-v2')
+          assert (root/'index.html').is_file()
+          assert (root/'js/app.js').is_file()
+          m=json.loads((root/'data/catalogo-publico.json').read_text())
+          assert m.get('version')=='2.0'
+          for item in m.get('periodos',[]):
+              for entity,paths in item.get('partes',{}).items():
+                  total=0
+                  for relative in paths:
+                      p=root/relative
+                      assert p.is_file(),str(p)
+                      rows=json.loads(p.read_text())
+                      assert isinstance(rows,list)
+                      total+=len(rows)
+                  assert total==item['conteos'][entity],(item['periodo'],entity,total)
+          assert pathlib.Path('index.html').is_file()
+          assert pathlib.Path('data/observatorio.json').is_file()
+          print('PREVIEW_V2_INTEGRIDAD_OK')
+          PY
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+      - name: Desplegar preview v2 manteniendo raíz v1
+        id: deploy
+        uses: actions/deploy-pages@v4
