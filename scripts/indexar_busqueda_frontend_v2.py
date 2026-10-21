@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Prepara un índice de búsqueda público por período/entidad desde fragmentos V2.
 
-El índice no contiene filas completas ni identificadores internos. Se divide
-en 64 particiones según el identificador de registro y se genera fuera de Sheets.
+El índice publica solo referencias [fragmento, fila], agrupadas por prefijo\nde palabra. Nunca publica filas completas ni identificadores privados.
 No modificar la carga del frontend hasta publicar y validar índices completos.
 """
 import argparse
@@ -50,15 +49,15 @@ def build(period, entity, root=ROOT):
             search = normalize(" ".join(str(record.get(field) or "") for field in FIELDS[entity]))
             keys = {word[:3] for word in re.findall(r"[a-z0-9]+", search) if len(word) >= 3}
             for key in keys:
-                buckets.setdefault(key, []).append([part_id, row_id, search])
+                buckets.setdefault(key, []).append([part_id, row_id])
             count += 1
     if count != expected:
         raise ValueError(f"Conteo discordante: {count} != {expected}")
     for key, rows in buckets.items():
         (output / f"{key}.json").write_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
-    meta = {"version": 1, "periodo": period, "entidad": entity, "conteo": count,
+    meta = {"version": 2, "periodo": period, "entidad": entity, "conteo": count,
             "fragmentos": len(parts), "tipo": "prefijo_palabra", "longitud_prefijo": 3,
-            "particiones": len(buckets), "campos": list(FIELDS[entity])}
+            "particiones": len(buckets), "formato": "referencias_fragmento_fila", "campos": list(FIELDS[entity])}
     (output / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("BUSQUEDA_INDICE_OK", period, entity, count, len(buckets))
 
