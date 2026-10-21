@@ -1,6 +1,23 @@
 {
   "version": "2.0",
-  "fecha_publicacion": null,
+  "fecha_publicacion": "2026-10-21T16:53:46.428585+00:00",
   "fuente": "MER v2 — extractos públicos por período (pendientes)",
-  "periodos": []
+  "periodos": [
+    {
+      "periodo": "2026-10",
+      "tipo": "operativo",
+      "conteos": {
+        "procesos": 1558
+      },
+      "partes": {
+        "procesos": [
+          "data/partes/procesos/2026-10/0001.json",
+          "data/partes/procesos/2026-10/0002.json"
+        ]
+      },
+      "huellas": {
+        "procesos": "40eaf3b8660e9a9356f47a46fb09204628395257261699e7c91fc919ef89512c"
+      }
+    }
+  ]
 }
