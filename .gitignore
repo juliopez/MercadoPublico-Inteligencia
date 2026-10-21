@@ -1,6 +1,47 @@
+# Credenciales y secretos locales
 .env
 .env.*
+!.env.example
+*.pem
+*.key
+*credentials*.json
+*service-account*.json
+servicio-google.json
+
+# Bases temporales, respaldos y artefactos locales
 output/
+tmp/
+temp/
 *.db
 *.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+*.log
+*.bak
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+
+# Python y pruebas
 __pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Dependencias temporales front y editores
+node_modules/
+dist/
+.cache/
+.vscode/
+.idea/
+
+# Importante: NO ignorar frontend-v2/data/ ni data/.
+# Son datos públicos aprobados/versionados e índices requeridos por Pages.
