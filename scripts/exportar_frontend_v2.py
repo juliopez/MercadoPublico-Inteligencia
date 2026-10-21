@@ -5,7 +5,7 @@ Ejemplo: python scripts/exportar_frontend_v2.py --periodo 2026-10 --entidad proc
 Usa GOOGLE_SERVICE_ACCOUNT_JSON o GOOGLE_APPLICATION_CREDENTIALS (JSON local).
 No publica hasta verificar recuentos y sustituir atómicamente archivos v2.
 """
-import argparse, datetime as dt, hashlib, json, os, shutil, tempfile
+import argparse, datetime as dt, hashlib, json, os, shutil, tempfile, time
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -54,9 +54,15 @@ def export(period,entity,output):
   names.append(f"data/partes/{entity}/{period}/{name}")
   rowsbuf=[]
  max_rows=max(1,sheet.row_count)
- for start in range(2,max_rows+1,1000):
-  end=min(max_rows,start+999)
-  block=sheet.get(f"A{start}:{chr(64+limit)}{end}")
+ for start in range(2,max_rows+1,5000):
+  end=min(max_rows,start+4999)
+  for attempt in range(5):
+   try:
+    block=sheet.get(f"A{start}:{chr(64+limit)}{end}")
+    break
+   except gspread.exceptions.APIError as exc:
+    if getattr(getattr(exc,"response",None),"status_code",None)!=429 or attempt==4:raise
+    time.sleep(35*(attempt+1))
   for rawrow in block:
    if not rawrow or not str(rawrow[0]).strip():continue
    row={key:str(rawrow[ix]) if ix<len(rawrow) else "" for key,ix in zip(PUBLIC[entity],indexes)}
