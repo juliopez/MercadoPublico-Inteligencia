@@ -1,68 +1,79 @@
-# Observatorio de Inteligencia — Mercado Público (Chile)
+# Observatorio de Inteligencia de Mercado Público · Chile
 
-Plataforma de análisis de licitaciones, Compra Ágil, ofertas, resultados y órdenes de compra. Código, procedimientos y extractos públicos en GitHub; fuentes operativas y MER v2 en **Google Sheets privadas**. Fecha de revisión documental: **21 de octubre de 2026**.
+Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes de compra** de Mercado Público. Este README describe el **estado vigente**; los procedimientos y antecedentes están separados en la documentación especializada.
 
-> **Regla de continuidad:** leer primero este README, después el [índice documental](docs/INDICE_DOCUMENTACION.md), las [decisiones técnicas](docs/DECISIONES_TECNICAS.md) y el documento de la tarea. Contrastar siempre con código, catálogo, ejecución de CI y validaciones reales; distinguir **implementado**, **validado técnicamente** y **probado visualmente**.
+**Última revisión documental:** 21 de octubre de 2026.
 
-## Accesos
+## Acceder
 
-- **[Observatorio V2 — consulta y análisis](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)** (desarrollo paralelo con datos públicos).
-- [Frontend V1 — versión original](https://juliopez.github.io/MercadoPublico-Inteligencia/) (se mantiene independiente).
-- [Manual y estado funcional V2](frontend-v2/README.md).
-- [Documentación ordenada por temas](docs/INDICE_DOCUMENTACION.md).
-- [Decisiones técnicas vigentes](docs/DECISIONES_TECNICAS.md).
+- **[Observatorio V2 — interfaz de consulta y análisis](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)**
+- [Frontend V1 — versión anterior independiente](https://juliopez.github.io/MercadoPublico-Inteligencia/)
+- [Manual de uso de V2](frontend-v2/README.md)
+- [Índice completo de documentación](docs/INDICE_DOCUMENTACION.md)
+- [Decisiones técnicas y restricciones](docs/DECISIONES_TECNICAS.md)
 
-## Estado actual y cobertura
+## Estado del sistema
 
-| Subsistema | Estado comprobado / restricción |
+| Componente | Estado y alcance |
 |---|---|
-| Frontend V2 | Publicado en su ruta propia; selección por mes/entidad, bloques de hasta 1.000, paginación de 10, búsqueda global indexada y fichas relacionadas |
-| Datos públicos V2 | Cinco períodos **2026-06 a 2026-10**; junio–septiembre históricos, octubre **parcial** |
-| Entidades V2 visibles | Procesos, Ofertas, Resultados y Órdenes de compra (no confundir con las seis tablas internas del MER) |
-| Funciones V2 | Indicadores interactivos por mes, perspectivas y comparación, perfiles, comparador con sugerencias, favoritos locales, CSV y enlaces entre registros |
-| Relaciones multimes | Índices por código para Procesos, Ofertas, Resultados y OC, limitados a períodos publicados |
-| V1 | Mantener `index.html` y `data/` aislados de `frontend-v2/` |
-| ETL diario Ubuntu | Flujo operacional separado; no alterar por mejoras visuales |
-| Cierre mensual MER | **Programado para supervisión manual el 10-11-2026**; no ejecutado a la fecha de este documento |
-| Auditoría integral de V2 | **Pendiente**, separada de la validación funcional y de CI |
+| Frontend V2 | Implementado y publicado en `frontend-v2/`; **revisión visual de los últimos cambios en curso por el usuario** |
+| Períodos públicos | Junio–octubre de 2026; octubre **parcial** |
+| Datos disponibles | Cuatro entidades públicas: Procesos, Ofertas, Resultados y Órdenes de compra |
+| Consulta | Primer bloque de hasta 1.000 filas; tablas paginadas de 10; búsqueda indexada por término/código para todo el mes |
+| Analítica | Selección de mes, comparación entre meses, vistas de actividad, importes informados y actores destacados |
+| Relaciones históricas | Fichas relacionadas entre **todos los meses publicados** mediante índices por código; no acceso a meses todavía no publicados |
+| Herramientas | Fichas, perfiles, comparación de proveedores, favoritos del navegador y exportación CSV |
+| Google Sheets MER | Datos privados; seis tablas internas, distintas de las cuatro entidades públicas |
+| Auditoría integral V2 | **Pendiente** como actividad independiente de pruebas de CI y revisión visual |
+| Cierre del mes de octubre | Primer cierre manual supervisado **previsto para el 10-11-2026**, sujeto a verificaciones y fuentes completas |
 
-Los datos reales disponibles y su fecha se consultan en [el catálogo público V2](frontend-v2/data/catalogo-publico.json), no en cifras copiadas en documentos.
+Los números y períodos vigentes se consultan siempre en el [catálogo público de V2](frontend-v2/data/catalogo-publico.json); no confiar en conteos copiados a documentación fechada.
 
-**Importante:** las cuatro entidades son conjuntos distintos. Ofertas informadas, resultados históricos, órdenes de compra y procesos no equivalen necesariamente a adjudicaciones jurídicas, operaciones únicas o pagos. Octubre no es comparable a meses cerrados sin advertencia de cobertura.
+## Cómo funciona V2
 
-## Arquitectura y límites
+1. Seleccionar **mes** y **entidad**. «Mostrar registros del período» carga el primer bloque de forma directa y muestra páginas de 10.
+2. Usar la **búsqueda global** para encontrar códigos o términos en todo el mes mediante índices; la exploración por bloques permanece como opción avanzada.
+3. Consultar el panel **Evolución mensual** para seleccionar, comparar períodos y alternar entre actividad, montos y actores.
+4. Abrir una ficha y revisar su resumen, campos completos y **registros vinculados entre los meses publicados**.
+5. Utilizar perfiles, comparación, favoritos y CSV cuando se requiera.
+
+**Interpretación responsable:** la coincidencia por código no acredita adjudicación; una oferta, resultado o OC informada no equivale por sí sola a un contrato pagado. Las sumas CLP son descriptivas. Octubre 2026 sigue incompleto. El ordenamiento global afecta coincidencias verificadas, no resultados aún sin cargar.
+
+## Arquitectura
 
 ```text
-ZIP históricos oficiales y flujos operativos ChileCompra
-           │
-  Importación / ETL Ubuntu
-           │
-  Google Sheets privadas MER v2 (seis entidades)
-           │ exportación pública controlada
-           ▼
+Fuentes ChileCompra / ZIP oficiales
+   ↓
+ETL y consolidación MER (Google Sheets privadas)
+   ↓ exportación controlada
 frontend-v2/data/catalogo-publico.json
- ├─ partes/                 JSON mensuales de hasta 1.000 filas
- ├─ busqueda/               índices de búsqueda global
- ├─ indices/ + relaciones-procesos/  vínculos multimes
- ├─ perfiles/ + autocompletar/      resúmenes y sugerencias
- └─ analitica/ + sugerencias/      agregados y controles
-           │
-    GitHub Pages V2 (sin acceso directo a Sheets)
+   ├─ partes/                 registros públicos por fragmentos
+   ├─ busqueda/               búsqueda indexada
+   ├─ indices/                relaciones por código en Ofertas, Resultados y OC
+   ├─ relaciones-procesos/    relaciones exactas de Procesos
+   ├─ perfiles/ + autocompletar/
+   └─ analitica/ + sugerencias/
+   ↓
+GitHub Pages V2 (sin acceso directo a Sheets)
 ```
 
-El navegador **no debe descargar todos los históricos** para mostrar una página. La búsqueda por término y las relaciones utilizan índices y fragmentos públicos selectivos; los gráficos consultan agregados JSON. En la consulta por bloques, filtros y orden se aplican al bloque actual. El ordenamiento global afecta los resultados **ya comprobados**, no registros aún sin cargar. Los CSV de consulta global requieren completar la verificación y están limitados para evitar exportaciones parciales engañosas.
+**Reglas de protección:** no modificar V1 (`index.html`, `data/`) durante mejoras V2; no descargar el histórico completo al navegador; no eliminar JSON generados, workflows de datos, credenciales locales protegidas ni ramas de respaldo como parte de una limpieza editorial.
 
-## Operación y próximo hito
+## Operación y mantenimiento
 
-**10 de noviembre de 2026:** cierre manual supervisado de octubre usando **tres ZIP oficiales** (licitaciones, Compra Ágil/COT y OC), respaldo previo, conciliación por PK, verificación de seis tablas y traslado de **la misma hoja** conservando su ID. Si falta fuente, permiso, respaldo o validación, detener el cierre. No configurar el cron mensual hasta aprobar este primer ciclo. No alterar el cron diario de Ubuntu.
+La operación diaria y el cierre mensual pertenecen a un flujo separado del frontend. El primer cierre de octubre está **programado, no ejecutado**; requiere tres ZIP oficiales, respaldos, conciliación y autorización supervisada. No instalar cron mensual ni cambiar el ETL diario antes de la aprobación del ciclo.
 
-Guías de referencia: [Runbook del cierre de octubre](docs/RUNBOOK_CIERRE_2026_10.md), [Procedimiento técnico de cierre](docs/PROCEDIMIENTO_CIERRE_MENSUAL.md), [ETL Ubuntu diario](docs/UBUNTU_ETL_DOS_FUENTES.md), [Modelo MER](docs/CONSOLIDADOR_MER_V2.md) y [Catálogo Sheets](docs/CATALOGO_SHEETS_Y_PERIODOS.md).
+- [Runbook del cierre de octubre](docs/RUNBOOK_CIERRE_2026_10.md)
+- [Procedimiento general de cierre mensual](docs/PROCEDIMIENTO_CIERRE_MENSUAL.md)
+- [ETL operativo Ubuntu](docs/UBUNTU_ETL_DOS_FUENTES.md)
+- [Modelo de consolidación MER v2](docs/CONSOLIDADOR_MER_V2.md)
+- [Mantenimiento y limpieza segura de GitHub](docs/MANTENIMIENTO_REPOSITORIO_2026-10-21.md)
 
-## Desarrollo y documentación
+## Desarrollo, pruebas y documentación
 
-- **Frontend y UX V2:** [manual funcional](frontend-v2/README.md) y [analítica + relaciones históricas](docs/ANALITICA_INTERACTIVA_RELACIONES_HISTORICAS_V2_2026-10-21.md).
-- **Validación automatizada:** consultar [workflows de GitHub Actions](.github/workflows/) y sus ejecuciones. CI no sustituye la prueba real en navegador ni operaciones contra Sheets.
-- **Scripts:** `scripts/`; **pruebas:** `tests/`; **configuración:** `config/`. No publicar credenciales.
-- **Archivo histórico:** [README legado íntegro](docs/historial/README_LEGADO_2026-10-21.md). Los documentos fechados describen hitos, **no prevalecen** sobre este estado actual y las decisiones vigentes.
+- Código frontend: `frontend-v2/`. Scripts de datos: `scripts/`. Pruebas: `tests/`. Workflows: `.github/workflows/`.
+- [Manual técnico V2](frontend-v2/README.md) y [analítica con relaciones multimes](docs/ANALITICA_INTERACTIVA_RELACIONES_HISTORICAS_V2_2026-10-21.md).
+- **No confundir niveles de evidencia:** implementado, probado en GitHub Actions, revisado visualmente y ejecutado en datos operativos son estados diferentes.
+- [Documentación por temas](docs/INDICE_DOCUMENTACION.md) y [decisiones técnicas](docs/DECISIONES_TECNICAS.md).
 
-Para buscar un documento, utilizar [el índice temático](docs/INDICE_DOCUMENTACION.md). No duplicar aquí bitácoras, fallos resueltos ni procedimientos extensos.
+**Continuidad:** antes de intervenir leer este README → índice → decisiones → documento específico → código real. Mantener la historia técnica en documentos especializados o [README legado](docs/historial/README_LEGADO_2026-10-21.md), no agregar bitácoras al README principal.
