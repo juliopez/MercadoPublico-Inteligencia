@@ -1,0 +1,42 @@
+name: Validar cinco ajustes visuales V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/validar-ajustes-landing-v2.yml'
+      - 'frontend-v2/js/app.js'
+      - 'frontend-v2/js/busqueda-global.js'
+      - 'frontend-v2/index.html'
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validar sintaxis de modulos
+        run: |
+          node --check frontend-v2/js/app.js
+          node --check frontend-v2/js/busqueda-global.js
+          node --check frontend-v2/js/comparar-proveedores.js
+          node --check frontend-v2/js/sugerencias-global.js
+      - name: Verificar las cinco modificaciones
+        run: |
+          node - <<'JS'
+          const fs=require('fs'),assert=require('node:assert/strict');
+          const html=fs.readFileSync('frontend-v2/index.html','utf8');
+          const app=fs.readFileSync('frontend-v2/js/app.js','utf8');
+          const search=fs.readFileSync('frontend-v2/js/busqueda-global.js','utf8');
+          const css=fs.readFileSync('frontend-v2/css/styles.css','utf8');
+          assert(!html.includes('Funciones de la versión 1 que conservaremos'));
+          assert(html.includes('01 · Explorar datos')&&html.includes('04 · Seguimiento'));
+          assert(html.includes('evolucion-resumen'));
+          assert(app.includes("America/Santiago")&&app.includes("Intl.DateTimeFormat"));
+          assert(app.includes('function sortLocal(')&&app.includes("function ordered("));
+          assert(search.includes("let globalSort=")&&search.includes("sort-heading"));
+          assert(css.includes('.evolution-summary')&&css.includes('.landing-group'));
+          console.log('CINCO_AJUSTES_ESTRUCTURA_OK');
+          JS
