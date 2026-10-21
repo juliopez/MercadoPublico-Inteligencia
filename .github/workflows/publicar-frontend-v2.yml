@@ -2,7 +2,7 @@ name: Frontend MER v2 - exportación aislada por período
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/publicar-frontend-v2.yml']
+    paths: ['.github/workflows/publicar-frontend-v2.yml', 'scripts/exportar_frontend_v2.py']
   workflow_dispatch:
     inputs:
       periodo:
