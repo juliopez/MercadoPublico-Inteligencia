@@ -128,3 +128,19 @@ Una vez disponible la conciliación en noviembre, generar el plan:
 6. Validación supervisada el 10 de noviembre; si resulta aprobada, recién instalar el cron mensual para comenzar 10 de diciembre.
 
 **No modificar el ETL diario ni cron vigente.** No activar cierres mientras existan controles pendientes.
+
+## Cuarta etapa: simulación de carga bloqueante
+
+Se añadió `scripts/simular_carga_cierre.py`. Contrasta el catálogo, `estado_cierre.json`, `plan_carga_cierre.json`, `informe.json`, los seis CSV y el número de filas de cada tabla del SQLite preparado. Produce un informe con SHA-256 de los CSV y operaciones candidatas, **sin abrir Google Sheets ni realizar escrituras, respaldos de hojas o traslados**.
+
+**Secuencia de ejecución supervisada a partir del día 10 de noviembre:** preparar con `orquestar_cierre_mensual.py`, ejecutar `conciliar_cierre_mensual.py`, generar el plan con `planificar_carga_cierre.py` y finalmente correr:
+
+```bash
+.venv/bin/python scripts/simular_carga_cierre.py \
+  --periodo 2026-10 \
+  --paquete "$HOME/.local/share/mercadopublico/cierres/2026-10/preparados" \
+  --plan "$HOME/.local/share/mercadopublico/cierres/2026-10/plan_carga_cierre.json" \
+  --estado "$HOME/.local/share/mercadopublico/cierres/2026-10/estado_cierre.json"
+```
+
+**Advertencia:** este paso es un simulador de precondiciones, **no el cargador de escritura definitivo**. No se debe describir como cierre listo para automatizar. Antes de habilitar escritura quedan pendientes política campo por campo, auditoría referencial ampliada, respaldo integral, idempotencia/reintentos, read-back, recuperación de fallos, y permisos Drive + catálogo. La ejecución programada del cierre continúa reservada para diciembre, sujeta a prueba integral supervisada en noviembre. No se ha cambiado el cron diario ni el frontend.
