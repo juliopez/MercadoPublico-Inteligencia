@@ -49,3 +49,11 @@ Se revisaron nuevamente README, índice, decisiones y documentación de búsqued
 - Se ejecutó `python /mnt/data/mpv2_check/check.py` en el entorno aislado de trabajo; resultado `PASS pruebas aisladas: prefijos, acentos, conteos y rutas`. Este archivo reproduce una parte de la lógica y **no sustituye el test del repositorio**, por lo que no se eleva su estado a prueba integral.
 - Hallazgo sobre dimensionamiento: el algoritmo mantiene `buckets` con textos repetidos para varios prefijos de cada fila. Con cientos de miles de registros podría crecer mucho en memoria y producir archivos de prefijos frecuentes poco eficientes. El índice requiere rediseño o un ensayo acotado instrumentado antes de desplegarlo; **no está aprobado su uso masivo**.
 - No se ha editado código ni desplegado datos en esta revisión: prioridad preservar la carga por fragmentos validada.
+
+
+## Optimización del formato — continuación 21-10-2026
+Se consultaron README, índice, decisiones, documento específico y código del indexador y sus pruebas antes de intervenir. El índice por prefijos fue ajustado para almacenar únicamente pares `[indice_fragmento,indice_fila]` en lugar de tripletas `[indice_fragmento,indice_fila,texto_normalizado]`, manteniendo la selección por prefijos de palabras. El metadato pasa a `version=2` y declara `formato=referencias_fragmento_fila`. Se actualizaron los casos unitarios para verificar tanto las coincidencias como que ninguna fila del índice incluya texto.
+
+**Commits:** `0690f729` (generador) y `49a36462` (pruebas).
+
+**Estado:** código implementado y contrastado estáticamente; **no se han ejecutado las pruebas contra el checkout ni medido los tamaños reales**. Los arrays de referencias continúan en memoria durante la generación y los prefijos frecuentes pueden originar archivos grandes, por lo que el consumo no se considera validado. Tampoco se publicaron índices, se cambió el frontend o se alteraron Sheets, ETL o V1. Se requiere CI exitosa y dimensionamiento instrumental antes de conectar búsqueda global.
