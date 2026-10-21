@@ -18,3 +18,12 @@ Se incorporó `scripts/indexar_busqueda_frontend_v2.py`, generador inicial que o
 
 ## Validación y siguiente hito
 Se inspeccionó código/documentación y se corrigió la serialización de saltos de línea. No se ejecutaron pruebas automatizadas ni navegador. Antes de activar funcionalidad, validar el generador con dataset reducido y posteriormente con cobertura real; generar índice y comprobar búsqueda selectiva end-to-end, sin regresión de rendimiento de V2.
+
+
+## Continuación — validación preventiva (21-10-2026)
+- Se volvió a leer README, índice, decisiones y este documento antes de intervenir.
+- Se detectó y corrigió una expresión regular que rechazaba rutas de fragmentos JSON válidos: commit `96f865db`.
+- Se incorporó `tests/test_indexar_busqueda_frontend_v2.py`, con casos para índice de dos procesos, normalización con tildes, prefijos y discordancia de conteos: commit `e9a4692b`.
+- **Pruebas aún no ejecutadas contra el código del repositorio:** la conexión de red del entorno local de verificación no permitió obtener el archivo remoto. Los nuevos casos de prueba quedan disponibles para ejecución en CI o en entorno de desarrollo.
+- No se generaron índices masivos ni se modificó el JavaScript de carga y búsqueda actual. La interfaz continúa utilizando búsqueda local por bloque.
+- Riesgos pendientes: volumen y tamaño de prefijos frecuentes, uso de memoria durante indexación, duplicación de texto por clave y latencia. No activar búsqueda global antes de medirlos.
