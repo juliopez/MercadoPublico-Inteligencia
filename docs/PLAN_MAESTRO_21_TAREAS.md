@@ -14,10 +14,10 @@
 
 | Nº | Tarea | Estado inicial |
 |---:|---|---|
-| 1 | Inventariar todas las Google Sheets existentes del proyecto | En curso: inventario inicial documentado; resta contrastar totalidad y dependencias |
+| 1 | Inventariar todas las Google Sheets existentes del proyecto | Avance sustantivo: activos, respaldos y staging identificados; requiere verificar dependencias para declarar exhaustivo |
 | 2 | Crear un directorio único en Google Drive para la plataforma | Completada: carpeta principal y cuatro subcarpetas |
-| 3 | Organizar las Google Sheets y eliminar las versiones obsoletas, previa revisión y respaldo | Pendiente |
-| 4 | Estandarizar los nombres de archivos: MER_2026_06, MER_2026_07, etc. | En curso: MER_2026_09 renombrada; pendientes otros meses |
+| 3 | Organizar las Google Sheets y eliminar las versiones obsoletas, previa revisión y respaldo | Parcial: documentos identificados organizados sin borrar; depuración exige lista exacta y autorización |
+| 4 | Estandarizar los nombres de archivos: MER_2026_06, MER_2026_07, etc. | **Completada**: MER_2026_06 a MER_2026_09 y MER_2026_10_OPERATIVO |
 | 5 | Validar septiembre de 2026 como primer histórico definitivo | Completada (auditoría de septiembre) |
 | 6 | Crear las Google Sheets históricas de junio, julio y agosto de 2026 | Completada: tres archivos creados, seis pestañas y encabezados validados |
 | 7 | Cargar y auditar los históricos de junio, julio y agosto de 2026 | **Completada**: junio, julio y agosto cargados y auditados; septiembre ya cerrado |
@@ -26,7 +26,7 @@
 | 10 | Implementar actualización incremental diaria y control de errores de API | Pendiente |
 | 11 | Diseñar el procedimiento de cierre mensual y consolidación con históricos oficiales | Completada: documento técnico de cierre y conciliación |
 | 12 | Automatizar el traspaso del mes cerrado a una Google Sheets histórica | Pendiente |
-| 13 | Implementar un catálogo central de Google Sheets y períodos disponibles | En curso: catálogo versionado inicial creado; falta integración operativa |
+| 13 | Implementar un catálogo central de Google Sheets y períodos disponibles | **Completada como registro central**: config/catalogo_sheets.json; integración de consumidores corresponde a tareas 9 y 14 |
 | 14 | Desarrollar el consolidador Python de datos históricos y operativos | Pendiente |
 | 15 | Adaptar la publicación de JSON al contrato de datos del frontend | Pendiente |
 | 16 | Integrar y validar la consulta de múltiples períodos desde el frontend | Pendiente |
@@ -62,3 +62,10 @@ Tarea 6 completada. Bases mensuales 2026-06, 2026-07 y 2026-08 creadas vacías y
 ## Cierre de la tarea 7 — 20 de octubre de 2026
 
 **Completada:** cuatro Google Sheets independientes `MER_2026_06`, `MER_2026_07`, `MER_2026_08` y `MER_2026_09`, con sus seis entidades; todos con auditoría estructural/referencial independiente satisfactoria con observaciones. Totales de filas de las seis entidades por archivo: junio 798.094; julio 810.333; agosto 834.370; septiembre 754.318. **Total acumulado de filas mensuales**: 3.197.115 (no equivale a identidades o procesos únicos entre meses). Detalles en [catálogo](CATALOGO_SHEETS_Y_PERIODOS.md). OC fuera de corte, resultados no verificados e identidad de proveedores son salvedades documentadas. No se modifica producción ni frontend.
+
+## Organización y catálogo — 20 de octubre de 2026
+
+- Los cuatro históricos y la hoja operativa presentan nombres normalizados y ubicación por categoría. Tarea 4 completada.
+- Se publicó [catálogo central JSON](../config/catalogo_sheets.json) para uso posterior por ETL y consolidador. Tarea 13 completada **como registro versionado**, sin afirmar que los consumidores actuales lo utilicen.
+- Se organizaron respaldos, archivos de staging y hojas auxiliares identificados en Drive, conservando los IDs. Producción antigua y clon permanecen fuera de la migración. Ver [inventario](CATALOGO_SHEETS_Y_PERIODOS.md).
+- **No se ejecutó eliminación** de documentos. Tarea 3 continúa parcial. Tarea 1 sigue pendiente de auditoría final de dependencias/alcance de búsqueda para cerrarla sin afirmar exhaustividad no acreditada.
