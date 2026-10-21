@@ -1,0 +1,40 @@
+name: Validar participantes históricos V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'frontend-v2/js/participantes-historicos.js'
+      - 'frontend-v2/index.html'
+      - 'scripts/generar_participacion_historica_v2.py'
+      - '.github/workflows/validar-participantes-v2.yml'
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Sintaxis y cobertura
+        run: |
+          node --check frontend-v2/js/participantes-historicos.js
+          python -m py_compile scripts/generar_participacion_historica_v2.py
+          python - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('frontend-v2/data')
+          cat=json.loads((root/'catalogo-publico.json').read_text())
+          for p in cat['periodos']:
+           month=p['periodo']
+           meta=json.loads((root/'participacion'/month/'meta.json').read_text())
+           assert meta['version']==1 and meta['periodo']==month
+           assert meta['procesos_publicados']<=p['conteos']['procesos']
+           assert meta['ofertas']<=p['conteos']['ofertas']
+           for entity in ('proveedor','organismo'):
+            assert (root/'participacion'/month/entity).is_dir()
+           print('PARTICIPACION_VERIFICADA',month)
+          PY
