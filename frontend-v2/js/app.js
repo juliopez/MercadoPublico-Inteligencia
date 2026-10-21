@@ -14,13 +14,43 @@ const tableColumns={
 function formatTableValue(record,key){
  const value=record[key];
  if(value===null||value===undefined||String(value).trim()==='')return 'No informado';
- if(key.endsWith('_clp')){
+ if(moneyField(key)){
   const raw=String(value).trim().replace(/\\./g,'').replace(',','.');
   const amount=Number(raw);
   return Number.isFinite(amount)?'$'+Math.round(amount).toLocaleString('es-CL'):String(value);
  }
  return String(value);
 }
+// Presentación pública común. Los valores originales de los JSON no cambian.
+function moneyField(key){return /(^monto|_monto|_clp$|precio|valor_total)/i.test(key)}
+function moneyCLP(value){
+ if(value==null||String(value).trim()==='')return 'No informado';
+ const n=Number(String(value).trim().replaceAll('.','').replace(',','.'));
+ return Number.isFinite(n)?new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(n):String(value);
+}
+function codeField(key){return ['codigo','codigo_proceso','codigo_oc','codigoexterno','codigo_externo'].includes(key.toLowerCase())}
+function openCode(code,key){
+ if(!/^[a-z0-9-]{4,100}$/i.test(String(code??'')))return;
+ const current=$('entidad').value;
+ const target=key==='codigo_oc'?'ordenescompra':key==='codigo_proceso'?'procesos':current;
+ $('entidad').value=target;$('entidad').dispatchEvent(new Event('change'));
+ $('buscar').value='';
+ $('busqueda-global-texto').value=String(code);
+ $('global-estado').value='';$('global-modalidad').value='';
+ $('busqueda-global-boton').click();
+ $('busqueda-global').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function displayedCell(record,key){
+ const td=textCell(moneyField(key)?moneyCLP(record[key]):record[key]??'No informado');
+ if(codeField(key)&&record[key]){
+  const button=document.createElement('button');button.type='button';button.className='code-link';
+  button.textContent=String(record[key]);button.title='Buscar este código en el Observatorio';
+  button.addEventListener('click',()=>openCode(record[key],key));
+  td.replaceChildren(button);
+ }
+ return td;
+}
+window.MPV2={moneyCLP,moneyField,codeField,openCode};
 function localFilterFields(){
  const e=$('entidad').value;
  return {state:e==='procesos'||e==='ordenescompra'?'estado':e==='ofertas'?'seleccionado':'validado',type:e==='procesos'?'modalidad':e==='ordenescompra'?'tipo_oc':null};
@@ -65,7 +95,7 @@ function render(){
  for(const record of current){
   const row=document.createElement('tr');
   for(const [key] of fields){
-   const td=textCell(formatTableValue(record,key));
+   const td=displayedCell(record,key);
    if(key==='codigo'||key==='codigo_oc'||key==='codigo_proceso')td.classList.add('process-code');
    if(key==='nombre')td.classList.add('process-name');
    if(key==='estado'){const pill=document.createElement('span');pill.className='state-pill';pill.textContent=td.textContent;td.replaceChildren(pill)}
@@ -140,7 +170,7 @@ async function showContextProfile(field,name){
   const body=document.createDocumentFragment();
   const sorted=profileSort.key?[...rows].sort((a,b)=>profileSort.direction*compareRows(a,b,profileSort.key)):rows;
   for(const record of sorted.slice(0,25)){
-   const tr=document.createElement('tr');for(const [key] of relevant)tr.append(textCell(formatTableValue(record,key)));body.append(tr);
+   const tr=document.createElement('tr');for(const [key] of relevant)tr.append(displayedCell(record,key));body.append(tr);
   }
   tableBody.replaceChildren(body);
  }
@@ -222,7 +252,7 @@ function showDetail(record){
    const a=document.createElement('a');a.href='https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion='+encodeURIComponent(code);
    a.target='_blank';a.rel='noopener noreferrer';a.textContent='Abrir ficha oficial';a.className='detail-official-link';
    dd.append(b,' ',a);
-  }else dd.textContent=formatTableValue(record,key);
+  }else if(codeField(key)&&value)dd.append(displayedCell(record,key).firstChild);else dd.textContent=moneyField(key)?moneyCLP(value):formatTableValue(record,key);
   body.append(dt,dd);
  }
  const external=$('detalle-enlace');
@@ -286,7 +316,7 @@ function renderLinkedRecords(target,items,kind){
   const orderedItems=relatedSort.key?[...items].sort((a,b)=>relatedSort.direction*compareRows(a,b,relatedSort.key)):items;
   for(const item of orderedItems.slice(page*perPage,(page+1)*perPage)){
    const tr=document.createElement('tr');
-   for(const field of fields)tr.append(textCell(item[field]));
+   for(const field of fields)tr.append(displayedCell(item,field));
    body.append(tr);
   }
   prev.disabled=page===0;next.disabled=page===pages-1;
