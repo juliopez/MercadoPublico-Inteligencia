@@ -27,6 +27,8 @@ Se inició una versión independiente en [`frontend-v2/`](frontend-v2/README.md)
 
 El usuario validó la navegación por períodos y entidades históricas y reportó **muy buena velocidad de carga** con lectura por fragmentos y **10 registros por página**. La referencia estable, cobertura y secuencia para recuperar las funciones de la versión 1 se registran en [BASELINE_FRONTEND_V2_2026-10-21.md](docs/BASELINE_FRONTEND_V2_2026-10-21.md). **Conservar este comportamiento antes de incorporar el detalle vinculado de ofertas, resultados y órdenes de compra.**
 
+El detalle vinculado por código de proceso está documentado en [DETALLE_RELACIONADO_FRONTEND_V2.md](docs/DETALLE_RELACIONADO_FRONTEND_V2.md): incorpora Ofertas, Resultados y Órdenes de Compra indexadas sin perder la carga por bloques. La verificación final en navegador sigue siendo necesaria.
+
 ## Próximo hito — 10 de noviembre de 2026
 
 **Primer cierre manual y supervisado de octubre**, sin desarrollar código nuevo durante la operación. Se requieren tres ZIP oficiales del **mes de octubre** (licitaciones, Compra Ágil/COT y órdenes de compra), conciliación con prioridad de la versión histórica oficial de ese mes, respaldo y verificación de seis entidades. Después se moverá **la misma hoja** desde Operativo a Históricos manteniendo su ID y se actualizará el catálogo GitHub.
