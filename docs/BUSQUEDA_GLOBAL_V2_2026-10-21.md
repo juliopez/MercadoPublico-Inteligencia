@@ -41,3 +41,11 @@ Se revisaron nuevamente README, índice, decisiones y documentación de búsqued
 - La red del contenedor no logró resolver GitHub. Se ejecutó **una reproducción local aislada de la lógica principal** con dos registros sintéticos: normalización de tildes, creación de prefijos, acceso a los registros por prefijo, validación de rutas y detección de discordancia de recuentos; el ensayo finalizó correctamente. Esto **no sustituye la ejecución del test original del repositorio**.
 - No se ejecutó una medición real de tamaño o consumo de memoria con el conjunto histórico completo; el navegador V2 sigue con búsqueda por bloque. No se habilitó nueva funcionalidad ni se modificó el sistema de carga.
 - Antes de desplegar índices globales, confirmar éxito de CI y establecer límites para prefijos frecuentes que podrían generar archivos muy grandes.
+
+
+## Revisión de seguimiento tras aprobación — 21-10-2026
+- Se releyeron README, índice, decisiones, documento específico y el código del generador y pruebas.
+- Se intentó obtener el checkout de GitHub en el entorno de ejecución; falló por resolución DNS de `github.com`. La consulta web a la página del workflow también resultó inaccesible. No existe evidencia obtenida de una ejecución de CI ni de mediciones sobre los archivos reales.
+- Se ejecutó `python /mnt/data/mpv2_check/check.py` en el entorno aislado de trabajo; resultado `PASS pruebas aisladas: prefijos, acentos, conteos y rutas`. Este archivo reproduce una parte de la lógica y **no sustituye el test del repositorio**, por lo que no se eleva su estado a prueba integral.
+- Hallazgo sobre dimensionamiento: el algoritmo mantiene `buckets` con textos repetidos para varios prefijos de cada fila. Con cientos de miles de registros podría crecer mucho en memoria y producir archivos de prefijos frecuentes poco eficientes. El índice requiere rediseño o un ensayo acotado instrumentado antes de desplegarlo; **no está aprobado su uso masivo**.
+- No se ha editado código ni desplegado datos en esta revisión: prioridad preservar la carga por fragmentos validada.
