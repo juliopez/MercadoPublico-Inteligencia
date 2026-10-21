@@ -498,9 +498,15 @@ $('perfil-cerrar').addEventListener('click',closeContextProfile);
 $('buscar').addEventListener('input',()=>{state.page=0;render()});
 for(const id of ['filtro-estado','filtro-modalidad'])$(id).addEventListener('change',()=>{state.page=0;render()});
 $('limpiar-filtros').addEventListener('click',()=>{$('buscar').value='';$('filtro-estado').value='';$('filtro-modalidad').value='';state.page=0;render()});
-$('ir-busqueda-global').addEventListener('click',()=>{
- $('busqueda-global').scrollIntoView({behavior:'smooth',block:'start'});
- $('busqueda-global-texto').focus({preventScroll:true});
+$('ir-busqueda-global').addEventListener('click',async ()=>{
+ if(!$('periodo').value){status('Selecciona primero un mes de referencia.');$('periodo').focus();return}
+ const button=$('ir-busqueda-global');
+ button.disabled=true;
+ try{
+  // Esta acción muestra los primeros registros sin depender del panel avanzado.
+  await consult();
+  if(state.records.length)$('resultados').scrollIntoView({behavior:'smooth',block:'start'});
+ }finally{button.disabled=false}
 });
 $('consultar').addEventListener('click',consult);
 $('entidad').addEventListener('change',()=>{renderMonthlyEvolution();++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;closeDetail();closeContextProfile();render()});
