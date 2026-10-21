@@ -2,3 +2,14 @@
 .detail-button{padding:6px 10px;white-space:nowrap;font-size:.85rem}.detail-grid{display:grid;grid-template-columns:minmax(130px,240px) 1fr;gap:9px 18px;margin:18px 0}.detail-grid dt{font-weight:600;color:#476176;text-transform:capitalize}.detail-grid dd{margin:0;overflow-wrap:anywhere}.detail-grid dt,.detail-grid dd{padding:7px 0;border-bottom:1px solid #e4ecf1}#detalle[hidden],#detalle-enlace[hidden]{display:none!important}#detalle-enlace{display:inline-block;margin-top:14px;color:#176b92;font-weight:650}@media(max-width:600px){.detail-grid{grid-template-columns:1fr;gap:0}.detail-grid dt{padding-bottom:0;border:0}.detail-grid dd{padding-top:2px}}
 
 .related{margin-top:24px;padding-top:18px;border-top:1px solid #dbe6ee}.related h3{margin:0 0 12px}.related h4{font-size:.95rem;margin:0 0 8px}.related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.related-grid section{min-width:0;overflow-x:auto;border:1px solid #e4ebf2;border-radius:9px;padding:12px}.related-grid table{font-size:.8rem}.related-grid th,.related-grid td{padding:8px 7px}@media(max-width:1050px){.related-grid{grid-template-columns:1fr}}
+
+/* V1 → V2: navegación visual y ayudas de cobertura; sin cambios al lector de fragmentos. */
+html{scroll-behavior:smooth;scroll-padding-top:18px}
+.quicknav{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 18px}
+.quicknav a{display:inline-block;padding:9px 13px;border:1px solid #c9dce9;background:#fff;color:#175781;border-radius:22px;text-decoration:none;font-size:.86rem;font-weight:650}
+.quicknav a:hover,.quicknav a:focus-visible{background:#e8f3fb;outline:2px solid #4184b1;outline-offset:2px}
+.stat .stat-help{display:inline-flex;align-items:center;justify-content:center;cursor:help;border:1px solid #99b8d2;border-radius:50%;width:19px;height:19px;font-size:12px;color:#e2f1ff;margin-left:5px}
+.stat .stat-help:focus-visible{outline:2px solid white;outline-offset:2px}
+.roadmap{background:#f8fafc}
+#consulta,#indicadores,#resultados,#detalle{scroll-margin-top:16px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
