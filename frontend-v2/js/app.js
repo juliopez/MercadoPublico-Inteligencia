@@ -21,9 +21,27 @@ function formatTableValue(record,key){
  }
  return String(value);
 }
-function render(){
+function localFilterFields(){
+ const e=$('entidad').value;
+ return {state:e==='procesos'||e==='ordenescompra'?'estado':e==='ofertas'?'seleccionado':'validado',type:e==='procesos'?'modalidad':e==='ordenescompra'?'tipo_oc':null};
+}
+function refreshLocalFilters(){
+ const fields=localFilterFields();
+ for(const [id,key] of [['filtro-estado',fields.state],['filtro-modalidad',fields.type]]){
+  const select=$(id),old=select.value;
+  select.replaceChildren(new Option(id==='filtro-estado'?'Todos':'Todas',''));
+  if(key){for(const v of [...new Set(state.records.map(r=>String(r[key]??'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es')))select.add(new Option(v,v))}
+  select.disabled=!key;
+  select.value=[...select.options].some(o=>o.value===old)?old:'';
+ }
+}
+function filteredBlock(){
  const term=$('buscar').value.trim().toLocaleLowerCase('es');
- const selected=state.records.filter(r=>!term||Object.values(r).some(v=>String(v??'').toLocaleLowerCase('es').includes(term)));
+ const fields=localFilterFields(),statusValue=$('filtro-estado').value,typeValue=$('filtro-modalidad').value;
+ return state.records.filter(r=>(!term||Object.values(r).some(v=>String(v??'').toLocaleLowerCase('es').includes(term)))&&(!statusValue||String(r[fields.state]??'')===statusValue)&&(!typeValue||(fields.type&&String(r[fields.type]??'')===typeValue)));
+}
+function render(){
+ const selected=filteredBlock();
  const pages=Math.ceil(selected.length/state.perPage);
  state.page=Math.min(state.page,Math.max(0,pages-1));
  const current=selected.slice(state.page*state.perPage,(state.page+1)*state.perPage);
@@ -194,7 +212,7 @@ async function loadChunk(index){
   state.cache.set(index,rows);
   // Cache acotada a los bloques cercanos.
   while(state.cache.size>3)state.cache.delete(state.cache.keys().next().value);
-  state.chunkIndex=index;state.records=rows;state.page=0;render();
+  state.chunkIndex=index;state.records=rows;state.page=0;refreshLocalFilters();render();
   $('stat-registros').textContent=Number(state.total).toLocaleString('es-CL');
   status('Bloque '+(index+1)+' de '+parts.length+' cargado. Búsqueda limitada al bloque visible; '+Number(state.total).toLocaleString('es-CL')+' registros publicados en este período.');
  }catch(e){if(token===state.token){state.records=[];render();status('Error al cargar: '+e.message)}}
@@ -205,7 +223,7 @@ async function consult(){
  const info=state.manifest.periodos.find(p=>p.periodo===period);
  const parts=info?.partes?.[entity];
  if(!Array.isArray(parts)){status('Entidad no publicada para este período.');return}
- ++state.token;state.cache.clear();state.parts=parts;state.total=info.conteos?.[entity]??0;state.records=[];state.page=0;closeDetail();render();
+ ++state.token;state.cache.clear();state.parts=parts;state.total=info.conteos?.[entity]??0;state.records=[];state.page=0;refreshLocalFilters();closeDetail();render();
  $('stat-registros').textContent=Number(state.total).toLocaleString('es-CL');
  $('consultar').disabled=false;
  if(!parts.length){status('La entidad está publicada, pero no registra filas en este período.');return}
@@ -228,11 +246,13 @@ async function init(){
   status(payload.periodos.length?'Seleccione un período y una entidad.':'Frontend v2 preparado. Aún no se han publicado extractos MER v2; la versión 1 sigue disponible.');
  }catch(e){status('Catálogo v2 todavía no publicado: '+e.message)}
 }
-$('periodo').addEventListener('change',()=>{$('stat-periodo').textContent=$('periodo').value||'—';++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;closeDetail();render()});
+$('periodo').addEventListener('change',()=>{$('stat-periodo').textContent=$('periodo').value||'—';++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;refreshLocalFilters();closeDetail();render()});
 $('detalle-cerrar').addEventListener('click',closeDetail);
 $('buscar').addEventListener('input',()=>{state.page=0;render()});
+for(const id of ['filtro-estado','filtro-modalidad'])$(id).addEventListener('change',()=>{state.page=0;render()});
+$('limpiar-filtros').addEventListener('click',()=>{$('buscar').value='';$('filtro-estado').value='';$('filtro-modalidad').value='';state.page=0;render()});
 $('consultar').addEventListener('click',consult);
 $('entidad').addEventListener('change',()=>{++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;closeDetail();render()});
 $('prev').addEventListener('click',()=>{if(state.page===0&&state.chunkIndex>0)loadChunk(state.chunkIndex-1);else{state.page--;render()}});
-$('next').addEventListener('click',()=>{const count=state.records.filter(r=>!$('buscar').value.trim()||Object.values(r).some(v=>String(v??'').toLocaleLowerCase('es').includes($('buscar').value.trim().toLocaleLowerCase('es')))).length;if((state.page+1)*state.perPage>=count&&state.chunkIndex<state.parts.length-1)loadChunk(state.chunkIndex+1);else{state.page++;render()}});
+$('next').addEventListener('click',()=>{const count=filteredBlock().length;if((state.page+1)*state.perPage>=count&&state.chunkIndex<state.parts.length-1)loadChunk(state.chunkIndex+1);else{state.page++;render()}});
 init();
