@@ -35,6 +35,7 @@ jobs:
            assert meta['procesos_publicados']<=p['conteos']['procesos']
            assert meta['ofertas']<=p['conteos']['ofertas']
            for entity in ('proveedor','organismo'):
-            assert (root/'participacion'/month/entity).is_dir()
+            expected=p['conteos']['ofertas' if entity=='proveedor' else 'procesos']
+            if expected:assert (root/'participacion'/month/entity).is_dir()
            print('PARTICIPACION_VERIFICADA',month)
           PY
