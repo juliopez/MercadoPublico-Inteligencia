@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "periodo": "2026-09",
+  "entidad": "ofertas",
+  "campo_actor": "proveedor",
+  "campo_monto": "monto_ofertado_clp",
+  "registros": 398018,
+  "registros_identificados": 398018,
+  "actores": 19359,
+  "archivos": 256,
+  "nota": "Cifras descriptivas por entidad/mes; registros y montos no equivalen a operaciones únicas ni adjudicaciones verificadas."
+}

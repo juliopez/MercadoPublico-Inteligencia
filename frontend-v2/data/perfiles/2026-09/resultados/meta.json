@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "periodo": "2026-09",
+  "entidad": "resultados",
+  "campo_actor": "adjudicatario",
+  "campo_monto": "monto_adjudicado_clp",
+  "registros": 48637,
+  "registros_identificados": 48637,
+  "actores": 11852,
+  "archivos": 256,
+  "nota": "Cifras descriptivas por entidad/mes; registros y montos no equivalen a operaciones únicas ni adjudicaciones verificadas."
+}
