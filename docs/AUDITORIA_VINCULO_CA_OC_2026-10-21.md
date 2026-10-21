@@ -45,3 +45,15 @@ GitHub Actions de publicación [#39694526927](https://github.com/juliopez/Mercad
 **Caso principal:** `839-4-COT26` tenía candidato `839-10-AG26` por unidad 839 y proveedor CAPACITACIONES ATRÉVETE SPA, por $1.650.000. Se espera que aparezca como *candidato* y no en «OC vinculadas» hasta obtener referencia oficial. La consulta web abierta no permitió obtener una ficha oficial verificable para esos dos códigos; **la validación externa sigue pendiente**. La mejora no resuelve por sí sola la identificación legal sin RUT ni la conciliación de referencias oficiales.
 
 **Pendiente:** prueba visual del usuario y cotejo en fuente oficial antes de marcar cualquier OC como vinculada; valorar fechas, monto ofertado versus monto OC, identidad de unidad y posibles homónimos. Auditoría integral V2 permanece pendiente.
+
+## Verificación oficial puntual ejecutada (21-10-2026)
+
+Se creó `scripts/verificar_oficial_ca_oc_v2.py` y el workflow `.github/workflows/verificar-oficial-ca-oc-v2.yml`, que utilizan `CHILECOMPRA_TICKET` solo como secreto del job, sin exponerlo. Se consultaron exclusivamente `839-4-COT26` en API v2 Compra Ágil y `839-10-AG26` en API v1 de órdenes de compra; no hubo escrituras en Sheets, ETL, históricos o índices.
+
+**Resultado registrado:** [informe JSON](auditorias/VERIFICACION_OFICIAL_839-4-COT26_2026-10-21.json), [ejecución GitHub Actions #39695604848](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39695604848) **success**:
+
+- API Compra Ágil HTTP **200**, pero no entregó en los campos públicos inspeccionados un código OC coincidente con `839-10-AG26`.
+- API OC consultada por código devolvió HTTP **203**; no se obtuvo una confirmación de referencia cruzada.
+- Dictamen automático: `pendiente_verificacion`, `coincidencia_oficial=false`, `verificacion_suficiente_para_vincular=false`.
+
+**Decisión técnica:** la OC permanece como candidata no verificada y **no** se añade a las OC de código de proceso confirmado. El HTTP 203 no equivale a ausencia de OC ni a una respuesta probatoria. El siguiente paso requiere cotejar la ficha y documentación oficial de ambos códigos (por ejemplo, detalle y origen de la OC en el portal) o disponer de un endpoint que devuelva explícitamente su vinculación.
