@@ -98,7 +98,7 @@ async function showContextProfile(field,name){
  for(const [target,label] of targets){
   const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=label;
   button.addEventListener('click',()=>{
-   const words=(name.normalize('NFD').replace(/\\p{M}/gu,'').match(/[a-z0-9]+/gi)||[]).filter(w=>w.length>=3);
+   const words=(name.normalize('NFD').replace(/\p{M}/gu,'').match(/[a-z0-9]+/gi)||[]).filter(w=>w.length>=3);
    if(!words.length){status('No existen palabras de 3 caracteres suficientes para esta búsqueda.');return}
    $('entidad').value=target;$('entidad').dispatchEvent(new Event('change'));
    $('busqueda-global-texto').value=words.join(' ');
