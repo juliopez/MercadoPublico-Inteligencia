@@ -50,3 +50,5 @@
 ## Regla editorial
 
 La información se consulta en este orden: **README vigente → decisiones vigentes → runbook/procedimiento específico → código y configuración comprobados → historial**. No afirmar «ejecutado» por tener solo código o CI aprobado. Al modificar documentación, revisar enlaces y no borrar material histórico sin conservar una copia íntegra.
+
+- [Mejoras integrales de experiencia V2 — 21-10-2026](MEJORAS_UX_INTEGRALES_V2_2026-10-21.md): nueve mejoras aprobadas (búsqueda, filtros, navegación, progreso, fichas, contexto, accesibilidad, moneda CLP y códigos) y sus límites de validación.
