@@ -8,8 +8,9 @@ function textCell(value){const td=document.createElement('td');td.textContent=St
 function render(){
  const term=$('buscar').value.trim().toLocaleLowerCase('es');
  const selected=state.records.filter(r=>!term||Object.values(r).some(v=>String(v??'').toLocaleLowerCase('es').includes(term)));
- const pages=Math.ceil(selected.length/state.perPage);state.page=Math.min(state.page,Math.max(0,pages-1));
- const current=selected.slice(state.page*state.perPage,(state.page+1)*state.perPage);
+ const pageSize=$('entidad').value==='ofertas'?10:25;
+ const pages=Math.ceil(selected.length/pageSize);state.page=Math.min(state.page,Math.max(0,pages-1));
+ const current=selected.slice(state.page*pageSize,(state.page+1)*pageSize);
  const fields=current.length?Object.keys(current[0]).slice(0,16):[];
  $('columns').replaceChildren();const tr=document.createElement('tr');
  for(const f of fields){const th=document.createElement('th');th.textContent=f;tr.append(th)}
@@ -61,6 +62,7 @@ async function init(){
 $('periodo').addEventListener('change',()=>{$('stat-periodo').textContent=$('periodo').value||'—';++state.token;state.records=[];state.page=0;render()});
 $('buscar').addEventListener('input',()=>{state.page=0;render()});
 $('consultar').addEventListener('click',consult);
+$('entidad').addEventListener('change',()=>{++state.token;state.records=[];state.page=0;render()});
 $('prev').addEventListener('click',()=>{state.page--;render()});
 $('next').addEventListener('click',()=>{state.page++;render()});
 init();
