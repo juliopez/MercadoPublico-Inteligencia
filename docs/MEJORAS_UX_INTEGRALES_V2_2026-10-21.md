@@ -23,3 +23,9 @@ Antes de intervenir: README, índice documental, decisiones técnicas vigentes, 
 
 ## Qué falta
 Prueba visual/funcional en navegador de los nueve cambios con códigos reales de Procesos, Compra Ágil y OC; verificar un importe, un enlace y el regreso al contexto para cada tipo. La auditoría integral de prioridad 5 acordada anteriormente sigue **pendiente como tarea independiente**: no confundir estas pruebas automatizadas con una auditoría completa de rendimiento, accesibilidad o equivalencia funcional V1/V2.
+
+
+## Corrección de experiencia posterior a revisión — 21-10-2026
+El usuario reportó que al pulsar «Buscar en todo el período» no aparecían resultados y era necesario desplegar «Exploración por bloques» y ejecutar «Consultar». Causa confirmada en código: `ir-busqueda-global` solo hacía `scrollIntoView` y `focus`; **no ejecutaba `consult()` ni `search()`**. Se corrigió la expectativa: el botón principal se rotuló **«Mostrar registros del período»** y ejecuta `await consult()`, mostrando automáticamente los primeros hasta 1.000 registros del mes/entidad, paginados de a 10, y desplazándose a Resultados. No se afirma que este botón liste simultáneamente los millones de registros; para buscar un código/término en todo el mes se usa «Buscar en todo el período» del buscador global indexado. La exploración avanzada permanece opcional y la carga sigue siendo selectiva.
+
+Archivos: `frontend-v2/index.html`, `frontend-v2/js/app.js`, `tests/test_accion_consulta_v2.cjs` y workflow de UX integral. GitHub Actions [#39680221155](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39680221155) completó con `success`: pruebas de sintaxis, nueve mejoras y verificación de llamada directa a `consult()` sin abrir panel avanzado. Validación manual del navegador pendiente.
