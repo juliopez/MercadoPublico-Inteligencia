@@ -233,6 +233,22 @@ function exportBlockCSV(){
 }
 function showDetail(record){
  const area=$('detalle'), body=$('detalle-campos');
+ const summary=$('detalle-resumen');summary.replaceChildren();
+ const entity=$('entidad').value;
+ const priority={procesos:['codigo','nombre','organismo_comprador','estado','monto_disponible_clp'],
+ ofertas:['codigo','proveedor','seleccionado','monto_ofertado_clp'],
+ resultados:['codigo','adjudicatario','monto_adjudicado_clp'],
+ ordenescompra:['codigo_oc','codigo_proceso','proveedor','estado','monto_total_oc_clp']}[entity]||[];
+ for(const key of priority){
+  const val=record[key];if(val===undefined||val===null||String(val).trim()==='')continue;
+  const item=document.createElement('div');item.className='detail-highlight';
+  const title=document.createElement('small');title.textContent=key.replaceAll('_',' ');
+  const value=document.createElement('strong');
+  if(codeField(key))value.append(displayedCell(record,key).firstChild);
+  else value.textContent=moneyField(key)?moneyCLP(val):String(val);
+  item.append(title,value);summary.append(item);
+ }
+ $('detalle-secundario').open=false;
  body.replaceChildren();
  for(const [key,value] of Object.entries(record)){
   if($('entidad').value==='resultados'&&['validado','estado_verificacion_oc'].includes(key))continue;
@@ -273,7 +289,7 @@ function showDetail(record){
  linked.hidden=$('entidad').value!=='procesos';
  if(!linked.hidden)loadRelated(code,$('periodo').value);
 }
-function closeDetail(){detailRequest++;$('detalle').hidden=true;$('detalle-campos').replaceChildren();$('detalle-relaciones').hidden=true;}
+function closeDetail(){detailRequest++;$('detalle-resumen').replaceChildren();$('detalle').hidden=true;$('detalle-campos').replaceChildren();$('detalle-relaciones').hidden=true;}
 
 
 // Los índices solo contienen código → archivos públicos. No cargamos el mes completo.
@@ -472,8 +488,9 @@ window.openIndexedRecord=async function(part,row,period,entity){
   status('El período o la entidad cambiaron. Ejecute nuevamente la búsqueda.');
   return;
  }
- if(!Number.isInteger(part)||part<0||part>=state.parts.length||!Number.isInteger(row)||row<0)return;
+ if(!Number.isInteger(part)||part<0||!Number.isInteger(row)||row<0)return;
  if(!state.parts.length)await consult();
+ if(part>=state.parts.length)return;
  const token=state.token;
  await loadChunk(part);
  if(token===state.token&&state.chunkIndex===part&&state.records[row])showDetail(state.records[row]);
