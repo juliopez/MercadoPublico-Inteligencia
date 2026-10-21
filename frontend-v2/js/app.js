@@ -127,15 +127,25 @@ async function showContextProfile(field,name){
  header.append(p);
  const relevant=tableColumns[entity]?.slice(0,5)||[];
  const head=document.createElement('tr');
- for(const [,label] of relevant){const th=document.createElement('th');th.textContent=label;head.append(th)}
- $('perfil-columnas').replaceChildren(head);
- const body=document.createDocumentFragment();
- for(const record of rows.slice(0,25)){
-  const tr=document.createElement('tr');
-  for(const [key] of relevant)tr.append(textCell(formatTableValue(record,key)));
-  body.append(tr);
+ let profileSort={key:null,direction:1};
+ const tableBody=$('perfil-filas');
+ function paintProfile(){
+  head.replaceChildren();
+  for(const [key,label] of relevant){
+   const th=document.createElement('th'),button=document.createElement('button');button.type='button';button.className='sort-heading';
+   button.textContent=label+(profileSort.key===key?(profileSort.direction===1?' ↑':' ↓'):' ⇅');
+   button.addEventListener('click',()=>{profileSort.direction=profileSort.key===key?-profileSort.direction:1;profileSort.key=key;paintProfile()});
+   th.append(button);head.append(th);
+  }
+  const body=document.createDocumentFragment();
+  const sorted=profileSort.key?[...rows].sort((a,b)=>profileSort.direction*compareRows(a,b,profileSort.key)):rows;
+  for(const record of sorted.slice(0,25)){
+   const tr=document.createElement('tr');for(const [key] of relevant)tr.append(textCell(formatTableValue(record,key)));body.append(tr);
+  }
+  tableBody.replaceChildren(body);
  }
- $('perfil-filas').replaceChildren(body);
+ $('perfil-columnas').replaceChildren(head);
+ paintProfile();
  if(rows.length>25){const more=document.createElement('p');more.className='muted';more.textContent='Se muestran los primeros 25 registros del bloque.';header.append(more)}
  area.hidden=false;area.scrollIntoView({behavior:'smooth',block:'start'});
  const extra=document.createElement('p');extra.className='muted';
@@ -259,9 +269,10 @@ function renderLinkedRecords(target,items,kind){
  if(!items.length)return;
  const table=document.createElement('table'),head=document.createElement('tr'),body=document.createElement('tbody');
  const fields=kind==='ofertas'?['proveedor','monto_ofertado_clp','seleccionado']:
-  kind==='resultados'?['adjudicatario','monto_adjudicado_clp','validado','estado_verificacion_oc']:
+  kind==='resultados'?['adjudicatario','monto_adjudicado_clp','monto_oferta_seleccionada_clp']:
   ['codigo_oc','proveedor','monto_total_oc_clp','estado'];
- for(const col of fields){const th=document.createElement('th');th.textContent=col.replaceAll('_',' ');head.append(th)}
+ let relatedSort={key:null,direction:1};
+ for(const col of fields){const th=document.createElement('th');const button=document.createElement('button');button.type='button';button.className='sort-heading';button.textContent=col.replaceAll('_',' ')+' ⇅';button.addEventListener('click',()=>{relatedSort.direction=relatedSort.key===col?-relatedSort.direction:1;relatedSort.key=col;page=0;draw()});th.append(button);head.append(th)}
  const thead=document.createElement('thead');thead.append(head);table.append(thead,body);
  container.append(table);
  const nav=document.createElement('div');nav.className='pagination';
@@ -272,7 +283,8 @@ function renderLinkedRecords(target,items,kind){
  let page=0;const perPage=10,pages=Math.ceil(items.length/perPage);
  function draw(){
   body.replaceChildren();
-  for(const item of items.slice(page*perPage,(page+1)*perPage)){
+  const orderedItems=relatedSort.key?[...items].sort((a,b)=>relatedSort.direction*compareRows(a,b,relatedSort.key)):items;
+  for(const item of orderedItems.slice(page*perPage,(page+1)*perPage)){
    const tr=document.createElement('tr');
    for(const field of fields)tr.append(textCell(item[field]));
    body.append(tr);
