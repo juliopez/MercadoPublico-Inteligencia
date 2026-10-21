@@ -334,9 +334,9 @@ function renderLinkedRecords(target,items,kind){
  container.append(description);
  if(!items.length)return;
  const table=document.createElement('table'),head=document.createElement('tr'),body=document.createElement('tbody');
- const fields=kind==='ofertas'?['proveedor','monto_ofertado_clp','seleccionado']:
-  kind==='resultados'?['adjudicatario','monto_adjudicado_clp','monto_oferta_seleccionada_clp']:
-  ['codigo_oc','proveedor','monto_total_oc_clp','estado'];
+ const fields=kind==='ofertas'?['_periodo_fuente','proveedor','monto_ofertado_clp','seleccionado']:
+  kind==='resultados'?['_periodo_fuente','adjudicatario','monto_adjudicado_clp','monto_oferta_seleccionada_clp']:
+  ['_periodo_fuente','codigo_oc','proveedor','monto_total_oc_clp','estado'];
  let relatedSort={key:null,direction:1};
  for(const col of fields){const th=document.createElement('th');const button=document.createElement('button');button.type='button';button.className='sort-heading';button.textContent=col.replaceAll('_',' ')+' ⇅';button.addEventListener('click',()=>{relatedSort.direction=relatedSort.key===col?-relatedSort.direction:1;relatedSort.key=col;page=0;draw()});th.append(button);head.append(th)}
  const thead=document.createElement('thead');thead.append(head);table.append(thead,body);
@@ -365,34 +365,45 @@ function renderLinkedRecords(target,items,kind){
 async function loadRelated(code,period){
  const seq=++detailRequest;
  for(const target of ['detalle-ofertas','detalle-resultados','detalle-oc'])$(target).replaceChildren();
- $('detalle-relaciones-estado').textContent='Consultando relaciones indexadas…';
+ $('detalle-relaciones-estado').textContent='Buscando relaciones en todos los períodos publicados…';
  if(!code){$('detalle-relaciones-estado').textContent='Sin código de proceso para relacionar.';return}
  try{
-  let index=indexCache.get(period);
-  if(!index){
-   index=await readJsonPublic('data/indices/'+period+'.json');
-   if(index.periodo!==period||!index.entidades)throw Error('Índice incompatible');
-   indexCache.set(period,index);
+  const periods=(state.manifest?.periodos||[]).map(p=>p.periodo);
+  const accum={ofertas:[],resultados:[],ordenescompra:[]};
+  let checked=0,issues=[];
+  for(const month of periods){
+   if(seq!==detailRequest)return;
+   let index=indexCache.get(month);
+   if(!index){
+    try{
+     index=await readJsonPublic('data/indices/'+month+'.json');
+     if(index.periodo!==month||!index.entidades)throw Error('Índice incompatible');
+     indexCache.set(month,index);
+    }catch(e){issues.push(month);continue}
+   }
+   for(const [entity,key] of [['ofertas','codigo'],['resultados','codigo'],['ordenescompra','codigo_proceso']]){
+    const refs=index.entidades?.[entity]?.[code]||[];
+    const paths=[...new Set(refs.map(ref=>typeof ref==='number'?index.archivos?.[entity]?.[ref]:ref))];
+    for(const path of paths){
+     if(seq!==detailRequest)return;
+     if(!safePart(path,month,entity)){issues.push(month+'/'+entity);continue}
+     try{
+      const rows=await readJsonPublic(path);
+      if(!Array.isArray(rows))throw Error('Fragmento no válido');
+      for(const row of rows)if(String(row[key]||'').trim()===code)accum[entity].push({...row,_periodo_fuente:month});
+     }catch(e){issues.push(month+'/'+entity)}
+    }
+   }
+   checked++;
+   if(seq===detailRequest)$('detalle-relaciones-estado').textContent='Revisados '+checked+' de '+periods.length+' períodos públicos…';
   }
   if(seq!==detailRequest)return;
-  let loaded=0;
-  for(const [entity,target,key] of [['ofertas','detalle-ofertas','codigo'],['resultados','detalle-resultados','codigo'],['ordenescompra','detalle-oc','codigo_proceso']]){
-   const refs=index.entidades?.[entity]?.[code]||[];
-   const paths=refs.map(ref=>typeof ref==='number'?index.archivos?.[entity]?.[ref]:ref);
-   const records=[];
-   for(const path of paths){
-    if(!safePart(path,period,entity))throw Error('Ruta vinculada no válida');
-    const chunk=await readJsonPublic(path);
-    if(!Array.isArray(chunk))throw Error('Fragmento inválido');
-    for(const item of chunk)if(String(item[key]||'').trim()===code)records.push(item);
-    if(seq!==detailRequest)return;
-   }
-   renderLinkedRecords(target,records,entity);
-   loaded+=records.length;
-  }
-  if(seq===detailRequest)$('detalle-relaciones-estado').textContent='Relaciones disponibles: '+loaded.toLocaleString('es-CL')+' registros públicos asociados al código '+code+'.';
+  for(const [entity,target] of [['ofertas','detalle-ofertas'],['resultados','detalle-resultados'],['ordenescompra','detalle-oc']])
+   renderLinkedRecords(target,accum[entity],entity);
+  const total=Object.values(accum).reduce((n,rows)=>n+rows.length,0);
+  $('detalle-relaciones-estado').textContent=total.toLocaleString('es-CL')+' registros vinculados al código '+code+' en '+checked+' períodos consultados'+(issues.length?'; '+issues.length+' fuentes no disponibles (cobertura parcial)':'')+'.';
  }catch(error){
-  if(seq===detailRequest)$('detalle-relaciones-estado').textContent='No fue posible consultar las relaciones indexadas: '+error.message+'. La ficha básica sigue disponible.';
+  if(seq===detailRequest)$('detalle-relaciones-estado').textContent='Error al consultar relaciones históricas: '+error.message;
  }
 }
 
