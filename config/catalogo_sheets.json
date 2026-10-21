@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "actualizado": "2026-10-20",
-  "arquitectura": "Google Sheets un archivo MER v2 por período + operativo API",
+  "arquitectura": "Google Sheets por período MER v2; ZIP diarios en mes operativo y Compra Ágil por flujo independiente",
   "carpetas": {
     "raiz": "1R5SDUh5n7XWxMYWWCRyIYqByMrAoPJ-H",
     "historicos": "1YC-1MT1QCnAvpKgDACCH-NKnV9caIFyW",
@@ -37,7 +37,13 @@
     "2026-10": {
       "tipo": "operativo",
       "id": "1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4",
-      "estado": "vacio_api_pendiente",
+      "estado": "dos_zip_cargados_y_verificados_COT_pendiente",
+      "filas": 111147
+    },
+    "2026-11": {
+      "tipo": "operativo",
+      "id": "1faLUhyB13Qty7dSNqbRHLCmpq-cxgW8bIOgPN0KCWnE",
+      "estado": "preparado_vacio_para_2026-11",
       "filas": 0
     }
   },
