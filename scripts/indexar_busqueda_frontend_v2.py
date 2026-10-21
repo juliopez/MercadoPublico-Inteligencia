@@ -6,7 +6,6 @@ en 64 particiones según el identificador de registro y se genera fuera de Sheet
 No modificar la carga del frontend hasta publicar y validar índices completos.
 """
 import argparse
-import hashlib
 import json
 import re
 import unicodedata
@@ -19,7 +18,6 @@ FIELDS = {
     "resultados": ("codigo", "adjudicatario"),
     "ordenescompra": ("codigo_oc", "codigo_proceso", "proveedor"),
 }
-SHARDS = 64
 
 def normalize(value):
     text = unicodedata.normalize("NFD", str(value or "").casefold())
@@ -43,7 +41,7 @@ def build(period, entity, root=ROOT):
     buckets = {}
     count = 0
     for part_id, relative in enumerate(parts):
-        if not re.fullmatch(rf"data/partes/{entity}/{period}/[a-z0-9_-]+\\.json", relative):
+        if not re.fullmatch(rf"data/partes/{entity}/{period}/[a-z0-9_-]+\.json", relative):
             raise ValueError("Ruta inválida: " + relative)
         records = json.loads((root / relative).read_text(encoding="utf-8"))
         if not isinstance(records, list):
