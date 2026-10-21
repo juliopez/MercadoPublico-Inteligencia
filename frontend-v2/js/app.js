@@ -1,7 +1,7 @@
 // MER v2: carga selectiva por período. No consulta Google Sheets desde el navegador.
 const $=id=>document.getElementById(id);
 const allowed=['procesos','ofertas','resultados','ordenescompra'];
-const state={manifest:null,records:[],page:0,perPage:10,token:0};
+const state={manifest:null,records:[],page:0,perPage:10,token:0,sort:{key:null,direction:1}};
 function status(message){$('status').textContent=message}
 function safePart(path,period,entity){return typeof path==='string'&&new RegExp('^data/partes/'+entity+'/'+period+'/[a-z0-9_-]+\\.json$').test(path)}
 function textCell(value){const td=document.createElement('td');td.textContent=String(value??'');return td}
@@ -40,8 +40,17 @@ function filteredBlock(){
  const fields=localFilterFields(),statusValue=$('filtro-estado').value,typeValue=$('filtro-modalidad').value;
  return state.records.filter(r=>(!term||Object.values(r).some(v=>String(v??'').toLocaleLowerCase('es').includes(term)))&&(!statusValue||String(r[fields.state]??'')===statusValue)&&(!typeValue||(fields.type&&String(r[fields.type]??'')===typeValue)));
 }
+function compareRows(a,b,key){
+ const x=a[key],y=b[key];
+ if(x==null||x==='')return y==null||y===''?0:1;
+ if(y==null||y==='')return -1;
+ if(key.endsWith('_clp'))return Number(String(x).replaceAll('.','').replace(',','.'))-Number(String(y).replaceAll('.','').replace(',','.'));
+ return String(x).localeCompare(String(y),'es',{numeric:true,sensitivity:'base'});
+}
+function ordered(rows){if(!state.sort.key)return rows;return [...rows].sort((a,b)=>state.sort.direction*compareRows(a,b,state.sort.key))}
+function sortLocal(key){state.sort.direction=state.sort.key===key?-state.sort.direction:1;state.sort.key=key;state.page=0;render()}
 function render(){
- const selected=filteredBlock();
+ const selected=ordered(filteredBlock());
  const pages=Math.ceil(selected.length/state.perPage);
  state.page=Math.min(state.page,Math.max(0,pages-1));
  const current=selected.slice(state.page*state.perPage,(state.page+1)*state.perPage);
@@ -50,7 +59,7 @@ function render(){
  $('resultados').classList.toggle('process-table',entity==='procesos');
  $('columns').replaceChildren();
  const header=document.createElement('tr');
- for(const [,label] of fields){const th=document.createElement('th');th.textContent=label;header.append(th)}
+ for(const [key,label] of fields){const th=document.createElement('th');const button=document.createElement('button');button.type='button';button.className='sort-heading';button.textContent=label+(state.sort.key===key?(state.sort.direction===1?' ↑':' ↓'):' ⇅');button.addEventListener('click',()=>sortLocal(key));th.append(button);header.append(th)}
  const actions=document.createElement('th');actions.textContent='Acciones';header.append(actions);$('columns').append(header);
  $('rows').replaceChildren();
  for(const record of current){
@@ -365,6 +374,17 @@ function renderMonthlyEvolution(){
  const entity=$('entidad').value;
  const items=state.manifest.periodos.map(p=>({period:p.periodo,n:Number(p.conteos?.[entity]||0)}));
  const max=Math.max(1,...items.map(p=>p.n));
+ const summary=$('evolucion-resumen');summary.replaceChildren();
+ const total=items.reduce((a,b)=>a+b.n,0);
+ const complete=items.filter(x=>x.period<'2026-10');
+ const average=complete.length?Math.round(complete.reduce((a,b)=>a+b.n,0)/complete.length):0;
+ const latestComplete=complete.at(-1),before=complete.at(-2);
+ const change=latestComplete&&before&&before.n?((latestComplete.n/before.n-1)*100).toFixed(1)+' %':'—';
+ for(const [label,value] of [['Registros publicados',total.toLocaleString('es-CL')],['Promedio mensual jun–sep',average.toLocaleString('es-CL')],['Variación último mes completo',change],['Mes más reciente',items.at(-1)?.period||'—']]){
+  const box=document.createElement('div');box.className='evolution-metric';
+  const small=document.createElement('small');small.textContent=label;
+  const strong=document.createElement('strong');strong.textContent=value;box.append(small,strong);summary.append(box);
+ }
  for(const item of items){
   const row=document.createElement('div');row.className='evolution-row';
   const label=document.createElement('span');label.textContent=item.period;
@@ -372,7 +392,7 @@ function renderMonthlyEvolution(){
   const bar=document.createElement('div');bar.className='evolution-fill';bar.style.width=(item.n/max*100).toFixed(1)+'%';
   track.append(bar);
   const count=document.createElement('strong');count.textContent=item.n.toLocaleString('es-CL');
-  row.append(label,track,count);container.append(row);
+  const delta=document.createElement('span');const previous=items[items.indexOf(item)-1];delta.textContent=previous?.n?((item.n/previous.n-1)*100).toFixed(1)+' %':'—';row.append(label,track,count,delta);container.append(row);
  }
 }
 async function init(){
@@ -387,7 +407,7 @@ async function init(){
    if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(item.periodo))continue;
    const option=document.createElement('option');option.value=item.periodo;option.textContent=item.periodo+' · '+(item.tipo==='historico'?'Histórico':'Operativo');$('periodo').append(option)
   }
-  $('stat-fecha').textContent=payload.fecha_publicacion||'Pendiente';
+  const date=new Date(payload.fecha_publicacion);$('stat-fecha').textContent=Number.isNaN(date.getTime())?(payload.fecha_publicacion||'Pendiente'):new Intl.DateTimeFormat('es-CL',{timeZone:'America/Santiago',dateStyle:'long',timeStyle:'short'}).format(date)+' (Chile)';
   $('consultar').disabled=payload.periodos.length===0;
   status(payload.periodos.length?'Seleccione un período y una entidad.':'Frontend v2 preparado. Aún no se han publicado extractos MER v2; la versión 1 sigue disponible.');
  }catch(e){status('Catálogo v2 todavía no publicado: '+e.message)}
