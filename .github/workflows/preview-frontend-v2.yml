@@ -9,6 +9,7 @@ on:
       - 'frontend-v2/js/**'
       - 'frontend-v2/data/catalogo-publico.json'
       - 'frontend-v2/data/partes/**'
+      - 'frontend-v2/data/indices/**'
       - '.github/workflows/preview-frontend-v2.yml'
 permissions:
   contents: read
@@ -26,6 +27,8 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}frontend-v2/
     steps:
       - uses: actions/checkout@v4
+      - name: Comprobar sintaxis del JavaScript antes del despliegue
+        run: node --check frontend-v2/js/app.js
       - name: Validar catálogo, integridad de partes y aislamiento de v1
         run: |
           python3 - <<'PY'
