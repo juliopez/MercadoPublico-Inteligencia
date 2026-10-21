@@ -1,0 +1,17 @@
+{
+  "version": 3,
+  "periodo": "2026-09",
+  "entidad": "ordenescompra",
+  "conteo": 147966,
+  "fragmentos": 148,
+  "tipo": "prefijo_palabra_agrupado",
+  "longitud_prefijo": 3,
+  "particiones": 4136,
+  "grupos": 603,
+  "formato": "referencias_fragmento_fila",
+  "campos": [
+    "codigo_oc",
+    "codigo_proceso",
+    "proveedor"
+  ]
+}
