@@ -1,0 +1,46 @@
+name: Publicar índice inicial búsqueda V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/publicar-busqueda-v2-inicial.yml'
+permissions:
+  contents: write
+concurrency:
+  group: publicar-indice-busqueda-v2
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generar índice público de Procesos junio 2026
+        run: python scripts/indexar_busqueda_frontend_v2.py --periodo 2026-06 --entidad procesos
+      - name: Validar metadatos contra catálogo
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          base=Path('frontend-v2/data')
+          catalog=json.loads((base/'catalogo-publico.json').read_text())
+          item=next(p for p in catalog['periodos'] if p['periodo']=='2026-06')
+          meta=json.loads((base/'busqueda/2026-06/procesos/meta.json').read_text())
+          assert meta['version']==3 and meta['conteo']==item['conteos']['procesos']
+          assert meta['fragmentos']==len(item['partes']['procesos'])
+          print('INDICE_VALIDADO',meta['conteo'],meta['grupos'])
+          PY
+      - name: Publicar únicamente índice inicial
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frontend-v2/data/busqueda/2026-06/procesos/
+          if ! git diff --cached --quiet; then
+            git commit -m "data(v2): publicar índice de búsqueda procesos junio 2026"
+            git push
+          fi
