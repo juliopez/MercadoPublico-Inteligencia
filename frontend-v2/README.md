@@ -15,16 +15,16 @@
 | Capacidad v1 | Estado previsto en v2 |
 |---|---|
 | Búsqueda y filtros de procesos | Base de consulta incorporada; filtros especializados pendientes |
-| Detalle de licitación y enlace al portal | Pendiente |
+| Detalle de licitación y enlace al portal | Ficha básica de registro habilitada; enlace oficial para procesos; relaciones pendientes |
 | Ofertas asociadas y trazabilidad de resultados | Pendiente |
 | Comparar empresas | Pendiente |
 | Perfil de organismo comprador | Pendiente |
 | Perfil de proveedor/empresa | Pendiente |
-| Órdenes de compra | Base de entidad y tabla incorporada; filtros y detalle pendientes |
+| Órdenes de compra | Tabla y ficha de detalle básico habilitadas; relaciones y filtros avanzados pendientes |
 | Mis favoritos | Pendiente |
 | Exportación CSV | Pendiente |
 | Indicadores, recuentos y fecha de actualización | Base incorporada, depende de extractos v2 |
-| Paginación | 10 resultados por página para Ofertas; 25 para otras entidades |
+| Paginación | **10 registros por página en las cuatro entidades** |
 | Seguridad de rutas de fragmentos | Restricción a carpeta y patrón por período/entidad |
 
 ## Contrato inicial de datos v2
@@ -45,7 +45,7 @@
   ]
 }
 ```
-**Ejemplo estructural, no datos reales**. No incorporar períodos sin archivos y recuentos verificados. El lector hace peticiones **solo al seleccionar** período y entidad, comprueba rutas y recuentos, limita vista a 25 filas, y no usa credenciales ni consulta Google Sheets desde el navegador. La primera implementación todavía acumula los fragmentos de la **entidad seleccionada** en memoria; deberá paginar/buscar mediante índices antes de publicar grandes volúmenes.
+**Ejemplo estructural, no datos reales**. No incorporar períodos sin archivos y recuentos verificados. El lector hace peticiones **solo al seleccionar** período y entidad, comprueba rutas y recuentos, limita vista a 10 filas, y no usa credenciales ni consulta Google Sheets desde el navegador. La primera implementación todavía acumula los fragmentos de la **entidad seleccionada** en memoria; deberá paginar/buscar mediante índices antes de publicar grandes volúmenes.
 
 ## Continuidad del Plan Maestro
 
@@ -72,3 +72,10 @@ Se creó el flujo [`preview-frontend-v2.yml`](../.github/workflows/preview-front
 Primera ejecución: [GitHub Actions #39639890184](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39639890184). En la revisión inicial quedó en estado `waiting` por autorización del entorno protegido `github-pages`; la API muestra despliegue pendiente y `current_user_can_approve=false`. **No atribuir éxito hasta que el workflow termine y se compruebe la URL en navegador.** No desactivar ni eludir aprobaciones del entorno para acelerar la publicación.
 
 URL **prevista**, no verificada todavía: `https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/`. Cuando la aprobación se resuelva, verificar catálogo 2026-10, Procesos 1.558, Ofertas 0, Resultados 0 y OC 91.070, paginación 10/25, y conservar funcionamiento del enlace a v1.
+
+## Actualización de interfaz — navegación de 10 registros y detalle (21/10/2026)
+
+- Los resultados visibles pasan a **10 por página** para Procesos, Ofertas, Resultados y Órdenes de Compra; es paginación de interfaz, **no implica** descargar solo 10 registros desde la red. La mejora de carga por índices sigue pendiente.
+- La acción **Ver detalle** presenta una ficha con las columnas públicas del registro exportado, en el mismo sitio. Para Procesos incorpora vínculo al detalle oficial de Mercado Público con HTTPS y dominio permitido; si no existe URL compatible se construye la ficha desde el código cuando cumple el formato.
+- No es todavía equivalente a la ficha completa de v1: **ofertas relacionadas, resultados vinculados, perfiles, comparación de empresas, favoritos y CSV siguen pendientes**. No declarar migración completa de la v1.
+- El código y los documentos de producción v1 siguen intactos. Validar la interacción real en navegador tras despliegue de Pages.
