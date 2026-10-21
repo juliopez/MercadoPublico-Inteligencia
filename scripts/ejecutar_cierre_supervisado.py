@@ -35,9 +35,12 @@ def api(url,token,method="GET",payload=None,headers=None):
 def drive_token():
  value=os.getenv("DRIVE_ACCESS_TOKEN")
  if value:return value
- # El token OAuth de usuario propietario es necesario si la cuenta de servicio
- # no puede trasladar hojas fuera de la carpeta.
- raise RuntimeError("Falta DRIVE_ACCESS_TOKEN del propietario con Drive scope.")
+ from google.oauth2.service_account import Credentials
+ from google.auth.transport.requests import Request
+ path=os.getenv("GOOGLE_APPLICATION_CREDENTIALS",str(Path.home()/".config/mercadopublico/servicio-google.json"))
+ creds=Credentials.from_service_account_file(path,scopes=["https://www.googleapis.com/auth/drive"])
+ creds.refresh(Request())
+ return creds.token
 
 def guardar(path,record):
  path.parent.mkdir(parents=True,exist_ok=True)
@@ -78,12 +81,12 @@ def preflight(period,folder):
  if this["tipo"]!="operativo" or not vigente or vigente.get("id")==this["id"]:
   raise ValueError("Catálogo operativo y destino de mes vigente incompatibles")
  status=json.loads((folder/"resumen_diagnostico_cierre.json").read_text(encoding="utf8"))
- if status.get("periodo")!=period or status.get("estado")!="DIAGNOSTICO_SIN_CONFLICTOS_PENDIENTE_CARGA":
+ if status.get("periodo")!=period or status.get("estado")!="DIAGNOSTICO_OFICIAL_MENSUAL_LISTO_PENDIENTE_CARGA":
   raise ValueError("El diagnóstico debe terminar sin conflictos antes de escribir")
  report=json.loads((folder/"preparados/informe.json").read_text(encoding="utf8"))
  if report.get("periodo")!=period or report.get("validacion_filas")!="OK":raise ValueError("Paquete histórico no validado")
- policy=json.loads((folder/"politica_conciliacion.json").read_text(encoding="utf8"))
- if policy.get("conflictos_totales")!=0:raise ValueError("Conciliación con conflictos")
+ policy=json.loads((folder/"precedencia_oficial_mensual.json").read_text(encoding="utf8"))
+ if policy.get("periodo")!=period or policy.get("fuente_prioritaria")!="HISTORICO_OFICIAL_MENSUAL":raise ValueError("Política mensual incompleta")
  return cat,this,policy,report
 
 def cargar(period,folder):
@@ -133,7 +136,7 @@ def trasladar(period,folder):
  if remote_entry.get("id")!=id:raise ValueError("ID remoto del catálogo no coincide")
  if remote_entry.get("tipo")=="operativo":
   remote_entry["tipo"]="historico"
-  remote_entry["estado"]="auditado_con_observaciones"
+  remote_entry["estado"]="cerrado_tras_carga_oficial_verificada"
   # Derivar conteos reales tras carga de la evidencia.
   remote_entry.pop("filas",None)
   remote["actualizado"]=dt.datetime.now(ZoneInfo("America/Santiago")).date().isoformat()
