@@ -196,3 +196,19 @@ El cierre se **bloquea** si una tabla cambia, si falta su huella porque el infor
 La lectura remota debe realizarse inmediatamente antes de una carga autorizada. **No equivale a una transacción**: otro escritor aún podría modificar Sheets después de la comprobación. Antes de habilitar el cargador real falta implantar exclusión mutua con el flujo de escritura, auditoría final, respaldo de las seis tablas, política para registros modificados, restauración y verificación posterior.
 
 **Estado:** código publicado sin prueba de integración sobre octubre; cron diario sin cambios y cron mensual sin instalar. Primera validación supervisada el 10 de noviembre.
+
+## Octava etapa: exclusión mutua entre ETL diario y preparación del cierre
+
+El ejecutor **diario** `scripts/ubuntu_etl_dos_fuentes.sh` ahora adquiere `logs/.mer_escritura_compartida.lock` mediante `flock -n`, además de conservar su bloqueo propio `logs/.etl_dos_fuentes.lock`. El preflight supervisado `scripts/ubuntu_preflight_cierre.sh` adquiere **el mismo archivo de bloqueo** antes de volver a leer las seis tablas, verificar las huellas contra la conciliación, comprobar los insumos y generar evidencia; lo mantiene hasta terminar. No ejecuta carga real ni traslado.
+
+El orden de bloqueo del ejecutor diario es siempre compartido → específico. El flujo de cierre toma únicamente el compartido. La exclusión funciona solamente entre procesos locales que **respeten ese mismo bloqueo** en la misma máquina/ruta; no protege contra cambios manuales en la web, otras máquinas, API externas o conectores. Por eso se combina con la revalidación de contenido y verificación posterior.
+
+**No ejecutar antes del 10 de noviembre:** se necesita el paquete oficial, conciliación y plan del mes anterior. Uso previsto después de prepararlos:
+```bash
+git pull --ff-only
+bash scripts/ubuntu_preflight_cierre.sh 2026-10
+```
+
+**Errores y recuperación:** ante cualquier fallo de revalidación o validación de archivos, el shell devuelve un código distinto de cero, libera el bloqueo al finalizar y **no habilita el archivado**. Un archivo `.lock` persistente no representa por sí mismo un proceso activo; `flock` se libera al cerrarse su descriptor. No se debe borrar manualmente el archivo de lock. En una futura carga interrumpida, habrá que revisar el respaldo íntegro y repetir reconciliación/read-back, sin sobrescribir a ciegas. Se documentará un mecanismo de recuperación específico antes de permitir escrituras del cierre.
+
+**Estado:** bloqueo implementado en código; todavía requiere prueba de concurrencia sobre Ubuntu. No se ha ejecutado ni autorizado cargador de escritura o traslado. La cuenta de servicio tampoco puede impedir modificaciones de terceros mediante `flock`.
