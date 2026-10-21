@@ -28,14 +28,14 @@ class SearchIndexTest(unittest.TestCase):
             output = root / "data/busqueda/2026-06/procesos"
             meta = json.loads((output / "meta.json").read_text(encoding="utf-8"))
             self.assertEqual(meta["conteo"], 2)
-            self.assertEqual(meta["version"], 2)
+            self.assertEqual(meta["version"], 3)
             self.assertEqual(meta["formato"], "referencias_fragmento_fila")
             for prefix in ("ser","cap","uni"):
-                self.assertTrue((output / f"{prefix}.json").exists())
-                found = json.loads((output / f"{prefix}.json").read_text(encoding="utf-8"))
+                self.assertTrue((output / f"{prefix[:2]}.json").exists())
+                found = json.loads((output / f"{prefix[:2]}.json").read_text(encoding="utf-8"))[prefix]
                 self.assertTrue(any(row == [0, 0] for row in found))
                 self.assertTrue(all(len(row) == 2 for row in found))
-            other = json.loads((output / "mat.json").read_text(encoding="utf-8"))
+            other = json.loads((output / "ma.json").read_text(encoding="utf-8"))["mat"]
             self.assertTrue(any(row == [0, 1] for row in other))
             self.assertTrue(all(len(row) == 2 for row in other))
     def test_detects_count_mismatch(self):
