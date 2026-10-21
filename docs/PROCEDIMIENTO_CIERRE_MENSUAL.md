@@ -235,3 +235,13 @@ Pruebas con sustitutos de Google Sheets: `tests/test_cargador_cierre_mer_v2.py`.
 - Verificar la suma de celdas efectivamente asignadas después del crecimiento de Google Sheets; la predicción es preventiva y no sustituye inspección post-carga.
 
 El ETL diario, el cron existente, las Google Sheets y el frontend no se modificaron en esta etapa.
+
+## Décima etapa: interrupción simulada y reanudación idempotente
+
+El núcleo `scripts/cargador_cierre_mer_v2.py` ahora captura fallos durante la aplicación de tablas, registra el estado `CARGA_INCOMPLETA_BLOQUEADA` mediante el evento `CARGA_INTERRUMPIDA` y **no emite `CARGA_VERIFICADA`**. Conserva `cierre_autorizado=false` y `traslado_autorizado=false`. Reanudar exige releer el destino, conservar claves ya escritas y repetir todas las comprobaciones y respaldo antes de comenzar.
+
+Se añadió `tests/test_recuperacion_cargador_cierre.py` con dos casos simulados: (1) corte después de haber escrito parcialmente dos tablas, seguido de una reanudación que no duplica PK; (2) error de registro del respaldo que impide iniciar escrituras. El ensayo trabaja con **dobles de Sheets y SQLite en memoria**, sin acceso remoto.
+
+Ejecutar localmente: `.venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v`. Se esperan **14 pruebas**, sujeto a verificación desde Ubuntu. Todavía no está resuelto el rollback físico automático de escrituras parcialmente confirmadas por Google, la auditoría de modificaciones campo por campo ni la integración de permiso real de escritura. La CLI del cargador sigue sin opción de aplicar, y no se activa el cron mensual.
+
+**Regla de recuperación:** una carga interrumpida no equivale a cierre; impedir todo traslado mientras falte read-back completo, respaldo y auditoría de seis tablas. Si hay diferencias inexplicadas, bloquear y revisar, no borrar ni reemplazar información automáticamente.
