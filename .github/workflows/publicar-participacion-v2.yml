@@ -1,0 +1,40 @@
+name: Publicar participación histórica V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/publicar-participacion-v2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: participar-v2
+  cancel-in-progress: false
+jobs:
+  indices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar sintaxis
+        run: |
+          python -m py_compile scripts/generar_participacion_historica_v2.py
+          node --check frontend-v2/js/participantes-historicos.js
+      - name: Publicar índices mensuales
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for p in 2026-06 2026-07 2026-08 2026-09 2026-10; do
+            python scripts/generar_participacion_historica_v2.py --periodo "$p"
+            git add "frontend-v2/data/participacion/$p/"
+            if ! git diff --cached --quiet; then
+              git commit -m "data(v2): índices de participación $p"
+              git pull --rebase origin main
+              git push origin main
+            fi
+          done
