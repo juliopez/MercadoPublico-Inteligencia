@@ -383,11 +383,51 @@ for(const kind of relationKinds){
   activateRelation(next);$('tab-'+next).focus();
  });
 }
+async function showUnverifiedOC(code,related,periods,requestToken){
+ const target=$('detalle-oc-candidatas');target.replaceChildren();
+ const note=document.createElement('p');note.className='muted';
+ note.textContent='Órdenes potencialmente relacionadas por unidad compradora y proveedor seleccionado (sin verificación documental).';
+ const candidates=[];
+ const suppliers=new Set();
+ const normalized=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+ for(const item of related.resultados)if(item.adjudicatario)suppliers.add(normalized(item.adjudicatario));
+ for(const item of related.ofertas)if(['si','sí','1','true'].includes(normalized(item.seleccionado))&&item.proveedor)suppliers.add(normalized(item.proveedor));
+ const unit=code.match(/^([0-9]+)-/)?.[1];
+ if(!unit||!suppliers.size){note.textContent='No hay datos suficientes del proveedor seleccionado para buscar órdenes candidatas.';target.append(note);return}
+ note.textContent='Buscando OC candidatas no verificadas por unidad compradora y proveedor…';target.append(note);
+ let unavailable=0;
+ for(const month of periods){
+  for(const supplier of suppliers){
+   if(requestToken!==detailRequest)return;
+   const key=unit+'|'+supplier;
+   const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(key));
+   const shard=new Uint8Array(digest)[0].toString(16).padStart(2,'0');
+   try{
+    const data=await readJsonPublic('data/oc-candidatas/'+month+'/'+shard+'.json');
+    for(const row of data[key]||[])candidates.push({month,code:String(row[0]),provider:String(row[1]),amount:row[2],status:row[3],date:row[4]});
+   }catch(e){if(!String(e.message).includes('404'))unavailable++}
+  }
+ }
+ if(requestToken!==detailRequest)return;
+ target.replaceChildren();
+ if(!candidates.length){note.textContent='No se identificaron OC candidatas con el mismo proveedor y unidad en los índices disponibles'+(unavailable?' (cobertura parcial)':'')+'.';target.append(note);return}
+ const title=document.createElement('h5');title.textContent='OC candidatas por verificar ('+candidates.length+')';
+ const explanation=document.createElement('p');explanation.className='muted';explanation.textContent='Coincidencia de unidad y proveedor, no prueba relación con la Compra Ágil ni adjudicación. Las candidatas NO forman parte del contador de OC vinculadas.';
+ const list=document.createElement('ul');
+ for(const item of candidates.slice(0,30)){
+  const li=document.createElement('li');
+  const b=document.createElement('button');b.className='code-link';b.type='button';b.textContent=item.code;b.addEventListener('click',()=>openCode(item.code,'codigo_oc'));
+  li.append(b,' · '+item.month+' · '+item.provider+' · '+moneyCLP(item.amount)+' · '+(item.status||'Estado no informado'));
+  list.append(li);
+ }
+ target.append(title,explanation,list);
+ if(unavailable){const warning=document.createElement('p');warning.textContent='No fue posible leer '+unavailable+' particiones de candidatos.';target.append(warning)}
+}
 async function loadRelated(code,period){
  const seq=++detailRequest;
  activateRelation('procesos');
  for(const kind of relationKinds)$('total-'+kind).textContent='…';
- for(const target of ['detalle-procesos','detalle-ofertas','detalle-resultados','detalle-oc'])$(target).replaceChildren();
+ for(const target of ['detalle-procesos','detalle-ofertas','detalle-resultados','detalle-oc','detalle-oc-candidatas'])$(target).replaceChildren();
  $('detalle-relaciones-estado').textContent='Buscando relaciones en todos los períodos publicados…';
  if(!code){$('detalle-relaciones-estado').textContent='Sin código de proceso para relacionar.';return}
  try{
@@ -443,6 +483,7 @@ async function loadRelated(code,period){
   }
   const first=[['procesos','procesos'],['ofertas','ofertas'],['resultados','resultados'],['ordenescompra','oc']].find(([entity])=>accum[entity].length);
   activateRelation(first?.[1]||'procesos');
+  await showUnverifiedOC(code,accum,periods,seq);
   const total=Object.values(accum).reduce((n,rows)=>n+rows.length,0);
   $('detalle-relaciones-estado').textContent=total.toLocaleString('es-CL')+' registros vinculados al código '+code+' en '+checked+' períodos consultados'+(issues.length?'; '+issues.length+' fuentes no disponibles (cobertura parcial)':'')+'.';
  }catch(error){
