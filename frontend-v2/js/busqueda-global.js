@@ -18,9 +18,14 @@ function matches(record,query,entity,filters={}){
         (!filters.type||norm(record[typeField]).includes(filters.type));
 }
 function controls(){
- const keys=facetFields[el('entidad').value]||[null,null];
+ const entity=el('entidad').value;
+ const keys=facetFields[entity]||[null,null];
  el('global-estado').disabled=!keys[0];el('global-modalidad').disabled=!keys[1];
  if(!keys[1])el('global-modalidad').value='';
+ const names={procesos:['Estado de licitación','Modalidad del proceso'],ofertas:['Selección informada','No corresponde'],resultados:['No corresponde: verificación interna','No corresponde'],ordenescompra:['Estado de orden','Tipo de OC']}[entity];
+ if(entity==='resultados')el('global-estado').disabled=true;
+ el('global-estado').placeholder=names[0];
+ el('global-modalidad').placeholder=names[1];
 }
 let seq=0,session=null;
 let globalSort={key:null,direction:1};
@@ -56,6 +61,7 @@ async function collect(s,t,target){
   const rows=await read(t.parts[part]);
   if(!valid(s,t))return;
   if(!Array.isArray(rows))throw Error('Fragmento inválido');
+  const progress=el('busqueda-global-progreso');progress.hidden=false;progress.value=t.refs.length?Math.round(t.cursor/t.refs.length*100):100;
   for(const [,pos] of group){
    if(!Number.isInteger(pos)||pos<0||pos>=rows.length)throw Error('Referencia inválida');
    if(matches(rows[pos],t.tokens,t.entity,t.filters))t.found.push({part,pos,record:rows[pos]});
