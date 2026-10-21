@@ -299,7 +299,7 @@ function showDetail(record){
   if(candidate.protocol==='https:'&&['www.mercadopublico.cl','mercadopublico.cl'].includes(candidate.hostname))url=candidate.href;
  }catch{}
  const code=String(record.codigo??'');
- if(!url&&$('entidad').value==='procesos'&&/^[a-z0-9-]{5,80}$/i.test(code))
+ if(!url&&$('entidad').value==='procesos'&&/^[a-z0-9-]+-[A-Z]{2}\d{2}$/i.test(code)&&!/-COT\d+$/i.test(code))
   url='https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion='+encodeURIComponent(code);
  external.hidden=!url;
  if(url)external.href=url;else external.removeAttribute('href');
