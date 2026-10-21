@@ -123,3 +123,20 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 #ir-busqueda-global{white-space:nowrap}
 #busqueda-global .global-filters input:disabled{background:#edf1f5;color:#697b86}
 @media(max-width:700px){#consulta .filters:has(#ir-busqueda-global){grid-template-columns:1fr}#ir-busqueda-global{white-space:normal}}
+
+/* Panel analítico: interacción accesible y comparación entre períodos. */
+.analytics-controls{display:flex;gap:14px;flex-wrap:wrap;align-items:end;margin:14px 0}
+.analytics-controls label{display:grid;gap:5px;min-width:180px;flex:1;font-weight:600}
+.analytics-controls select{width:100%}
+.analytics-detail{border-top:1px solid #d9e5ee;margin-top:15px;padding:13px 2px}
+.analytics-detail h4{margin:12px 0 7px}
+.analytics-detail ol{columns:2;column-gap:30px;padding-left:23px}
+.analytics-detail li{break-inside:avoid;margin-bottom:6px}
+#analitica-ver-registros{margin-top:9px}
+.evolution-row{cursor:pointer;padding:4px 5px;border-radius:8px}
+.evolution-row:hover,.evolution-row:focus-visible{background:#e9f4fb;outline:2px solid #3584ad;outline-offset:2px}
+.evolution-row.selected{background:#e1f0fb;outline:2px solid #1c719c}
+.related-grid section{overflow:hidden;min-width:0}
+.related-grid section table{min-width:520px}
+.related-grid section .table-scroll{overflow-x:auto}
+@media(max-width:650px){.analytics-controls{display:grid;grid-template-columns:1fr}.analytics-detail ol{columns:1}}
