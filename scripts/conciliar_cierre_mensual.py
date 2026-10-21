@@ -2,7 +2,7 @@
 """Conciliación MER v2 SOLO LECTURA: SQLite histórico preparado vs Google Sheets operativo.
 No modifica hojas; genera reporte JSON, con claves completas solo como ejemplos acotados.
 """
-import argparse,datetime as dt,importlib.util,json,os,sqlite3,collections
+import argparse,datetime as dt,importlib.util,json,os,sqlite3,collections,hashlib
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -25,6 +25,12 @@ def leer_destino(ws,cols):
   if key in found:raise ValueError("Clave duplicada en "+ws.title+": "+key)
   found[key]=[str(x or "") for x in (row+[""]*len(cols))[:len(cols)]]
  return found
+def huella_tabla(actual):
+ h=hashlib.sha256()
+ for pk in sorted(actual):
+  h.update(json.dumps([pk,actual[pk]],ensure_ascii=False,separators=(',',':')).encode('utf-8'))
+  h.update(b'\n')
+ return h.hexdigest()
 def comparar(db,table,actual,muestra=5):
  conteos=collections.Counter();ejemplos={k:[] for k in ("nuevos","modificados","sin_cambios","solo_operativo")}
  presentes=set()
@@ -42,7 +48,8 @@ def comparar(db,table,actual,muestra=5):
    conteos["solo_operativo"]+=1
    if len(ejemplos["solo_operativo"])<muestra:ejemplos["solo_operativo"].append(key)
  return {**{k:conteos[k] for k in ejemplos},"ejemplos_pk":ejemplos,
-         "filas_historico":len(presentes),"filas_operativo":len(actual)}
+         "filas_historico":len(presentes),"filas_operativo":len(actual),
+         "sha256_operativo":huella_tabla(actual)}
 def main():
  p=argparse.ArgumentParser()
  p.add_argument("--periodo",required=True,help="AAAA-MM")
