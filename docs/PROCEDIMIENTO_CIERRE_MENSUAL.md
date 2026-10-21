@@ -165,3 +165,13 @@ Para inspeccionar el plan del mes anterior cuando estén sus archivos conciliado
 ```
 
 **Límite de la etapa:** esto no equivale a un cargador remoto de producción. No se ha implementado aún reconciliación de campos modificados, operaciones Google Sheets con verificación final, rollback auditado ni traslado Drive/GitHub. No activar el cron mensual antes de completar y probar tales componentes. El ETL diario existente permanece independiente.
+
+## Sexta etapa: evidencia vinculada y control de cambios
+
+Se agregó `scripts/vincular_evidencia_cierre.py`. Verifica que período, Sheet ID y conteos sean coherentes entre catálogo, estado de preparación, informe del importador, conciliación y plan de carga. Calcula SHA-256 de los seis CSV, SQLite y cinco documentos de control; genera `evidencia_vinculada.json`. Si uno de esos insumos cambia después, su huella también cambiará y deberá repetirse la revisión. El módulo **no puede escribir en Google Sheets ni mover archivos**.
+
+Prueba offline: `python -m unittest discover -s tests -p 'test_vincular_evidencia_cierre.py'`.
+
+**Pendiente crítico:** falta implementar y probar una segunda comprobación de estas mismas huellas inmediatamente ANTES de cualquier escritura real y de una autorización explícita e independiente. Asimismo, el contenido operativo de Sheets puede cambiar después de la conciliación: se requiere relectura remota o sello verificable de estado previo. Hasta resolverlo, no activar un cargador remoto ni un cierre desatendido. Este módulo es un avance de seguridad, no un cierre completo.
+
+No se ejecutaron las pruebas en Ubuntu, no se habilitó cron mensual y no se modificó frontend, Drive ni Sheets.
