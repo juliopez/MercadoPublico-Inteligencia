@@ -1,33 +1,58 @@
 // MER v2: carga selectiva por período. No consulta Google Sheets desde el navegador.
 const $=id=>document.getElementById(id);
 const allowed=['procesos','ofertas','resultados','ordenescompra'];
-const state={manifest:null,records:[],page:0,perPage:25,token:0};
+const state={manifest:null,records:[],page:0,perPage:10,token:0};
 function status(message){$('status').textContent=message}
 function safePart(path,period,entity){return typeof path==='string'&&new RegExp('^data/partes/'+entity+'/'+period+'/[a-z0-9_-]+\\.json$').test(path)}
 function textCell(value){const td=document.createElement('td');td.textContent=String(value??'');return td}
 function render(){
  const term=$('buscar').value.trim().toLocaleLowerCase('es');
  const selected=state.records.filter(r=>!term||Object.values(r).some(v=>String(v??'').toLocaleLowerCase('es').includes(term)));
- const pageSize=$('entidad').value==='ofertas'?10:25;
+ const pageSize=state.perPage;
  const pages=Math.ceil(selected.length/pageSize);state.page=Math.min(state.page,Math.max(0,pages-1));
  const current=selected.slice(state.page*pageSize,(state.page+1)*pageSize);
  const fields=current.length?Object.keys(current[0]).slice(0,16):[];
  $('columns').replaceChildren();const tr=document.createElement('tr');
  for(const f of fields){const th=document.createElement('th');th.textContent=f;tr.append(th)}
- if(!fields.length){const th=document.createElement('th');th.textContent='Resultados';tr.append(th)}
+ if(!fields.length){const th=document.createElement('th');th.textContent='Resultados';tr.append(th)}else{const th=document.createElement('th');th.textContent='Acciones';tr.append(th)}
  $('columns').append(tr);$('rows').replaceChildren();
- for(const record of current){const row=document.createElement('tr');for(const f of fields)row.append(textCell(record[f]));$('rows').append(row)}
+ for(const record of current){const row=document.createElement('tr');for(const f of fields)row.append(textCell(record[f]));const action=document.createElement('td');const button=document.createElement('button');button.textContent='Ver detalle';button.className='detail-button';button.addEventListener('click',()=>showDetail(record));action.append(button);row.append(action);$('rows').append(row)}
  if(!current.length){const row=document.createElement('tr');row.append(textCell('No hay registros para la consulta.'));$('rows').append(row)}
  $('counter').textContent=selected.length.toLocaleString('es-CL')+' registros encontrados';
  $('page').textContent='Página '+(pages?state.page+1:0)+' de '+pages;
  $('prev').disabled=state.page===0;$('next').disabled=state.page+1>=pages;
 }
+function showDetail(record){
+ const area=$('detalle'), body=$('detalle-campos');
+ body.replaceChildren();
+ for(const [key,value] of Object.entries(record)){
+  const dt=document.createElement('dt');dt.textContent=key.replaceAll('_',' ');
+  const dd=document.createElement('dd');dd.textContent=String(value??'');
+  body.append(dt,dd);
+ }
+ const external=$('detalle-enlace');
+ const raw=String(record.url_detalle??'').trim();
+ let url=null;
+ try{
+  const candidate=new URL(raw);
+  if(candidate.protocol==='https:'&&['www.mercadopublico.cl','mercadopublico.cl'].includes(candidate.hostname))url=candidate.href;
+ }catch{}
+ const code=String(record.codigo??'');
+ if(!url&&$('entidad').value==='procesos'&&/^[a-z0-9-]{5,80}$/i.test(code))
+  url='https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion='+encodeURIComponent(code);
+ external.hidden=!url;
+ if(url)external.href=url;else external.removeAttribute('href');
+ $('detalle-titulo').textContent='Detalle del registro · '+$('periodo').value;
+ area.hidden=false;area.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeDetail(){$('detalle').hidden=true;$('detalle-campos').replaceChildren()}
+
 async function consult(){
  const period=$('periodo').value, entity=$('entidad').value, token=++state.token;
  if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period)||!allowed.includes(entity))return;
  const info=state.manifest.periodos.find(p=>p.periodo===period);
  const parts=info?.partes?.[entity];if(!Array.isArray(parts)){status('Entidad no publicada para este período.');return}
- $('consultar').disabled=true;state.records=[];state.page=0;render();
+ $('consultar').disabled=true;state.records=[];state.page=0;closeDetail();render();
  try{
   const all=[];for(const path of parts){
    if(!safePart(path,period,entity))throw Error('Ruta JSON no permitida');
@@ -60,6 +85,7 @@ async function init(){
  }catch(e){status('Catálogo v2 todavía no publicado: '+e.message)}
 }
 $('periodo').addEventListener('change',()=>{$('stat-periodo').textContent=$('periodo').value||'—';++state.token;state.records=[];state.page=0;render()});
+$('detalle-cerrar').addEventListener('click',closeDetail);
 $('buscar').addEventListener('input',()=>{state.page=0;render()});
 $('consultar').addEventListener('click',consult);
 $('entidad').addEventListener('change',()=>{++state.token;state.records=[];state.page=0;render()});
