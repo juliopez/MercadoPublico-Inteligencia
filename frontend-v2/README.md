@@ -9,8 +9,8 @@ V2 es un **frontend paralelo** que publica extractos autorizados de Mercado Púb
 1. Seleccionar **mes de referencia y entidad** (Procesos, Ofertas, Resultados u Órdenes de compra).
 2. Para explorar rápidamente, pulsar **Mostrar registros del período**: carga el primer bloque (hasta 1.000 registros), presenta páginas de **10** y desplaza a la tabla de resultados. La exploración por bloques y sus filtros locales están en el panel avanzado.
 3. Para localizar un código, organismo o proveedor entre los registros de **todo el mes**, utilizar la **búsqueda global indexada**, que comprueba candidatos leyendo únicamente fragmentos necesarios. Puede incluir filtros según entidad. Las sugerencias son ayudas, no listas exhaustivas.
-4. En la ficha de un registro, revisar resumen y campos desplegables; cuando existe un **código de proceso**, consultar **Procesos, Ofertas, Resultados y OC relacionados en todos los meses publicados** (junio–octubre 2026), con mes de origen visible.
-5. **Evolución mensual**: seleccionar una barra para examinar un período, comparar otro mes y cambiar perspectiva entre actividad, montos informados y actores frecuentes.
+4. En la ficha de un registro, revisar resumen y campos desplegables; cuando existe un **código de proceso**, consultar mediante **pestañas con contadores** los Procesos, Ofertas, Resultados y OC relacionados en todos los meses publicados (junio–octubre 2026), con mes de origen visible.
+5. **Evolución mensual**: seleccionar una barra para examinar un período, comparar otro mes y cambiar perspectiva entre actividad, montos informados y actores frecuentes. Las vistas de **actores y montos** presentan gráficos horizontales, no listados extensos.
 6. Herramientas complementarias: perfiles de actores, comparación de hasta tres proveedores con sugerencias de razones sociales, favoritos guardados **solo en el navegador** y exportación CSV.
 
 ## Cobertura y límites
