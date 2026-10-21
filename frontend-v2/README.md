@@ -1,124 +1,55 @@
-# Frontend MER v2 — desarrollo independiente
+# Frontend V2 — Guía funcional y estado vigente
 
-> **ESTADO VIGENTE Y VALIDADO POR EL USUARIO (21-10-2026):** la navegación de la v2 carga las entidades históricas y el usuario informó que su velocidad es muy buena. La línea base y los próximos pasos están documentados en [BASELINE_FRONTEND_V2_2026-10-21.md](../docs/BASELINE_FRONTEND_V2_2026-10-21.md). Las secciones fechadas que siguen son **historial de desarrollo**, por lo que sus afirmaciones de «pendiente» anteriores no deben tomarse como estado vigente.
+**Revisión:** 21-10-2026. **[Abrir V2](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)** · [README del proyecto](../README.md) · [Índice documental](../docs/INDICE_DOCUMENTACION.md).
 
+V2 es un **frontend paralelo** que publica extractos autorizados de Mercado Público. V1 continúa operando desde `../index.html`; no se modifica por el desarrollo V2.
 
-**Inicio:** 2026-10-21. **Estado actual:** MER v2 desplegado en ruta independiente, cuatro entidades históricas junio–septiembre publicadas, navegación por fragmentos y paginación de 10 registros; usuario confirmó funcionamiento y buena velocidad. **Pendiente:** búsqueda global y detalle relacionado equivalente a v1.
+## Cómo utilizarlo
 
-## Reglas obligatorias de convivencia
+1. Seleccionar **mes de referencia y entidad** (Procesos, Ofertas, Resultados u Órdenes de compra).
+2. Para explorar rápidamente, pulsar **Mostrar registros del período**: carga el primer bloque (hasta 1.000 registros), presenta páginas de **10** y desplaza a la tabla de resultados. La exploración por bloques y sus filtros locales están en el panel avanzado.
+3. Para localizar un código, organismo o proveedor entre los registros de **todo el mes**, utilizar la **búsqueda global indexada**, que comprueba candidatos leyendo únicamente fragmentos necesarios. Puede incluir filtros según entidad. Las sugerencias son ayudas, no listas exhaustivas.
+4. En la ficha de un registro, revisar resumen y campos desplegables; cuando existe un **código de proceso**, consultar **Procesos, Ofertas, Resultados y OC relacionados en todos los meses publicados** (junio–octubre 2026), con mes de origen visible.
+5. **Evolución mensual**: seleccionar una barra para examinar un período, comparar otro mes y cambiar perspectiva entre actividad, montos informados y actores frecuentes.
+6. Herramientas complementarias: perfiles de actores, comparación de hasta tres proveedores con sugerencias de razones sociales, favoritos guardados **solo en el navegador** y exportación CSV.
 
-1. La v1 sigue en `/index.html`; conserva su publicación, experiencia de usuario y datos `/data/`. **No alterar** `index.html`, `data/observatorio.json`, `data/partes/` ni workflows de publicación v1 durante la construcción v2.
-2. Toda la v2 está en `/frontend-v2/`, incluidos HTML, CSS, JS y `data/catalogo-publico.json`. Se prepararán fragmentos en `frontend-v2/data/partes/{entidad}/{AAAA-MM}/{archivo}.json`, separados de v1.
-3. No publicar identificadores internos ni información privada de Google Sheets. Solo extractos explícitos de entidades públicas; seis tablas MER v2 sustentan modelo, cuatro son visibles inicialmente.
-4. El catálogo v2 comienza vacío intencionadamente: muestra «aún no publicados» en lugar de inventar cifras o consumir por error la v1.
-5. No desplegar nueva interfaz como reemplazo principal hasta completar contrato, publicación y validación en paralelo. El vínculo a v1 permite comparación funcional.
+## Cobertura y límites
 
-## Inventario de funcionalidades a preservar desde v1
+- Catálogo de verdad: [`data/catalogo-publico.json`](data/catalogo-publico.json). Históricos junio–septiembre; octubre 2026 **parcial**; faltan Ofertas y Resultados de octubre según catálogo.
+- Las seis tablas internas MER son distintas de las **cuatro entidades** publicadas en el frontend.
+- El navegador no accede a Google Sheets privadas ni descarga todos los históricos. Se leen fragmentos de unas 1.000 filas bajo demanda. Índices estáticos permiten búsquedas y relaciones entre meses.
+- Las búsquedas globales requieren término/código; los filtros de estado y modalidad no son consultas autónomas por faceta. Paginación: 10 filas. Orden global: sobre coincidencias **ya verificadas**.
+- Los perfiles agregados y rankings se basan en **nombres normalizados**, no identidad única por RUT. Los montos son importes **informados**, no pagos o contratos confirmados. Algunas entidades tienen campos monetarios sin valor informado.
+- El enlace a la ficha oficial se muestra solo cuando hay una URL verificada o una ruta de licitación compatible; no se presupone que una Compra Ágil tenga URL de licitación.
+- Las relaciones multimes abarcan **meses publicados en el catálogo**, no la totalidad de ChileCompra. Una asociación por código no acredita por sí sola adjudicación.
+- CSV local exporta el bloque filtrado; CSV global verifica todos los candidatos antes de exportar y rechaza consultas que superen el límite explícito de 20.000.
+- Octubre es parcial: evitar conclusiones sobre tendencias respecto a meses completos.
 
-| Capacidad v1 | Estado previsto en v2 |
+## Arquitectura pública y archivos
+
+| Archivo/directorio | Propósito |
 |---|---|
-| Búsqueda y filtros de procesos | Base de consulta incorporada; filtros especializados pendientes |
-| Detalle de licitación y enlace al portal | Ficha y enlace oficial, con ofertas/resultados/OC relacionados indexados; validar en navegador |
-| Ofertas asociadas y trazabilidad de resultados | **Implementado en detalle de Procesos, con índices por mes y sin asumir adjudicación**; validar en navegador |
-| Comparar empresas | Pendiente |
-| Perfil de organismo comprador | Pendiente |
-| Perfil de proveedor/empresa | Pendiente |
-| Órdenes de compra | Tabla y ficha de detalle básico habilitadas; relaciones y filtros avanzados pendientes |
-| Mis favoritos | Pendiente |
-| Exportación CSV | Pendiente |
-| Indicadores, recuentos y fecha de actualización | Base incorporada, depende de extractos v2 |
-| Paginación | **10 registros por página en las cuatro entidades** |
-| Seguridad de rutas de fragmentos | Restricción a carpeta y patrón por período/entidad |
+| `index.html`, `css/styles.css`, `js/app.js` | Interfaz, tablas y fragmentos |
+| `js/busqueda-global.js` | Índice de prefijos y resultados progresivos |
+| `js/sugerencias-global.js` | Sugerencias de palabras y facetas |
+| `js/comparar-proveedores.js` | Comparación de actores por período |
+| `js/analitica-interactiva.js` | Meses, vistas y agregados analíticos |
+| `data/partes/`, `data/catalogo-publico.json` | Extractos y catálogo de recuentos |
+| `data/busqueda/`, `data/indices/`, `data/relaciones-procesos/` | Índices de búsqueda y relaciones |
+| `data/perfiles/`, `data/autocompletar/`, `data/analitica/`, `data/sugerencias/` | Agregados públicos y sugerencias |
+| `../scripts/exportar_frontend_v2.py` | Exportación controlada de datos |
+| `../scripts/generar_analitica_v2.py`, `../scripts/indexar_relaciones_procesos_v2.py` | Generación de agregados/índices |
 
-## Contrato inicial de datos v2
+**No** editar a mano los JSON generados ni mezclar V1 y V2. Los índices y agregados deben mantenerse sincronizados con el catálogo y los fragmentos mediante sus workflows específicos.
 
-`frontend-v2/data/catalogo-publico.json`:
-```json
-{
-  "version":"2.0",
-  "fecha_publicacion":null,
-  "fuente":"MER v2 — extractos públicos por período",
-  "periodos":[
-    {
-      "periodo":"2026-06",
-      "tipo":"historico",
-      "conteos":{"procesos":0,"ofertas":0,"resultados":0,"ordenescompra":0},
-      "partes":{"procesos":["data/partes/procesos/2026-06/0001.json"],"ofertas":[],"resultados":[],"ordenescompra":[]}
-    }
-  ]
-}
-```
-**Ejemplo estructural, no datos reales**. No incorporar períodos sin archivos y recuentos verificados. El lector hace peticiones **solo al seleccionar** período y entidad, comprueba rutas y recuentos, limita vista a 10 filas, y no usa credenciales ni consulta Google Sheets desde el navegador. La primera implementación todavía acumula los fragmentos de la **entidad seleccionada** en memoria; deberá paginar/buscar mediante índices antes de publicar grandes volúmenes.
+## Pruebas y documentación
 
-## Continuidad del Plan Maestro
+- [Línea base de rendimiento y navegación](../docs/BASELINE_FRONTEND_V2_2026-10-21.md)
+- [Búsqueda global](../docs/BUSQUEDA_GLOBAL_V2_2026-10-21.md)
+- [Perfiles y comparador](../docs/PERFILES_CONTEXTUALES_FRONTEND_V2_2026-10-21.md)
+- [Mejoras de experiencia](../docs/MEJORAS_UX_INTEGRALES_V2_2026-10-21.md)
+- [Analítica interactiva y relaciones multimes](../docs/ANALITICA_INTERACTIVA_RELACIONES_HISTORICAS_V2_2026-10-21.md)
 
-- Tarea 14: preparar exportador multiperíodo desde catálogo, lectura privada de Sheets y validaciones.
-- Tarea 15: publicar los extractos **separados de v1** y un manifiesto v2.
-- Tarea 16: consulta por mes/período y relaciones.
-- Tarea 17: rendimiento con índices/carga parcial real para millones de filas.
-- Tareas 19/21: evaluación funcional y despliegue paralelo, nunca sustitución no aprobada.
+Las pruebas de sintaxis e integración GitHub Actions **no equivalen a validación de navegador en todos los casos**. La auditoría integral de UX, rendimiento, seguridad y compatibilidad con V1 sigue pendiente como tarea independiente.
 
-**No interpretar el prototipo como un frontend funcional con datos reales.** La versión v1 sigue siendo la referencia operativa y la fuente de requisitos de experiencia de usuario.
-
-## Primera publicación real — 21/10/2026
-
-Exportación aislada usando `scripts/exportar_frontend_v2.py` y [workflow de publicación v2](../.github/workflows/publicar-frontend-v2.yml), confirmada en [ejecución exitosa](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39639320943). **Período 2026-10:** Procesos **1.558**, Ofertas **0**, Resultados **0**, Órdenes de Compra **91.070**. Los ceros son ausencia efectiva en las pestañas del operativo de octubre a la fecha, no errores ni valores históricos extrapolados. El catálogo de publicación está en [`data/catalogo-publico.json`](data/catalogo-publico.json); los fragmentos dentro de `data/partes/`.
-
-Primer intento de cuatro entidades falló por cuota **429 de lecturas Google Sheets por minuto**. Se ajustó a bloques de 5.000 filas y reintentos con espera, y la segunda ejecución **terminó correctamente**. La v1 continúa en `/index.html` y `/data/` sin cambios por estos exportadores.
-
-**Pendiente antes de declarar front v2 operativo:** despliegue independiente/Pages, navegación real y carga selectiva de grandes volúmenes (el lector actual descarga todos los fragmentos de la entidad elegida). Los históricos junio–septiembre aún no han sido exportados al catálogo v2. Ejecutar manualmente el workflow por mes y entidad, verificando la cobertura antes de ampliar. La publicación actual de datos en GitHub **no implica que la web v2 ya esté desplegada**.
-
-## Vista previa web — actualización del 21/10/2026
-
-Se creó el flujo [`preview-frontend-v2.yml`](../.github/workflows/preview-frontend-v2.yml): valida el manifiesto y todos los fragmentos referenciados, empaqueta el repositorio con la v1 en la raíz y despliega a GitHub Pages, exponiendo la v2 en la ruta `/frontend-v2/`. **La ruta no reemplaza la v1.**
-
-Primera ejecución: [GitHub Actions #39639890184](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39639890184). En la revisión inicial quedó en estado `waiting` por autorización del entorno protegido `github-pages`; la API muestra despliegue pendiente y `current_user_can_approve=false`. **No atribuir éxito hasta que el workflow termine y se compruebe la URL en navegador.** No desactivar ni eludir aprobaciones del entorno para acelerar la publicación.
-
-URL **prevista**, no verificada todavía: `https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/`. Cuando la aprobación se resuelva, verificar catálogo 2026-10, Procesos 1.558, Ofertas 0, Resultados 0 y OC 91.070, paginación 10/25, y conservar funcionamiento del enlace a v1.
-
-## Actualización de interfaz — navegación de 10 registros y detalle (21/10/2026)
-
-- Los resultados visibles pasan a **10 por página** para Procesos, Ofertas, Resultados y Órdenes de Compra; es paginación de interfaz, **no implica** descargar solo 10 registros desde la red. La mejora de carga por índices sigue pendiente.
-- La acción **Ver detalle** presenta una ficha con las columnas públicas del registro exportado, en el mismo sitio. Para Procesos incorpora vínculo al detalle oficial de Mercado Público con HTTPS y dominio permitido; si no existe URL compatible se construye la ficha desde el código cuando cumple el formato.
-- No es todavía equivalente a la ficha completa de v1: **ofertas relacionadas, resultados vinculados, perfiles, comparación de empresas, favoritos y CSV siguen pendientes**. No declarar migración completa de la v1.
-- El código y los documentos de producción v1 siguen intactos. Validar la interacción real en navegador tras despliegue de Pages.
-
-## Prueba de históricos MER v2 — junio a septiembre de 2026
-
-**Objetivo acordado:** incorporar cuatro meses históricos **sin modificar las seis tablas de las Google Sheets originales, ni archivos de datos ni frontend de v1**. El volumen es grande: suman **3.197.115 filas en las seis entidades**, según auditorías previas. Por eso la primera prueba se ejecuta sobre **Procesos completos de cada mes** antes de ampliar a Ofertas/Resultados/OC y medir rendimiento real.
-
-**Control de permisos:** ejecución inicial de [GitHub Actions 39641670544](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39641670544) devolvió 403 por no compartir los históricos con la identidad de servicio. Se concedió permiso **reader**, exclusivamente, a `observatorio-mercadopublico@mercadopublico-inteligencia.iam.gserviceaccount.com` en las cuatro Sheets. No se alteraron sus datos. En el segundo intento se leyeron todos los Procesos de junio (80.898), julio (80.996) y agosto (83.937), pero la lectura de la cabecera de septiembre recibió 429 por cuota de Sheets. Al ser una publicación transaccional al final del job, ese intento **no incorporó esos registros a GitHub**. Se agregó reintento también a la lectura de cabeceras y se inició una nueva ejecución.
-
-**Advertencia:** 10 filas por página es una paginación visual; el lector v2 aún descarga todos los fragmentos de la entidad seleccionada. La carga completa de Ofertas (aproximadamente 1,7 millones de registros entre junio y septiembre) requiere índice/búsqueda selectiva y evaluación del tamaño final antes de publicar. No declarar históricas todas las entidades publicadas si el catálogo solo refleja Procesos.
-
-## Resultado confirmado del piloto histórico — 21/10/2026
-
-La exportación de la entidad **Procesos** concluyó exitosamente para los cuatro históricos, [run GitHub Actions #39642284420, intento posterior](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39642284420):
-
-| Período | Procesos publicados | Fragmentos |
-|---|---:|---:|
-| 2026-06 | 80.898 | 81 |
-| 2026-07 | 80.996 | 81 |
-| 2026-08 | 83.937 | 84 |
-| 2026-09 | 79.376 | 80 |
-| **Total** | **325.207** | **326** |
-
-Los documentos se obtuvieron directamente de las cuatro hojas MER v2 con **permiso reader** de la cuenta de servicio; Sheets históricos y datos v1 permanecieron sin escrituras. [Catálogo publicado](data/catalogo-publico.json). Las otras tres entidades visibles de esos meses **no están publicadas todavía**, y el lector actual acumula todos los fragmentos de un período y entidad en la memoria del navegador. El despliegue Pages tras cada cambio del catálogo está incorporado al flujo [preview](../.github/workflows/preview-frontend-v2.yml). Antes de exportar Ofertas a gran escala se debe abordar rendimiento y estrategia de entrega; no interpretar la paginación de 10 filas como paginación de red.
-
-## Política de cobertura histórica (acordada el 21/10/2026)
-
-Un histórico mensual no se considera funcionalmente publicado solo porque se hayan exportado sus `Procesos`. Debe contemplar, **por cada mes**, `Procesos`, `Ofertas`, `Resultados` y `OrdenesCompra` de manera completa y comprobable, sin truncamiento a muestras. Las otras dos entidades del MER v2 (`Proveedores` y `VinculosCOT_OC`) sustentan perfiles y relaciones; deben integrarse mediante extractos públicos seguros, sin volcar indiscriminadamente RUT ni identificadores internos. Mostrar 10 registros por página no significa descartar datos: la paginación es solo de presentación.
-
-**Publicación extendida en curso:** [ejecución 39643679107](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39643679107) para `Ofertas`, `Resultados` y `OrdenesCompra` de junio, julio, agosto y septiembre; se conserva la publicación anterior de `Procesos`. El job valida recuentos de todos los JSON antes de persistirlos. **No declarar completado hasta terminar el job correctamente y verificar el catálogo**, y tener presente que el lector web necesita índices o búsqueda selectiva para soportar centenares de miles de ofertas con buen rendimiento. La v1 y las Sheets históricas permanecen inalteradas.
-
-## Incidente de carga de Ofertas desde GitHub Pages — 21/10/2026
-
-El navegador mostraba «No se pudo leer el fragmento de 2026-06» pese a que los fragmentos de Ofertas existían en el repositorio y estaban referenciados en el catálogo público. Se corroboró la carga completa de datos en GitHub; el síntoma no equivale a inexistencia de Ofertas.
-
-Se modificó **exclusivamente la aplicación v2** para que descargue un solo fragmento (~1.000 filas) por vez en lugar de descargar de manera secuencial centenares de archivos; ofrece reintentos, intenta `raw.githubusercontent.com` como origen alternativo ante errores de la ruta Pages y mantiene memoria acotada. Las 10 filas por página se mantienen. Durante esta fase la **búsqueda se limita al bloque cargado**, no al histórico completo. Esta limitación se anuncia visiblemente; la búsqueda global indexada queda pendiente antes de dar la experiencia de v2 como equivalente a v1.
-
-El repositorio tiene aproximadamente 877 MB de JSON v2; la integridad del despliegue y acceso público a cada archivo individual sigue requiriendo verificación real en navegador y eventualmente migración de distribución a índices estáticos. La v1 permanece sin alteraciones.
-
-## Detalle relacionado — nueva implementación
-
-Se incorporaron índices compactos por período y vínculo técnico de `Procesos.codigo` con Ofertas, Resultados y OC. Solo se consultan los fragmentos relevantes **al abrir una ficha**, sin modificar la carga rápida del listado; cada sección relacionada se pagina de **10 registros**. La verificación de adjudicación se presenta como campo informativo, no se infiere de la simple asociación. Ver [documentación técnica y pruebas pendientes](../docs/DETALLE_RELACIONADO_FRONTEND_V2.md).
+La cronología completa de implementación se conserva en documentos especializados de `../docs/` y en el historial Git; no repetirla en este README.
