@@ -27,5 +27,5 @@ jobs:
       - name: Medir tamaño y memoria con datos sintéticos
         run: python tests/benchmark_busqueda_frontend_v2.py
 
-      - name: Medir índice en muestra histórica real de Ofertas
-        run: python tests/benchmark_busqueda_historica_v2.py --periodo 2026-06 --entidad ofertas --fragmentos 50
+      - name: Medir índice de todas las Ofertas junio 2026
+        run: python tests/benchmark_busqueda_historica_v2.py --periodo 2026-06 --entidad ofertas --fragmentos 9999
