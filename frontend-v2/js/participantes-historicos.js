@@ -26,21 +26,17 @@ async function suggestions(){
  const id=++seq,term=normalizeActor(ph('participante-nombre').value);
  ph('participante-sugerencias').replaceChildren();
  if(term.length<2)return;
- const entity=ph('participante-tipo').value==='proveedor'?'ofertas':'procesos';
- // Las primeras dos letras se resuelven mediante los índices de proveedores;
- // los organismos usan sus perfiles publicados y sugerencias por palabra.
- if(entity!=='ofertas')return;
- const c=await catalog(),names=new Map();
- const hash=await shard(term.slice(0,2));
+ const type=ph('participante-tipo').value;
+ const c=await catalog(),names=new Set(),hash=await shard(term.slice(0,2));
  for(const p of c.periodos){
-  const path='data/autocompletar/'+p.periodo+'/'+hash+'.json';
+  const path='data/participacion/'+p.periodo+'/sugerencias/'+type+'/'+hash+'.json';
   try{
    const entries=await fetchPublic(path);
    if(id!==seq)return;
-   for(const [key,name] of entries)if(key.startsWith(term))names.set(key,name);
+   for(const name of entries)if(name.startsWith(term))names.add(name);
   }catch{}
  }
- for(const name of [...names.values()].slice(0,40)){const opt=document.createElement('option');opt.value=name;ph('participante-sugerencias').append(opt)}
+ for(const name of [...names].slice(0,40)){const opt=document.createElement('option');opt.value=name;ph('participante-sugerencias').append(opt)}
 }
 async function searchParticipant(){
  const req=++seq,name=ph('participante-nombre').value.trim(),type=ph('participante-tipo').value;
