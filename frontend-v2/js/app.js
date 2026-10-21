@@ -8,7 +8,7 @@ function textCell(value){const td=document.createElement('td');td.textContent=St
 const tableColumns={
  procesos:[['codigo','Código'],['nombre','Nombre del proceso'],['modalidad','Modalidad'],['organismo_comprador','Organismo comprador'],['estado','Estado'],['fecha_publicacion','Publicación'],['fecha_cierre','Cierre'],['monto_disponible_clp','Monto disponible']],
  ofertas:[['codigo','Proceso'],['proveedor','Proveedor'],['monto_ofertado_clp','Monto ofertado'],['seleccionado','Oferta seleccionada'],['fecha_oferta','Fecha de oferta']],
- resultados:[['codigo','Proceso'],['adjudicatario','Proveedor informado'],['monto_adjudicado_clp','Monto adjudicado'],['monto_oferta_seleccionada_clp','Oferta seleccionada'],['validado','Verificación'],['estado_verificacion_oc','Verificación OC']],
+ resultados:[['codigo','Proceso'],['adjudicatario','Proveedor informado'],['monto_adjudicado_clp','Monto adjudicado'],['monto_oferta_seleccionada_clp','Oferta seleccionada']],
  ordenescompra:[['codigo_oc','Orden de compra'],['codigo_proceso','Proceso asociado'],['proveedor','Proveedor'],['estado','Estado'],['monto_total_oc_clp','Monto total'],['fecha_creacion','Creación']]
 };
 function formatTableValue(record,key){
@@ -47,6 +47,7 @@ function render(){
  const current=selected.slice(state.page*state.perPage,(state.page+1)*state.perPage);
  const entity=$('entidad').value;
  const fields=tableColumns[entity]||[];
+ $('resultados').classList.toggle('process-table',entity==='procesos');
  $('columns').replaceChildren();
  const header=document.createElement('tr');
  for(const [,label] of fields){const th=document.createElement('th');th.textContent=label;header.append(th)}
@@ -186,7 +187,22 @@ function showDetail(record){
  body.replaceChildren();
  for(const [key,value] of Object.entries(record)){
   const dt=document.createElement('dt');dt.textContent=key.replaceAll('_',' ');
-  const dd=document.createElement('dd');dd.textContent=String(value??'');
+  const dd=document.createElement('dd');
+  const isOC=$('entidad').value==='ordenescompra';
+  if(isOC&&key==='codigo_proceso'&&/^[a-z0-9-]{5,80}$/i.test(String(value??''))){
+   const code=String(value).trim();
+   const b=document.createElement('button');b.type='button';b.className='secondary detail-process-link';b.textContent='Ver proceso '+code+' en el Observatorio';
+   b.addEventListener('click',()=>{
+    $('entidad').value='procesos';$('entidad').dispatchEvent(new Event('change'));
+    $('busqueda-global-texto').value=code;
+    $('global-estado').value='';$('global-modalidad').value='';
+    $('busqueda-global-boton').click();
+    $('busqueda-global').scrollIntoView({behavior:'smooth',block:'start'});
+   });
+   const a=document.createElement('a');a.href='https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion='+encodeURIComponent(code);
+   a.target='_blank';a.rel='noopener noreferrer';a.textContent='Abrir ficha oficial';a.className='detail-official-link';
+   dd.append(b,' ',a);
+  }else dd.textContent=String(value??'');
   body.append(dt,dd);
  }
  const external=$('detalle-enlace');
