@@ -464,7 +464,7 @@ function renderMonthlyEvolution(){
   const strong=document.createElement('strong');strong.textContent=value;box.append(small,strong);summary.append(box);
  }
  for(const item of items){
-  const row=document.createElement('div');row.className='evolution-row';
+  const row=document.createElement('div');row.className='evolution-row';row.dataset.period=item.period;row.tabIndex=0;row.setAttribute('role','button');row.setAttribute('aria-label','Analizar período '+item.period);row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();row.click()}});
   const label=document.createElement('span');label.textContent=item.period;
   const track=document.createElement('div');track.className='evolution-track';
   const bar=document.createElement('div');bar.className='evolution-fill';bar.style.width=(item.n/max*100).toFixed(1)+'%';
