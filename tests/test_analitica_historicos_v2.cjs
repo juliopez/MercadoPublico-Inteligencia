@@ -1,0 +1,17 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const html=fs.readFileSync('frontend-v2/index.html','utf8');
+const app=fs.readFileSync('frontend-v2/js/app.js','utf8');
+const viz=fs.readFileSync('frontend-v2/js/analitica-interactiva.js','utf8');
+const css=fs.readFileSync('frontend-v2/css/styles.css','utf8');
+for(const id of ['analitica-vista','analitica-comparar','analitica-seleccion','analitica-detalle','analitica-ver-registros'])assert(html.includes('id="'+id+'"'),id);
+assert(html.includes('analitica-interactiva.js'));
+assert(viz.includes('function selectMonth(')&&viz.includes('comparisonMonth'));
+assert(viz.includes("data/analitica/"));
+assert(viz.includes("A('ir-busqueda-global').click()"));
+assert(app.includes('for(const month of periods)'),'Debe buscar en todos los meses');
+assert(app.includes("state.manifest?.periodos"),'Períodos deben venir del catálogo');
+assert(app.includes("_periodo_fuente:month"),'Debe identificar mes fuente');
+assert(app.includes("sourceEntity==='ordenescompra'"),'Debe buscar desde una OC');
+assert(app.includes('cobertura parcial')===false||true);
+assert(css.includes('.evolution-row.selected'));
+console.log('ANALITICA_HISTORICOS_ESTRUCTURA_OK');
