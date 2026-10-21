@@ -17,3 +17,10 @@ assert(html.includes('id="detalle-procesos"'),'Debe incluir panel de procesos vi
 assert(app.includes('cobertura parcial')===false||true);
 assert(css.includes('.evolution-row.selected'));
 console.log('ANALITICA_HISTORICOS_ESTRUCTURA_OK');
+
+assert(html.includes('role="tablist"')&&html.includes('id="panel-ofertas"'));
+assert(app.includes('function activateRelation('));
+assert(viz.includes("chart.className='actor-chart'"));
+assert(viz.includes("chart.className='amount-chart'"));
+assert(!viz.includes("document.createElement('ol')"));
+console.log('DETALLE_PESTANAS_GRAFICOS_OK');
