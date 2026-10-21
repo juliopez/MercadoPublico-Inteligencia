@@ -48,15 +48,8 @@ async function paint(seq){
    const tr=document.createElement('tr');
    for(const [key] of fields){const td=document.createElement('td');td.textContent=String(rowData[key]??'')||'No informado';tr.append(td)}
    const td=document.createElement('td'),button=document.createElement('button');
-   button.textContent='Ver registro en bloque';
-   button.addEventListener('click',()=>{
-    // Navega a la consulta original sin sustituir su modelo de carga.
-    reset('Abra el detalle del registro desde el bloque indicado.');
-    el('buscar').value=String(rowData.codigo??rowData.codigo_oc??'');
-    el('filtro-estado').value='';el('filtro-modalidad').value='';
-    document.getElementById('resultados').scrollIntoView({behavior:'smooth'});
-    el('busqueda-global-estado').textContent='Referencia: bloque '+(part+1)+'. Pulse Consultar y navegue a ese bloque para ver la ficha.';
-   });
+   button.textContent='Ver detalle';
+   button.addEventListener('click',()=>window.openIndexedRecord?.(part,index,period,entity));
    td.append(button);tr.append(td);body.append(tr);
   }
   el('busqueda-global-columnas').replaceChildren(head);
@@ -64,7 +57,7 @@ async function paint(seq){
   el('busqueda-global-pagina').textContent='Página '+(page+1)+' de '+Math.ceil(references.length/10);
   el('busqueda-global-anterior').disabled=page===0;
   el('busqueda-global-siguiente').disabled=start+10>=references.length;
-  el('busqueda-global-estado').textContent=references.length.toLocaleString('es-CL')+' coincidencias indexadas · '+period+' · '+entity+'.';
+  el('busqueda-global-estado').textContent=references.length.toLocaleString('es-CL')+' candidatos por prefijo · '+period+' · '+entity+'.';
  }catch(error){if(seq===request)el('busqueda-global-estado').textContent='Error al leer resultados: '+error.message}
 }
 async function search(){
