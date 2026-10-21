@@ -153,3 +153,11 @@ Se consultaron directamente en el repositorio los archivos `frontend-v2/data/bus
 - 2026-10: Procesos 1.558; Órdenes de compra 91.070. Ofertas y Resultados muestran cero registros publicados, por lo cual el workflow omite generarles índice.
 
 **Evidencia y límite:** CI satisfactoria, publicación y conciliación de metadatos verificadas. La validación en navegador reportada por el usuario corresponde al índice inicial junio/Procesos; la ampliación a otras entidades y meses **aún requiere prueba interactiva**. La búsqueda opera por prefijos de palabras y puede presentar candidatos adicionales; no confundir con coincidencia exacta. No se modificaron Google Sheets, ETL ni la V1. La consulta del frontend V2 sigue usando fragmentos de 1.000 registros y paginación de 10.
+
+
+## Verificación funcional de referencias por combinación — 21-10-2026
+Por aprobación del usuario se añadió `tests/validar_combinaciones_busqueda_v2.py` (commit `d304a155`) y workflow `.github/workflows/validar-combinaciones-busqueda-v2.yml` (commit `159c983d`). Se ejecutó [GitHub Actions #39662282184](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39662282184), job `119438137437`, resultado **success** confirmado en los logs originales.
+
+La validación recorrió los **18 índices publicados** de junio–octubre 2026 con conteos mayores que cero: verificó versión, identidad, conteos y fragmentos de cada metadato, generó entre 23 y 25 comprobaciones positivas por combinación desde los primeros cinco registros reales y exigió que cada par `[fragmento,fila]` estuviera en el grupo y prefijo correspondientes. Se identificaron correctamente sin registros Ofertas y Resultados de octubre. Resultado del log: `BUSQUEDA_18_COMBINACIONES_OK 18`.
+
+**Alcance de la evidencia:** coincidencias positivas y coherencia de índices sobre fragmentos públicos; no se ejecutó un navegador real con pulsaciones, cambio de período/entidad, pruebas de ausencia de resultados ni paginación. La validación manual del usuario sigue referida a Procesos junio. No afirmar cobertura de interacción completa ni ausencia de regresiones en UI. No se modificaron frontend, ETL, Sheets ni la V1.
