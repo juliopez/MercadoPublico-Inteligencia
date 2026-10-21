@@ -113,7 +113,7 @@ async function init(){
   status(payload.periodos.length?'Seleccione un período y una entidad.':'Frontend v2 preparado. Aún no se han publicado extractos MER v2; la versión 1 sigue disponible.');
  }catch(e){status('Catálogo v2 todavía no publicado: '+e.message)}
 }
-$('periodo').addEventListener('change',()=>{$('stat-periodo').textContent=$('periodo').value||'—';++state.token;state.records=[];state.page=0;render()});
+$('periodo').addEventListener('change',()=>{$('stat-periodo').textContent=$('periodo').value||'—';++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;closeDetail();render()});
 $('detalle-cerrar').addEventListener('click',closeDetail);
 $('buscar').addEventListener('input',()=>{state.page=0;render()});
 $('consultar').addEventListener('click',consult);
