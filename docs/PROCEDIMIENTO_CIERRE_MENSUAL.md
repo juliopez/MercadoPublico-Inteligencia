@@ -97,3 +97,34 @@ Salida: `~/.local/share/mercadopublico/cierres/2026-10/conciliacion.json`. **No 
 La prueba anterior cubre clasificación de nuevas, modificadas, iguales y solo operativas, pero el script completo **aún no ha sido probado contra la Google Sheets de octubre**. El cron mensual continúa deshabilitado; objetivo: prueba supervisada 10 de noviembre y activación tentativa el 10 de diciembre tras aprobación.
 
 La próxima etapa será decidir reglas por tabla y crear un cargador transaccional con respaldo, protección ante reintentos, auditoría completa y prueba de lectura final; el traslado Drive y actualización GitHub se harán solamente al terminar todas esas etapas.
+
+## Política conservadora para aplicar diferencias — tercer avance
+
+Se incorporó `scripts/planificar_carga_cierre.py`, que **solo lee** `conciliacion.json` y genera `plan_carga_cierre.json`. Requiere seis tablas y valida que sus cuatro clases sumen los totales histórico y operativo; no conecta con Google Sheets/Drive ni cambia catálogo.
+
+- **Nuevos:** candidatos a insertar por PK tras aprobar cobertura y auditoría.
+- **Modificados:** candidatos a actualizar; deben revisarse diferencias por campo. La selección histórica de una oferta no constituye adjudicación verificada.
+- **Sin cambios:** no requiere escritura.
+- **Solo operativos:** preservar, no borrar por falta de correspondencia en ZIP mensual.
+- **Vínculos COT–OC fuera de período:** observación, no necesariamente error. Ambigüedades de selección deben quedar advertidas.
+- El plan termina obligatoriamente con `autorizado_para_escribir=false` y `autorizado_para_mover=false`. No constituye orden de carga ni aprobación de cierre.
+
+Pruebas offline en `tests/test_planificar_carga_cierre.py` cubren conteos incoherentes, ausencia de tablas y preservación de registros solo operativos. **Pendiente ejecutarlas en Ubuntu; no se ha realizado una prueba integral con octubre.**
+
+Una vez disponible la conciliación en noviembre, generar el plan:
+
+```bash
+.venv/bin/python scripts/planificar_carga_cierre.py \
+  --conciliacion "$HOME/.local/share/mercadopublico/cierres/2026-10/conciliacion.json"
+```
+
+### Barreras pendientes antes de activar escritura/traslado
+
+1. Contrastar valores modificados a nivel de columna y definir reglas de precedencia por entidad, incluyendo semántica de resultados y proveedores.
+2. Realizar auditoría referencial completa, integridad de los seis conjuntos y dimensión del destino para evitar límite de celdas.
+3. Respaldar todo el operativo con hashes/CRC utilizando `respaldo_local()` ya desarrollado.
+4. Implementar aplicador idempotente, relectura y comprobación post-escritura con manejo de ejecución parcial y recuperación.
+5. Validar permisos Google Drive para traslado del archivo con mismo ID y transición del catálogo de forma recuperable.
+6. Validación supervisada el 10 de noviembre; si resulta aprobada, recién instalar el cron mensual para comenzar 10 de diciembre.
+
+**No modificar el ETL diario ni cron vigente.** No activar cierres mientras existan controles pendientes.
