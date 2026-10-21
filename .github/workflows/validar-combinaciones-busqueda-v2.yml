@@ -1,0 +1,20 @@
+name: Validar combinaciones de búsqueda V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tests/validar_combinaciones_busqueda_v2.py'
+      - '.github/workflows/validar-combinaciones-busqueda-v2.yml'
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verificar 18 combinaciones publicadas contra registros reales
+        run: python tests/validar_combinaciones_busqueda_v2.py
