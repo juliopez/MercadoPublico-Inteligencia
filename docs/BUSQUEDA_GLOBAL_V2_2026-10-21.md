@@ -92,3 +92,11 @@ GitHub Actions [#39659422313](https://github.com/juliopez/MercadoPublico-Intelig
 Las **2 pruebas unitarias también aprobaron** en esta ejecución. Benchmark sintético ejecutado en el mismo job: 20.000 filas, 0,657 s, 38.100 KB, 1.846.369 bytes.
 
 **Alcance:** resultados reales de una muestra de 50 fragmentos, no del período completo de 407.923 Ofertas ni de millones de registros. Los 3.116 archivos ponen en evidencia un costo operativo importante si se publican los índices como archivos individuales; se debe evaluar empaquetado/rangos y respuestas de términos frecuentes antes de integrarlos al navegador. No se publicaron los archivos de índice ni se alteraron los sistemas actuales.
+
+
+## Consolidación física de prefijos — 21-10-2026
+- Revisados README, índice, decisiones, documento de búsqueda, generador, pruebas y workflow antes de intervenir.
+- El índice pasó de un archivo por prefijo de tres caracteres a un archivo por sus dos primeros caracteres, con un diccionario `prefijo -> [[fragmento,fila], ...]`. La búsqueda futura leerá el grupo correspondiente y recuperará solamente el prefijo buscado. No hay cambios en el motor de carga de V2 ni publicación de índices.
+- Generador: versión de contrato de índice **3**, metadatos `grupos` y `particiones`; commit `041a71be`. Prueba unitaria ajustada: commit `8a9c00a0`.
+- GitHub Actions lanzó automáticamente la ejecución [#39659762031](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39659762031). **En progreso en la última consulta de esta anotación**; obtener conclusión y métricas antes de hablar de mejora cuantitativa.
+- Restricción: agrupar reduce el número de archivos pero puede aumentar el tamaño máximo de una descarga; medir especialmente el mayor grupo en la muestra real de Ofertas antes de integrar el navegador.
