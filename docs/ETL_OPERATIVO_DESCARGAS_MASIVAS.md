@@ -57,3 +57,9 @@ Si el repositorio ya existe: entrar a su directorio, `git pull --ff-only` y ejec
 La segunda instrucción descarga y valida los ZIP oficiales del mes local en Santiago y ejecuta la conversión MER v2. Resultados: `salida_operativa/simulacion_AAAA-MM.json`, `salida_operativa/preparado_AAAA-MM/informe.json` y `logs/prueba_descargas_*.log`. Si falla, el código de salida es no-cero y el log conserva el mensaje. Archivo de bloqueo `logs/.prueba_etl.lock` impide dos ejecuciones simultáneas. La primera ejecución puede tardar y consumir gigabytes temporales según el tamaño de los ZIP. **No programar cron ni activar carga en esta fase.**
 
 El simulador completo todavía requiere validación empírica; si los tres ZIP descargan pero el parser rechaza un CSV, conservar el log para corregir la compatibilidad. El futuro servicio tendrá que implementar reintentos, autenticación Google, escritura incremental y cierre mensual por separado.
+
+## Incidente de fuente no disponible — 20 de octubre de 2026
+
+Primera prueba real en Ubuntu (22:16 hora de Santiago): `licitaciones` comenzó a descargarse, pero `Compra Ágil` respondió `HTTP 404 The specified blob does not exist` a `https://transparenciachc.blob.core.windows.net/trnspchc/COT_2026-10.zip`; el script abortó antes de descargar órdenes de compra. No se escribió en Sheets ni se ejecutó cron. **No se puede afirmar que las tres fuentes se publiquen diariamente** solo por la periodicidad general de las descargas masivas.
+
+Se incorporó preflight de disponibilidad HTTP para las **tres** fuentes, antes de transferir ZIP voluminosos; si falta alguna, se genera `salida_operativa/diagnostico_fuentes_AAAA-MM.json`, la ejecución termina con código 2 y conserva todos los datos. Futuros reintentos deberán distinguir `404` persistente de fallas transitorias. No habilitar carga incompleta ni buscar reemplazo no oficial sin aprobación.
