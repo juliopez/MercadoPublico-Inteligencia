@@ -262,6 +262,7 @@ window.openIndexedRecord=async function(part,row,period,entity){
   return;
  }
  if(!Number.isInteger(part)||part<0||part>=state.parts.length||!Number.isInteger(row)||row<0)return;
+ if(!state.parts.length)await consult();
  const token=state.token;
  await loadChunk(part);
  if(token===state.token&&state.chunkIndex===part&&state.records[row])showDetail(state.records[row]);
