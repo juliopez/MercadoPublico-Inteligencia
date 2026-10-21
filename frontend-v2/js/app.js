@@ -92,6 +92,23 @@ async function showContextProfile(field,name){
  const seq=++profileRequest;
  const period=$('periodo').value,entity=$('entidad').value;
  const rows=state.records.filter(record=>String(record[field]??'').trim()===name);
+ const link=$('perfil-ver-global');
+ link.replaceChildren();
+ const targets=field==='organismo_comprador'?[['procesos','Ver procesos del organismo']]:[['ofertas','Ver ofertas'],['resultados','Ver resultados informados'],['ordenescompra','Ver órdenes de compra']];
+ for(const [target,label] of targets){
+  const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=label;
+  button.addEventListener('click',()=>{
+   const words=(name.normalize('NFD').replace(/\\p{M}/gu,'').match(/[a-z0-9]+/gi)||[]).filter(w=>w.length>=3);
+   if(!words.length){status('No existen palabras de 3 caracteres suficientes para esta búsqueda.');return}
+   $('entidad').value=target;$('entidad').dispatchEvent(new Event('change'));
+   $('busqueda-global-texto').value=words.join(' ');
+   $('global-estado').value='';$('global-modalidad').value='';
+   $('busqueda-global-boton').click();
+   $('busqueda-global').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  link.append(button);
+ }
+
  const area=$('perfil-contextual'),header=$('perfil-resumen');
  $('perfil-titulo').textContent=(field==='organismo_comprador'?'Organismo comprador':'Proveedor')+' · '+name;
  header.replaceChildren();
