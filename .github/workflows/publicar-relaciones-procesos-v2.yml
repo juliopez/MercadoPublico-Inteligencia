@@ -1,0 +1,47 @@
+name: Publicar índice de vínculos de Procesos V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/publicar-relaciones-procesos-v2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: publicar-relaciones-procesos-v2
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Preparar y validar índices exactos
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/indexar_relaciones_procesos_v2.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for period in 2026-06 2026-07 2026-08 2026-09 2026-10; do
+            python scripts/indexar_relaciones_procesos_v2.py --periodo "$period"
+            export PERIOD="$period"
+            python - <<'PY'
+          import json,os,pathlib
+          root=pathlib.Path('frontend-v2/data')
+          period=os.environ['PERIOD']
+          expected=next(p for p in json.loads((root/'catalogo-publico.json').read_text())['periodos'] if p['periodo']==period)['conteos']['procesos']
+          meta=json.loads((root/'relaciones-procesos'/period/'meta.json').read_text())
+          assert meta['version']==1 and meta['registros']==expected
+          print('PROCESOS_VINCULOS_VERIFICADOS',period,expected)
+          PY
+            git add "frontend-v2/data/relaciones-procesos/$period/"
+            if ! git diff --cached --quiet; then
+              git commit -m "data(v2): índice exacto de procesos $period"
+              git pull --rebase origin main
+              git push origin main
+            fi
+          done
