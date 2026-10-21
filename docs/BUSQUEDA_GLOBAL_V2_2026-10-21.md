@@ -76,3 +76,9 @@ Se añadió `tests/benchmark_busqueda_frontend_v2.py` (commit `08e8d00d`) para g
 - Mensaje del generador: `BUSQUEDA_INDICE_OK 2026-06 procesos 20000 909` (909 particiones de prefijos + meta.json = 910 archivos).
 
 **Interpretación:** éxito de la prueba sintética e integración de CI, sin extrapolar esos tiempos, tamaños o memoria a millones de registros. La fragmentación en 909 archivos y las palabras de alta frecuencia requieren evaluación con históricos antes de generar/publicar índices y habilitar la búsqueda global. Ningún dato de Google Sheets, ETL ni frontend V1/V2 se modificó para esta verificación.
+
+
+## Ensayo con histórico público real — 21-10-2026
+Se revisaron README, índice, decisiones y el documento específico antes de intervenir. Se añadió `tests/benchmark_busqueda_historica_v2.py` (commit `4685afc6`): utiliza **los primeros 50 fragmentos de Ofertas de junio 2026** ya publicados, confecciona un manifiesto temporal con el recuento exacto de esa muestra y construye el índice en `TemporaryDirectory`, enlazando los fragmentos públicos originales solo para lectura. Reporta registros, tiempo, memoria máxima, tamaño total y tamaño mayor de archivo. No accede a Google Sheets.
+
+Se actualizó `.github/workflows/validar-busqueda-v2.yml` (commit `b5cf0cb5`) con el benchmark de históricos reales y límite de 15 minutos para el trabajo. GitHub Actions inició automáticamente la [ejecución #39659422313](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39659422313). **Última consulta durante esta edición:** `in_progress`, checkout en ejecución; no atribuir éxito ni cifras hasta consultar su conclusión y logs. Se preservan V1, V2, datos, ETL y Sheets.
