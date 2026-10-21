@@ -25,3 +25,23 @@ La ausencia de vínculo en V2 deriva de **insuficiencia del campo de referencia 
 5. **No autorizado / no efectuado:** rellenar `codigo_proceso` por similitud de proveedor, alterar datos originales, editar Sheets o regenerar todos los índices operativos.
 
 Esta auditoría diagnostica el problema y deja una OC candidata; **no certifica que la candidata corresponda al proceso**.
+
+
+## Segunda etapa — índices de OC candidatas y consulta pública
+
+**Implementado:** `scripts/indexar_oc_candidatas_v2.py` construye, por mes, un índice independiente para OC con sufijo `AG`, proveedor informado y `codigo_proceso` vacío, agrupadas por **unidad compradora + nombre normalizado de proveedor**. No atribuye un `codigo_proceso` inexistente ni cambia el histórico. Archivo público: `frontend-v2/data/oc-candidatas/AAAA-MM/<hash>.json`, con metadatos por mes.
+
+**Cobertura publicada y verificada:**
+- Junio: 61.782 OC candidatas AG sin referencia, de 150.451 OC.
+- Julio: 58.733 de 150.980.
+- Agosto: 61.761 de 153.221.
+- Septiembre: 60.792 de 147.966.
+- Octubre: 37.493 de 91.070.
+
+GitHub Actions de publicación [#39694526927](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39694526927): `success`. Verificación de la sintaxis e integración de V2: [#39694607358](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39694607358): `success`.
+
+**Interfaz:** la pestaña Órdenes de compra mantiene las **coincidencias exactas confirmadas por campo de código**; ahora dispone de una lista independiente de **«OC candidatas por verificar»** cuando el proceso tiene proveedor seleccionado o adjudicatario informado. Consulta solo una partición indexada por mes y proveedor, sin descargar todas las OC. La selección de proveedor procede de campos de Resultados u Ofertas seleccionadas. El código candidato es navegable como OC; **no se presenta como asociación contractual confirmada**.
+
+**Caso principal:** `839-4-COT26` tenía candidato `839-10-AG26` por unidad 839 y proveedor CAPACITACIONES ATRÉVETE SPA, por $1.650.000. Se espera que aparezca como *candidato* y no en «OC vinculadas» hasta obtener referencia oficial. La consulta web abierta no permitió obtener una ficha oficial verificable para esos dos códigos; **la validación externa sigue pendiente**. La mejora no resuelve por sí sola la identificación legal sin RUT ni la conciliación de referencias oficiales.
+
+**Pendiente:** prueba visual del usuario y cotejo en fuente oficial antes de marcar cualquier OC como vinculada; valorar fechas, monto ofertado versus monto OC, identidad de unidad y posibles homónimos. Auditoría integral V2 permanece pendiente.
