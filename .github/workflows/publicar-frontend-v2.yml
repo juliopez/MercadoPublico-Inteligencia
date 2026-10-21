@@ -1,5 +1,8 @@
 name: Frontend MER v2 - exportación aislada por período
 on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publicar-frontend-v2.yml']
   workflow_dispatch:
     inputs:
       periodo:
@@ -38,8 +41,8 @@ jobs:
       - name: Exportar UNA entidad de UN mes; no modificar v1
         env:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
-          PERIODO: ${{ inputs.periodo }}
-          ENTIDAD: ${{ inputs.entidad }}
+          PERIODO: ${{ inputs.periodo || '2026-10' }}
+          ENTIDAD: ${{ inputs.entidad || 'procesos' }}
         run: python scripts/exportar_frontend_v2.py --periodo "$PERIODO" --entidad "$ENTIDAD"
       - name: Verificar manifiesto y fragmentos referenciados
         run: |
