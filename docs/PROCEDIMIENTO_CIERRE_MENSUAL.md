@@ -269,3 +269,18 @@ Se añadieron dos escenarios de auditoría en `tests/test_auditar_referencias_ci
 ```
 
 Salida: `~/.local/share/mercadopublico/cierres/2026-10/auditoria_referencial.json`. El código no modifica datos ni activa el cron mensual.
+
+## Duodécima etapa — puerta de evaluación final, sin movimiento
+
+Se creó `scripts/evaluar_cierre_mensual.py`, que coteja las evidencias de preparación, conciliación, plan, auditoría, revalidación y carga verificada, además del catálogo. Si falta evidencia, hay errores bloqueantes, existen observaciones sin revisión o las seis tablas e identificadores no coinciden, devuelve `BLOQUEADO`. Si las comprobaciones declaradas son coherentes y no hay observaciones, devuelve `CANDIDATO_A_APROBACION_SUPERVISADA`.
+
+**En ambos casos** `cierre_autorizado=false` y `traslado_autorizado=false`. La función no verifica firmas de autorización ni realiza transferencias. Este módulo no prueba todavía que el contenido de la carga real exista: `carga_verificada.json` se considera evidencia solo cuando sea generado por un ejecutor real auditado y aprobado, que sigue pendiente. La aprobación supervisada posterior constituye una etapa diferenciada.
+
+Pruebas sin servicios externos: `tests/test_evaluar_cierre_mensual.py` comprueba estado bloqueado sin carga, el estado candidato sin permiso de traslado y el bloqueo por observaciones. Estas pruebas no se han ejecutado aún desde Ubuntu. La integración con permisos Drive, recuperación y cierre del catálogo permanece pendiente. No se modifica el ETL diario ni cron mensual.
+
+En la prueba integral prevista para el 10 de noviembre:
+```bash
+.venv/bin/python scripts/evaluar_cierre_mensual.py \
+ --periodo 2026-10 \
+ --directorio "$HOME/.local/share/mercadopublico/cierres/2026-10"
+```
