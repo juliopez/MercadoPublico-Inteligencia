@@ -1,0 +1,12 @@
+{
+  "proceso": "839-4-COT26",
+  "oc_candidata": "839-10-AG26",
+  "consultado_utc": "2026-10-21T23:47:08.178773+00:00",
+  "estado": "pendiente_verificacion",
+  "motivo": "La API no informa el código público candidato en campos de OC; sin confirmar vínculo",
+  "api_ca_http": 200,
+  "api_oc_http": 203,
+  "coincidencia_oficial": false,
+  "oc_publicas_identificadas": [],
+  "verificacion_suficiente_para_vincular": false
+}
