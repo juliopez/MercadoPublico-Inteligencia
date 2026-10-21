@@ -37,6 +37,8 @@
 - Los controles del cierre y recuperación se documentan en [procedimiento mensual](PROCEDIMIENTO_CIERRE_MENSUAL.md).
 - La validación automática está en [GitHub Actions](../.github/workflows/validacion-mer.yml).
 
+- **[Línea base estable frontend v2 (21-10-2026)](BASELINE_FRONTEND_V2_2026-10-21.md)** — validación del usuario, conteos, límites y siguiente fase: recuperar detalle vinculado de v1.
+
 ## 06. Plan e historial
 
 - [Plan maestro de 21 tareas](PLAN_MAESTRO_21_TAREAS.md) — planificación histórica; **no equivale al estado actual**.
