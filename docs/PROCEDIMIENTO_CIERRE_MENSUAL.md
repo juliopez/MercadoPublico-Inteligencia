@@ -67,3 +67,33 @@ Este comando efectúa descargas y procesamiento local **pero nunca escribe en Sh
 **Decisión pendiente de calendario:** hora concreta de lanzamiento (el usuario especificó día 10, no hora) y política de reintentos tras fallos. No programar el script hasta disponer de pruebas offline y del cargador conciliado seguro. El cron diario del ETL vigente permanece independiente.
 
 **Actualización del diseño de materialización:** el procedimiento inicial proponía crear una nueva hoja histórica. Se prioriza ahora, conforme a la decisión del proyecto, **consolidar la hoja operativa existente y trasladarla conservando su ID**, siempre que las seis tablas sean auditables y la carga reconciliada. Si no cabe en los límites de Sheets o no se cumple una validación, detener y revisar alternativa sin perder el origen.
+
+## Conciliador de seis tablas — segunda etapa (solo lectura)
+
+Se añadió `scripts/conciliar_cierre_mensual.py`, junto con una prueba unitaria independiente de Google (`tests/test_conciliar_cierre_mensual.py`). El conciliador compara las **seis tablas** del paquete SQLite generado por el importador histórico contra la Google Sheets operativa del período anterior. Lee mediante `spreadsheets.readonly` y **no solicita permiso de escritura**.
+
+Por cada tabla clasifica registros:
+- **nuevos:** presentes en el histórico oficial, ausentes del operativo.
+- **modificados:** misma PK, valores distintos.
+- **sin_cambios:** misma PK y todos los valores idénticos.
+- **solo_operativo:** presentes en la Google Sheets pero ausentes del paquete histórico; **no eliminar automáticamente**.
+
+Valida la identidad del mes, disponibilidad de `preparado.sqlite` e `informe.json`, cabeceras, unicidad de PK, recuentos e integridad de filas, con ejemplos acotados de claves. Las diferencias no implican automáticamente errores ni aprobación de un cambio: deben revisarse antes de escribir.
+
+### Ejecución prevista después del 10 de noviembre
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/mercadopublico/servicio-google.json"
+.venv/bin/python scripts/orquestar_cierre_mensual.py
+.venv/bin/python scripts/conciliar_cierre_mensual.py --periodo 2026-10 --paquete "$HOME/.local/share/mercadopublico/cierres/2026-10/preparados"
+```
+
+Salida: `~/.local/share/mercadopublico/cierres/2026-10/conciliacion.json`. **No ejecutar hoy**: solo el mes anterior puede conciliarse y no antes del día 10. Ejecutar las pruebas locales antes:
+
+```bash
+.venv/bin/python -m unittest discover -s tests -p 'test_conciliar_cierre_mensual.py'
+```
+
+La prueba anterior cubre clasificación de nuevas, modificadas, iguales y solo operativas, pero el script completo **aún no ha sido probado contra la Google Sheets de octubre**. El cron mensual continúa deshabilitado; objetivo: prueba supervisada 10 de noviembre y activación tentativa el 10 de diciembre tras aprobación.
+
+La próxima etapa será decidir reglas por tabla y crear un cargador transaccional con respaldo, protección ante reintentos, auditoría completa y prueba de lectura final; el traslado Drive y actualización GitHub se harán solamente al terminar todas esas etapas.
