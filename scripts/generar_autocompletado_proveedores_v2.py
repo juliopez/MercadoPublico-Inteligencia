@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Construye autocompletado público desde perfiles ya agregados, sin releer históricos."""
-import argparse,json,re
+import argparse,hashlib,json,re
 from collections import defaultdict
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]/"frontend-v2"
@@ -18,7 +18,7 @@ def build(period,root=ROOT):
     if len(key)>=2 and key not in names:names[key]=item["nombre"]
  buckets=defaultdict(list)
  for key,name in sorted(names.items()):
-  buckets[key[:2]].append([key,name])
+  buckets[hashlib.sha256(key[:2].encode('utf8')).hexdigest()[:2]].append([key,name])
  output=root/"data/autocompletar"/period;output.mkdir(parents=True,exist_ok=True)
  for prefix,items in buckets.items():
   (output/(prefix+".json")).write_text(json.dumps(items,ensure_ascii=False,separators=(",",":")),encoding="utf8")
