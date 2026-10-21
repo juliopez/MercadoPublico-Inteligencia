@@ -23,6 +23,10 @@ La configuración de períodos e identificadores vigente está en [`config/catal
 
 Se inició una versión independiente en [`frontend-v2/`](frontend-v2/README.md) para consulta por período con MER v2. **La versión 1 publicada (`index.html` y `data/`) se conserva intacta.** El catálogo público de v2 está vacío hasta generar extractos reales validados; no sustituir ni redirigir la publicación principal sin aprobación. Consulta el [inventario de funcionalidades heredadas de v1](frontend-v2/README.md).
 
+## Línea base validada — frontend MER v2 (21-10-2026)
+
+El usuario validó la navegación por períodos y entidades históricas y reportó **muy buena velocidad de carga** con lectura por fragmentos y **10 registros por página**. La referencia estable, cobertura y secuencia para recuperar las funciones de la versión 1 se registran en [BASELINE_FRONTEND_V2_2026-10-21.md](docs/BASELINE_FRONTEND_V2_2026-10-21.md). **Conservar este comportamiento antes de incorporar el detalle vinculado de ofertas, resultados y órdenes de compra.**
+
 ## Próximo hito — 10 de noviembre de 2026
 
 **Primer cierre manual y supervisado de octubre**, sin desarrollar código nuevo durante la operación. Se requieren tres ZIP oficiales del **mes de octubre** (licitaciones, Compra Ágil/COT y órdenes de compra), conciliación con prioridad de la versión histórica oficial de ese mes, respaldo y verificación de seis entidades. Después se moverá **la misma hoja** desde Operativo a Históricos manteniendo su ID y se actualizará el catálogo GitHub.
