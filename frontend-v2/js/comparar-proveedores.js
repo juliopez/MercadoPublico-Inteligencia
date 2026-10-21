@@ -56,3 +56,40 @@ async function compare(){
 }
 byId('comparar-ejecutar').addEventListener('click',compare);
 byId('periodo').addEventListener('change',()=>clear('El período cambió. Ejecute nuevamente la comparación.'));
+
+let suggestionSeq=0, suggestionTimer;
+const suggestionCache=new Map();
+async function suggest(input){
+ const seq=++suggestionSeq,period=byId('periodo').value;
+ const term=canonical(input.value);
+ const list=byId('comparar-sugerencias');
+ list.replaceChildren();
+ if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period)||term.length<2)return;
+ const prefix=term.slice(0,2),cacheKey=period+'/'+prefix;
+ try{
+  let entries=suggestionCache.get(cacheKey);
+  if(!entries){
+   const response=await fetch('./data/autocompletar/'+cacheKey+'.json');
+   if(response.status===404){byId('comparar-ayuda').textContent='Las sugerencias no están publicadas para este período. Puedes escribir el nombre manualmente.';return}
+   if(!response.ok)throw Error('HTTP '+response.status);
+   entries=await response.json();
+   if(!Array.isArray(entries))throw Error('Formato inválido');
+   suggestionCache.set(cacheKey,entries);
+   if(suggestionCache.size>12)suggestionCache.delete(suggestionCache.keys().next().value);
+  }
+  if(seq!==suggestionSeq||byId('periodo').value!==period)return;
+  const matching=entries.filter(([key])=>key.startsWith(term)).slice(0,40);
+  for(const [,name] of matching){const option=document.createElement('option');option.value=name;list.append(option)}
+  byId('comparar-ayuda').textContent=matching.length+' sugerencias de proveedores para el texto ingresado. Selecciona una razón social completa.';
+ }catch(error){if(seq===suggestionSeq)byId('comparar-ayuda').textContent='No fue posible consultar sugerencias. Puedes ingresar el nombre manualmente.'}
+}
+for(const n of [1,2,3]){
+ byId('comparar-nombre-'+n).addEventListener('input',event=>{
+  clearTimeout(suggestionTimer);
+  suggestionTimer=setTimeout(()=>suggest(event.target),200);
+ });
+}
+byId('periodo').addEventListener('change',()=>{
+ suggestionSeq++;byId('comparar-sugerencias').replaceChildren();
+ byId('comparar-ayuda').textContent='Escribe al menos dos letras iniciales para ver proveedores del nuevo período.';
+});
