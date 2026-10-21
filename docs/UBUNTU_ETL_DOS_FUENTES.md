@@ -25,13 +25,13 @@ La simulación descarga/valida ambos ZIP y cuenta los registros, no requiere cue
 ## Credenciales para carga real
 1. Configurar un proyecto en Google Cloud con Google Sheets API y Google Drive API habilitadas y una cuenta de servicio dedicada.
 2. Descargar la clave JSON únicamente a Ubuntu, fuera de Git y de carpetas públicas, permisos `chmod 600`. Nunca compartir claves o credenciales por ChatGPT/GitHub.
-3. Compartir `MER_2026_10_OPERATIVO` exclusivamente con el correo de la cuenta de servicio como Editor; validar también autorización de copias de respaldo en Drive. No compartir los cuatro históricos ni la producción antigua.
+3. Compartir `MER_2026_10_OPERATIVO` exclusivamente con el correo de la cuenta de servicio como Editor. El respaldo se hace localmente mediante Sheets API, sin copia por Drive. No compartir los cuatro históricos ni la producción antigua.
 4. En la terminal local, antes de la primera ejecución validada:
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/mercadopublico/servicio-google.json"
 bash scripts/ubuntu_etl_dos_fuentes.sh --aplicar
 ```
-**Importante:** `--aplicar` realiza escrituras reales en la Sheet operativa. Hacerlo únicamente después de validar la simulación, tamaño y permisos. Crea una copia previa con Drive; si una escritura falla a mitad, conserva registros ya escritos y requiere reejecución/verificación. El upsert es idempotente respecto a PK, pero **no es una transacción atómica multitabla**. No lanzar ejecuciones simultáneas ni habilitar cron antes de primera prueba completa.
+**Importante:** `--aplicar` realiza escrituras reales en la Sheet operativa. Hacerlo únicamente después de validar la simulación, tamaño y permisos. Crea un respaldo ZIP local de las seis pestañas antes de escribir; si una escritura falla a mitad, conserva registros ya escritos y requiere reejecución/verificación. El upsert es idempotente respecto a PK, pero **no es una transacción atómica multitabla**. No lanzar ejecuciones simultáneas ni habilitar cron antes de primera prueba completa.
 
 ## Cron (propuesto, NO activado)
 Usar el huso horario del equipo: comprobar `timedatectl | grep 'Time zone'`. Si difiere de Santiago, adaptar el cron a la hora local equivalente; `TZ` dentro del script solo afecta a su ejecución, no al horario al que cron lo inicia.
@@ -51,3 +51,18 @@ La planificación a las 16:00 aplica lunes–sábado, solo si Ubuntu está encen
 - Conteos PK y esquema, revisión de suficiencia de celdas.
 - Tras carga piloto: reporte con `CARGA_VERIFICADA` y comprobación independiente de las pestañas.
 - Si el servidor devuelve ZIP antiguo/vacío o error de HTTP: no publicar nueva hora de éxito en el frontend. El frontend todavía no está conectado a este flujo.
+
+## Respaldo local obligatorio — corrección por error 403 de almacenamiento
+
+La cuenta de servicio **puede leer la Sheet y usar la API Drive**, pero `files.copy` devolvió `storageQuotaExceeded`. No se requiere habilitar facturación. Desde esta revisión, `scripts/etl_zip_dos_fuentes.py` **no utiliza la API de Drive**. En su lugar, antes de cualquier escritura lee las seis pestañas por Sheets API y crea un ZIP verificado con seis CSV, `manifiesto.json`, SHA-256 por archivo, CRC y hash global. Se guarda fuera del repositorio, en `~/.local/share/mercadopublico/respaldos/` (directorio 700, archivo ZIP 600). Si falla, la escritura queda bloqueada.
+
+**Prueba obligatoria de solo lectura antes de aplicar:**
+```bash
+git pull --ff-only
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/mercadopublico/servicio-google.json"
+.venv/bin/python scripts/ubuntu_verificar_respaldo.py
+```
+
+El resultado esperado es `RESPALDO LOCAL CREADO Y VERIFICADO`. Compartir solo las estadísticas impresas (sin credenciales); no borrar el respaldo. La prueba no descarga ZIP de ChileCompra ni escribe en Google Sheets.
+
+**Limitación:** respaldo previo y validación de carga no constituyen una transacción atómica de Google Sheets; si se interrumpe la ejecución, las tablas pueden estar parcialmente actualizadas. `cron` seguirá desactivado hasta comprobar la carga inicial de punta a punta y diseñar recuperación. El ZIP local permite restauración manual controlada; **aún no está implementado un restaurador automático**.
