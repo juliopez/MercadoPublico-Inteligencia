@@ -114,11 +114,15 @@ def aplicar_tabla(ws,cols,rows,existing,max_batch=500):
  end=colname(len(cols))
  for i in range(0,len(novel),max_batch):
   batch=novel[i:i+max_batch]
-  # No repetir un append tras respuesta ambigua; consultar claves actuales.
+  # Leer todas las PK solo si ocurrió un error ambiguo en escritura.
+  intentos=[0]
   def append_seguro():
-   keys=ws.col_values(1)
-   keys=set(keys[1:])
-   pending=[row for row in batch if row[0] not in keys]
+   if intentos[0]==0:
+    pending=batch
+   else:
+    keys=set(ws.col_values(1)[1:])
+    pending=[row for row in batch if row[0] not in keys]
+   intentos[0]+=1
    if pending:ws.append_rows(pending,value_input_option="RAW",insert_data_option="INSERT_ROWS")
   solicitud_con_reintentos(append_seguro,f"{ws.title} inserción {i}")
   if (i//max_batch)%8==0:print(ws.title,"avance",min(i+len(batch),len(novel)),"/",len(novel),flush=True)
