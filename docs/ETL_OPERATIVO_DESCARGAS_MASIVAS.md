@@ -63,3 +63,14 @@ El simulador completo todavía requiere validación empírica; si los tres ZIP d
 Primera prueba real en Ubuntu (22:16 hora de Santiago): `licitaciones` comenzó a descargarse, pero `Compra Ágil` respondió `HTTP 404 The specified blob does not exist` a `https://transparenciachc.blob.core.windows.net/trnspchc/COT_2026-10.zip`; el script abortó antes de descargar órdenes de compra. No se escribió en Sheets ni se ejecutó cron. **No se puede afirmar que las tres fuentes se publiquen diariamente** solo por la periodicidad general de las descargas masivas.
 
 Se incorporó preflight de disponibilidad HTTP para las **tres** fuentes, antes de transferir ZIP voluminosos; si falta alguna, se genera `salida_operativa/diagnostico_fuentes_AAAA-MM.json`, la ejecución termina con código 2 y conserva todos los datos. Futuros reintentos deberán distinguir `404` persistente de fallas transitorias. No habilitar carga incompleta ni buscar reemplazo no oficial sin aprobación.
+
+## Arquitectura híbrida aprobada — 20 de octubre de 2026
+
+Se reemplaza el requisito de tres ZIP simultáneos por tres flujos independientes:
+1. Licitaciones: descarga ZIP mensual y actualización MER de la tabla Procesos (modalidad Licitación), sin eliminar filas de Compra Ágil.
+2. Órdenes de compra: descarga ZIP mensual y actualización de OrdenesCompra y Proveedores relacionados, sin borrar proveedores ni procesos de otras fuentes.
+3. Compra Ágil: API v2 (beta) con ticket exclusivamente en cabecera HTTP `ticket`, tiempos de espera y reintentos moderados, lectura paginada, detalle individual por código cuando haga falta y control de cambios. Si la API falla, conservar último estado válido. No ejecutar escritura hasta validar datos y conciliación MER.
+
+**Reglas de integridad:** cada flujo tiene su propio último éxito, error y marca temporal; PK idempotentes; no reemplazar pestañas enteras con datos parciales; evitar carreras entre flujos (bloqueo); no actualizar históricos junio–septiembre. El frontend debe indicar cobertura independiente por fuente. La API v2 puede producir 504 y respuestas parciales; no tratar respuestas incompletas como corte válido.
+
+**Estado de implementación:** diseño documentado; los scripts previos siguen en modo simulación y requieren simultáneamente los tres ZIP, por lo que **NO representan esta arquitectura híbrida todavía**. Pendientes: refactorizar preparación de fuente individual, upsert seguro en Sheets, credenciales locales Ubuntu, prueba real end-to-end y recién entonces activar cron. Nunca almacenar tickets en el repositorio; leerlos de variable de entorno o archivo local con permisos restrictivos.
