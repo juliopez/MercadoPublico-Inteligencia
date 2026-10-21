@@ -140,3 +140,16 @@ El usuario confirmó expresamente que la búsqueda global inicial de **Procesos 
 Se releyeron README, índice, decisiones, este documento, catálogo público y workflow inicial antes de intervenir. Se creó `.github/workflows/ampliar-busqueda-v2.yml` (commit `8073bc41`) que genera y valida índices restantes por entidad y período (junio–octubre 2026) directamente de fragmentos JSON públicos, omite entidades con cero registros y publica por períodos en commits separados; no modifica Sheets, ETL, fragmentos, ni V1 o lector V2. Cada índice se verifica contra conteos y número de fragmentos del catálogo.
 
 **Ejecución iniciada:** [GitHub Actions #39661477081](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39661477081). Al redactar este registro el trabajo estaba `in_progress`. **Solo períodos con índices efectivamente confirmados en repositorio deben comunicarse como disponibles.** Tras finalizar, revisar logs, cobertura por entidad y eventual impacto de archivos publicados sobre GitHub Pages.
+
+
+## Expansión completa publicada y verificada — 21-10-2026
+La persona usuaria validó funcionalmente en navegador la búsqueda inicial de junio/Procesos. Para extenderla, se creó `.github/workflows/ampliar-busqueda-v2.yml`, commit `8073bc41`. La ejecución [#39661477081](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39661477081) publicó junio, pero falló durante el push de julio por concurrencia con una actualización documental. Se incorporó `git pull --rebase origin main` antes de cada push (commit `8a01439d`) y la segunda ejecución [#39661629520](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39661629520) finalizó con **success**.
+
+Se consultaron directamente en el repositorio los archivos `frontend-v2/data/busqueda/AAAA-MM/entidad/meta.json` para todos los períodos y entidades con `conteos > 0`. Los 18 índices publicados coinciden con los registros y fragmentos del catálogo:
+- 2026-06: Procesos 80.898; Ofertas 407.923; Resultados 63.214; Órdenes de compra 150.451.
+- 2026-07: Procesos 80.996; Ofertas 437.855; Resultados 54.526; Órdenes de compra 150.980.
+- 2026-08: Procesos 83.937; Ofertas 432.111; Resultados 65.945; Órdenes de compra 153.221.
+- 2026-09: Procesos 79.376; Ofertas 398.018; Resultados 48.637; Órdenes de compra 147.966.
+- 2026-10: Procesos 1.558; Órdenes de compra 91.070. Ofertas y Resultados muestran cero registros publicados, por lo cual el workflow omite generarles índice.
+
+**Evidencia y límite:** CI satisfactoria, publicación y conciliación de metadatos verificadas. La validación en navegador reportada por el usuario corresponde al índice inicial junio/Procesos; la ampliación a otras entidades y meses **aún requiere prueba interactiva**. La búsqueda opera por prefijos de palabras y puede presentar candidatos adicionales; no confundir con coincidencia exacta. No se modificaron Google Sheets, ETL ni la V1. La consulta del frontend V2 sigue usando fragmentos de 1.000 registros y paginación de 10.
