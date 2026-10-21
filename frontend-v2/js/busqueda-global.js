@@ -33,6 +33,7 @@ function clear(text){
  el('busqueda-global-anterior').disabled=true;el('busqueda-global-siguiente').disabled=true;
  el('global-csv').disabled=true;
  el('global-analitica').textContent='Indicadores de consulta: sin ejecutar.';
+ el('busqueda-global-progreso').hidden=true;
  message(text);
 }
 async function read(path){
@@ -64,11 +65,13 @@ async function collect(s,t,target){
 async function draw(s,t){
  if(!valid(s,t))return;
  const limit=(t.page+1)*10+1;
- message('Comprobando coincidencias exactas en fragmentos públicos…');
+ message('Comprobando registros del período…');
+ const progress=el('busqueda-global-progreso');progress.hidden=false;progress.value=t.refs.length?Math.round(t.cursor/t.refs.length*100):100;
  el('busqueda-global-anterior').disabled=true;el('busqueda-global-siguiente').disabled=true;
  try{
   await collect(s,t,limit);
   if(!valid(s,t))return;
+  const progress=el('busqueda-global-progreso');progress.hidden=false;progress.value=t.refs.length?Math.round(t.cursor/t.refs.length*100):100;
   const ordering=globalSort.key?[...t.found].sort((a,b)=>globalSort.direction*String(a.record[globalSort.key]??'').localeCompare(String(b.record[globalSort.key]??''),'es',{numeric:true})):t.found;
   const visible=ordering.slice(t.page*10,(t.page+1)*10);
   const head=document.createElement('tr');
@@ -100,10 +103,14 @@ async function draw(s,t){
 }
 async function search(){
  const now=++seq,period=el('periodo').value,entity=el('entidad').value;
+ el('busqueda-global-progreso').hidden=false;el('busqueda-global-progreso').value=0;
  session=null;
- const query=[...new Set(terms(el('busqueda-global-texto').value))];
+ const raw=el('busqueda-global-texto').value.trim();
+ const query=[...new Set(terms(raw))];
+ const codeQuery=/^[a-z0-9]+(?:-[a-z0-9]+)+$/i.test(raw);
+ const indexedTokens=query.filter(t=>t.length>=3);
  if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period)||!fields[entity]){clear('Seleccione un período y una entidad.');return}
- if(!query.length||query.some(t=>t.length<3)){clear('Escriba palabras de al menos 3 caracteres.');return}
+ if(!indexedTokens.length||(!codeQuery&&query.some(t=>t.length<3))){clear('Introduce palabras de al menos 3 caracteres o un código completo.');return}
  message('Consultando índice de '+period+'…');
  try{
   const meta=await read('data/busqueda/'+period+'/'+entity+'/meta.json');
@@ -115,12 +122,12 @@ async function search(){
   const parts=catalogue.periodos?.find(p=>p.periodo===period)?.partes?.[entity];
   if(!Array.isArray(parts)||parts.length!==meta.fragmentos)throw Error('Índice desactualizado');
   const grouped=new Map();
-  for(const key of [...new Set(query.map(t=>t.slice(0,2)))]){
+  for(const key of [...new Set(indexedTokens.map(t=>t.slice(0,2)))]){
    try{grouped.set(key,await read('data/busqueda/'+period+'/'+entity+'/'+key+'.json'))}
    catch(e){if(String(e.message).includes('404'))grouped.set(key,{});else throw e}
    if(now!==seq)return;
   }
-  const lists=query.map(token=>grouped.get(token.slice(0,2))?.[token.slice(0,3)]||[]);
+  const lists=indexedTokens.map(token=>grouped.get(token.slice(0,2))?.[token.slice(0,3)]||[]);
   lists.sort((a,b)=>a.length-b.length);
   const others=lists.slice(1).map(list=>new Set(list.map(v=>v.join(':'))));
   const refs=(lists[0]||[]).filter(ref=>others.every(set=>set.has(ref.join(':'))));
