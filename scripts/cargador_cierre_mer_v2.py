@@ -59,6 +59,16 @@ def cargar_con_respaldo(book,db,schemas,periodo,readback,aplicar,backup,registra
   raise ValueError("Respaldo incompleto")
  resultado["respaldo"]=copia
  registrar("RESPALDO_VERIFICADO",resultado)
+ try:
+  _ejecutar_tablas(book,db,schemas,readback,aplicar,registrar,resultado)
+ except BaseException as exc:
+  resultado["estado"]="CARGA_INCOMPLETA_BLOQUEADA"
+  resultado["error"]=repr(exc)
+  registrar("CARGA_INTERRUMPIDA",resultado)
+  raise
+ return resultado
+
+def _ejecutar_tablas(book,db,schemas,readback,aplicar,registrar,resultado):
  # Cada etapa vuelve a consultar el destino: reinicio tras fallos no duplica PK.
  for tab in TABLAS:
   ws=book.worksheet(tab)
@@ -77,7 +87,6 @@ def cargar_con_respaldo(book,db,schemas,periodo,readback,aplicar,backup,registra
   registrar("TABLA_VERIFICADA:"+tab,resultado)
  resultado["estado"]="DATOS_CARGADOS_Y_VERIFICADOS_PENDIENTES_DE_AUDITORIA"
  registrar("CARGA_VERIFICADA",resultado)
- return resultado
 
 def main():
  p=argparse.ArgumentParser(description="Preflight del cargador: sin escrituras ni autorización de cierre")
