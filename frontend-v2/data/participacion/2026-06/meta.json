@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "periodo": "2026-06",
+  "procesos_publicados": 80898,
+  "ofertas": 407923,
+  "ofertas_sin_proceso_en_el_mismo_mes": 0,
+  "metodo": "Vinculación exacta por código de proceso dentro de cada período; no identifica procesos de otros meses"
+}
