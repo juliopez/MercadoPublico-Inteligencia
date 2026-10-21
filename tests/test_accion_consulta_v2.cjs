@@ -1,0 +1,12 @@
+const fs=require('fs'),assert=require('node:assert/strict');
+const html=fs.readFileSync('frontend-v2/index.html','utf8');
+const js=fs.readFileSync('frontend-v2/js/app.js','utf8');
+assert(html.includes('id="ir-busqueda-global">Mostrar registros del período'));
+assert(html.includes('id="consulta-avanzada"'));
+const action=js.match(/\$\('ir-busqueda-global'\)\.addEventListener\('click',async \(\)=>\{[\s\S]*?\n\}\);/)?.[0];
+assert(action,'No se encontró acción principal');
+assert(action.includes('await consult()'),'El botón principal debe cargar registros');
+assert(action.includes("$('resultados').scrollIntoView"),'Debe abrir la tabla');
+assert(!action.includes("$('consulta-avanzada').open"),'No requiere desplegar avanzada');
+assert(js.includes("await loadChunk(0)"),'Carga primer fragmento');
+console.log('BOTON_CONSULTA_DIRECTA_OK');
