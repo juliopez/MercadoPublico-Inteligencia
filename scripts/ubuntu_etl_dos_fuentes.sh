@@ -12,6 +12,8 @@ fi
 export TZ=America/Santiago
 STAMP="$(date +%Y%m%d_%H%M%S)"
 LOG="$ROOT/logs/etl_dos_fuentes_$STAMP.log"
+exec 8>"$ROOT/logs/.mer_escritura_compartida.lock"
+flock -n 8 || { echo "Bloqueo MER ocupado por cierre u otro escritor; ETL no iniciado"; exit 5; }
 exec 9>"$ROOT/logs/.etl_dos_fuentes.lock"
 flock -n 9 || { echo "Otra ejecución activa; no se superpone"; exit 3; }
 INICIO_EPOCH="$(date +%s)"
