@@ -28,7 +28,7 @@ concurrency:
 jobs:
   publicar:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,8 +45,8 @@ jobs:
           ENTIDAD: ${{ inputs.entidad || 'procesos' }}
         run: |
           if [ "$GITHUB_EVENT_NAME" = "push" ]; then
-            for table in procesos ofertas resultados ordenescompra; do
-              python scripts/exportar_frontend_v2.py --periodo 2026-10 --entidad "$table"
+            for period in 2026-06 2026-07 2026-08 2026-09; do
+              python scripts/exportar_frontend_v2.py --periodo "$period" --entidad procesos
             done
           else
             python scripts/exportar_frontend_v2.py --periodo "$PERIODO" --entidad "$ENTIDAD"
