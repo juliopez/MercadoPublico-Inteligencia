@@ -410,3 +410,13 @@ Las PK divergentes y las filas incompatibles son bloqueantes. Los registros solo
 **Punto crítico:** completar un campo vacío solo es seguro si el dato tiene la misma semántica entre fuentes; el informe aún requiere contrastar esa compatibilidad, especialmente monto, identidad y estados. No elevar una selección histórica a adjudicación verificada. Para las columnas conflictivas se decidirá precedencia por entidad/campo usando la muestra real de octubre. Sin esos datos, codificar reglas específicas sería inventar equivalencias.
 
 El programa recibe `preparado.sqlite` oficial y `operativo_snapshot.sqlite` de solo lectura, ambos reutilizados de las etapas existentes. Hay cuatro pruebas nuevas en `tests/test_politica_conciliacion_cierre.py`, todavía no ejecutadas. La última cifra verificada por el usuario fue 34 pruebas; hay código de pruebas posterior pendiente de la próxima ronda de integración.
+
+## Simplificación operativa: un comando de diagnóstico de cierre (21/10/2026)
+
+Para evitar una cadena indefinida de pruebas y componentes independientes, se añadió `scripts/diagnosticar_cierre_integrado.py`: **un solo comando**, a partir del día 10, que ejecuta secuencialmente lo ya construido: descarga y preparación de los tres ZIP, exportación de Sheets de solo lectura a SQLite, conciliación, plan conservador, auditoría referencial, diferencias campo a campo y política de conflictos. Genera `~/.local/share/mercadopublico/cierres/AAAA-MM/resumen_diagnostico_cierre.json`; ante fallo se detiene y deja traza local. No incorpora ETL nuevo ni altera los históricos de junio–septiembre.
+
+```bash
+.venv/bin/python scripts/diagnosticar_cierre_integrado.py --periodo 2026-10
+```
+
+**Se ejecutará solo desde el 10/11/2026 y bajo supervisión.** Hoy no debe descargarse octubre para forzar la prueba. El programa no tiene capacidad de escribir en Google Sheets, archivar en Drive, actualizar catálogo o instalar cron. Por tanto **NO es aún un cierre completo**. Los pendientes reales son (1) resolver conflictos de campos con datos efectivos de octubre, (2) conectar con seguridad el cargador real y su verificación y (3) traslado autorizado Drive/GitHub. La siguiente intervención debe centrarse en estos bloqueos, no añadir otro conjunto de pruebas unitarias por inercia.
