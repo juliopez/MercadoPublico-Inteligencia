@@ -64,3 +64,11 @@ Exportación aislada usando `scripts/exportar_frontend_v2.py` y [workflow de pub
 Primer intento de cuatro entidades falló por cuota **429 de lecturas Google Sheets por minuto**. Se ajustó a bloques de 5.000 filas y reintentos con espera, y la segunda ejecución **terminó correctamente**. La v1 continúa en `/index.html` y `/data/` sin cambios por estos exportadores.
 
 **Pendiente antes de declarar front v2 operativo:** despliegue independiente/Pages, navegación real y carga selectiva de grandes volúmenes (el lector actual descarga todos los fragmentos de la entidad elegida). Los históricos junio–septiembre aún no han sido exportados al catálogo v2. Ejecutar manualmente el workflow por mes y entidad, verificando la cobertura antes de ampliar. La publicación actual de datos en GitHub **no implica que la web v2 ya esté desplegada**.
+
+## Vista previa web — actualización del 21/10/2026
+
+Se creó el flujo [`preview-frontend-v2.yml`](../.github/workflows/preview-frontend-v2.yml): valida el manifiesto y todos los fragmentos referenciados, empaqueta el repositorio con la v1 en la raíz y despliega a GitHub Pages, exponiendo la v2 en la ruta `/frontend-v2/`. **La ruta no reemplaza la v1.**
+
+Primera ejecución: [GitHub Actions #39639890184](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39639890184). En la revisión inicial quedó en estado `waiting` por autorización del entorno protegido `github-pages`; la API muestra despliegue pendiente y `current_user_can_approve=false`. **No atribuir éxito hasta que el workflow termine y se compruebe la URL en navegador.** No desactivar ni eludir aprobaciones del entorno para acelerar la publicación.
+
+URL **prevista**, no verificada todavía: `https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/`. Cuando la aprobación se resuelva, verificar catálogo 2026-10, Procesos 1.558, Ofertas 0, Resultados 0 y OC 91.070, paginación 10/25, y conservar funcionamiento del enlace a v1.
