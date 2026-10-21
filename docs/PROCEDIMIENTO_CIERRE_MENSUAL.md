@@ -420,3 +420,11 @@ Para evitar una cadena indefinida de pruebas y componentes independientes, se a�
 ```
 
 **Se ejecutará solo desde el 10/11/2026 y bajo supervisión.** Hoy no debe descargarse octubre para forzar la prueba. El programa no tiene capacidad de escribir en Google Sheets, archivar en Drive, actualizar catálogo o instalar cron. Por tanto **NO es aún un cierre completo**. Los pendientes reales son (1) resolver conflictos de campos con datos efectivos de octubre, (2) conectar con seguridad el cargador real y su verificación y (3) traslado autorizado Drive/GitHub. La siguiente intervención debe centrarse en estos bloqueos, no añadir otro conjunto de pruebas unitarias por inercia.
+
+## Integración real de carga reutilizando ETL existente (21/10/2026)
+
+Se añadió al cargador `scripts/cargador_cierre_mer_v2.py` el adaptador `cargar_con_adaptadores_etl`, que enlaza el motor de cierre con **funciones reales ya existentes** de `scripts/etl_zip_dos_fuentes.py`: `worksheet_rows` (lectura), `respaldo_local` (ZIP de las seis pestañas con SHA256) y `aplicar_tabla` (escritura por lotes con reintentos). No duplica la implementación del ETL diario.
+
+**Alcance actual:** adaptador funcional invocable desde Python, sin CLI de escritura, sin conexión de autenticación y sin autorización de cierre. Solo se permite llamar con una confirmación explícita de cierre supervisado; esa confirmación es una barrera programática, **no reemplaza** una autorización externa ni el candado `flock`, y no se expondrá a usuario hasta integrar esas garantías. El motor admite únicamente altas de PK ausentes; cualquier diferencia de un registro existente bloquea la carga antes del respaldo. Esto significa que **no puede todavía resolver conflictos o enriquecer campos vacíos**, y por tanto no constituye el cargador de cierre definitivo.
+
+**Próximos bloqueantes concretos:** resolver la política efectiva de modificación campo a campo basada en octubre, integrar la exclusión mutua con ETL diario, verificar origen/snapshot antes de cada operación y autenticar un orquestador supervisado que invoque este adaptador con bitácora persistente. Después, traslado real Drive y actualización GitHub; validaciones de aceptación acordadas: tres, no nuevas rondas intermedias indefinidas. No se efectuaron operaciones remotas ni pruebas contra producción en este commit.
