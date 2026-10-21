@@ -65,7 +65,10 @@ async function suggest(input){
  const list=byId('comparar-sugerencias');
  list.replaceChildren();
  if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period)||term.length<2)return;
- const prefix=term.slice(0,2),cacheKey=period+'/'+prefix;
+ const prefix=term.slice(0,2);
+ const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(prefix));
+ const shard=new Uint8Array(digest)[0].toString(16).padStart(2,'0');
+ const cacheKey=period+'/'+shard;
  try{
   let entries=suggestionCache.get(cacheKey);
   if(!entries){
