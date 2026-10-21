@@ -1,0 +1,48 @@
+name: Frontend MER v2 - índices de detalle relacionado
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/indexar_relaciones_frontend_v2.py'
+      - '.github/workflows/indexar-relaciones-v2.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: frontend-mer-v2-indices
+  cancel-in-progress: false
+jobs:
+  indices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generar índices de relaciones por período
+        run: |
+          for period in 2026-06 2026-07 2026-08 2026-09 2026-10; do
+            python3 scripts/indexar_relaciones_frontend_v2.py --periodo "$period"
+          done
+      - name: Verificar sintaxis e integridad básica
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for file in Path('frontend-v2/data/indices').glob('*.json'):
+              d=json.loads(file.read_text())
+              assert d['periodo']==file.stem
+              assert set(d['entidades'])<= {'ofertas','resultados','ordenescompra'}
+              for data in d['entidades'].values():
+                  for files in data.values():
+                      assert all((Path('frontend-v2')/p).is_file() for p in files)
+              print(file, 'OK')
+          PY
+      - name: Versionar índices públicos aislados v2
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A frontend-v2/data/indices
+          if ! git diff --cached --quiet; then
+            git commit -m "data(v2): índices de relaciones por proceso"
+            git pull --rebase
+            git push
+          fi
