@@ -2,7 +2,7 @@
 """ETL operativo MER v2: ZIP de licitaciones y OC, sin Compra Ágil.
 Solo escribe con --aplicar; exige credencial local y respaldo verificable ZIP de las seis pestañas.
 """
-import argparse,csv,datetime as dt,hashlib,importlib.util,io,json,os,sqlite3,sys,tempfile,urllib.request,zipfile
+import argparse,csv,datetime as dt,hashlib,importlib.util,io,json,os,sqlite3,sys,tempfile,time,random,urllib.request,zipfile
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -86,7 +86,20 @@ def load_rows(db,table,cols):
   row=json.loads(raw)
   if len(row)!=len(cols) or row[0]!=pk:raise ValueError("Contrato origen corrupto")
   yield pk,[str(v or "") for v in row]
-def aplicar_tabla(ws,cols,rows,existing,max_batch=150):
+def solicitud_con_reintentos(fn,descripcion,max_intentos=9):
+ """Reintentos acotados ante 429 y 5xx, con espera exponencial y jitter."""
+ from gspread.exceptions import APIError
+ for intento in range(max_intentos):
+  try:return fn()
+  except APIError as e:
+   status=getattr(getattr(e,"response",None),"status_code",None)
+   if status not in (429,500,502,503,504) or intento==max_intentos-1:raise
+   esperar=min(90,12*(2**min(intento,3)))+random.uniform(0,4)
+   print(f"Cuota temporal {status} en {descripcion}, espera {esperar:.0f}s ({intento+1}/{max_intentos})",flush=True)
+   time.sleep(esperar)
+
+def aplicar_tabla(ws,cols,rows,existing,max_batch=500):
+ """Upsert con paquetes moderados y pausa; relectura ante reintento ambiguo."""
  import gspread
  changed=[];novel=[];same=0
  for pk,row in rows:
@@ -99,14 +112,23 @@ def aplicar_tabla(ws,cols,rows,existing,max_batch=150):
   while n:n,x=divmod(n-1,26);s=chr(65+x)+s
   return s
  end=colname(len(cols))
- if novel:
-  # La escritura de nuevos registros es reanudable; misma PK nunca se inserta dos veces.
-  for start in range(0,len(novel),max_batch):
-   batch=novel[start:start+max_batch]
-   ws.append_rows(batch,value_input_option="RAW",insert_data_option="INSERT_ROWS")
- for start in range(0,len(changed),max_batch):
-  batch=changed[start:start+max_batch]
-  ws.batch_update([{"range":f"A{num}:{end}{num}","values":[row]} for num,row in batch],value_input_option="RAW")
+ for i in range(0,len(novel),max_batch):
+  batch=novel[i:i+max_batch]
+  # No repetir un append tras respuesta ambigua; consultar claves actuales.
+  def append_seguro():
+   keys=ws.col_values(1)
+   keys=set(keys[1:])
+   pending=[row for row in batch if row[0] not in keys]
+   if pending:ws.append_rows(pending,value_input_option="RAW",insert_data_option="INSERT_ROWS")
+  solicitud_con_reintentos(append_seguro,f"{ws.title} inserción {i}")
+  if (i//max_batch)%8==0:print(ws.title,"avance",min(i+len(batch),len(novel)),"/",len(novel),flush=True)
+  time.sleep(1.3)
+ for i in range(0,len(changed),max_batch):
+  block=changed[i:i+max_batch]
+  solicitud_con_reintentos(lambda:ws.batch_update(
+   [{"range":f"A{num}:{end}{num}","values":[row]} for num,row in block],
+   value_input_option="RAW"),f"{ws.title} actualización {i}")
+  time.sleep(1.3)
  return {"nuevos":len(novel),"modificados":len(changed),"sin_cambios":same}
 def main():
  p=argparse.ArgumentParser()
@@ -159,7 +181,7 @@ def main():
    book=gc.open_by_key(dest["id"])
    tables={}
    for table,cols in expected.items():
-    ws=book.worksheet(table);current=worksheet_rows(ws,cols)
+    ws=book.worksheet(table);current=solicitud_con_reintentos(lambda:worksheet_rows(ws,cols),table+' lectura')
     original=dict(load_rows(db,table,cols))
     newer=sum(key not in current for key in original)
     modified=sum(key in current and current[key][1]!=row for key,row in original.items())
@@ -176,7 +198,7 @@ def main():
     ws=book.worksheet(table);current=worksheet_rows(ws,cols)
     report["aplicados"][table]=aplicar_tabla(ws,cols,load_rows(db,table,cols),current)
     # Read-back counts and PK integrity
-    after=worksheet_rows(ws,cols)
+    after=solicitud_con_reintentos(lambda:worksheet_rows(ws,cols),table+' verificacion')
     expected_size=len(current)+report["aplicados"][table]["nuevos"]
     if len(after)!=expected_size:raise ValueError("Verificación de PK falló en "+table)
     for key,row in load_rows(db,table,cols):
