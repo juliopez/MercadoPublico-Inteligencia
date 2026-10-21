@@ -13,3 +13,14 @@ html{scroll-behavior:smooth;scroll-padding-top:18px}
 .roadmap{background:#f8fafc}
 #consulta,#indicadores,#resultados,#detalle{scroll-margin-top:16px}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Tablas V2: lectura simplificada con la densidad y jerarquía visual de V1. */
+.table-scroll{border:1px solid #e1eaf1;border-radius:9px}
+.table-scroll table{min-width:850px}
+.table-scroll th{white-space:nowrap;color:#4b6175;position:sticky;top:0;z-index:1}
+.table-scroll tbody tr:hover{background:#f5fafd}
+.table-scroll .process-code{font-variant-numeric:tabular-nums;font-weight:650;color:#175781;white-space:nowrap}
+.table-scroll .process-name{font-weight:650;color:#244765;min-width:190px}
+.table-scroll .amount-cell{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.table-scroll .state-pill{display:inline-block;background:#edf2f7;color:#284c69;padding:5px 9px;border-radius:16px;font-weight:600;max-width:240px}
+.table-scroll td:last-child{white-space:nowrap}
