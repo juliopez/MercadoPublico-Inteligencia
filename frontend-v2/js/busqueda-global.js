@@ -3,7 +3,7 @@ const el=id=>document.getElementById(id);
 const fields={
  procesos:[['codigo','Código'],['nombre','Proceso'],['organismo_comprador','Organismo'],['estado','Estado']],
  ofertas:[['codigo','Proceso'],['proveedor','Proveedor'],['monto_ofertado_clp','Monto CLP']],
- resultados:[['codigo','Proceso'],['adjudicatario','Proveedor informado'],['validado','Verificación']],
+ resultados:[['codigo','Proceso'],['adjudicatario','Proveedor informado'],['monto_adjudicado_clp','Monto informado']],
  ordenescompra:[['codigo_oc','Orden de compra'],['codigo_proceso','Proceso'],['proveedor','Proveedor']]
 };
 const searchable={procesos:['codigo','nombre','organismo_comprador'],ofertas:['codigo','proveedor'],resultados:['codigo','adjudicatario'],ordenescompra:['codigo_oc','codigo_proceso','proveedor']};
@@ -165,7 +165,7 @@ async function exportGlobal(){
   const cols=fields[t.entity].map(([key])=>key);
   const safe=x=>'"'+String(x??'').replaceAll('"','""').replace(/^[=+@\-\t\r]/,m=>"'"+m)+'"';
   const all=globalSort.key?[...t.found].sort((a,b)=>globalSort.direction*String(a.record[globalSort.key]??'').localeCompare(String(b.record[globalSort.key]??''),'es',{numeric:true})):t.found;
-  const csv='\uFEFF'+[cols.join(';'),...all.map(x=>cols.map(key=>safe(window.MPV2?.moneyField(key)?window.MPV2.moneyCLP(x.record[key]):x.record[key])).join(';'))].join('\r\n');
+  const csv='\uFEFF'+[cols.join(';'),...all.map(x=>cols.map(key=>safe(x.record[key])).join(';'))].join('\r\n');
   const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   const a=document.createElement('a');a.href=url;a.download='busqueda-global-'+t.entity+'-'+t.period+'.csv';
   document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
