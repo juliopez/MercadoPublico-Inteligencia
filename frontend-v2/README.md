@@ -1,6 +1,6 @@
 # Frontend MER v2 — desarrollo independiente
 
-**Inicio:** 2026-10-21. **Estado:** base visual y lector por período publicados en código, **sin datos MER v2 exportados y sin despliegue independiente validado**.
+**Inicio:** 2026-10-21. **Estado:** base visual y lector por período preparados. **Primera exportación real de octubre publicada en el repositorio** y verificada por GitHub Actions; **sitio v2 todavía sin despliegue independiente ni prueba de navegador**.
 
 ## Reglas obligatorias de convivencia
 
@@ -24,7 +24,7 @@
 | Mis favoritos | Pendiente |
 | Exportación CSV | Pendiente |
 | Indicadores, recuentos y fecha de actualización | Base incorporada, depende de extractos v2 |
-| Paginación | 25 registros por página en prototipo v2 |
+| Paginación | 10 resultados por página para Ofertas; 25 para otras entidades |
 | Seguridad de rutas de fragmentos | Restricción a carpeta y patrón por período/entidad |
 
 ## Contrato inicial de datos v2
@@ -56,3 +56,11 @@
 - Tareas 19/21: evaluación funcional y despliegue paralelo, nunca sustitución no aprobada.
 
 **No interpretar el prototipo como un frontend funcional con datos reales.** La versión v1 sigue siendo la referencia operativa y la fuente de requisitos de experiencia de usuario.
+
+## Primera publicación real — 21/10/2026
+
+Exportación aislada usando `scripts/exportar_frontend_v2.py` y [workflow de publicación v2](../.github/workflows/publicar-frontend-v2.yml), confirmada en [ejecución exitosa](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39639320943). **Período 2026-10:** Procesos **1.558**, Ofertas **0**, Resultados **0**, Órdenes de Compra **91.070**. Los ceros son ausencia efectiva en las pestañas del operativo de octubre a la fecha, no errores ni valores históricos extrapolados. El catálogo de publicación está en [`data/catalogo-publico.json`](data/catalogo-publico.json); los fragmentos dentro de `data/partes/`.
+
+Primer intento de cuatro entidades falló por cuota **429 de lecturas Google Sheets por minuto**. Se ajustó a bloques de 5.000 filas y reintentos con espera, y la segunda ejecución **terminó correctamente**. La v1 continúa en `/index.html` y `/data/` sin cambios por estos exportadores.
+
+**Pendiente antes de declarar front v2 operativo:** despliegue independiente/Pages, navegación real y carga selectiva de grandes volúmenes (el lector actual descarga todos los fragmentos de la entidad elegida). Los históricos junio–septiembre aún no han sido exportados al catálogo v2. Ejecutar manualmente el workflow por mes y entidad, verificando la cobertura antes de ampliar. La publicación actual de datos en GitHub **no implica que la web v2 ya esté desplegada**.
