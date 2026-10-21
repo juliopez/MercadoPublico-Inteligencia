@@ -57,3 +57,11 @@ Se consultaron README, índice, decisiones, documento específico y código del 
 **Commits:** `0690f729` (generador) y `49a36462` (pruebas).
 
 **Estado:** código implementado y contrastado estáticamente; **no se han ejecutado las pruebas contra el checkout ni medido los tamaños reales**. Los arrays de referencias continúan en memoria durante la generación y los prefijos frecuentes pueden originar archivos grandes, por lo que el consumo no se considera validado. Tampoco se publicaron índices, se cambió el frontend o se alteraron Sheets, ETL o V1. Se requiere CI exitosa y dimensionamiento instrumental antes de conectar búsqueda global.
+
+
+## Instrumentación del rendimiento — continuación aprobada
+Tras releer README, índice documental, decisiones y este documento, se intentó ejecutar las pruebas originales mediante descarga HTTPS de GitHub: bloqueo por DNS (`raw.githubusercontent.com` no resoluble). No se afirman resultados de esas pruebas ni del workflow.
+
+Se añadió `tests/benchmark_busqueda_frontend_v2.py` (commit `08e8d00d`) para generar **20.000 registros sintéticos en 20 fragmentos**, ejecutar el índice compacto y reportar tiempo, memoria máxima del proceso, bytes totales, número de archivos y tamaño del prefijo más grande. El workflow `.github/workflows/validar-busqueda-v2.yml` fue ampliado para ejecutar el benchmark después de las pruebas unitarias (commit `28c5971c`).
+
+**Estado de evidencia:** benchmark automatizado incorporado, **sin resultado de ejecución confirmado todavía**. Esta prueba sintética no sustituye medir las entidades históricas ni demuestra escalabilidad a millones de registros. No se generaron índices públicos ni se modificaron V1, JS de V2, datos, Sheets o ETL. Se mantiene la búsqueda global desactivada hasta evaluar cifras medidas.
