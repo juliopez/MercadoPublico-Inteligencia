@@ -40,28 +40,29 @@ def build(period, entity, root=ROOT):
         raise ValueError("Entidad incompleta en el manifiesto")
     output = root / "data" / "busqueda" / period / entity
     output.mkdir(parents=True, exist_ok=True)
-    # Cada registro se almacena solo una vez; particionar por hash estable.
-    buffers = [[] for _ in range(SHARDS)]
+    buckets = {}
     count = 0
     for part_id, relative in enumerate(parts):
-        if not re.fullmatch(rf"data/partes/{entity}/{period}/[a-z0-9_-]+\.json", relative):
+        if not re.fullmatch(rf"data/partes/{entity}/{period}/[a-z0-9_-]+\\.json", relative):
             raise ValueError("Ruta inválida: " + relative)
         records = json.loads((root / relative).read_text(encoding="utf-8"))
         if not isinstance(records, list):
             raise ValueError("Fragmento inválido")
         for row_id, record in enumerate(records):
             search = normalize(" ".join(str(record.get(field) or "") for field in FIELDS[entity]))
-            # No incluir columnas ajenas al contrato explícito de búsqueda.
-            shard = int(hashlib.sha256(f"{part_id}:{row_id}".encode()).hexdigest()[:4], 16) % SHARDS
-            buffers[shard].append([part_id, row_id, search])
+            keys = {word[:3] for word in re.findall(r"[a-z0-9]+", search) if len(word) >= 3}
+            for key in keys:
+                buckets.setdefault(key, []).append([part_id, row_id, search])
             count += 1
     if count != expected:
         raise ValueError(f"Conteo discordante: {count} != {expected}")
-    for i, rows in enumerate(buffers):
-        (output / f"{i:02d}.json").write_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
-    meta = {"version": 1, "periodo": period, "entidad": entity, "conteo": count, "fragmentos": len(parts), "particiones": SHARDS, "campos": list(FIELDS[entity])}
-    (output / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print("BUSQUEDA_INDICE_OK", period, entity, count, SHARDS)
+    for key, rows in buckets.items():
+        (output / f"{key}.json").write_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")) + "\\n", encoding="utf-8")
+    meta = {"version": 1, "periodo": period, "entidad": entity, "conteo": count,
+            "fragmentos": len(parts), "tipo": "prefijo_palabra", "longitud_prefijo": 3,
+            "particiones": len(buckets), "campos": list(FIELDS[entity])}
+    (output / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    print("BUSQUEDA_INDICE_OK", period, entity, count, len(buckets))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
