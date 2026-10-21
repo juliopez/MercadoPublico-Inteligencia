@@ -98,3 +98,21 @@ Comprobar que aparece `VERIFICACIÓN CRON OK`. Confirma existencia de Python, ar
 ## Preparación del cierre diferido (sin afectar cron diario)
 
 Después del cambio a noviembre, ejecutar manualmente `git pull --ff-only` y `.venv/bin/python scripts/monitorear_cierre_mensual.py`. El script verifica por HEAD los tres ZIP oficiales del mes anterior y guarda `salida_operativa/cierre_candidato_2026-10.json`. No descarga los archivos ni modifica Google Sheets, carpetas o el catálogo. Solo si las tres fuentes están disponibles, preparar una conciliación y auditoría independiente antes de archivar. **No programar este monitor en cron por ahora**: el comportamiento ante HEAD no soportado o publicación retrasada debe verificarse con octubre. La tarea diaria de octubre/noviembre instalada continúa independiente.
+
+## Registro persistente de sincronizaciones (octubre 2026)
+
+El ejecutor `scripts/ubuntu_etl_dos_fuentes.sh --aplicar` ahora ejecuta `scripts/registrar_sincronizacion.py` después del ETL. Se generan localmente, sin nuevas escrituras a Sheets:
+
+- `salida_operativa/estado_sincronizacion.json`: última ejecución y **última sincronización exitosa**, que no se pierde si hay errores posteriores.
+- `salida_operativa/historial_sincronizacion.jsonl`: historial acumulativo por ejecución; incluye resultado, período y controles por fuente.
+- Se consigna explícitamente que Compra Ágil **no se actualiza** mediante este ETL.
+
+La marca de éxito se registra solamente cuando el ETL terminó con código 0 y produjo un informe fresco con `CARGA_VERIFICADA`. Una simulación no se identifica como una actualización pública. Esto **no publica** el estado en GitHub Pages; se usará en el futuro como entrada del consolidador y tooltip, después de validar su propia publicación. No ejecutar una carga manual adicional solo para ensayar esta función: se evaluará en la próxima ejecución habitual de cron.
+
+Consultar localmente después de las 16:00:
+```bash
+cat salida_operativa/estado_sincronizacion.json
+ls -lt logs/etl_dos_fuentes_*.log | head -3
+```
+
+Para obtener el nuevo código antes de la próxima ejecución programada: `git pull --ff-only` desde el directorio del repositorio Ubuntu.
