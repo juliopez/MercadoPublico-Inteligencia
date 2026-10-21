@@ -45,5 +45,12 @@
     "produccion_antigua": "1y81QaPy37APkBwxlYrKyE66_1ECdhL87GyWNitTfHr4",
     "clon_antiguo": "1loeK_IM3RXHaR7CqpjUbz-TsNgOKNrV1ejq8aRC6JyE"
   },
-  "seguridad": "No publicar tokens, no borrar archivos por pertenecer a revisión, no actualizar producción, histórico cerrado inmutable."
+  "seguridad": "No publicar tokens, no borrar archivos por pertenecer a revisión, no actualizar producción, histórico cerrado inmutable.",
+  "nombres_carpetas": {
+    "raiz": "Plataforma Mercado Público",
+    "historicos": "01_Historicos_MER",
+    "operativo": "02_Operativo_MER",
+    "respaldos": "03_Respaldos",
+    "revision": "04_Revision_y_Obsoletos"
+  }
 }
