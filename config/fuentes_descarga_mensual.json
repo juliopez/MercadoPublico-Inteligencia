@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "timezone": "America/Santiago",
+  "periodo_operativo": "2026-10",
+  "horario": "16:00",
+  "reintentos_locales": [
+    "16:30",
+    "17:00"
+  ],
+  "fuentes": {
+    "licitaciones": "https://transparenciachc.blob.core.windows.net/lic-da/{yyyy}-{mm}.zip",
+    "compra_agil": "https://transparenciachc.blob.core.windows.net/trnspchc/COT_{yyyy}-{mm}.zip",
+    "ordenes_compra": "https://transparenciachc.blob.core.windows.net/oc-da/{yyyy}-{mm}.zip"
+  },
+  "escritura": "deshabilitada_hasta_validacion",
+  "modo": "solo_mes_operativo",
+  "reprocesamiento_historicos": false,
+  "metodo": "upsert_pk_con_hash_normalizado",
+  "control": "validar tres ZIP y persistir marca de sincronizacion solo tras carga integral exitosa"
+}
