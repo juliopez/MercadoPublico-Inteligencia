@@ -70,6 +70,9 @@ function render(){
    profile.addEventListener('click',()=>showContextProfile(actorKey,String(record[actorKey])));
    action.append(' ',profile);
   }
+  const favorite=document.createElement('button');favorite.type='button';favorite.className='secondary';
+  favorite.textContent=favorites.some(x=>x.key===favoriteKey(entity,$('periodo').value,record))?'★ Guardado':'☆ Favorito';
+  favorite.addEventListener('click',()=>toggleFavorite(record));action.append(' ',favorite);
   row.append(action);$('rows').append(row);
  }
  if(!current.length){const row=document.createElement('tr');const cell=textCell('No hay registros para la consulta.');cell.colSpan=fields.length+1;row.append(cell);$('rows').append(row)}
@@ -124,6 +127,42 @@ async function showContextProfile(field,name){
   const money=Number(item.monto_total_clp||0).toLocaleString('es-CL');
   extra.textContent='Resumen del período completo: '+total+' registros identificados; '+available+' con monto informado; suma de montos: $'+money+'. Son registros de '+entity+', no operaciones únicas ni adjudicaciones verificadas.';
  }catch(e){if(seq===profileRequest)extra.textContent='Resumen mensual aún no publicado. Se muestra únicamente el bloque consultado.'}
+}
+const FAVORITES_KEY='observatorio-favoritos-v2';
+let favorites=[];
+try{const saved=JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]');if(Array.isArray(saved))favorites=saved.slice(0,200)}catch{}
+function favoriteKey(entity,period,record){return JSON.stringify([entity,period,record])}
+function renderFavorites(){
+ const box=$('favoritos-lista');box.replaceChildren();
+ $('favoritos-estado').textContent=favorites.length+' favoritos guardados en este navegador.';
+ for(const item of favorites){
+  const line=document.createElement('div');line.className='favorite-item';
+  const label=document.createElement('span');label.textContent=item.period+' · '+item.entity+' · '+item.label;
+  const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent='Eliminar';
+  button.addEventListener('click',()=>{favorites=favorites.filter(x=>x.key!==item.key);persistFavorites();render();renderFavorites()});
+  line.append(label,button);box.append(line);
+ }
+}
+function persistFavorites(){try{localStorage.setItem(FAVORITES_KEY,JSON.stringify(favorites))}catch{$('favoritos-estado').textContent='No se pudo guardar en el navegador.'}}
+function toggleFavorite(record){
+ const entity=$('entidad').value,period=$('periodo').value,key=favoriteKey(entity,period,record);
+ if(favorites.some(x=>x.key===key))favorites=favorites.filter(x=>x.key!==key);
+ else{
+  if(favorites.length>=200){status('Límite de 200 favoritos en este navegador.');return}
+  favorites.push({key,entity,period,label:String(record.codigo_oc??record.codigo??record.nombre??'Registro'),record});
+ }
+ persistFavorites();renderFavorites();render();
+}
+function exportBlockCSV(){
+ const rows=filteredBlock(),entity=$('entidad').value,period=$('periodo').value;
+ if(!rows.length){status('No hay registros filtrados para exportar.');return}
+ const keys=tableColumns[entity].map(([key])=>key);
+ const escape=value=>'"'+String(value??'').replaceAll('"','""').replace(/^[=+@\-\t\r]/,x=>"'"+x)+'"';
+ const csv='\uFEFF'+[keys.join(';'),...rows.map(row=>keys.map(k=>escape(row[k])).join(';'))].join('\r\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+ const link=document.createElement('a');link.href=url;link.download='observatorio-v2-'+entity+'-'+period+'-bloque-'+(state.chunkIndex+1)+'.csv';
+ document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ status('CSV exportado: '+rows.length+' registros filtrados del bloque '+(state.chunkIndex+1)+'.');
 }
 function showDetail(record){
  const area=$('detalle'), body=$('detalle-campos');
@@ -304,6 +343,8 @@ async function init(){
 }
 $('periodo').addEventListener('change',()=>{$('stat-periodo').textContent=$('periodo').value||'—';++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;refreshLocalFilters();closeDetail();render()});
 $('detalle-cerrar').addEventListener('click',closeDetail);
+$('exportar-csv').addEventListener('click',exportBlockCSV);
+renderFavorites();
 $('perfil-cerrar').addEventListener('click',closeContextProfile);
 $('buscar').addEventListener('input',()=>{state.page=0;render()});
 for(const id of ['filtro-estado','filtro-modalidad'])$(id).addEventListener('change',()=>{state.page=0;render()});
