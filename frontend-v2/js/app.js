@@ -343,7 +343,8 @@ function renderLinkedRecords(target,items,kind){
  let relatedSort={key:null,direction:1};
  for(const col of fields){const th=document.createElement('th');const button=document.createElement('button');button.type='button';button.className='sort-heading';button.textContent=col.replaceAll('_',' ')+' ⇅';button.addEventListener('click',()=>{relatedSort.direction=relatedSort.key===col?-relatedSort.direction:1;relatedSort.key=col;page=0;draw()});th.append(button);head.append(th)}
  const thead=document.createElement('thead');thead.append(head);table.append(thead,body);
- container.append(table);
+ const scroll=document.createElement('div');scroll.className='table-scroll';scroll.append(table);
+ container.append(scroll);
  const nav=document.createElement('div');nav.className='pagination';
  const prev=document.createElement('button');prev.textContent='Anterior';
  const pageText=document.createElement('span');
