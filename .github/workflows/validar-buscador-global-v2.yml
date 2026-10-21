@@ -1,0 +1,38 @@
+name: Validar buscador global V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'frontend-v2/js/busqueda-global.js'
+      - '.github/workflows/validar-buscador-global-v2.yml'
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validar sintaxis del módulo
+        run: node --check frontend-v2/js/busqueda-global.js
+      - name: Verificar coincidencias exactas y navegación implementada
+        run: |
+          node - <<'JS'
+          const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+          const src=fs.readFileSync('frontend-v2/js/busqueda-global.js','utf8');
+          const calls={};
+          const dom=new Proxy({}, {get(_,id){return calls[id]??=( {addEventListener(){},replaceChildren(){},value:'',disabled:false,textContent:''} )}});
+          const sandbox={document:{getElementById:id=>dom[id]},window:{},fetch(){}};
+          vm.createContext(sandbox);vm.runInContext(src,sandbox);
+          const check=vm.runInContext('matches',sandbox);
+          assert.equal(check({codigo:'2026-100',nombre:'Capacitación docente',organismo_comprador:'Hospital Regional'},['capacitacion','hospital'],'procesos'),true);
+          assert.equal(check({codigo:'2026-100',nombre:'Capacitación docente',organismo_comprador:'Hospital Regional'},['capacitador'],'procesos'),false);
+          assert.equal(check({codigo:'XX',proveedor:'Transportes Aurora'},['transporte'],'ofertas'),false);
+          assert.equal(check({codigo_oc:'1020-1',codigo_proceso:'A-1',proveedor:'Comercial Sur'},['comercial'],'ordenescompra'),true);
+          assert(src.includes('window.openIndexedRecord'));
+          assert(src.includes("t.page+1"));
+          assert(src.includes("for(const id of ['periodo','entidad'])"));
+          console.log('BUSCADOR_LOGICA_OK');
+          JS
