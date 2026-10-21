@@ -42,6 +42,33 @@ V2 es un **frontend paralelo** que publica extractos autorizados de Mercado Púb
 
 **No** editar a mano los JSON generados ni mezclar V1 y V2. Los índices y agregados deben mantenerse sincronizados con el catálogo y los fragmentos mediante sus workflows específicos.
 
+## Estado funcional y procedimientos para continuar
+
+| Área | Comportamiento vigente |
+|---|---|
+| Entrada | «Mostrar registros del período» carga el primer bloque sin abrir el panel avanzado |
+| Búsqueda global | Busca códigos y palabras en el mes completo usando índices; presenta progreso de candidatos y filtros pertinentes |
+| Evolución mensual | Barras seleccionables, perspectivas de actividad/montos/actores y comparación con otro mes |
+| Fichas | Resumen principal, detalle expandible, códigos navegables y relaciones históricas multimes |
+| Relaciones | Procesos, Ofertas, Resultados y OC de todos los períodos públicos disponibles; el mes de origen aparece en cada tabla |
+| Moneda | Campos monetarios visibles en CLP, conservando valores originales en los JSON |
+| Perfil y comparación | Nombres normalizados, sugerencias y agregados por período; no identidad única por RUT |
+| CSV | Bloque filtrado o búsqueda global completamente verificada dentro del límite establecido |
+
+**Última comprobación técnica:** [validación de analítica y relaciones históricas](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39682682170) y [publicación de índices exactos de Procesos](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39682406233). CI no sustituye revisión manual del navegador ni auditoría integral.
+
+### Dónde cambiar cada parte
+
+- `js/app.js`: período, bloques, tablas, fichas, relaciones multimes, formatos y navegación.
+- `js/busqueda-global.js`: consulta indexada de palabras y códigos, filtros y exportación global.
+- `js/analitica-interactiva.js`: selección de meses, comparación y perspectivas.
+- `js/comparar-proveedores.js`: comparación y sugerencias de proveedores.
+- `js/sugerencias-global.js`: sugerencias de búsquedas y facetas.
+- `css/styles.css`: presentación, responsividad y accesibilidad.
+- `../scripts/generar_analitica_v2.py` y `../scripts/indexar_relaciones_procesos_v2.py`: agregados e índices generados fuera del navegador.
+
+**Para ampliar períodos:** publicar primero extractos y catálogo reconciliados, después actualizar índices/agregados y comprobar la integración. Nunca editar manualmente grandes JSON ni depender de descargar el mes completo en cliente.
+
 ## Pruebas y documentación
 
 - [Línea base de rendimiento y navegación](../docs/BASELINE_FRONTEND_V2_2026-10-21.md)
