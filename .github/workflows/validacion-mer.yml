@@ -1,0 +1,45 @@
+name: Validacion consolidada MER v2
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/**"
+      - "tests/**"
+      - ".github/workflows/validacion-mer.yml"
+  pull_request:
+    paths:
+      - "scripts/**"
+      - "tests/**"
+      - ".github/workflows/validacion-mer.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compilar todos los scripts y tests
+        run: python -m compileall -q scripts tests
+      - name: Validar sintaxis de scripts bash
+        run: |
+          set -euo pipefail
+          find scripts -type f -name '*.sh' -print0 | while IFS= read -r -d '' file; do
+            bash -n "$file"
+          done
+      - name: Ejecutar batería unitaria completa
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Resumen de alcance
+        if: always()
+        run: |
+          echo "Las pruebas no escriben en Sheets, no mueven Drive y no instalan cron."
+          echo "La validación con Google y el cierre mensual real requieren autorización independiente."
