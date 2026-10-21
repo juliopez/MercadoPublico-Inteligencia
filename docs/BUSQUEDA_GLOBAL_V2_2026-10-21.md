@@ -82,3 +82,13 @@ Se añadió `tests/benchmark_busqueda_frontend_v2.py` (commit `08e8d00d`) para g
 Se revisaron README, índice, decisiones y el documento específico antes de intervenir. Se añadió `tests/benchmark_busqueda_historica_v2.py` (commit `4685afc6`): utiliza **los primeros 50 fragmentos de Ofertas de junio 2026** ya publicados, confecciona un manifiesto temporal con el recuento exacto de esa muestra y construye el índice en `TemporaryDirectory`, enlazando los fragmentos públicos originales solo para lectura. Reporta registros, tiempo, memoria máxima, tamaño total y tamaño mayor de archivo. No accede a Google Sheets.
 
 Se actualizó `.github/workflows/validar-busqueda-v2.yml` (commit `b5cf0cb5`) con el benchmark de históricos reales y límite de 15 minutos para el trabajo. GitHub Actions inició automáticamente la [ejecución #39659422313](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39659422313). **Última consulta durante esta edición:** `in_progress`, checkout en ejecución; no atribuir éxito ni cifras hasta consultar su conclusión y logs. Se preservan V1, V2, datos, ETL y Sheets.
+
+
+## Resultado confirmado de benchmark histórico — ejecución #39659422313
+GitHub Actions [#39659422313](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39659422313) terminó con `conclusion=success`; job `119428225566`. Verificados los logs originales el 21-10-2026.
+
+**Ofertas reales, junio 2026, primeros 50 fragmentos:** 50.000 registros; 1,133 segundos; memoria máxima **46.932 KB** (métrica de proceso); **3.116 archivos** (3.115 prefijos y un `meta.json`); **2.656.877 bytes** de archivos generados; archivo mayor **434.502 bytes**. Registro: `BUSQUEDA_INDICE_OK 2026-06 ofertas 50000 3115`.
+
+Las **2 pruebas unitarias también aprobaron** en esta ejecución. Benchmark sintético ejecutado en el mismo job: 20.000 filas, 0,657 s, 38.100 KB, 1.846.369 bytes.
+
+**Alcance:** resultados reales de una muestra de 50 fragmentos, no del período completo de 407.923 Ofertas ni de millones de registros. Los 3.116 archivos ponen en evidencia un costo operativo importante si se publican los índices como archivos individuales; se debe evaluar empaquetado/rangos y respuestas de términos frecuentes antes de integrarlos al navegador. No se publicaron los archivos de índice ni se alteraron los sistemas actuales.
