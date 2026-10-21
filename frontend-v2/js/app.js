@@ -385,7 +385,23 @@ async function loadRelated(code,period){
      indexCache.set(month,index);
     }catch(e){issues.push(month);continue}
    }
-   for(const [entity,key] of [['procesos','codigo'],['ofertas','codigo'],['resultados','codigo'],['ordenescompra','codigo_proceso']]){
+   // El índice mensual tradicional no incorpora Procesos. Resolverlos por un
+   // índice exacto y ligero, con referencia directa a fragmento y fila.
+   try{
+    const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(code));
+    const shard=new Uint8Array(digest)[0].toString(16).padStart(2,'0');
+    const exact=await readJsonPublic('data/relaciones-procesos/'+month+'/'+shard+'.json');
+    const refs=exact[code]||[];
+    const partPaths=state.manifest.periodos.find(p=>p.periodo===month)?.partes?.procesos||[];
+    const cache=new Map();
+    for(const [part,row] of refs){
+     if(!Number.isInteger(part)||!Number.isInteger(row)||!safePart(partPaths[part],month,'procesos'))continue;
+     if(!cache.has(part))cache.set(part,await readJsonPublic(partPaths[part]));
+     const entry=cache.get(part)?.[row];
+     if(entry&&String(entry.codigo||'').trim()===code)accum.procesos.push({...entry,_periodo_fuente:month});
+    }
+   }catch(e){issues.push(month+'/procesos')}
+   for(const [entity,key] of [['ofertas','codigo'],['resultados','codigo'],['ordenescompra','codigo_proceso']]){
     const refs=index.entidades?.[entity]?.[code]||[];
     const paths=[...new Set(refs.map(ref=>typeof ref==='number'?index.archivos?.[entity]?.[ref]:ref))];
     for(const path of paths){
