@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/indexar_busqueda_frontend_v2.py'
       - 'tests/test_indexar_busqueda_frontend_v2.py'
+      - 'tests/benchmark_busqueda_frontend_v2.py'
       - '.github/workflows/validar-busqueda-v2.yml'
 permissions:
   contents: read
@@ -20,3 +21,6 @@ jobs:
         run: python -m py_compile scripts/indexar_busqueda_frontend_v2.py tests/test_indexar_busqueda_frontend_v2.py
       - name: Pruebas unitarias
         run: python -m unittest discover -s tests -p 'test_indexar_busqueda_frontend_v2.py' -v
+
+      - name: Medir tamaño y memoria con datos sintéticos
+        run: python tests/benchmark_busqueda_frontend_v2.py
