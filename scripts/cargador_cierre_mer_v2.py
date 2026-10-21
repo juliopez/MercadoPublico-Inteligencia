@@ -109,21 +109,19 @@ def cargar_con_adaptadores_etl(book,db,schemas,periodo,registrar,confirmacion=No
 
 
 def preparar_carga_conciliada(db,schemas,estado,politica):
- """Preflight completo: nunca sobrescribir divergencias no resueltas.
-
- Devuelve filas propuestas para el ETL, manteniendo campos operativos donde
- la fuente oficial no aporta datos. Todas las tablas se validan ANTES de escribir.
+ """La última fuente oficial del MES prevalece por PK y columna; se conservan
+ filas sólo operativas y campos sin cobertura oficial. No mezclar períodos.
  """
  if set(schemas)!=set(TABLAS) or set(estado)!=set(TABLAS):
   raise ValueError("Contrato MER incompleto")
- if politica.get("estado")!="PROPUESTA_SIN_CONFLICTOS_PENDIENTE_AUDITORIA" or politica.get("conflictos_totales")!=0:
-  raise ValueError("Política de conciliación no aprobable: conflictos o estado inválido")
- pol=importar("politica_cierre","politica_conciliacion_cierre.py")
+ if politica.get("periodo") is None or politica.get("fuente_prioritaria")!="HISTORICO_OFICIAL_MENSUAL":
+  raise ValueError("Falta informe de precedencia oficial mensual")
+ if politica.get("estado")!="PRECEDENCIA_OFICIAL_DOCUMENTADA":
+  raise ValueError("Política oficial aún no validada")
  propuestas={};counts={}
  for tab in TABLAS:
   cols=schemas[tab];existing=estado[tab]
-  nuevos=completados=preservados=0;result=[]
-  keys=set()
+  nuevos=actualizados=preservados=0;result=[];keys=set()
   for pk,raw in db.execute('SELECT pk,fila FROM "'+tab+'" ORDER BY pk'):
    official=[str(v or "") for v in json.loads(raw)]
    if len(official)!=len(cols) or official[0]!=pk or pk in keys:
@@ -133,17 +131,15 @@ def preparar_carga_conciliada(db,schemas,estado,politica):
    if actual is None:
     nuevos+=1;result.append((pk,official));continue
    prior=actual[1]
-   merged,filled,conflicts=pol.conciliar_fila(cols,prior,official)
-   if conflicts:raise ValueError("Conflicto nuevo detectado: "+tab+" "+pk)
-   if filled:completados+=1
+   # Valor no vacío oficial prevalece; si falta dato oficial conservar operativo.
+   merged=[prior[i] if i>0 and not str(official[i]).strip() else official[i] for i in range(len(cols))]
+   if merged!=prior:actualizados+=1
    else:preservados+=1
    result.append((pk,merged))
-  counts[tab]={"altas":nuevos,"campos_completados_en_registros":completados,
-               "registros_existentes_conservados":preservados,
-               "solo_operativo_conservado":len(set(existing)-keys)}
+  counts[tab]={"altas":nuevos,"actualizados_por_fuente_oficial":actualizados,
+               "sin_cambios":preservados,"solo_operativo_conservado":len(set(existing)-keys)}
   propuestas[tab]=result
  return propuestas,counts
-
 
 def ejecutar_carga_conciliada(book,db,schemas,periodo,politica,registrar,confirmacion=None):
  """Ruta única conciliación->respaldo->escritura->lectura, sin exponer CLI.
