@@ -24,3 +24,13 @@ Workflow: https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/3
 
 ## Próxima mejora
 Perfiles agregados por organismo y proveedor por período, precalculados en proceso separado sobre extractos públicos, con indicadores y detalles de respaldo; nunca calculados descargando todo el mes en el cliente.
+
+
+## Ampliación: agregados públicos mensuales (21-10-2026)
+El usuario confirmó la revisión de ambos botones. Se releyeron README, índice, decisiones y este documento antes de intervenir.
+
+Se incorporó `scripts/generar_perfiles_v2.py`: agrega registros y suma los montos informados por actor, período y entidad, leyendo exclusivamente los fragmentos públicos existentes. Se particiona por los primeros dos caracteres del SHA-256 del nombre normalizado; los índices no incluyen información de Sheets. Los totales son **descriptivos por entidad**: no equivalen a contratos únicos, adjudicaciones comprobadas ni montos efectivamente pagados. Los registros sin actor no se asignan a perfil; el metadato declara tanto cobertura total como registros identificados.
+
+Se amplió `frontend-v2/js/app.js` para consultar bajo demanda el resumen mensual del actor desde `data/perfiles/AAAA-MM/entidad/hash.json`, manteniendo tabla contextual del bloque y cierre ante cambios de período/bloque. `.github/workflows/publicar-perfiles-v2.yml` genera y valida por mes/entidad, omite entidades con cero registros y publica mensualmente.
+
+**Incidencia detectada y reparada:** primera ejecución [#39664483681](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39664483681) falló por error de sintaxis en `app.js` antes de la generación. Se corrigió la línea de texto y se restauró `showDetail` y el cierre del módulo (commit `31d8b9db`). La ejecución siguiente es [#39664667269](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39664667269), que se debe comprobar antes de declarar la publicación completada. No se modificó V1, los históricos originales, Sheets ni ETL.
