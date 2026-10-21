@@ -24,3 +24,12 @@ html{scroll-behavior:smooth;scroll-padding-top:18px}
 .table-scroll .amount-cell{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
 .table-scroll .state-pill{display:inline-block;background:#edf2f7;color:#284c69;padding:5px 9px;border-radius:16px;font-weight:600;max-width:240px}
 .table-scroll td:last-child{white-space:nowrap}
+
+/* Filtros locales del bloque: distribución adaptable, sin afectar solicitudes de datos. */
+.local-filters{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;margin-top:14px;padding-top:14px;border-top:1px solid #e1eaf1}
+.local-filters label{display:grid;gap:6px;font-size:.85rem;font-weight:600}
+.local-filters .muted{grid-column:1/-1;margin:0}
+button.secondary{background:#e8f1f8;color:#15527d}
+button.secondary:hover{background:#d4e6f3;color:#104b68}
+@media(max-width:720px){.local-filters{grid-template-columns:1fr 1fr}.local-filters button{grid-column:1/-1}}
+@media(max-width:480px){.local-filters{grid-template-columns:1fr}}
