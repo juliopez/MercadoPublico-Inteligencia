@@ -148,3 +148,22 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 #detalle-relaciones .related-grid table{min-width:560px;width:max-content;max-width:none}
 #detalle-relaciones .related-grid th,#detalle-relaciones .related-grid td{white-space:normal;word-break:normal;overflow-wrap:break-word;min-width:100px}
 @media(max-width:850px){#detalle-relaciones .related-grid{grid-template-columns:1fr}}
+
+
+/* Detalle de registros: una relación visible por vez. */
+#detalle-relaciones .related-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0;border-bottom:1px solid #d6e4ee;padding-bottom:12px}
+#detalle-relaciones .related-tabs button{border:1px solid #c6dcea;background:#f1f6fa;color:#244c69;border-radius:10px;padding:10px 13px;font-size:.88rem}
+#detalle-relaciones .related-tabs button[aria-selected="true"]{background:#1b698f;border-color:#1b698f;color:#fff}
+#detalle-relaciones .related-tabs button span{display:inline-block;margin-left:5px;font-variant-numeric:tabular-nums}
+#detalle-relaciones .related-content section{min-width:0;overflow:hidden}
+#detalle-relaciones .related-content section[hidden]{display:none}
+#detalle-relaciones .related-content .table-scroll{width:100%;overflow-x:auto}
+#detalle-relaciones .related-content table{min-width:650px;width:100%}
+/* Panel analítico: barras comparativas de actores e importes. */
+.actor-chart,.amount-chart{display:grid;gap:10px;margin:14px 0 24px}
+.actor-bar,.amount-bar{display:grid;grid-template-columns:minmax(150px,32%) minmax(100px,1fr) 110px;gap:13px;align-items:center}
+.actor-name{font-size:.84rem;line-height:1.3;overflow-wrap:anywhere}
+.actor-track{width:100%;height:17px;background:#e7eef5;border-radius:10px;overflow:hidden}
+.actor-fill{height:100%;background:#367fa8;border-radius:10px}
+.actor-bar strong,.amount-bar strong{text-align:right;white-space:nowrap;font-size:.86rem;font-variant-numeric:tabular-nums}
+@media(max-width:700px){.actor-bar,.amount-bar{grid-template-columns:minmax(95px,40%) minmax(60px,1fr) 82px;gap:7px}.actor-bar strong,.amount-bar strong{font-size:.72rem}.actor-name{font-size:.74rem}}
