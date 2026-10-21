@@ -400,7 +400,7 @@ async function loadRelated(code,period){
      const entry=cache.get(part)?.[row];
      if(entry&&String(entry.codigo||'').trim()===code)accum.procesos.push({...entry,_periodo_fuente:month});
     }
-   }catch(e){issues.push(month+'/procesos')}
+   }catch(e){if(!String(e.message).includes('404'))issues.push(month+'/procesos')}
    for(const [entity,key] of [['ofertas','codigo'],['resultados','codigo'],['ordenescompra','codigo_proceso']]){
     const refs=index.entidades?.[entity]?.[code]||[];
     const paths=[...new Set(refs.map(ref=>typeof ref==='number'?index.archivos?.[entity]?.[ref]:ref))];
