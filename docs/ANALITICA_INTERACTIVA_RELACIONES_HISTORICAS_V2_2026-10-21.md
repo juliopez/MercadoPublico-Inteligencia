@@ -24,3 +24,16 @@ Se consultaron antes de editar README, índice documental, decisiones técnicas,
 Workflow `.github/workflows/validar-analitica-historicos-v2.yml`: sintaxis JavaScript, controles del panel, integración de las relaciones y apertura válida de los índices de los cinco períodos. Pruebas automatizadas aprobadas [#39682595022](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39682595022). La última actualización a todas las entidades desencadenó una nueva ejecución; consultar estado para validar esa revisión final.
 
 **Pendiente:** prueba interactiva en navegador de las tres vistas, selección/comparación y fichas con relaciones que efectivamente abarcan meses distintos; medir tiempo de carga en escenarios de códigos con muchas relaciones. La auditoría integral independiente sigue pendiente.
+
+
+## Segunda revisión UX: detalle ordenado y gráficos (21-10-2026)
+El usuario aprobó el rediseño de la zona de detalle y la sustitución del ranking textual por gráficos. Se consultaron previamente README principal, índice, decisiones, manual V2 y código vigente.
+
+- **Relaciones por pestañas:** se sustituyó la cuadrícula de cuatro tablas simultáneas por una pestaña activa a la vez: Procesos, Ofertas, Resultados y Órdenes de compra. Cada pestaña presenta contador, y la primera que contenga registros se selecciona al completar la consulta. Se conservan ordenamiento, paginación, códigos navegables, mes fuente y cobertura histórica junio–octubre 2026. Las flechas izquierda/derecha permiten cambiar pestaña por teclado.
+- **Actores:** el Top 10 ahora es un gráfico de barras horizontales con nombres y valores exactos. Conserva información por período y muestra gráficos separados cuando se comparan meses.
+- **Montos:** representación comparativa por barras horizontales; mantiene advertencia sobre sumas informadas y la distinción explícita entre ausencia de montos y valor cero.
+- **Estilo:** presentación responsiva; una tabla histórica visible por vez con desplazamiento horizontal interno.
+
+Archivos modificados: `frontend-v2/index.html`, `frontend-v2/js/app.js`, `frontend-v2/js/analitica-interactiva.js`, `frontend-v2/css/styles.css`, `tests/test_analitica_historicos_v2.cjs`.
+
+**Prueba técnica:** [GitHub Actions #39690926782](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39690926782) completó con resultado **success**; sintaxis y prueba de integración aprobadas. **Pendiente:** revisión visual en navegador de pestañas y gráficos; la auditoría integral independiente sigue pendiente.
