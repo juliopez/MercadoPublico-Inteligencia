@@ -18,8 +18,8 @@
 | Capacidad v1 | Estado previsto en v2 |
 |---|---|
 | Búsqueda y filtros de procesos | Base de consulta incorporada; filtros especializados pendientes |
-| Detalle de licitación y enlace al portal | Ficha básica de registro habilitada; enlace oficial para procesos; relaciones pendientes |
-| Ofertas asociadas y trazabilidad de resultados | Pendiente |
+| Detalle de licitación y enlace al portal | Ficha y enlace oficial, con ofertas/resultados/OC relacionados indexados; validar en navegador |
+| Ofertas asociadas y trazabilidad de resultados | **Implementado en detalle de Procesos, con índices por mes y sin asumir adjudicación**; validar en navegador |
 | Comparar empresas | Pendiente |
 | Perfil de organismo comprador | Pendiente |
 | Perfil de proveedor/empresa | Pendiente |
@@ -118,3 +118,7 @@ El navegador mostraba «No se pudo leer el fragmento de 2026-06» pese a que los
 Se modificó **exclusivamente la aplicación v2** para que descargue un solo fragmento (~1.000 filas) por vez en lugar de descargar de manera secuencial centenares de archivos; ofrece reintentos, intenta `raw.githubusercontent.com` como origen alternativo ante errores de la ruta Pages y mantiene memoria acotada. Las 10 filas por página se mantienen. Durante esta fase la **búsqueda se limita al bloque cargado**, no al histórico completo. Esta limitación se anuncia visiblemente; la búsqueda global indexada queda pendiente antes de dar la experiencia de v2 como equivalente a v1.
 
 El repositorio tiene aproximadamente 877 MB de JSON v2; la integridad del despliegue y acceso público a cada archivo individual sigue requiriendo verificación real en navegador y eventualmente migración de distribución a índices estáticos. La v1 permanece sin alteraciones.
+
+## Detalle relacionado — nueva implementación
+
+Se incorporaron índices compactos por período y vínculo técnico de `Procesos.codigo` con Ofertas, Resultados y OC. Solo se consultan los fragmentos relevantes **al abrir una ficha**, sin modificar la carga rápida del listado; cada sección relacionada se pagina de **10 registros**. La verificación de adjudicación se presenta como campo informativo, no se infiere de la simple asociación. Ver [documentación técnica y pruebas pendientes](../docs/DETALLE_RELACIONADO_FRONTEND_V2.md).
