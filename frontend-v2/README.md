@@ -84,3 +84,5 @@ La cronología completa de implementación se conserva en documentos especializa
 ## Búsqueda transversal por participantes
 
 La sección **Participación histórica de empresas y organismos** permite consultar por nombre normalizado todos los meses publicados (junio–octubre de 2026), con sugerencias, totales, gráfico mensual y accesos a las ofertas o procesos del mes. Incluye métricas de **procesos distintos por proveedor dentro de cada mes** y de **ofertas recibidas vinculadas por código al organismo dentro del mismo mes**, siempre que los índices generados estén disponibles. No equivale a identificación única por RUT ni a una deduplicación de procesos entre meses. Referencia: [documentación de participantes históricos](../docs/PARTICIPANTES_HISTORICOS_V2_2026-10-21.md).
+
+**Auditoría de relaciones CA–OC:** [Caso 839-4-COT26](../docs/AUDITORIA_VINCULO_CA_OC_2026-10-21.md). El 60,4 % de OC publicadas carece de `codigo_proceso`; cero enlaces exactos no demuestra que no exista orden de compra. La candidata identificada requiere verificación documental externa.
