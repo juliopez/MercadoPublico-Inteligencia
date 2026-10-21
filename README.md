@@ -19,6 +19,10 @@ Proyecto de análisis de licitaciones, Compra Ágil y órdenes de compra de Chil
 
 La configuración de períodos e identificadores vigente está en [`config/catalogo_sheets.json`](config/catalogo_sheets.json). Los documentos anteriores pueden conservar información histórica desactualizada: usar el registro de decisiones y el código actual para resolver dudas.
 
+## Desarrollo paralelo del frontend MER v2
+
+Se inició una versión independiente en [`frontend-v2/`](frontend-v2/README.md) para consulta por período con MER v2. **La versión 1 publicada (`index.html` y `data/`) se conserva intacta.** El catálogo público de v2 está vacío hasta generar extractos reales validados; no sustituir ni redirigir la publicación principal sin aprobación. Consulta el [inventario de funcionalidades heredadas de v1](frontend-v2/README.md).
+
 ## Próximo hito — 10 de noviembre de 2026
 
 **Primer cierre manual y supervisado de octubre**, sin desarrollar código nuevo durante la operación. Se requieren tres ZIP oficiales del **mes de octubre** (licitaciones, Compra Ágil/COT y órdenes de compra), conciliación con prioridad de la versión histórica oficial de ese mes, respaldo y verificación de seis entidades. Después se moverá **la misma hoja** desde Operativo a Históricos manteniendo su ID y se actualizará el catálogo GitHub.
