@@ -1,0 +1,41 @@
+name: Publicar candidatas OC V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/publicar-oc-candidatas-v2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: publicar-oc-candidatas-v2
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generar y validar sin modificar fuente
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/indexar_oc_candidatas_v2.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for period in 2026-06 2026-07 2026-08 2026-09 2026-10; do
+            python scripts/indexar_oc_candidatas_v2.py --periodo "$period"
+            git add "frontend-v2/data/oc-candidatas/$period/"
+            if ! git diff --cached --quiet; then
+              git commit -m "data(v2): candidatas OC $period"
+              for attempt in 1 2 3 4 5; do
+                git pull --rebase origin main
+                if git push origin main; then break; fi
+                if [ "$attempt" -eq 5 ]; then exit 1; fi
+                sleep 3
+              done
+            fi
+          done
