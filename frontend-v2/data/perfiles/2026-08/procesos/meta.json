@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "periodo": "2026-08",
+  "entidad": "procesos",
+  "campo_actor": "organismo_comprador",
+  "campo_monto": "monto_disponible_clp",
+  "registros": 83937,
+  "registros_identificados": 83937,
+  "actores": 1944,
+  "archivos": 256,
+  "nota": "Cifras descriptivas por entidad/mes; registros y montos no equivalen a operaciones únicas ni adjudicaciones verificadas."
+}

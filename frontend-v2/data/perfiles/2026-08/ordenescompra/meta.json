@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "periodo": "2026-08",
+  "entidad": "ordenescompra",
+  "campo_actor": "proveedor",
+  "campo_monto": "monto_total_oc_clp",
+  "registros": 153221,
+  "registros_identificados": 153220,
+  "actores": 23261,
+  "archivos": 256,
+  "nota": "Cifras descriptivas por entidad/mes; registros y montos no equivalen a operaciones únicas ni adjudicaciones verificadas."
+}
