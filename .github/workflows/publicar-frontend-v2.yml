@@ -43,7 +43,14 @@ jobs:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           PERIODO: ${{ inputs.periodo || '2026-10' }}
           ENTIDAD: ${{ inputs.entidad || 'procesos' }}
-        run: python scripts/exportar_frontend_v2.py --periodo "$PERIODO" --entidad "$ENTIDAD"
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            for table in procesos ofertas resultados ordenescompra; do
+              python scripts/exportar_frontend_v2.py --periodo 2026-10 --entidad "$table"
+            done
+          else
+            python scripts/exportar_frontend_v2.py --periodo "$PERIODO" --entidad "$ENTIDAD"
+          fi
       - name: Verificar manifiesto y fragmentos referenciados
         run: |
           python - <<'PY'
