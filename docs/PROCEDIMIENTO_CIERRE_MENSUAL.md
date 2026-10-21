@@ -318,3 +318,13 @@ Ante interrupciones, el protocolo reevalúa los estados externos en vez de confi
 `tests/test_protocolo_traslado_drive_github.py` cubre cinco escenarios de origen, traslado parcial, finalización, catálogo adelantado y finalización falsa. Se esperan **28 pruebas locales en total**, pendientes de ejecución en Ubuntu.
 
 **Condición de activación:** prueba integral supervisada en noviembre y aprobación expresa antes de habilitar cambios Drive/GitHub. El cron mensual sigue sin instalar.
+
+## Decimoquinta etapa — inspección real de metadatos y permisos
+
+El 21/10/2026 se realizó consulta de **solo lectura** a Google Drive de `MER_2026_10_OPERATIVO` (ID `1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4`) y revisión del catálogo de GitHub. Se verificó mismo ID, título esperado y única carpeta padre `02_Operativo_MER` (`1m3feqWXUNtur6v17qvhZ9bQrB38-ruVS`). El archivo **no fue movido ni renombrado**.
+
+**Hallazgo crítico:** los metadatos Drive devolvieron un permiso `type=anyone, role=writer`, junto al permiso del propietario. Esto implica un riesgo de edición pública mediante enlace y debe investigarse/restringirse **antes** de habilitar un cierre automático. No se modificaron permisos sin autorización del usuario; se debe preservar acceso explícito al ETL de la cuenta de servicio.
+
+Se creó `scripts/verificar_metadata_traslado.py`: validador **offline y de solo lectura**, recibe el catálogo y un snapshot JSON de Drive y bloquea discrepancias de ID/nombre/carpeta/tipo o permiso amplio de editor, o permisos que no se puedan inspeccionar. No se conecta a APIs ni mueve archivos. Se agregaron pruebas `tests/test_verificar_metadata_traslado.py` de coincidencia, edición general, carpeta errónea y permisos ausentes. Se esperan **32 pruebas**, aún pendientes de ejecución en Ubuntu.
+
+**Pendientes:** restringir permiso general con aprobación específica, verificar los permisos de las demás hojas y los mecanismos de autorización de Google Drive/GitHub del futuro ejecutor. El cron mensual no está activado.
