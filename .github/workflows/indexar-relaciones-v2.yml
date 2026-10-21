@@ -31,9 +31,11 @@ jobs:
               d=json.loads(file.read_text())
               assert d['periodo']==file.stem
               assert set(d['entidades'])<= {'ofertas','resultados','ordenescompra'}
-              for data in d['entidades'].values():
-                  for files in data.values():
-                      assert all((Path('frontend-v2')/p).is_file() for p in files)
+              for entity,data in d['entidades'].items():
+                  files=d['archivos'][entity]
+                  assert all((Path('frontend-v2')/p).is_file() for p in files)
+                  for positions in data.values():
+                      assert all(isinstance(i,int) and 0<=i<len(files) for i in positions)
               print(file, 'OK')
           PY
       - name: Versionar índices públicos aislados v2
