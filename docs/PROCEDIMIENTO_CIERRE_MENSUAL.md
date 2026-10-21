@@ -382,3 +382,14 @@ export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/mercadopublico/servicio-goo
 ```
 
 Se añadieron pruebas offline en `tests/test_exportar_operativo_sqlite.py`, que ensayan seis tablas y protección de un snapshot previo ante PK duplicada. Se esperan **38 pruebas unitarias** en total (34 previas + 2 diferencias por campo + 2 exportador), no ejecutadas todavía en Ubuntu. El exportador no reemplaza el control de concurrencia ni garantiza que el contenido remoto no cambie durante una lectura larga: sigue siendo obligatorio cotejar las huellas inmediatamente antes de aplicar y mantener el `flock` local. El cierre real, el traslado y el cron mensual continúan inactivos.
+
+## Simplificación por reutilización de trabajo histórico — decisión 21/10/2026
+
+No rediseñar ni replicar la ingeniería ya utilizada en las cargas de junio–septiembre. Las siguientes funciones existentes son la base de producción:
+- `scripts/importador_historicos_v2.py`: `stream`, `process_cot`, `process_oc`, `process_licitaciones`, `finish`; generan las seis entidades y reporte.
+- `scripts/etl_zip_dos_fuentes.py`: `respaldo_local`, `worksheet_rows`, `load_rows`, `solicitud_con_reintentos`, `aplicar_tabla`; aportan respaldo verificable, clasificación PK, escritura y reintentos de Sheets.
+- Las auditorías históricas, sus observaciones conocidas sobre cobertura cruzada de meses y los resultados ya registrados conservan su valor; no repetir las cargas históricas.
+
+Lo pendiente no es rehacer la validación de archivos base, sino **decidir precedencia por columna y por entidad** cuando un registro operativo difiere del histórico, probar un ciclo de carga y lectura posterior sobre un destino de ensayo, y completar el traslado autorizado con recuperación. La política de diferencias debe preservar el estado jurídico de adjudicación y la procedencia de los datos. No asumir que ZIP oficiales pueden sobrescribir incondicionalmente todos los campos, ni que datos operativos sin correspondencia son falsos.
+
+Próximo desarrollo concentrado: adaptador del cierre que use directamente las funciones de escritura y respaldo existentes, asociado a una política explícita para filas modificadas. Se rechaza agregar más capas de simulación que no aporten un riesgo nuevo. Solo volver a ejecutar pruebas cuando se alcance un hito de integración significativo.
