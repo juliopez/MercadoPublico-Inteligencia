@@ -13,10 +13,11 @@ MODE="${1:-}";shift || true
 STAMP="$(date +%Y%m%d_%H%M%S)"
 LOG="$ROOT/logs/cierre_supervisado_$STAMP.log"
 case "$MODE" in
+ verificar-acceso) COMMAND=(.venv/bin/python scripts/ejecutar_cierre_supervisado.py --verificar-acceso --periodo "${1:-2026-10}");;
  diagnosticar) COMMAND=(.venv/bin/python scripts/diagnosticar_cierre_integrado.py "$@");;
  cargar) COMMAND=(.venv/bin/python scripts/ejecutar_cierre_supervisado.py --cargar --confirmar-carga "$@");;
  trasladar) COMMAND=(.venv/bin/python scripts/ejecutar_cierre_supervisado.py --trasladar --confirmar-traslado "$@");;
- *) echo "Uso: bash scripts/ubuntu_cierre_supervisado.sh diagnosticar|cargar|trasladar --periodo AAAA-MM";exit 2;;
+ *) echo "Uso: bash scripts/ubuntu_cierre_supervisado.sh verificar-acceso|diagnosticar|cargar|trasladar --periodo AAAA-MM";exit 2;;
 esac
 echo "INICIO $MODE $(date --iso-8601=seconds)" | tee "$LOG"
 set +e
