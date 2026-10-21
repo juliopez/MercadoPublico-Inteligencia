@@ -57,11 +57,11 @@ def build(period, entity, root=ROOT):
     if count != expected:
         raise ValueError(f"Conteo discordante: {count} != {expected}")
     for key, rows in buckets.items():
-        (output / f"{key}.json").write_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")) + "\\n", encoding="utf-8")
+        (output / f"{key}.json").write_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     meta = {"version": 1, "periodo": period, "entidad": entity, "conteo": count,
             "fragmentos": len(parts), "tipo": "prefijo_palabra", "longitud_prefijo": 3,
             "particiones": len(buckets), "campos": list(FIELDS[entity])}
-    (output / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    (output / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("BUSQUEDA_INDICE_OK", period, entity, count, len(buckets))
 
 if __name__ == "__main__":
