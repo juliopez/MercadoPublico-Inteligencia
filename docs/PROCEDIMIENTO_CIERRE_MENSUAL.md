@@ -428,3 +428,13 @@ Se añadió al cargador `scripts/cargador_cierre_mer_v2.py` el adaptador `cargar
 **Alcance actual:** adaptador funcional invocable desde Python, sin CLI de escritura, sin conexión de autenticación y sin autorización de cierre. Solo se permite llamar con una confirmación explícita de cierre supervisado; esa confirmación es una barrera programática, **no reemplaza** una autorización externa ni el candado `flock`, y no se expondrá a usuario hasta integrar esas garantías. El motor admite únicamente altas de PK ausentes; cualquier diferencia de un registro existente bloquea la carga antes del respaldo. Esto significa que **no puede todavía resolver conflictos o enriquecer campos vacíos**, y por tanto no constituye el cargador de cierre definitivo.
 
 **Próximos bloqueantes concretos:** resolver la política efectiva de modificación campo a campo basada en octubre, integrar la exclusión mutua con ETL diario, verificar origen/snapshot antes de cada operación y autenticar un orquestador supervisado que invoque este adaptador con bitácora persistente. Después, traslado real Drive y actualización GitHub; validaciones de aceptación acordadas: tres, no nuevas rondas intermedias indefinidas. No se efectuaron operaciones remotas ni pruebas contra producción en este commit.
+
+## Serialización con ETL diario — 21/10/2026
+
+Se creó `scripts/ubuntu_diagnostico_cierre.sh` como entrada supervisada del **diagnóstico integrado**. Adquiere el mismo `flock -n` ya utilizado por `scripts/ubuntu_etl_dos_fuentes.sh`: `logs/.mer_escritura_compartida.lock`. Si el ETL diario está activo, el diagnóstico se rechaza con código 5; si el diagnóstico está activo, el ETL diario no se superpone. Exporta credenciales de solo lectura para el script Python, crea bitácora fechada y conserva el código de salida real mediante `PIPESTATUS`.
+
+Uso previsto **desde el 10/11/2026** en la raíz del repo:
+```bash
+bash scripts/ubuntu_diagnostico_cierre.sh --periodo 2026-10
+```
+No hay `--aplicar` en esta envoltura ni en el diagnóstico; no modifica datos o archivos de Drive, no instala cron. El uso compartido de candado evita concurrencia entre estos dos procesos de Ubuntu, pero **no protege ante modificaciones externas a Sheets**, que exigen revalidación de instantánea antes de escribir. La envoltura no habilita el cargador ni el traslado. Queda pendiente integrar el mismo candado al futuro orquestador de escritura y exigir evidencia de autorización fuera del código, además de probar la corrida real.
