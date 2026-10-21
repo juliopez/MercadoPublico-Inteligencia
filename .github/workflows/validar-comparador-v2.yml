@@ -1,0 +1,38 @@
+name: Validar comparación proveedores V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'frontend-v2/js/comparar-proveedores.js'
+      - '.github/workflows/validar-comparador-v2.yml'
+permissions:
+  contents: read
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sintaxis JavaScript
+        run: |
+          node --check frontend-v2/js/comparar-proveedores.js
+          node --check frontend-v2/js/app.js
+      - name: Comprobar normalización y controles
+        run: |
+          node - <<'JS'
+          const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+          const code=fs.readFileSync('frontend-v2/js/comparar-proveedores.js','utf8');
+          const html=fs.readFileSync('frontend-v2/index.html','utf8');
+          const refs={};
+          const document={getElementById:id=>refs[id]??={addEventListener(){},replaceChildren(){},value:''}};
+          const ctx=vm.createContext({document,crypto:{subtle:{}},fetch(){}});
+          vm.runInContext(code,ctx);
+          const canonical=vm.runInContext('canonical',ctx);
+          assert.equal(canonical('  COMPAÑÍA   PÚBLICA  '),'compania publica');
+          assert.equal(canonical('Proveedor Sur'),'proveedor sur');
+          for(const id of ['comparar-proveedores','comparar-nombre-1','comparar-nombre-2','comparar-nombre-3','comparar-ejecutar','comparar-cabecera','comparar-cuerpo'])assert(html.includes('id="'+id+'"'));
+          assert(code.includes("Promise.all(names.map("));
+          console.log('COMPARADOR_ESTRUCTURA_OK');
+          JS
