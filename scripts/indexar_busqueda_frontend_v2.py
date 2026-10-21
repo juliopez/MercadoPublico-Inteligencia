@@ -53,13 +53,18 @@ def build(period, entity, root=ROOT):
             count += 1
     if count != expected:
         raise ValueError(f"Conteo discordante: {count} != {expected}")
+    # Agrupar los prefijos por sus dos primeros caracteres reduce los archivos
+    # sin obligar a descargar el índice completo del período.
+    groups = {}
     for key, rows in buckets.items():
-        (output / f"{key}.json").write_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
-    meta = {"version": 2, "periodo": period, "entidad": entity, "conteo": count,
-            "fragmentos": len(parts), "tipo": "prefijo_palabra", "longitud_prefijo": 3,
-            "particiones": len(buckets), "formato": "referencias_fragmento_fila", "campos": list(FIELDS[entity])}
+        groups.setdefault(key[:2], {})[key] = rows
+    for group, entries in groups.items():
+        (output / f"{group}.json").write_text(json.dumps(entries, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+    meta = {"version": 3, "periodo": period, "entidad": entity, "conteo": count,
+            "fragmentos": len(parts), "tipo": "prefijo_palabra_agrupado", "longitud_prefijo": 3,
+            "particiones": len(buckets), "grupos": len(groups), "formato": "referencias_fragmento_fila", "campos": list(FIELDS[entity])}
     (output / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print("BUSQUEDA_INDICE_OK", period, entity, count, len(buckets))
+    print("BUSQUEDA_INDICE_OK", period, entity, count, len(buckets), 'grupos', len(groups))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
