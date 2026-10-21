@@ -144,3 +144,24 @@ Se añadió `scripts/simular_carga_cierre.py`. Contrasta el catálogo, `estado_c
 ```
 
 **Advertencia:** este paso es un simulador de precondiciones, **no el cargador de escritura definitivo**. No se debe describir como cierre listo para automatizar. Antes de habilitar escritura quedan pendientes política campo por campo, auditoría referencial ampliada, respaldo integral, idempotencia/reintentos, read-back, recuperación de fallos, y permisos Drive + catálogo. La ejecución programada del cierre continúa reservada para diciembre, sujeta a prueba integral supervisada en noviembre. No se ha cambiado el cron diario ni el frontend.
+
+## Quinta etapa — motor de carga conservador (octubre 2026)
+
+Código `scripts/motor_carga_cierre.py`: añade una política formal para registros del paquete MER v2 y comprueba coherencia de informes y SHA-256 de los seis CSV. El motor **no se conecta a Google ni escribe en la hoja**. Se mantiene el bloqueo mientras no existan precedencias por campo, auditoría final y estrategia probada de recuperación.
+
+La función `simulacion()` ensaya localmente, sobre dos bases SQLite separadas, insertar solamente PK nuevas mediante `INSERT OR IGNORE`; preserva registros modificados y aquellos ausentes del ZIP. La operación es repetible sin duplicar claves (idempotencia). Pruebas unitarias en `tests/test_motor_carga_cierre.py`. **Pruebas pendientes de ejecución en Ubuntu**.
+
+Para probar el motor offline:
+```bash
+.venv/bin/python -m unittest discover -s tests -p 'test_motor_carga_cierre.py'
+```
+
+Para inspeccionar el plan del mes anterior cuando estén sus archivos conciliados (a partir del día 10):
+```bash
+.venv/bin/python scripts/motor_carga_cierre.py \
+ --paquete "$HOME/.local/share/mercadopublico/cierres/2026-10/preparados" \
+ --conciliacion "$HOME/.local/share/mercadopublico/cierres/2026-10/conciliacion.json" \
+ --plan "$HOME/.local/share/mercadopublico/cierres/2026-10/plan_carga_cierre.json"
+```
+
+**Límite de la etapa:** esto no equivale a un cargador remoto de producción. No se ha implementado aún reconciliación de campos modificados, operaciones Google Sheets con verificación final, rollback auditado ni traslado Drive/GitHub. No activar el cron mensual antes de completar y probar tales componentes. El ETL diario existente permanece independiente.
