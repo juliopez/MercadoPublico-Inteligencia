@@ -77,3 +77,5 @@ La operación diaria y el cierre mensual pertenecen a un flujo separado del fron
 - [Documentación por temas](docs/INDICE_DOCUMENTACION.md) y [decisiones técnicas](docs/DECISIONES_TECNICAS.md).
 
 **Continuidad:** antes de intervenir leer este README → índice → decisiones → documento específico → código real. Mantener la historia técnica en documentos especializados o [README legado](docs/historial/README_LEGADO_2026-10-21.md), no agregar bitácoras al README principal.
+
+**Última incorporación:** [consulta transversal de proveedores oferentes y organismos compradores](docs/PARTICIPANTES_HISTORICOS_V2_2026-10-21.md), con indicadores históricos y enlaces a procesos por período. La revisión visual de esta nueva sección está pendiente.
