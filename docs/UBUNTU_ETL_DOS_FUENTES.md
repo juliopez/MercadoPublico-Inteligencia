@@ -1,0 +1,53 @@
+# Operación Ubuntu — Licitaciones y Órdenes de compra (sin API)
+
+**Estado:** código publicado, pendiente de prueba real y habilitación local. NO se ha activado cron ni se han cargado datos.
+
+## Alcance
+- Usa los ZIP oficiales del período vigente calculado con `America/Santiago`:
+  - licitaciones `https://transparenciachc.blob.core.windows.net/lic-da/AAAA-MM.zip`
+  - OC `https://transparenciachc.blob.core.windows.net/oc-da/AAAA-MM.zip`
+- Nunca pide el ZIP COT. La API Compra Ágil queda para otro flujo.
+- MER v2: prepara y actualiza solo `Procesos`, `OrdenesCompra` y `Proveedores`. Nunca borra filas ausentes, ni vacía `Ofertas`, `Resultados` o `VinculosCOT_OC`.
+- Se bloquea si el mes no figura como `operativo` en `config/catalogo_sheets.json`. No cambia automáticamente la hoja al empezar un mes: **el nuevo archivo y catálogo deben existir antes del día 1**.
+- Las claves son `codigo`, `codigo_oc` e `id_proveedor`; la misma PK no vuelve a insertarse. Los datos distintos se actualizan. Ciertas discrepancias de identidad tributaria aún deben conciliarse.
+
+## Preparación inicial
+```bash
+cd ~/MercadoPublico-Inteligencia # ajustar a tu ubicación
+git pull --ff-only
+sudo apt install -y python3-venv util-linux
+bash scripts/ubuntu_preparar_prueba.sh
+.venv/bin/pip install 'gspread>=6,<7' 'google-auth>=2,<3' 'google-api-python-client>=2,<3'
+bash scripts/ubuntu_etl_dos_fuentes.sh --simular
+```
+La simulación descarga/valida ambos ZIP y cuenta los registros, no requiere cuenta Google. Revisar `salida_operativa/etl_zip_operativo_AAAA-MM.json` y `logs/etl_dos_fuentes_*.log`.
+
+## Credenciales para carga real
+1. Configurar un proyecto en Google Cloud con Google Sheets API y Google Drive API habilitadas y una cuenta de servicio dedicada.
+2. Descargar la clave JSON únicamente a Ubuntu, fuera de Git y de carpetas públicas, permisos `chmod 600`. Nunca compartir claves o credenciales por ChatGPT/GitHub.
+3. Compartir `MER_2026_10_OPERATIVO` exclusivamente con el correo de la cuenta de servicio como Editor; validar también autorización de copias de respaldo en Drive. No compartir los cuatro históricos ni la producción antigua.
+4. En la terminal local, antes de la primera ejecución validada:
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/mercadopublico/servicio-google.json"
+bash scripts/ubuntu_etl_dos_fuentes.sh --aplicar
+```
+**Importante:** `--aplicar` realiza escrituras reales en la Sheet operativa. Hacerlo únicamente después de validar la simulación, tamaño y permisos. Crea una copia previa con Drive; si una escritura falla a mitad, conserva registros ya escritos y requiere reejecución/verificación. El upsert es idempotente respecto a PK, pero **no es una transacción atómica multitabla**. No lanzar ejecuciones simultáneas ni habilitar cron antes de primera prueba completa.
+
+## Cron (propuesto, NO activado)
+Usar el huso horario del equipo: comprobar `timedatectl | grep 'Time zone'`. Si difiere de Santiago, adaptar el cron a la hora local equivalente; `TZ` dentro del script solo afecta a su ejecución, no al horario al que cron lo inicia.
+
+Tras validar **una carga completa** y confirmar credenciales estables, abrir `crontab -e` e insertar (ajustar ruta absoluta):
+
+```cron
+0 16 * * 1-6 /bin/bash /home/USUARIO/MercadoPublico-Inteligencia/scripts/ubuntu_etl_dos_fuentes.sh --aplicar
+```
+
+El export de `GOOGLE_APPLICATION_CREDENTIALS` no se transmite entre terminal interactiva y cron. Para ejecución desatendida cargarla desde un archivo local restringido, por ejemplo un wrapper bajo `~/.config/mercadopublico/`, propiedad del usuario (`chmod 700` directorio y `chmod 600` archivo); **sin guardar la clave en Git**.
+
+La planificación a las 16:00 aplica lunes–sábado, solo si Ubuntu está encendido. No hay reintentos automáticos dentro del programa ni cierre mensual automático aún. Esto se abordará tras la prueba real.
+
+## Evidencia requerida
+- Archivo `salida_operativa/etl_zip_operativo_2026-10.json` de simulación.
+- Conteos PK y esquema, revisión de suficiencia de celdas.
+- Tras carga piloto: reporte con `CARGA_VERIFICADA` y comprobación independiente de las pestañas.
+- Si el servidor devuelve ZIP antiguo/vacío o error de HTTP: no publicar nueva hora de éxito en el frontend. El frontend todavía no está conectado a este flujo.
