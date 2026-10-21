@@ -5,20 +5,49 @@ const state={manifest:null,records:[],page:0,perPage:10,token:0};
 function status(message){$('status').textContent=message}
 function safePart(path,period,entity){return typeof path==='string'&&new RegExp('^data/partes/'+entity+'/'+period+'/[a-z0-9_-]+\\.json$').test(path)}
 function textCell(value){const td=document.createElement('td');td.textContent=String(value??'');return td}
+const tableColumns={
+ procesos:[['codigo','Código'],['nombre','Nombre del proceso'],['modalidad','Modalidad'],['organismo_comprador','Organismo comprador'],['estado','Estado'],['fecha_publicacion','Publicación'],['fecha_cierre','Cierre'],['monto_disponible_clp','Monto disponible']],
+ ofertas:[['codigo','Proceso'],['proveedor','Proveedor'],['monto_ofertado_clp','Monto ofertado'],['seleccionado','Oferta seleccionada'],['fecha_oferta','Fecha de oferta']],
+ resultados:[['codigo','Proceso'],['adjudicatario','Proveedor informado'],['monto_adjudicado_clp','Monto adjudicado'],['monto_oferta_seleccionada_clp','Oferta seleccionada'],['validado','Verificación'],['estado_verificacion_oc','Verificación OC']],
+ ordenescompra:[['codigo_oc','Orden de compra'],['codigo_proceso','Proceso asociado'],['proveedor','Proveedor'],['estado','Estado'],['monto_total_oc_clp','Monto total'],['fecha_creacion','Creación']]
+};
+function formatTableValue(record,key){
+ const value=record[key];
+ if(value===null||value===undefined||String(value).trim()==='')return 'No informado';
+ if(key.endsWith('_clp')){
+  const raw=String(value).trim().replace(/\\./g,'').replace(',','.');
+  const amount=Number(raw);
+  return Number.isFinite(amount)?'$'+Math.round(amount).toLocaleString('es-CL'):String(value);
+ }
+ return String(value);
+}
 function render(){
  const term=$('buscar').value.trim().toLocaleLowerCase('es');
  const selected=state.records.filter(r=>!term||Object.values(r).some(v=>String(v??'').toLocaleLowerCase('es').includes(term)));
- const pageSize=state.perPage;
- const pages=Math.ceil(selected.length/pageSize);state.page=Math.min(state.page,Math.max(0,pages-1));
- const current=selected.slice(state.page*pageSize,(state.page+1)*pageSize);
- const fields=current.length?Object.keys(current[0]).slice(0,16):[];
- $('columns').replaceChildren();const tr=document.createElement('tr');
- for(const f of fields){const th=document.createElement('th');th.textContent=f;tr.append(th)}
- if(!fields.length){const th=document.createElement('th');th.textContent='Resultados';tr.append(th)}else{const th=document.createElement('th');th.textContent='Acciones';tr.append(th)}
- $('columns').append(tr);$('rows').replaceChildren();
- for(const record of current){const row=document.createElement('tr');for(const f of fields)row.append(textCell(record[f]));const action=document.createElement('td');const button=document.createElement('button');button.textContent='Ver detalle';button.className='detail-button';button.addEventListener('click',()=>showDetail(record));action.append(button);row.append(action);$('rows').append(row)}
- if(!current.length){const row=document.createElement('tr');row.append(textCell('No hay registros para la consulta.'));$('rows').append(row)}
- $('counter').textContent=selected.length.toLocaleString('es-CL')+' registros encontrados';
+ const pages=Math.ceil(selected.length/state.perPage);
+ state.page=Math.min(state.page,Math.max(0,pages-1));
+ const current=selected.slice(state.page*state.perPage,(state.page+1)*state.perPage);
+ const entity=$('entidad').value;
+ const fields=tableColumns[entity]||[];
+ $('columns').replaceChildren();
+ const header=document.createElement('tr');
+ for(const [,label] of fields){const th=document.createElement('th');th.textContent=label;header.append(th)}
+ const actions=document.createElement('th');actions.textContent='Acciones';header.append(actions);$('columns').append(header);
+ $('rows').replaceChildren();
+ for(const record of current){
+  const row=document.createElement('tr');
+  for(const [key] of fields){
+   const td=textCell(formatTableValue(record,key));
+   if(key==='codigo'||key==='codigo_oc'||key==='codigo_proceso')td.classList.add('process-code');
+   if(key==='nombre')td.classList.add('process-name');
+   if(key==='estado'){const pill=document.createElement('span');pill.className='state-pill';pill.textContent=td.textContent;td.replaceChildren(pill)}
+   if(key.endsWith('_clp'))td.classList.add('amount-cell');
+   row.append(td);
+  }
+  const action=document.createElement('td');const button=document.createElement('button');button.textContent='Ver detalle';button.className='detail-button';button.addEventListener('click',()=>showDetail(record));action.append(button);row.append(action);$('rows').append(row);
+ }
+ if(!current.length){const row=document.createElement('tr');const cell=textCell('No hay registros para la consulta.');cell.colSpan=fields.length+1;row.append(cell);$('rows').append(row)}
+ $('counter').textContent=selected.length.toLocaleString('es-CL')+' registros encontrados en el bloque';
  $('page').textContent='Bloque '+(state.chunkIndex+1)+'/'+Math.max(state.parts.length,1)+' · Página '+(pages?state.page+1:0)+'/'+pages;
  $('prev').disabled=state.page===0&&state.chunkIndex===0;$('next').disabled=state.page+1>=pages&&state.chunkIndex>=state.parts.length-1;
 }
