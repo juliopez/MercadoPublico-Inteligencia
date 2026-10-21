@@ -65,3 +65,14 @@ Tras releer README, índice documental, decisiones y este documento, se intentó
 Se añadió `tests/benchmark_busqueda_frontend_v2.py` (commit `08e8d00d`) para generar **20.000 registros sintéticos en 20 fragmentos**, ejecutar el índice compacto y reportar tiempo, memoria máxima del proceso, bytes totales, número de archivos y tamaño del prefijo más grande. El workflow `.github/workflows/validar-busqueda-v2.yml` fue ampliado para ejecutar el benchmark después de las pruebas unitarias (commit `28c5971c`).
 
 **Estado de evidencia:** benchmark automatizado incorporado, **sin resultado de ejecución confirmado todavía**. Esta prueba sintética no sustituye medir las entidades históricas ni demuestra escalabilidad a millones de registros. No se generaron índices públicos ni se modificaron V1, JS de V2, datos, Sheets o ETL. Se mantiene la búsqueda global desactivada hasta evaluar cifras medidas.
+
+
+## Resultado de GitHub Actions confirmado — ejecución #39658799509
+**Fuente comprobada:** ejecución [#39658799509](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39658799509), trabajo `tests` #119426064019, conclusión `success`, registrada el 21-10-2026 UTC. Se consultaron los registros originales del trabajo.
+
+- Sintaxis Python: éxito.
+- Pruebas unitarias: **2 ejecutadas, 2 correctas** (`Ran 2 tests in 0.003s`).
+- Benchmark **sintético**, no histórico: **20.000 registros**, **0,405 segundos** de construcción, **910 archivos JSON**, **1.846.369 bytes** de índice total, **167.802 bytes** el archivo más grande y **38.156 KB** de memoria máxima reportada por el proceso.
+- Mensaje del generador: `BUSQUEDA_INDICE_OK 2026-06 procesos 20000 909` (909 particiones de prefijos + meta.json = 910 archivos).
+
+**Interpretación:** éxito de la prueba sintética e integración de CI, sin extrapolar esos tiempos, tamaños o memoria a millones de registros. La fragmentación en 909 archivos y las palabras de alta frecuencia requieren evaluación con históricos antes de generar/publicar índices y habilitar la búsqueda global. Ningún dato de Google Sheets, ETL ni frontend V1/V2 se modificó para esta verificación.
