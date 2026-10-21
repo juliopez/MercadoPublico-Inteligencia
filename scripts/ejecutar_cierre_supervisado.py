@@ -150,7 +150,7 @@ def trasladar(period,folder):
  "fecha":dt.datetime.now(ZoneInfo("America/Santiago")).isoformat()})
  print("CIERRE VERIFICADO Drive y GitHub",id)
 
-def verificar_acceso():
+def verificar_acceso(period):
  """Comprueba acceso con JSON local sin alterar Drive ni Sheets."""
  from google.oauth2.service_account import Credentials
  from google.auth.transport.requests import Request
@@ -164,9 +164,7 @@ def verificar_acceso():
   print("CARPETA",item,meta.get("name"),"canAddChildren",meta.get("capabilities",{}).get("canAddChildren"))
   if not meta.get("capabilities",{}).get("canAddChildren"):
    raise PermissionError("Cuenta de servicio sin permiso para añadir archivo a "+item)
- now=dt.datetime.now(ZoneInfo("America/Santiago"))
- prev=(now.date().replace(day=1)-dt.timedelta(days=1)).strftime("%Y-%m")
- entry=cat["periodos"][prev]
+ entry=cat["periodos"][period]
  meta=api("https://www.googleapis.com/drive/v3/files/"+entry["id"]+
  "?fields=id,name,parents,capabilities(canMoveItemWithinDrive,canMoveItemOutOfDrive,canEdit)&supportsAllDrives=true",cred.token)
  print("ORIGEN",meta.get("name"),"capabilities",meta.get("capabilities"))
@@ -186,7 +184,7 @@ def main():
  p.add_argument("--confirmar-traslado",action="store_true")
  a=p.parse_args();folder=a.directorio.expanduser().resolve()/a.periodo
  if a.verificar_acceso:
-  verificar_acceso()
+  verificar_acceso(a.periodo)
  elif a.cargar:
   if not a.confirmar_carga:raise SystemExit("Requiere --confirmar-carga")
   cargar(a.periodo,folder)
