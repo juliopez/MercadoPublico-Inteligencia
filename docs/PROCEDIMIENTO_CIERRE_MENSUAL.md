@@ -482,3 +482,24 @@ Controles: las operaciones rechazan un mes distinto del anterior, inicio antes d
 Para el cierre del mes, la **última versión descargada de los ZIP oficiales de Mercado Público correspondiente a ese período y entidad** es la fuente de referencia ante diferencias con la hoja operativa. Conservar filas exclusivamente operativas y no asumir baja por ausencia en el ZIP; no inventar adjudicaciones ni equivalencias entre columnas, y mantener trazabilidad del origen/fecha de descarga y del respaldo anterior. **Esta regla sustituye la política anterior de bloqueo universal de valores distintos.** Se debe actualizar el código del conciliador y cargador antes de considerar listo el cierre del 10 de noviembre. No declarar la carga habilitada mientras la implementación no refleje esta decisión.
 
 **Autorización para Drive:** el script de Ubuntu actualmente **no presenta un diálogo OAuth interactivo**; espera `DRIVE_ACCESS_TOKEN` válido del propietario de Drive. Para GitHub necesita sesión `gh auth login` o `GH_TOKEN`. Debe resolverse antes del día 10. No compartir credenciales por chat ni guardarlas en Git. La cuenta de servicio con acceso Editor a Sheets no garantiza permisos para el traslado entre carpetas propiedad del usuario.
+
+## Estado consolidado final de preparación para el 10/11/2026
+
+La decisión del usuario es **histórico oficial completo por MES prevalece sobre el operativo**. Al coincidir una PK, todos los campos de esa fila toman los valores del ZIP histórico de ese mes, incluso si un valor oficial está vacío. Filas de PK ausentes en el paquete oficial no se eliminan de la hoja operativa, pues pueden obedecer a diferencias de cobertura. Las seis tablas se escriben mediante el ETL existente, con respaldo ZIP, comprobación de PK, reread por tabla, bitácora y mismo lock del ETL diario. Las referencias anteriores en este documento que señalan precedencia solo en campos no vacíos **quedan sustituidas por este apartado**.
+
+La credencial ya descargada por el usuario se encuentra en Ubuntu, sin ser necesario descargar otro JSON: `$HOME/.config/mercadopublico/servicio-google.json`. Tanto Google Sheets como las llamadas a Drive ahora usan esa credencial de cuenta de servicio. **Advertencia de permisos**: disponer del archivo JSON y compartir las hojas como Editor NO demuestra permiso para mover entre ambas carpetas. Antes del 10 se debe ejecutar **una sola vez** la verificación de capacidad con la cuenta efectiva (no mueve archivos):
+```bash
+bash scripts/ubuntu_cierre_supervisado.sh verificar-acceso
+```
+Si `canAddChildren` no está habilitado en origen y destino o falta acceso al archivo, **no mover** ni dar por habilitado el cierre. A falta de acceso del servicio, la operación podrá requerir realizar el traslado desde la cuenta propietaria mediante la integración conectada, sin modificar el cargador. `gh auth login` debe estar configurado para actualizar el catálogo GitHub. La revisión real de credenciales que residen en Ubuntu no es realizable desde GitHub Actions.
+
+Procedimiento operativo:
+1. `git pull --ff-only`, validar que CI de GitHub Actions esté aprobado y verificar acceso una vez.
+2. 10/11: `bash scripts/ubuntu_cierre_supervisado.sh diagnosticar --periodo 2026-10`. Si faltan los tres ZIP, no iniciar carga.
+3. Inspeccionar informe `precedencia_oficial_mensual.json` e informes de observaciones referenciales. Diferencias entre fuente histórica y operativa ya no bloquean por sí solas: la versión histórica mensual prevalece.
+4. `bash scripts/ubuntu_cierre_supervisado.sh cargar --periodo 2026-10`. Verificar el respaldo y `constancia_carga_real.json`.
+5. Generar `APROBACION_CIERRE.json` únicamente luego de auditar carga y respaldo, conforme al modelo documentado arriba.
+6. `bash scripts/ubuntu_cierre_supervisado.sh trasladar --periodo 2026-10`. Verificar mismo ID de hoja y GitHub catalogado histórico.
+7. Solo tras resultado favorable, preparar cron para el primer cierre automatizado previsto el 10/12.
+
+**No dar por probado traslado ni escritura sobre producción hasta ejecutarlos realmente; las validaciones GitHub Actions prueban sintaxis y funcionalidad offline.** No se programó un cron mensual por anticipado.
