@@ -29,10 +29,13 @@ function moneyCLP(value){
  return Number.isFinite(n)?new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(n):String(value);
 }
 function codeField(key){return ['codigo','codigo_proceso','codigo_oc','codigoexterno','codigo_externo'].includes(key.toLowerCase())}
+let previousContext=null;
 function openCode(code,key){
  if(!/^[a-z0-9-]{4,100}$/i.test(String(code??'')))return;
  const current=$('entidad').value;
- const target=key==='codigo_oc'?'ordenescompra':key==='codigo_proceso'?'procesos':current;
+ const target=key==='codigo_oc'?'ordenescompra':'procesos';
+ previousContext={period:$('periodo').value,entity:$('entidad').value,block:state.chunkIndex,search:$('buscar').value,global:$('busqueda-global-texto').value,status:$('global-estado').value,type:$('global-modalidad').value};
+ $('volver-contexto').hidden=false;
  $('entidad').value=target;$('entidad').dispatchEvent(new Event('change'));
  $('buscar').value='';
  $('busqueda-global-texto').value=String(code);
@@ -50,6 +53,18 @@ function displayedCell(record,key){
  }
  return td;
 }
+$('volver-contexto').addEventListener('click',async ()=>{
+ const old=previousContext;if(!old)return;
+ previousContext=null;$('volver-contexto').hidden=true;
+ if($('periodo').value!==old.period){$('periodo').value=old.period;$('periodo').dispatchEvent(new Event('change'))}
+ $('entidad').value=old.entity;$('entidad').dispatchEvent(new Event('change'));
+ $('buscar').value=old.search;
+ $('busqueda-global-texto').value=old.global;
+ $('global-estado').value=old.status;$('global-modalidad').value=old.type;
+ await consult();
+ if(old.block>0&&old.block<state.parts.length)await loadChunk(old.block);
+ $('consulta').scrollIntoView({behavior:'smooth',block:'start'});
+});
 window.MPV2={moneyCLP,moneyField,codeField,openCode};
 function localFilterFields(){
  const e=$('entidad').value;
@@ -265,9 +280,14 @@ function showDetail(record){
     $('busqueda-global-boton').click();
     $('busqueda-global').scrollIntoView({behavior:'smooth',block:'start'});
    });
-   const a=document.createElement('a');a.href='https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion='+encodeURIComponent(code);
-   a.target='_blank';a.rel='noopener noreferrer';a.textContent='Abrir ficha oficial';a.className='detail-official-link';
-   dd.append(b,' ',a);
+   dd.append(b);
+   // La ruta de fichaLicitacion solo es apropiada para códigos de licitación,
+   // no para toda Compra Ágil ni para cualquier OC.
+   if(/-([A-Z]{2}\d{0,2})$/i.test(code)&&!/-COT\d+$/i.test(code)){
+    const a=document.createElement('a');a.href='https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion='+encodeURIComponent(code);
+    a.target='_blank';a.rel='noopener noreferrer';a.textContent='Abrir ficha de licitación';a.className='detail-official-link';
+    dd.append(' ',a);
+   }
   }else if(codeField(key)&&value)dd.append(displayedCell(record,key).firstChild);else dd.textContent=moneyField(key)?moneyCLP(value):formatTableValue(record,key);
   body.append(dt,dd);
  }
