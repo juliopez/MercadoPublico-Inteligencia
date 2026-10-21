@@ -1,0 +1,49 @@
+{
+  "version": "1.0",
+  "actualizado": "2026-10-20",
+  "arquitectura": "Google Sheets un archivo MER v2 por período + operativo API",
+  "carpetas": {
+    "raiz": "1R5SDUh5n7XWxMYWWCRyIYqByMrAoPJ-H",
+    "historicos": "1YC-1MT1QCnAvpKgDACCH-NKnV9caIFyW",
+    "operativo": "1m3feqWXUNtur6v17qvhZ9bQrB38-ruVS",
+    "respaldos": "1TQAxQUPsDPACmTBhh3HR7OMyCemC8NAZ",
+    "revision": "1R2g284moDJOeCsVH8Wf-yiQwgGXBX8je"
+  },
+  "periodos": {
+    "2026-06": {
+      "tipo": "historico",
+      "id": "137pknbQIBbm5WAYvFh5bXKTGX9uBVhBYleTwxO6x7PI",
+      "estado": "auditado_con_observaciones",
+      "filas": 798094
+    },
+    "2026-07": {
+      "tipo": "historico",
+      "id": "1LcVUrWn99deDkgphD8cAn2n4jLxl-HZyzNm0XGffC5w",
+      "estado": "auditado_con_observaciones",
+      "filas": 810333
+    },
+    "2026-08": {
+      "tipo": "historico",
+      "id": "1TY41r2eriz3wvvLvHdYxHVrbqk94Lsp1kFtDtxxcXEs",
+      "estado": "auditado_con_observaciones",
+      "filas": 834370
+    },
+    "2026-09": {
+      "tipo": "historico",
+      "id": "1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA",
+      "estado": "auditado_con_observaciones",
+      "filas": 754318
+    },
+    "2026-10": {
+      "tipo": "operativo",
+      "id": "1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4",
+      "estado": "vacio_api_pendiente",
+      "filas": 0
+    }
+  },
+  "excluidos": {
+    "produccion_antigua": "1y81QaPy37APkBwxlYrKyE66_1ECdhL87GyWNitTfHr4",
+    "clon_antiguo": "1loeK_IM3RXHaR7CqpjUbz-TsNgOKNrV1ejq8aRC6JyE"
+  },
+  "seguridad": "No publicar tokens, no borrar archivos por pertenecer a revisión, no actualizar producción, histórico cerrado inmutable."
+}
