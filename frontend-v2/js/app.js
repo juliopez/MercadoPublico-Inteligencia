@@ -93,7 +93,7 @@ function compareRows(a,b,key){
  return String(x).localeCompare(String(y),'es',{numeric:true,sensitivity:'base'});
 }
 function ordered(rows){if(!state.sort.key)return rows;return [...rows].sort((a,b)=>state.sort.direction*compareRows(a,b,state.sort.key))}
-function sortLocal(key){state.sort.direction=state.sort.key===key?-state.sort.direction:1;state.sort.key=key;state.page=0;render()}
+function sortLocal(key){state.sort.direction=state.sort.key===key?-state.sort.direction:1;state.sort.key=key;state.page=0;render();const heading=[...$('columns').querySelectorAll('.sort-heading')].find(b=>b.dataset.key===key);heading?.focus({preventScroll:true})}
 function render(){
  const selected=ordered(filteredBlock());
  const pages=Math.ceil(selected.length/state.perPage);
@@ -104,7 +104,7 @@ function render(){
  $('resultados').classList.toggle('process-table',entity==='procesos');
  $('columns').replaceChildren();
  const header=document.createElement('tr');
- for(const [key,label] of fields){const th=document.createElement('th');const button=document.createElement('button');button.type='button';button.className='sort-heading';button.textContent=label+(state.sort.key===key?(state.sort.direction===1?' ↑':' ↓'):' ⇅');button.addEventListener('click',()=>sortLocal(key));th.append(button);header.append(th)}
+ for(const [key,label] of fields){const th=document.createElement('th');const button=document.createElement('button');button.type='button';button.className='sort-heading';button.dataset.key=key;th.setAttribute('aria-sort',state.sort.key===key?(state.sort.direction===1?'ascending':'descending'):'none');button.textContent=label+(state.sort.key===key?(state.sort.direction===1?' ↑':' ↓'):' ⇅');button.addEventListener('click',()=>sortLocal(key));th.append(button);header.append(th)}
  const actions=document.createElement('th');actions.textContent='Acciones';header.append(actions);$('columns').append(header);
  $('rows').replaceChildren();
  for(const record of current){
