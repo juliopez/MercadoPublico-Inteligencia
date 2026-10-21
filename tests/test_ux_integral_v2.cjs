@@ -26,13 +26,12 @@ assert(app.includes('displayedCell(record,key)'));
 assert(globalJS.includes('window.MPV2?.moneyField(key)'));
 assert(app.includes('function openCode(')&&app.includes('codeField(key)'));
 assert(app.includes('previousContext')&&app.includes("'volver-contexto'"));
-assert(app.includes('detail-resumen')&&app.includes("'detalle-secundario'"));
+assert(app.includes('detalle-resumen')&&app.includes("'detalle-secundario'"));
 assert(html.includes('<details id="detalle-secundario">'));
 assert(!html.includes('Funciones de la versión 1 que conservaremos'));
 assert(globalJS.includes('busqueda-global-progreso'));
 assert(globalJS.includes('codeQuery=')&&globalJS.includes('indexedTokens='));
 assert(globalJS.includes('facetFields'));
-assert(globalJS.includes('results')===false || true); // comprobación de compatibilidad sin inferencias de adjudicación
 assert(app.includes('function renderLinkedRecords('));
 assert(app.includes('function renderMonthlyEvolution('));
 
