@@ -28,7 +28,7 @@
 
 | Período | Tipo | ID de Google Sheet | Estado |
 |---|---|---|---|
-| 2026-06 | Histórico | `137pknbQIBbm5WAYvFh5bXKTGX9uBVhBYleTwxO6x7PI` | Creado, seis tablas MER v2 vacías; pendiente carga |
+| 2026-06 | Histórico | `137pknbQIBbm5WAYvFh5bXKTGX9uBVhBYleTwxO6x7PI` | 798.094 registros cargados; auditoría independiente pendiente |
 | 2026-07 | Histórico | `1LcVUrWn99deDkgphD8cAn2n4jLxl-HZyzNm0XGffC5w` | 810.333 registros; auditoría estructural/referencial aprobada con observaciones |
 | 2026-08 | Histórico | `1TY41r2eriz3wvvLvHdYxHVrbqk94Lsp1kFtDtxxcXEs` | 834.370 registros; auditoría independiente aprobada con observaciones (20-10-2026) |
 | 2026-09 | Histórico | `1lnMVUZ_pn_HkwEvI90yYz5GOMSYzuX-FbcbMR71-oDA` | Cargado y auditado |
@@ -72,3 +72,7 @@ Colab informó `CARGA MER V2 FINALIZADA 2026-07`. Se verificaron dimensiones de 
 ## Cierre estructural de julio — 2026-10-20
 
 Evidencia: `auditoria_integridad_mer_v2_2026-07.json`, 2026-10-20T23:04:32Z, MER v2 julio, solo lectura. Estado: `AUDITORIA_COMPLETADA_CON_OBSERVACIONES`. Procesos 80.996, Proveedores 29.827, Ofertas 437.855, OrdenesCompra 150.980, VinculosCOT_OC 56.149, Resultados 54.526; total **810.333**. Cero claves primarias vacías o duplicadas, cero columnas extra o ausentes; referencias auditadas sin huérfanos, cero pares COT–OC repetidos. Observaciones: 14.080 vínculos con OC fuera del corte (cobertura aceptada), 54.526 resultados OC no verificada, 29.762 proveedores RUT sin contraste y 65 SIN_RUT. **Cierre estructural aprobado;** no es certificación jurídica. Siguiente período: junio 2026.
+
+## Junio 2026 — carga verificada
+
+Colab informó `CARGA MER V2 FINALIZADA 2026-06`. Verificación directa de dimensiones y presencia de datos en las últimas filas de MER_2026_06: Procesos 80.898, Proveedores 29.741, Ofertas 407.923, OrdenesCompra 150.451, VinculosCOT_OC 65.867, Resultados 63.214; total **798.094**. Queda pendiente **auditoría independiente estructural/referencial**, antes de marcar la tarea 7 completa. No volver a insertar el paquete de junio.
