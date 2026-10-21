@@ -44,8 +44,81 @@ function showDetail(record){
  if(url)external.href=url;else external.removeAttribute('href');
  $('detalle-titulo').textContent='Detalle del registro · '+$('periodo').value;
  area.hidden=false;area.scrollIntoView({behavior:'smooth',block:'start'});
+ const linked=$('detalle-relaciones');
+ linked.hidden=$('entidad').value!=='procesos';
+ if(!linked.hidden)loadRelated(code,$('periodo').value);
 }
-function closeDetail(){$('detalle').hidden=true;$('detalle-campos').replaceChildren()}
+function closeDetail(){detailRequest++;$('detalle').hidden=true;$('detalle-campos').replaceChildren();$('detalle-relaciones').hidden=true;}
+
+
+// Los índices solo contienen código → archivos públicos. No cargamos el mes completo.
+let detailRequest=0;
+const indexCache=new Map();
+async function readJsonPublic(path){
+ const urls=['./'+path,'https://raw.githubusercontent.com/juliopez/MercadoPublico-Inteligencia/main/frontend-v2/'+path];
+ let last;
+ for(const url of urls){
+  try{
+   const response=await fetch(url,{cache:'no-store'});
+   if(!response.ok)throw Error('HTTP '+response.status);
+   return await response.json();
+  }catch(error){last=error}
+ }
+ throw last;
+}
+function renderLinkedRecords(target,items,kind){
+ const container=$(target);
+ container.replaceChildren();
+ const description=document.createElement('p');description.className='muted';
+ description.textContent=items.length.toLocaleString('es-CL')+' registros relacionados por código de proceso.';
+ container.append(description);
+ if(!items.length)return;
+ const table=document.createElement('table'),head=document.createElement('tr'),body=document.createElement('tbody');
+ const fields=kind==='ofertas'?['proveedor','monto_ofertado_clp','seleccionado']:
+  kind==='resultados'?['adjudicatario','monto_adjudicado_clp','validado','estado_verificacion_oc']:
+  ['codigo_oc','proveedor','monto_total_oc_clp','estado'];
+ for(const col of fields){const th=document.createElement('th');th.textContent=col.replaceAll('_',' ');head.append(th)}
+ const thead=document.createElement('thead');thead.append(head);table.append(thead);
+ for(const item of items.slice(0,30)){
+  const tr=document.createElement('tr');
+  for(const field of fields)tr.append(textCell(item[field]));
+  body.append(tr);
+ }
+ table.append(body);container.append(table);
+ if(items.length>30){const n=document.createElement('p');n.className='muted';n.textContent='Se muestran 30 registros. Hay más relaciones disponibles.';container.append(n)}
+}
+async function loadRelated(code,period){
+ const seq=++detailRequest;
+ for(const target of ['detalle-ofertas','detalle-resultados','detalle-oc'])$(target).replaceChildren();
+ $('detalle-relaciones-estado').textContent='Consultando relaciones indexadas…';
+ if(!code){$('detalle-relaciones-estado').textContent='Sin código de proceso para relacionar.';return}
+ try{
+  let index=indexCache.get(period);
+  if(!index){
+   index=await readJsonPublic('data/indices/'+period+'.json');
+   if(index.periodo!==period||!index.entidades)throw Error('Índice incompatible');
+   indexCache.set(period,index);
+  }
+  if(seq!==detailRequest)return;
+  let loaded=0;
+  for(const [entity,target,key] of [['ofertas','detalle-ofertas','codigo'],['resultados','detalle-resultados','codigo'],['ordenescompra','detalle-oc','codigo_proceso']]){
+   const paths=index.entidades?.[entity]?.[code]||[];
+   const records=[];
+   for(const path of paths){
+    if(!safePart(path,period,entity))throw Error('Ruta vinculada no válida');
+    const chunk=await readJsonPublic(path);
+    if(!Array.isArray(chunk))throw Error('Fragmento inválido');
+    for(const item of chunk)if(String(item[key]||'').trim()===code)records.push(item);
+    if(seq!==detailRequest)return;
+   }
+   renderLinkedRecords(target,records,entity);
+   loaded+=records.length;
+  }
+  if(seq===detailRequest)$('detalle-relaciones-estado').textContent='Relaciones disponibles: '+loaded.toLocaleString('es-CL')+' registros públicos asociados al código '+code+'.';
+ }catch(error){
+  if(seq===detailRequest)$('detalle-relaciones-estado').textContent='No fue posible consultar las relaciones indexadas: '+error.message+'. La ficha básica sigue disponible.';
+ }
+}
 
 // Lectura por bloque: cada parte tiene hasta 1000 filas; no descargar 400+ partes al abrir.
 const chunkSize=1000;
