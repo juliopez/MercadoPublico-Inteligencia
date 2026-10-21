@@ -1,0 +1,39 @@
+name: Validar presentación y enlaces V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'frontend-v2/js/app.js'
+      - 'frontend-v2/css/styles.css'
+      - '.github/workflows/validar-presentacion-detalle-v2.yml'
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sintaxis JavaScript
+        run: |
+          node --check frontend-v2/js/app.js
+          node --check frontend-v2/js/busqueda-global.js
+      - name: Comprobar presentación y vínculos de proceso
+        run: |
+          node - <<'JS'
+          const fs=require('fs'),assert=require('node:assert/strict');
+          const js=fs.readFileSync('frontend-v2/js/app.js','utf8');
+          const css=fs.readFileSync('frontend-v2/css/styles.css','utf8');
+          const table=js.match(/resultados:\[([^\n]+)/)?.[1]||'';
+          assert(!table.includes("'Verificación'"),'No publicar columnas internas de verificación');
+          assert(!table.includes("'Verificación OC'"),'No publicar verificación interna OC');
+          assert(js.includes("isOC&&key==='codigo_proceso'"));
+          assert(js.includes("fichaLicitacion.html?idLicitacion="));
+          assert(js.includes("$('busqueda-global-boton').click()"));
+          assert(js.includes("['validado','estado_verificacion_oc'].includes(key)"));
+          assert(css.includes("min-width:1560px"));
+          assert(css.includes("white-space:nowrap"));
+          console.log('TABLAS_VINCULOS_OK');
+          JS
