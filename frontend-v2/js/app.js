@@ -255,4 +255,15 @@ $('consultar').addEventListener('click',consult);
 $('entidad').addEventListener('change',()=>{++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;closeDetail();render()});
 $('prev').addEventListener('click',()=>{if(state.page===0&&state.chunkIndex>0)loadChunk(state.chunkIndex-1);else{state.page--;render()}});
 $('next').addEventListener('click',()=>{const count=filteredBlock().length;if((state.page+1)*state.perPage>=count&&state.chunkIndex<state.parts.length-1)loadChunk(state.chunkIndex+1);else{state.page++;render()}});
+// API mínima para abrir resultados indexados sin duplicar el lector de fragmentos.
+window.openIndexedRecord=async function(part,row,period,entity){
+ if($('periodo').value!==period||$('entidad').value!==entity){
+  status('El período o la entidad cambiaron. Ejecute nuevamente la búsqueda.');
+  return;
+ }
+ if(!Number.isInteger(part)||part<0||part>=state.parts.length||!Number.isInteger(row)||row<0)return;
+ const token=state.token;
+ await loadChunk(part);
+ if(token===state.token&&state.chunkIndex===part&&state.records[row])showDetail(state.records[row]);
+};
 init();
