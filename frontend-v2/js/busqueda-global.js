@@ -23,6 +23,7 @@ function controls(){
  if(!keys[1])el('global-modalidad').value='';
 }
 let seq=0,session=null;
+let globalSort={key:null,direction:1};
 function message(text){el('busqueda-global-estado').textContent=text}
 function clear(text){
  seq++;session=null;
@@ -68,9 +69,10 @@ async function draw(s,t){
  try{
   await collect(s,t,limit);
   if(!valid(s,t))return;
-  const visible=t.found.slice(t.page*10,(t.page+1)*10);
+  const ordering=globalSort.key?[...t.found].sort((a,b)=>globalSort.direction*String(a.record[globalSort.key]??'').localeCompare(String(b.record[globalSort.key]??''),'es',{numeric:true})):t.found;
+  const visible=ordering.slice(t.page*10,(t.page+1)*10);
   const head=document.createElement('tr');
-  for(const [,label] of fields[t.entity]){const th=document.createElement('th');th.textContent=label;head.append(th)}
+  for(const [key,label] of fields[t.entity]){const th=document.createElement('th');const b=document.createElement('button');b.className='sort-heading';b.type='button';b.textContent=label+(globalSort.key===key?(globalSort.direction===1?' ↑':' ↓'):' ⇅');b.addEventListener('click',()=>{globalSort.direction=globalSort.key===key?-globalSort.direction:1;globalSort.key=key;t.page=0;draw(seq,t)});th.append(b);head.append(th)}
   const action=document.createElement('th');action.textContent='Acción';head.append(action);
   const frag=document.createDocumentFragment();
   for(const item of visible){
@@ -123,6 +125,7 @@ async function search(){
   const others=lists.slice(1).map(list=>new Set(list.map(v=>v.join(':'))));
   const refs=(lists[0]||[]).filter(ref=>others.every(set=>set.has(ref.join(':'))));
   refs.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  globalSort={key:null,direction:1};
   const t={period,entity,parts,tokens:query,filters:{status:norm(el('global-estado').value.trim()),type:norm(el('global-modalidad').value.trim())},refs,cursor:0,found:[],page:0};
   session=t;
   await draw(now,t);
@@ -148,7 +151,8 @@ async function exportGlobal(){
   }
   const cols=fields[t.entity].map(([key])=>key);
   const safe=x=>'"'+String(x??'').replaceAll('"','""').replace(/^[=+@\-\t\r]/,m=>"'"+m)+'"';
-  const csv='\uFEFF'+[cols.join(';'),...t.found.map(x=>cols.map(key=>safe(x.record[key])).join(';'))].join('\r\n');
+  const all=globalSort.key?[...t.found].sort((a,b)=>globalSort.direction*String(a.record[globalSort.key]??'').localeCompare(String(b.record[globalSort.key]??''),'es',{numeric:true})):t.found;
+  const csv='\uFEFF'+[cols.join(';'),...all.map(x=>cols.map(key=>safe(x.record[key])).join(';'))].join('\r\n');
   const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   const a=document.createElement('a');a.href=url;a.download='busqueda-global-'+t.entity+'-'+t.period+'.csv';
   document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
