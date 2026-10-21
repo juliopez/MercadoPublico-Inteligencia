@@ -175,3 +175,8 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 #participante-resumen{margin-top:18px}
 #participante-evolucion .amount-bar{grid-template-columns:110px 1fr 95px}
 @media(max-width:700px){#participantes-historicos .filters{grid-template-columns:1fr}}
+
+/* Vínculos OC acreditados por documento, separados de candidatos. */
+.oc-verified{margin:12px 0;padding:10px 14px;border-left:4px solid #278468;background:#edf8f3;border-radius:5px}
+.oc-verified h5{margin:3px 0 8px;color:#175c46}
+.oc-verified li{margin:5px 0;overflow-wrap:anywhere}
