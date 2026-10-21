@@ -72,10 +72,17 @@ async function suggest(input){
  try{
   let entries=suggestionCache.get(cacheKey);
   if(!entries){
-   const response=await fetch('./data/autocompletar/'+cacheKey+'.json');
-   if(response.status===404){byId('comparar-ayuda').textContent='Las sugerencias no están publicadas para este período. Puedes escribir el nombre manualmente.';return}
-   if(!response.ok)throw Error('HTTP '+response.status);
-   entries=await response.json();
+   const relative='data/autocompletar/'+cacheKey+'.json';
+   let lastError;
+   for(const url of ['./'+relative,'https://raw.githubusercontent.com/juliopez/MercadoPublico-Inteligencia/main/frontend-v2/'+relative]){
+    try{
+     const response=await fetch(url,{cache:'no-store'});
+     if(!response.ok)throw Error('HTTP '+response.status);
+     entries=await response.json();
+     break;
+    }catch(e){lastError=e}
+   }
+   if(!entries)throw lastError||Error('Índice temporalmente inaccesible');
    if(!Array.isArray(entries))throw Error('Formato inválido');
    suggestionCache.set(cacheKey,entries);
    if(suggestionCache.size>12)suggestionCache.delete(suggestionCache.keys().next().value);
@@ -84,7 +91,7 @@ async function suggest(input){
   const matching=entries.filter(([key])=>key.startsWith(term)).slice(0,40);
   for(const [,name] of matching){const option=document.createElement('option');option.value=name;list.append(option)}
   byId('comparar-ayuda').textContent=matching.length+' sugerencias de proveedores para el texto ingresado. Selecciona una razón social completa.';
- }catch(error){if(seq===suggestionSeq)byId('comparar-ayuda').textContent='No fue posible consultar sugerencias. Puedes ingresar el nombre manualmente.'}
+ }catch(error){if(seq===suggestionSeq)byId('comparar-ayuda').textContent='No se pudieron cargar las sugerencias (acceso a los archivos públicos). Puedes escribir el nombre manualmente y volver a intentarlo.'}
 }
 for(const n of [1,2,3]){
  byId('comparar-nombre-'+n).addEventListener('input',event=>{
