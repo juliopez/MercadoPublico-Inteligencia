@@ -23,6 +23,14 @@ def select(catalog,period):
  if entry["tipo"]=="historico" and "auditad" in entry.get("estado","").lower():return entry
  if entry["tipo"]=="operativo" and period==now:return entry
  raise ValueError("Período no habilitado para publicar: "+period)
+def retry_read(action):
+ import gspread
+ for attempt in range(6):
+  try:return action()
+  except gspread.exceptions.APIError as exc:
+   if getattr(getattr(exc,"response",None),"status_code",None)!=429 or attempt==5:raise
+   time.sleep(30*(attempt+1))
+
 def export(period,entity,output):
  import gspread
  from google.oauth2.service_account import Credentials
@@ -35,7 +43,7 @@ def export(period,entity,output):
  entry=select(catalog,period)
  book=gspread.authorize(creds).open_by_key(entry["id"])
  sheet=book.worksheet(ENTITIES[entity])
- header=sheet.row_values(1)
+ header=retry_read(lambda:sheet.row_values(1))
  missing=[k for k in PUBLIC[entity] if k not in header]
  if missing:raise ValueError("Faltan campos públicos: "+repr(missing))
  indexes=[header.index(k) for k in PUBLIC[entity]]
@@ -58,7 +66,7 @@ def export(period,entity,output):
   end=min(max_rows,start+4999)
   for attempt in range(5):
    try:
-    block=sheet.get(f"A{start}:{chr(64+limit)}{end}")
+    block=retry_read(lambda:sheet.get(f"A{start}:{chr(64+limit)}{end}"))
     break
    except gspread.exceptions.APIError as exc:
     if getattr(getattr(exc,"response",None),"status_code",None)!=429 or attempt==4:raise
