@@ -57,3 +57,10 @@ Se creó `scripts/verificar_oficial_ca_oc_v2.py` y el workflow `.github/workflow
 - Dictamen automático: `pendiente_verificacion`, `coincidencia_oficial=false`, `verificacion_suficiente_para_vincular=false`.
 
 **Decisión técnica:** la OC permanece como candidata no verificada y **no** se añade a las OC de código de proceso confirmado. El HTTP 203 no equivale a ausencia de OC ni a una respuesta probatoria. El siguiente paso requiere cotejar la ficha y documentación oficial de ambos códigos (por ejemplo, detalle y origen de la OC en el portal) o disponer de un endpoint que devuelva explícitamente su vinculación.
+
+## Confirmación documental aportada por el usuario — 21-10-2026
+El usuario consultó directamente MercadoPublico.cl y presentó tres capturas de pantallas oficiales: ficha de Compra Ágil `839-4-COT26` (FONASA), listado oficial de OC `839-10-AG26` (proveedor CAPACITACIONES ATRÉVETE SPA, aceptada) y, crucialmente, **detalle oficial de esa OC cuya descripción dice expresamente**: «Solicitud cotización ID 839-4-COT26 dirigida a CAPACITACIONES ATRÉVETE SPA». Esta referencia documental cruzada resuelve la ambigüedad de la búsqueda por similitud.
+
+**Nuevo dictamen:** la asociación `839-4-COT26` → `839-10-AG26` está **confirmada documentalmente por la descripción oficial de la OC aportada en captura**, aunque el campo `codigo_proceso` de nuestros históricos está vacío y las consultas de API realizadas anteriormente no expusieron esa referencia. No confundir vínculo de origen con ejecución de pago.
+
+**Acción implementada:** archivo público separado `frontend-v2/data/vinculos-oc-verificados.json` con códigos, fuente, alcance y evidencia. V2 muestra «OC vinculadas mediante evidencia documental» y excluye ese código de «OC candidatas por verificar». No se modificaron ZIP, JSON históricos, Google Sheets ni ETL. Este mecanismo es puntual; requiere procedimiento de revisión de evidencia oficial para confirmar futuros vínculos.
