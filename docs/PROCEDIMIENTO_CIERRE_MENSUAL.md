@@ -284,3 +284,20 @@ En la prueba integral prevista para el 10 de noviembre:
  --periodo 2026-10 \
  --directorio "$HOME/.local/share/mercadopublico/cierres/2026-10"
 ```
+
+## Decimotercera etapa — simulación de traslado Drive a Históricos
+
+Se añadieron `scripts/simular_traslado_cierre.py` y `tests/test_simular_traslado_cierre.py`. El simulador exige evaluación en estado `CANDIDATO_A_APROBACION_SUPERVISADA`, comprueba catálogo, período, exclusiones y carpetas, y describe la transformación `MER_AAAA_MM_OPERATIVO` → `MER_AAAA_MM` de `02_Operativo_MER` a `01_Historicos_MER`, **conservando el mismo ID**. No usa Google Drive ni GitHub, y sus flags de autorización son siempre falsos.
+
+Futura operación real, únicamente tras aprobación independiente: comprobar metadatos Drive (ID, nombre, parent de origen); registrar intención durable; ejecutar `files.update` con `addParents`=históricos, `removeParents`=operativo y nombre definitivo; verificar metadatos Drive; actualizar solo la entrada de período en catálogo GitHub; verificar catálogo y registrar finalización. La cuenta de servicio Ubuntu podría no tener permisos Drive para mover, por lo que es necesario un método de autorización apropiado.
+
+**Recuperación ante fallo parcial:** si Drive ya se movió y GitHub no, no duplicar ni volver a mover: comprobar ID y parent, reintentar únicamente actualización del catálogo, registrando la incidencia. Si GitHub se actualizó sin que Drive refleje el movimiento, bloquear y reparar de forma supervisada. El simulador no ejecuta recuperación ni garantiza transacción atómica entre sistemas.
+
+### Validación local
+
+```bash
+git pull --ff-only
+.venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v
+```
+
+Se agregaron cuatro pruebas nuevas de preservación de ID, bloqueo ante cierre incompleto, exclusiones y permisos inesperados. **Se esperan 23 pruebas en total, aún no ejecutadas en Ubuntu.** El simulador solo será ejecutable contra evidencia favorable posterior al cierre verificado; en octubre presente aún no existe tal evidencia. No se ha movido ninguna hoja.
