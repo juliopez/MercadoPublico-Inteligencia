@@ -73,3 +73,5 @@ Referencias conservadas para trazabilidad; **no sustituyen** el MER v2 vigente.
 3. Distinguir claramente **codificado → CI aprobado → probado visualmente → ejecutado con datos operativos**.
 4. Los JSON públicos de gran volumen, scripts con dependencias, credenciales locales (nunca versionadas), workflows en uso y V1/V2 no se eliminan en una limpieza editorial.
 5. La auditoría integral del frontend V2, distinta de pruebas visuales puntuales, sigue pendiente y deberá planificarse independientemente.
+
+- [Búsqueda de participantes históricos: proveedores y organismos](PARTICIPANTES_HISTORICOS_V2_2026-10-21.md) — consulta transversal, métricas y límites metodológicos.
