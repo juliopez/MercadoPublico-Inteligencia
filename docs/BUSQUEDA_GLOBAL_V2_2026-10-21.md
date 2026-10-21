@@ -112,3 +112,11 @@ Se consultaron los logs del trabajo `119429401700` en la ejecución [#3965976203
 Benchmark sintético del nuevo formato: 20.000 registros; 0,622 segundos; 100 archivos; 1.852.046 bytes; máximo 176.684 bytes; 38.180 KB.
 
 **Decisión operativa:** índice agrupado v3 validado en muestra real, sin publicación masiva ni activación del buscador. Siguiente hito: probar tamaño del grupo más frecuente y cobertura de la entidad completa, y después integrar búsqueda selectiva al frontend sin sustituir `loadChunk()`. La V1 y los datos/ETL/Sheets se mantuvieron intactos.
+
+
+## Cierre del benchmark mensual completo — 21-10-2026
+La ejecución [GitHub Actions #39660049638](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39660049638), job `119430375028`, completó con `success`, según consulta directa al job y a sus logs. Cobertura real total de **Ofertas junio 2026**: **408 fragmentos, 407.923 registros**, concordantes con el catálogo público. Índice agrupado: 4.046 prefijos repartidos en **604 grupos (605 archivos incluyendo metadatos)**. Métricas: **7,734 segundos** de generación; **23.975.509 bytes** totales; **4.997.582 bytes** del mayor archivo; **254.392 KB** de memoria máxima del proceso en runner Linux. Dos pruebas unitarias correctas.
+
+La medición se realizó en directorio temporal sin publicar índices o modificar los fragmentos originales, Sheets ni V1/V2. **Se considera cerrada la prueba de escalabilidad de generación para un mes completo de Ofertas**. La validación no mide aún latencia de búsqueda por navegador, y el archivo más pesado (~5 MB) requiere descarga selectiva, límites y manejo de errores.
+
+**Siguiente fase:** integración funcional de la búsqueda indexada con manejo de consulta, límites de resultados, paginación y accesos a fragmentos. No generar más experimentos de tamaño por incrementos; pasar a entrega visible tras pruebas funcionales.
