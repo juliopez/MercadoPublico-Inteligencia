@@ -28,3 +28,9 @@ Se revisó README, índice documental, decisiones y esta documentación antes de
 Se añadieron campos con `datalist` al comparador y se conectó `frontend-v2/js/comparar-proveedores.js` para cargar sugerencias a demanda según período y prefijo, con debounce de 200 ms, máximo 40 opciones y caché de 12 grupos. La entrada manual sigue siendo posible. Solo se sugieren coincidencias al **inicio** de la razón social normalizada; no se resuelven RUT ni alias.
 
 Workflow `.github/workflows/publicar-autocompletado-v2.yml`, ejecución [#39665786022](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39665786022), iniciada; verificar conclusión y existencia de metadatos de todos los meses antes de dar por publicada la función. La validación visual de las sugerencias en el navegador queda pendiente.
+
+
+## Publicación confirmada de selección asistida
+Primera ejecución [#39665786022](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39665786022) falló por nombres físicos de prefijo con `/`. Se sustituyó el nombre de archivo por los dos primeros caracteres hexadecimales del SHA-256 del prefijo, de forma coherente en Python y JavaScript. La segunda ejecución [#39665979872](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/39665979872) concluyó con **success**.
+
+Los cinco `meta.json` fueron verificados directamente en GitHub: junio 32.328 proveedores (232 grupos), julio 32.237 (232), agosto 33.097 (234), septiembre 32.767 (229) y octubre 18.183 (218). Estos recuentos son nombres normalizados, no RUT únicos. Publicación y sintaxis verificadas; la interacción con `datalist` queda por validar visualmente en el navegador. Entrada manual conservada. V1, ETL, Sheets y fragmentos históricos intactos.
