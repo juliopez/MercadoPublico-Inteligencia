@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/auditar-vinculo-ca-oc-v2.yml'
+      - 'scripts/auditar_vinculo_ca_oc_historico_v2.py'
 permissions:
   contents: write
 concurrency:
