@@ -96,3 +96,13 @@ Todas las tablas: cero campos extra/ausentes; integridad referencial evaluada si
 ### Fin de carga histórica extraordinaria
 
 Los cuatro períodos previstos **2026-06, 2026-07, 2026-08 y 2026-09** están cargados en cuatro Google Sheets separados y cuentan con auditoría estructural/referencial independiente aprobada con observaciones. El alcance de esta carga extraordinaria termina en junio; no se incorporarán más meses históricos anteriores sin un nuevo acuerdo.
+
+## Inventario consolidado y organización — octubre 2026
+
+**Registro de lectura automática:** [`config/catalogo_sheets.json`](../config/catalogo_sheets.json), fuente de referencia de los cinco períodos, carpetas y exclusiones. La nomenclatura operativa es `MER_AAAA_MM_OPERATIVO` y la histórica `MER_AAAA_MM`.
+
+**Verificación de carpetas:** `01_Historicos_MER` contiene cuatro documentos (junio–septiembre); `02_Operativo_API` contiene octubre. Cuatro respaldos MER v2 (uno por mes cargado) fueron movidos a `03_Respaldos`. También se organizaron respaldos previos del clon y producción identificados por nombre. Los archivos auxiliares de Compra Ágil, OC y staging pasaron a `04_Revision_y_Obsoletos` **sin borrarlos**. Los movimientos conservaron los ID de Google Drive.
+
+**Archivos críticos excluidos de movimientos y depuración:** producción antigua `1y81QaPy37APkBwxlYrKyE66_1ECdhL87GyWNitTfHr4` y clon histórico `1loeK_IM3RXHaR7CqpjUbz-TsNgOKNrV1ejq8aRC6JyE`. Deben mantenerse disponibles hasta comprobar dependencias de ETL y publicación vigente.
+
+**Depuración pendiente:** la carpeta de revisión no significa que sus contenidos puedan eliminarse. Identificar dependencias, verificar respaldo y presentar una lista exacta de ID para autorización explícita antes de enviar a papelera. Los respaldos se conservan por precaución. El inventario abarca los recursos identificados en búsquedas del proyecto, no certifica una enumeración exhaustiva de cualquier archivo cuyo nombre no aluda al proyecto.
