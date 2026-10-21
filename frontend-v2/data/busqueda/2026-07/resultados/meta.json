@@ -1,0 +1,16 @@
+{
+  "version": 3,
+  "periodo": "2026-07",
+  "entidad": "resultados",
+  "conteo": 54526,
+  "fragmentos": 55,
+  "tipo": "prefijo_palabra_agrupado",
+  "longitud_prefijo": 3,
+  "particiones": 3424,
+  "grupos": 545,
+  "formato": "referencias_fragmento_fila",
+  "campos": [
+    "codigo",
+    "adjudicatario"
+  ]
+}
