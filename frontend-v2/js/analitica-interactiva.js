@@ -35,16 +35,33 @@ async function analytics(){
   }
   if(view==='actores'){
    for(const d of datas){
-    const title=document.createElement('h4');title.textContent=d.periodo+' · principales actores por registros';
-    area.append(title);
-    const list=document.createElement('ol');
-    for(const [name,num] of d.top_actores||[]){const li=document.createElement('li');li.textContent=name+' — '+nfmt(num)+' registros';list.append(li)}
-    area.append(list);
+    const heading=document.createElement('h4');heading.textContent=d.periodo+' · diez actores con más registros';area.append(heading);
+    const chart=document.createElement('div');chart.className='actor-chart';
+    const actors=d.top_actores||[],maximum=Math.max(1,...actors.map(x=>Number(x[1])||0));
+    if(!actors.length){const empty=document.createElement('p');empty.textContent='Sin actores identificados en el período.';chart.append(empty)}
+    for(const [name,count] of actors){
+     const row=document.createElement('div');row.className='actor-bar';
+     const label=document.createElement('span');label.className='actor-name';label.textContent=name;label.title=name;
+     const track=document.createElement('div');track.className='actor-track';
+     const fill=document.createElement('div');fill.className='actor-fill';fill.style.width=((Number(count)||0)/maximum*100).toFixed(1)+'%';track.append(fill);
+     const value=document.createElement('strong');value.textContent=nfmt(count);
+     row.append(label,track,value);chart.append(row);
+    }
+    area.append(chart);
    }
   }else{
-   const tr=document.createElement('p');
-   tr.textContent=datas.map(d=>d.periodo+': '+(d.registros_con_monto?pesos(d.monto_total_clp):'Sin montos informados')+' ('+nfmt(d.registros_con_monto)+' registros con monto)').join(' · ')+'. Importes informados, no pagos ni adjudicaciones acreditadas.';
-   area.append(tr);
+   const chart=document.createElement('div');chart.className='amount-chart';
+   const maximum=Math.max(1,...datas.map(d=>Number(d.monto_total_clp)||0));
+   for(const d of datas){
+    const row=document.createElement('div');row.className='amount-bar';
+    const label=document.createElement('span');label.textContent=d.periodo;
+    const track=document.createElement('div');track.className='actor-track';
+    const fill=document.createElement('div');fill.className='actor-fill';fill.style.width=((Number(d.monto_total_clp)||0)/maximum*100).toFixed(1)+'%';track.append(fill);
+    const value=document.createElement('strong');value.textContent=d.registros_con_monto?pesos(d.monto_total_clp):'Sin información';
+    row.append(label,track,value);chart.append(row);
+   }
+   area.append(chart);
+   const note=document.createElement('p');note.className='muted';note.textContent='Sumas de montos informados, no pagos ni adjudicaciones acreditadas. La comparación con meses parciales exige cautela.';area.append(note);
   }
  }catch(e){
   if(id===analyticsRequest)block.textContent='Agregados complementarios no disponibles todavía; la vista de actividad sigue funcionando.';area.append(block);
