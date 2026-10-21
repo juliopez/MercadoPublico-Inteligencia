@@ -48,3 +48,16 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 #comparar-proveedores{scroll-margin-top:16px}
 @media(max-width:900px){.compare-inputs{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:550px){.compare-inputs{grid-template-columns:1fr}}
+
+/* Analítica y filtros globales: mantiene lectura selectiva y diez resultados por página. */
+.global-filters{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+.global-filters label{display:grid;gap:6px;min-width:190px;flex:1}
+.global-filters input{width:100%}
+#global-csv{margin:12px 0}
+.profile-links{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}
+.evolution-bars{display:grid;gap:10px;margin-top:14px}
+.evolution-row{display:grid;grid-template-columns:90px 1fr 110px;align-items:center;gap:12px;font-size:.9rem}
+.evolution-row strong{text-align:right;font-variant-numeric:tabular-nums}
+.evolution-track{height:14px;border-radius:8px;background:#e8eff6;overflow:hidden}
+.evolution-fill{height:100%;background:#357da7;border-radius:8px}
+@media(max-width:600px){.evolution-row{grid-template-columns:70px 1fr 85px;gap:6px;font-size:.78rem}}
