@@ -167,3 +167,11 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 .actor-fill{height:100%;background:#367fa8;border-radius:10px}
 .actor-bar strong,.amount-bar strong{text-align:right;white-space:nowrap;font-size:.86rem;font-variant-numeric:tabular-nums}
 @media(max-width:700px){.actor-bar,.amount-bar{grid-template-columns:minmax(95px,40%) minmax(60px,1fr) 82px;gap:7px}.actor-bar strong,.amount-bar strong{font-size:.72rem}.actor-name{font-size:.74rem}}
+
+/* Participación histórica transversal */
+#participantes-historicos .filters{grid-template-columns:minmax(160px,.8fr) minmax(240px,2fr) auto;align-items:end}
+#participante-enlaces{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
+#participante-enlaces button{font-size:.86rem}
+#participante-resumen{margin-top:18px}
+#participante-evolucion .amount-bar{grid-template-columns:110px 1fr 95px}
+@media(max-width:700px){#participantes-historicos .filters{grid-template-columns:1fr}}
