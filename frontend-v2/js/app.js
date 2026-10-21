@@ -366,8 +366,27 @@ function renderLinkedRecords(target,items,kind){
  next.addEventListener('click',()=>{if(page+1<pages){page++;draw()}});
  draw();
 }
+const relationKinds=['procesos','ofertas','resultados','oc'];
+function activateRelation(kind){
+ for(const name of relationKinds){
+  const active=name===kind;
+  $('panel-'+name).hidden=!active;
+  const tab=$('tab-'+name);tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;
+ }
+}
+for(const kind of relationKinds){
+ $('tab-'+kind).addEventListener('click',()=>activateRelation(kind));
+ $('tab-'+kind).addEventListener('keydown',event=>{
+  if(event.key!=='ArrowLeft'&&event.key!=='ArrowRight')return;
+  event.preventDefault();
+  const next=relationKinds[(relationKinds.indexOf(kind)+(event.key==='ArrowRight'?1:3))%4];
+  activateRelation(next);$('tab-'+next).focus();
+ });
+}
 async function loadRelated(code,period){
  const seq=++detailRequest;
+ activateRelation('procesos');
+ for(const kind of relationKinds)$('total-'+kind).textContent='…';
  for(const target of ['detalle-procesos','detalle-ofertas','detalle-resultados','detalle-oc'])$(target).replaceChildren();
  $('detalle-relaciones-estado').textContent='Buscando relaciones en todos los períodos publicados…';
  if(!code){$('detalle-relaciones-estado').textContent='Sin código de proceso para relacionar.';return}
@@ -418,8 +437,12 @@ async function loadRelated(code,period){
    if(seq===detailRequest)$('detalle-relaciones-estado').textContent='Revisados '+checked+' de '+periods.length+' períodos públicos…';
   }
   if(seq!==detailRequest)return;
-  for(const [entity,target] of [['procesos','detalle-procesos'],['ofertas','detalle-ofertas'],['resultados','detalle-resultados'],['ordenescompra','detalle-oc']])
+  for(const [entity,target,kind] of [['procesos','detalle-procesos','procesos'],['ofertas','detalle-ofertas','ofertas'],['resultados','detalle-resultados','resultados'],['ordenescompra','detalle-oc','oc']]){
    renderLinkedRecords(target,accum[entity],entity);
+   $('total-'+kind).textContent=accum[entity].length.toLocaleString('es-CL');
+  }
+  const first=[['procesos','procesos'],['ofertas','ofertas'],['resultados','resultados'],['ordenescompra','oc']].find(([entity])=>accum[entity].length);
+  activateRelation(first?.[1]||'procesos');
   const total=Object.values(accum).reduce((n,rows)=>n+rows.length,0);
   $('detalle-relaciones-estado').textContent=total.toLocaleString('es-CL')+' registros vinculados al código '+code+' en '+checked+' períodos consultados'+(issues.length?'; '+issues.length+' fuentes no disponibles (cobertura parcial)':'')+'.';
  }catch(error){
