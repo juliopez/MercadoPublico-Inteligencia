@@ -43,31 +43,50 @@ const HELP={
  "Resultados vinculados":"Datos de selección o adjudicación encontrados en la fuente. Su fiabilidad depende de los estados de verificación disponibles."
 };
 const normalize=s=>String(s||'').replace(/ⓘ/g,'').replace(/\s+/g,' ').replace(/\s*[↗→].*$/,'').replace(/\s+\d[\d.,]*$/,'').trim();
+let currentTip=null,currentButton=null;
+function closeTip(){
+ if(currentTip){currentTip.remove();currentTip=null}
+ if(currentButton){currentButton.setAttribute('aria-expanded','false');currentButton=null}
+}
 function attach(el,title,description){
  if(!el||el.dataset.helpReady)return;
  el.dataset.helpReady='1';
  const button=document.createElement('button');
  button.type='button';button.className='mer-help-trigger';button.setAttribute('aria-label','Ayuda: '+title);
  button.setAttribute('aria-expanded','false');button.textContent='ⓘ';
- const tip=document.createElement('span');tip.className='mer-help-tooltip';tip.setAttribute('role','tooltip');tip.textContent=description;tip.hidden=true;
  const wrapper=document.createElement('span');wrapper.className='mer-help-inline';
- button.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const open=tip.hidden;document.querySelectorAll('.mer-help-tooltip:not([hidden])').forEach(x=>{x.hidden=true;x.previousElementSibling?.setAttribute('aria-expanded','false')});tip.hidden=!open;button.setAttribute('aria-expanded',String(open))});
- button.addEventListener('keydown',e=>{if(e.key==='Escape'){tip.hidden=true;button.setAttribute('aria-expanded','false');button.focus()}});
- wrapper.append(button,tip);el.append(wrapper);
+ wrapper.append(button);el.append(wrapper);
+ button.addEventListener('click',e=>{
+  e.preventDefault();e.stopPropagation();
+  if(currentButton===button){closeTip();return}
+  closeTip();
+  const tip=document.createElement('div');tip.className='mer-help-tooltip';tip.setAttribute('role','tooltip');tip.textContent=description;
+  document.body.append(tip);
+  const rect=button.getBoundingClientRect();
+  const width=Math.min(330,window.innerWidth-32);
+  const left=Math.max(16,Math.min(window.innerWidth-width-16,rect.left));
+  tip.style.width=width+'px';tip.style.left=left+'px';
+  const height=tip.getBoundingClientRect().height;
+  tip.style.top=(rect.bottom+10+height>window.innerHeight?Math.max(12,rect.top-height-10):rect.bottom+10)+'px';
+  currentTip=tip;currentButton=button;button.setAttribute('aria-expanded','true');
+ });
+ button.addEventListener('keydown',e=>{if(e.key==='Escape'){closeTip();button.focus()}});
 }
 function scan(){
  const root=document.querySelector('main');if(!root)return;
  for(const el of root.querySelectorAll('h2,h3,h4,label,.viz-card h3,.viz-card h4,.viz-kpi span,.stat>span')){
-  if(el.closest('.mer-help-tooltip'))continue;
   const txt=normalize(el.childNodes[0]?.textContent||el.textContent);
   const desc=HELP[txt];
   if(desc)attach(el,txt,desc);
  }
- const labels=[['#indicadores .stat:first-child span','Período seleccionado']];
- for(const [selector,key] of labels){const el=document.querySelector(selector);if(el)attach(el,key,HELP[key])}
+ const el=document.querySelector('#indicadores .stat:first-child span');
+ if(el)attach(el,'Período seleccionado',HELP['Período seleccionado']);
 }
 let scheduled=false;
 const observer=new MutationObserver(()=>{if(scheduled)return;scheduled=true;queueMicrotask(()=>{scheduled=false;scan()})});
 const start=()=>{scan();const main=document.querySelector('main');if(main)observer.observe(main,{childList:true,subtree:true})};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-document.addEventListener('click',e=>{if(e.target.closest('.mer-help-inline'))return;document.querySelectorAll('.mer-help-tooltip:not([hidden])').forEach(t=>{t.hidden=true;t.previousElementSibling?.setAttribute('aria-expanded','false')})});
+document.addEventListener('click',e=>{if(!e.target.closest('.mer-help-trigger'))closeTip()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTip()});
+window.addEventListener('scroll',closeTip,{passive:true});
+window.addEventListener('resize',closeTip);
