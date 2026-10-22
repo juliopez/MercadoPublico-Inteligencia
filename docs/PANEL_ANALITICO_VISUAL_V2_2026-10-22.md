@@ -44,3 +44,17 @@ La versión unificada deja visibles solamente tres tarjetas de Montos, Organismo
 - Variaciones del mes parcial se rotulan «Parcial»; las comparaciones que lo incluyen no calculan una diferencia porcentual ordinaria.
 - Se actualizaron las pruebas estructurales de analítica/UX que aún exigían los textos y el módulo legado eliminado; **pendiente comprobar su ejecución exitosa en Actions**.
 - **Pendiente crítico:** regeneración y publicación de los agregados analíticos históricos `top_actores_monto` y `modalidades`; los históricos JSON siguen sin esas claves hasta ejecutar `generar-analitica-v2.yml`. Este paso solo transforma los fragmentos públicos en JSON derivados, pero debe ejecutarse separadamente y validarse. No se ha autorizado una alteración de Google Sheets ni del cron.
+
+## Cierre visual previo al cron — 22/10/2026, 14:09 Chile
+
+**Evidencia:** captura del usuario de GitHub Pages (22/10, 14:09 hora Santiago). Confirmados visualmente:
+- Tarjetas unificadas Montos registrados, Organismos compradores y Actividad, sin gráfico legado duplicado.
+- Unidades monetarias expresadas en millones o mil millones; gráfico de tendencia excluye octubre sin importes informados.
+- Ranking monetario de compradores y dona de concentración con agregados analíticos reales (ejemplo 2026-08, procesos; top 3 9,9 % mostrado).
+- Variaciones entre meses completos visibles; octubre rotulado como período parcial, sin caída ordinaria imputada.
+- Modalidades Compra Ágil/Licitación presentes en el panel de agosto.
+- Interacción visible de selección de agosto desde actividad.
+
+**Decisión:** se declara aprobada la **revisión visual** del bloque y se congelan modificaciones UX antes de la auditoría operativa. No equivale a validación funcional integral ni de accesibilidad. Observación pendiente: tarjeta «Registros disponibles» presenta guion incluso con período seleccionado; determinar si requiere ejecutar la consulta por bloques o es defecto del contador. También revisar la eventual compactación de textos monetarios en una etapa posterior.
+
+**Próximo hito, sin ejecución anticipada:** 16:00 cron integrado de Ubuntu; 17:00 proceso programado de GitHub; después de 17:00 instrucción «valida» para auditoría integral. Consultar logs locales solo si falta evidencia remota. La tarea 5 API Compra Ágil continúa pospuesta. No ejecutar otra carga histórica ni editar Sheets/ETL mientras se observa la primera ejecución completa.
