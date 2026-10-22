@@ -2,7 +2,7 @@ name: Publicacion V2 posterior al ETL Ubuntu
 on:
   schedule:
     # Disparos UTC para 17:00 Santiago en verano e invierno
-    - cron: '0 20,21 * * 1-5'
+    - cron: '0,15,30,45 20,21 * * 1-5'
   workflow_dispatch:
 permissions:
   contents: write
@@ -69,7 +69,12 @@ jobs:
               n=entry["conteos"][entity]
               paths=entry["partes"][entity]
               assert sum(len(json.loads((root/rel.removeprefix("data/")).read_text())) for rel in paths)==n
-              assert json.loads((root/"analitica"/p/(entity+".json")).read_text())["registros"]==n
+              analytic=json.loads((root/"analitica"/p/(entity+".json")).read_text())
+              assert analytic["registros"]==n
+              assert 0<=analytic["registros_con_monto"]<=n
+              assert analytic["monto_total_clp"]>=0
+              if p=="2026-10" and entity=="procesos":
+                  assert analytic["registros_con_monto"]>=794, "Regresion de cobertura CLP octubre"
               assert json.loads((root/"perfiles"/p/entity/"meta.json").read_text())["registros"]==n
               assert json.loads((root/"busqueda"/p/entity/"meta.json").read_text())["conteo"]==n
           assert json.loads((root/"relaciones-procesos"/p/"meta.json").read_text())["registros"]==entry["conteos"]["procesos"]
