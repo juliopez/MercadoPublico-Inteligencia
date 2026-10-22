@@ -17,3 +17,23 @@ El script `scripts/auditar_montos_licitaciones.py` lee temporalmente el ZIP púb
 5. Mantener la tarea 5 (API Compra Ágil) independiente de este análisis.
 
 **Estado inicial:** causa exacta aún no confirmada; análisis programado. No declarar montos corregidos sin evidencia y revalidación.
+
+## Diagnóstico confirmado (auditoría oficial 22/10)
+GitHub Actions `Auditoria montos licitaciones operativas` ejecutó lectura real del ZIP público 2026-10. Se confirmó que el CSV no tiene `MontoDisponible`; sí contiene `MontoEstimado`, `CodigoMoneda`, `Estimacion` y `VisibilidadMonto`. El origen incluye montos en CLP, USD y CLF; `Estimacion` distingue 1 (presupuesto disponible) y 2 (precio referencial). Por lo tanto, leer indiscriminadamente `MontoEstimado` sería incorrecto.
+
+**Corrección futura publicada:** `scripts/importador_historicos_v2.py` ahora utiliza `monto_presupuesto_clp(row)`, que toma `MontoEstimado` solo con `CodigoMoneda=CLP`, `Estimacion=1` y `VisibilidadMonto=1`. Los otros casos quedan vacíos deliberadamente. No se ejecutó el ETL de carga.
+
+**Recuperación controlada de octubre preparada:** `scripts/completar_montos_operativos.py` reconstruye presupuestos por código desde el ZIP mensual público y compara solo `Procesos.monto_disponible_clp` del MER vigente. En modo predeterminado simula sin escribir; `--aplicar` realiza copia CSV local completa de la hoja, actualiza **solo celdas vacías**, excluye claves ambiguas y montos en otra moneda, preserva todos los valores existentes y verifica lectura posterior. No edita los ZIP ni las hojas históricas ni otras pestañas.
+
+**Pendiente de ejecución local:** el script requiere credencial de servicio accesible únicamente en Ubuntu. Aquí no se ejecutó ninguna escritura al MER y no se debe afirmar que los montos ya se recuperaron. Se debe inspeccionar el reporte de simulación antes de la aplicación. Tras una aplicación verificada: ejecutar solo `ubuntu_publicar_v2_post_etl.sh --aplicar` (sin repetir ETL), luego `publicacion-v2-post-etl.yml` para recalcular analítica y desplegar Pages.
+
+### Comandos Ubuntu
+```bash
+cd "$HOME/Julio Lopez/chilecompra/MercadoPublico-Inteligencia" || exit 1
+git pull --ff-only origin main
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/mercadopublico/servicio-google.json"
+.venv/bin/python scripts/completar_montos_operativos.py
+# Revisar conteos, ambigüedades y celdas propuestas antes de aplicar:
+.venv/bin/python scripts/completar_montos_operativos.py --aplicar
+```
+No ejecutar la carga histórica ni la actualización ETL completa. Los valores marcados como **precio referencial** no se deben sumar como presupuestos disponibles.
