@@ -34,3 +34,19 @@ Tras la prueba revisar los conteos y la muestra de filas frente al MER. No activ
 - La agenda de 17:00 tiene condición de entrada: catálogo actualizado después de las 16:00. Sin nuevo catálogo, no publica derivados.
 - La exportación automática de **VinculosCOT_OC** al registro documental V2 no está incluida todavía: las relaciones en la Sheet no equivalen automáticamente al fichero de vínculos documentales del frontend. No afirmar actualización de esas fichas por este workflow.
 - Históricos junio–septiembre y Ofertas/Resultados no se modifican.
+
+
+## Actualización de vínculos COT–OC (22/10)
+Se incorpora `scripts/exportar_vinculos_documentales_v2.py` al publicador Ubuntu. Lee los MER históricos y operativo, conserva el registro documental V2 y añade exclusivamente pares no existentes con evidencia documental de OC, sin publicar textos, RUT ni credenciales. Conflictos en una misma OC se excluyen de la nueva exportación.
+
+La lectura de vínculos en diferentes meses no descarga ZIP históricos ni altera ninguna hoja. No atribuir a la API Compra Ágil una ejecución que no existe.
+
+### Verificación no destructiva en Ubuntu
+```bash
+cd "$HOME/Julio Lopez/chilecompra/MercadoPublico-Inteligencia"
+git pull --ff-only
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/mercadopublico/servicio-google.json"
+bash scripts/ubuntu_publicar_v2_post_etl.sh
+```
+
+**Límite:** código publicado, aún sin prueba real del exportador documental desde Ubuntu ni prueba desatendida del flujo completo a las 16:00/17:00. Verificar GitHub Pages tras el despliegue y confirmar que se muestran vínculos octubre. El cron local debe recibir el commit actualizado mediante `git pull`.
