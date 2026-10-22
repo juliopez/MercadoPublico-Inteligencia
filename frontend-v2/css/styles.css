@@ -199,3 +199,9 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 #busqueda-global-texto{min-height:45px}
 #consulta,#resultados,#participantes-historicos,#favoritos-v2{scroll-margin-top:16px}
 @media(max-width:700px){#busqueda-global .global-filters{display:grid;grid-template-columns:1fr}#busqueda-global .global-filters label{min-width:0}#busqueda-global-boton{width:100%}}
+
+/* Enlace oficial inmediatamente visible tras el resumen de ficha. */
+.detail-official-actions{margin:14px 0 18px}
+.detail-official-button{display:inline-flex;align-items:center;gap:8px;background:#176b92;color:#fff;text-decoration:none;border-radius:8px;padding:12px 18px;font-weight:700}
+.detail-official-button:hover,.detail-official-button:focus-visible{background:#104b68;color:#fff;outline:2px solid #79badc;outline-offset:2px}
+.detail-official-button[hidden]{display:none}
