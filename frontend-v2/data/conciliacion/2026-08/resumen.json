@@ -15,10 +15,10 @@
   "diagnostico": {
     "sin_codigo_proceso": 92522,
     "ag_sin_candidato_proveedor": 16865,
-    "con_referencia_fuera_procesos_agosto": 52990
+    "con_referencia_fuera_procesos_publicados": 52990
   },
   "tipo_evidencia": {
-    "directos": "codigo_proceso exacto, solo procesos del mismo mes",
+    "directos": "codigo_proceso exacto, buscando procesos publicados junio-octubre",
     "candidatos": "misma unidad compradora y proveedor seleccionado o en resultados, SIN verificación"
   },
   "limitaciones": [
