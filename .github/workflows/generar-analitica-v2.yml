@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/generar-analitica-v2.yml'
+      - 'frontend-v2/js/analitica-visual.js'
 permissions:
   contents: write
 concurrency:
