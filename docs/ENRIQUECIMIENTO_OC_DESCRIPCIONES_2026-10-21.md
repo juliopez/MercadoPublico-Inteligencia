@@ -36,3 +36,9 @@ Se produjeron **1.465 vínculos potenciales** con referencias textuales. Validac
 5. Para nuevos meses, el generador de vínculos documentales debe procesar evidencia explícita y publicar el registro actualizado sin modificar manualmente los JSON fuente de OC.
 
 **Estados distintos:** MER actualizado y verificado por script Ubuntu; JSON en GitHub `main` confirmado; integración funcional en código confirmada; despliegue efectivo Pages y revisión visual pendientes.
+
+## Comprobación posterior de integración V2 (21–22 octubre 2026)
+
+Se leyó directamente desde GitHub `main` el registro `frontend-v2/data/vinculos-oc-verificados.json`: 1.412 entradas (junio 20, julio 44, agosto 1.223, septiembre 125). Se contrastó `frontend-v2/js/app.js`: la función `showVerifiedOC` solicita el JSON, selecciona entradas por `codigo_proceso`, y muestra códigos de OC y mes; hay lógica separada que retira las OC verificadas de las candidatas. Caso trazable publicado: `1028871-59-COT26` → `1028871-369-AG26`, de junio.
+
+La consulta externa a `https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/` y a su JSON devolvió acceso no disponible desde la herramienta de navegación; esto **no acredita caída ni publicación exitosa**. La consulta de GitHub Actions asociada al commit documental `1ac8085` devolvió lista vacía; esto **no demuestra el estado de Pages**, que puede usar otra forma de publicación. Siguen **pendientes la comprobación HTTP del recurso servido y una revisión visual real en navegador**. No se dispararon workflows ni se alteraron archivos operativos para una prueba redundante.
