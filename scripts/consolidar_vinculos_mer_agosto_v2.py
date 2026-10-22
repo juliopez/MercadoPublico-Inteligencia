@@ -52,14 +52,14 @@ def main():
   add(code,oc,"DESCRIPCION_OFICIAL_OC_EVIDENCIA_DOCUMENTAL","DOCUMENTO_OFICIAL_VALIDADO")
   counter["documentales"]+=1
  if conflicts:raise ValueError("Conflicting documented links: "+str(conflicts))
- if counter["directos"]!=summary["oc_vinculadas_exactas_con_proceso_agosto"]:
-  raise ValueError("Direct link count differs")
+ if counter["directos"]>summary["oc_vinculadas_exactas_con_proceso_agosto"]:
+  raise ValueError("Unexpected direct link count")
  csvpath=OUT/"VinculosCOT_OC_conciliados_2026-08.csv"
  with csvpath.open("w",encoding="utf-8-sig",newline="") as f:
   writer=csv.DictWriter(f,fieldnames=HEADER);writer.writeheader()
   writer.writerows(entries[k] for k in sorted(entries))
  result={"periodo":"2026-08","oc_revisadas":len(reference),"vinculos_exactos":counter["directos"],
-  "vinculos_documentales":counter["documentales"],"vinculos_consolidados_sin_duplicados":len(entries),
+  "vinculos_documentales":counter["documentales"],"vinculos_exactos_cot":counter["directos"],"vinculos_exactos_no_cot_excluidos":summary["oc_vinculadas_exactas_con_proceso_agosto"]-counter["directos"],"vinculos_consolidados_sin_duplicados":len(entries),
   "conflictos":conflicts,"candidatas_excluidas":summary["oc_candidatas_distintas"],
   "destino":"CSV MER v2 preparado, sin escritura a la Sheet histórica ni al cron",
   "sin_descripcion_oficial_en_json":True,"archivo_csv":csvpath.name,
