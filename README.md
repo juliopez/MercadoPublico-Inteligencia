@@ -2,7 +2,7 @@
 
 Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes de compra** de Mercado Público. Este README describe el **estado vigente**; los procedimientos y antecedentes están separados en la documentación especializada.
 
-**Última revisión documental:** 21 de octubre de 2026.
+**Última revisión documental:** 21–22 de octubre de 2026.
 
 ## Acceder
 
@@ -19,7 +19,7 @@ Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes d
 | Frontend V2 | Implementado y publicado en `frontend-v2/`; **revisión visual de los últimos cambios en curso por el usuario** |
 | Períodos públicos | Junio–octubre de 2026; octubre **parcial** |
 | Datos disponibles | Cuatro entidades públicas: Procesos, Ofertas, Resultados y Órdenes de compra |
-| Consulta | Primer bloque de hasta 1.000 filas; tablas paginadas de 10; búsqueda indexada por término/código para todo el mes |
+| Consulta | Primer bloque de hasta 1.000 filas; tablas paginadas de 10; búsqueda indexada por término/código entre todos los períodos publicados (o por un mes) |
 | Analítica | Selección de mes, comparación entre meses, vistas de actividad, importes informados y actores destacados |
 | Relaciones históricas | Fichas relacionadas entre **todos los meses publicados** mediante índices por código; no acceso a meses todavía no publicados |
 | Herramientas | Fichas, perfiles, comparación de proveedores, favoritos del navegador y exportación CSV |
@@ -32,7 +32,7 @@ Los números y períodos vigentes se consultan siempre en el [catálogo público
 ## Cómo funciona V2
 
 1. Seleccionar **mes** y **entidad**. «Mostrar registros del período» carga el primer bloque de forma directa y muestra páginas de 10.
-2. Usar la **búsqueda global** para encontrar códigos o términos en todo el mes mediante índices; la exploración por bloques permanece como opción avanzada.
+2. Usar **Buscar en los históricos** para consultar todos los períodos publicados, con opción de limitar a un mes; la exploración por bloques permanece como opción avanzada.
 3. Consultar el panel **Evolución mensual** para seleccionar, comparar períodos y alternar entre actividad, montos y actores.
 4. Abrir una ficha y revisar su resumen, campos completos y **registros vinculados entre los meses publicados**.
 5. Utilizar perfiles, comparación, favoritos y CSV cuando se requiera.
@@ -78,4 +78,6 @@ La operación diaria y el cierre mensual pertenecen a un flujo separado del fron
 
 **Continuidad:** antes de intervenir leer este README → índice → decisiones → documento específico → código real. Mantener la historia técnica en documentos especializados o [README legado](docs/historial/README_LEGADO_2026-10-21.md), no agregar bitácoras al README principal.
 
-**Última incorporación:** [consulta transversal de proveedores oferentes y organismos compradores](docs/PARTICIPANTES_HISTORICOS_V2_2026-10-21.md), con indicadores históricos y enlaces a procesos por período. La revisión visual de esta nueva sección está pendiente.
+**Últimas mejoras V2:** [búsqueda transversal multimes](docs/BUSQUEDA_TRANSVERSAL_MULTIMES_V2_2026-10-21.md) con detalle navegable, [participantes históricos](docs/PARTICIPANTES_HISTORICOS_V2_2026-10-21.md) y [vista unificada de OC](docs/VISTA_UNIFICADA_OC_FRONTEND_V2_2026-10-21.md). Verificación visual de funciones puntuales en curso; no equivale a auditoría integral.
+
+**Continuidad operativa:** [plan de mejoras del cron de las 16:00](docs/PLAN_MEJORAS_CRON_1600_2026-10-21.md). Es una propuesta, no un cambio autorizado ni ejecutado. El ETL diario actual y su horario permanecen intactos.
