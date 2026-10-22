@@ -623,7 +623,7 @@ async function init(){
   status(payload.periodos.length?'Seleccione un período y una entidad.':'Frontend v2 preparado. Aún no se han publicado extractos MER v2; la versión 1 sigue disponible.');
  }catch(e){status('Catálogo v2 todavía no publicado: '+e.message)}
 }
-$('periodo').addEventListener('change',()=>{$('stat-periodo').textContent=$('periodo').value||'—';++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;refreshLocalFilters();closeDetail();render()});
+$('periodo').addEventListener('change',()=>{const period=$('periodo').value,entity=$('entidad').value;const item=state.manifest?.periodos?.find(p=>p.periodo===period);$('stat-periodo').textContent=period||'—';$('stat-registros').textContent=item&&allowed.includes(entity)?Number(item.conteos?.[entity]||0).toLocaleString('es-CL'):'—';state.total=item?.conteos?.[entity]||0;++state.token;state.records=[];state.parts=[];state.chunkIndex=0;state.cache.clear();state.page=0;refreshLocalFilters();closeDetail();render()});
 $('detalle-cerrar').addEventListener('click',closeDetail);
 $('exportar-csv').addEventListener('click',exportBlockCSV);
 renderFavorites();
