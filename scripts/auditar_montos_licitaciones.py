@@ -14,8 +14,8 @@ with tempfile.TemporaryDirectory(prefix='mer_audit_montos_') as d:
    with z.open(obj) as stream:
     reader=csv.DictReader(io.TextIOWrapper(stream,encoding='latin-1',newline=''),delimiter=';')
     fields=reader.fieldnames or []
-    candidates=[name for name in fields if any(x in name.casefold() for x in ('monto','moneda','estimad','presup','valor'))]
-    counters=collections.Counter();examples={}
+    candidates=[name for name in fields if any(x in name.casefold() for x in ('monto','moneda','estim','presup','valor','visibilidad'))]
+    counters=collections.Counter();examples={};clases=collections.defaultdict(collections.Counter)
     n=0
     for row in reader:
      n+=1
@@ -24,5 +24,6 @@ with tempfile.TemporaryDirectory(prefix='mer_audit_montos_') as d:
       if val:
        counters[field]+=1
        if field not in examples:examples[field]=val[:32]
-    report.append({'archivo':obj.filename,'registros':n,'cabeceras_monetarias':candidates,'campos_con_datos':dict(counters),'ejemplos_anonimos':examples,'columna_usada_por_importador':'MontoDisponible','existe': 'MontoDisponible' in fields})
+       if any(k in field.casefold() for k in ('moneda','visibilidad','estimacion','tipomonto')):clases[field][val[:40]]+=1
+    report.append({'archivo':obj.filename,'registros':n,'cabeceras_monetarias':candidates,'campos_con_datos':dict(counters),'ejemplos_anonimos':examples,'columna_usada_por_importador':'MontoDisponible','existe': 'MontoDisponible' in fields,'clases':{k:v.most_common(12) for k,v in clases.items()}})
  print(json.dumps(report,ensure_ascii=False,indent=2))
