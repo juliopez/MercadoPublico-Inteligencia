@@ -383,73 +383,80 @@ for(const kind of relationKinds){
   activateRelation(next);$('tab-'+next).focus();
  });
 }
-async function showVerifiedOC(code,requestToken){
- const target=$('detalle-oc-verificadas');if(!target)return;target.replaceChildren();
- try{
-  const source=await readJsonPublic('data/vinculos-oc-verificados.json');
-  if(requestToken!==detailRequest)return;
-  const links=(source.vinculos||[]).filter(x=>x.codigo_proceso===code);
-  if(!links.length)return;
-  const title=document.createElement('h5');title.textContent='OC vinculadas mediante evidencia documental ('+links.length+')';
-  const list=document.createElement('ul');
-  for(const item of links){
-   const li=document.createElement('li');
-   const btn=document.createElement('button');btn.type='button';btn.className='code-link';btn.textContent=item.codigo_oc;
-   btn.addEventListener('click',()=>openCode(item.codigo_oc,'codigo_oc'));
-   const note=document.createElement('span');note.textContent=' · '+item.periodo_oc+' · '+moneyCLP(item.monto_oc_clp)+' · vínculo confirmado por descripción oficial; no acredita pago.';
-   li.append(btn,note);list.append(li);
-  }
-  target.append(title,list);
- }catch(e){if(requestToken===detailRequest)target.textContent='La evidencia documental verificada no está disponible temporalmente.'}
-}
-async function showUnverifiedOC(code,related,periods,requestToken){
- const target=$('detalle-oc-candidatas');target.replaceChildren();
- const note=document.createElement('p');note.className='muted';
- note.textContent='Órdenes potencialmente relacionadas por unidad compradora y proveedor seleccionado (sin verificación documental).';
- const candidates=[];
- const suppliers=new Set();
- const normalized=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
- for(const item of related.resultados)if(item.adjudicatario)suppliers.add(normalized(item.adjudicatario));
- for(const item of related.ofertas)if(['si','sí','1','true'].includes(normalized(item.seleccionado))&&item.proveedor)suppliers.add(normalized(item.proveedor));
- const unit=code.match(/^([0-9]+)-/)?.[1];
- if(!unit||!suppliers.size){note.textContent='No hay datos suficientes del proveedor seleccionado para buscar órdenes candidatas.';target.append(note);return}
- note.textContent='Buscando OC candidatas no verificadas por unidad compradora y proveedor…';target.append(note);
+async function showUnifiedOC(code,related,periods,requestToken){
+ const target=$('detalle-oc');if(!target)return;
+ target.replaceChildren();
+ const items=new Map();
+ const put=(id,patch,rank)=>{
+  if(!id)return;
+  const old=items.get(id);
+  if(!old||rank>old.rank)items.set(id,{...(old||{}),...patch,code:id,rank});
+  else if(old){for(const [k,v] of Object.entries(patch))if((old[k]===undefined||old[k]===null||old[k]==='')&&v!==undefined)old[k]=v}
+ };
+ for(const row of related.ordenescompra){
+  put(String(row.codigo_oc||'').trim(),{month:row._periodo_fuente,provider:row.proveedor,amount:row.monto_total_oc_clp,status:row.estado,relation:'Referencia exacta',reason:'Código del proceso informado en OC'},2);
+ }
  let unavailable=0;
- for(const month of periods){
-  for(const supplier of suppliers){
-   if(requestToken!==detailRequest)return;
-   const key=unit+'|'+supplier;
-   const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(key));
-   const shard=new Uint8Array(digest)[0].toString(16).padStart(2,'0');
-   try{
-    const data=await readJsonPublic('data/oc-candidatas/'+month+'/'+shard+'.json');
-    for(const row of data[key]||[])candidates.push({month,code:String(row[0]),provider:String(row[1]),amount:row[2],status:row[3],date:row[4]});
-   }catch(e){if(!String(e.message).includes('404'))unavailable++}
+ try{
+  const registry=await readJsonPublic('data/vinculos-oc-verificados.json');
+  if(requestToken!==detailRequest)return;
+  for(const row of registry.vinculos||[]){
+   if(row.codigo_proceso!==code)continue;
+   put(String(row.codigo_oc||'').trim(),{month:row.periodo_oc,provider:row.proveedor,amount:row.monto_oc_clp,status:row.estado_oc_historico,relation:'Documentada',reason:row.evidencia||'Referencia explícita en descripción oficial'},3);
+  }
+ }catch(e){unavailable++; }
+ const normalized=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+ const suppliers=new Set();
+ for(const row of related.resultados)if(row.adjudicatario)suppliers.add(normalized(row.adjudicatario));
+ for(const row of related.ofertas)if(['si','sí','1','true'].includes(normalized(row.seleccionado))&&row.proveedor)suppliers.add(normalized(row.proveedor));
+ const unit=code.match(/^([0-9]+)-/)?.[1];
+ if(unit&&suppliers.size){
+  for(const month of periods){
+   for(const provider of suppliers){
+    if(requestToken!==detailRequest)return;
+    const key=unit+'|'+provider;
+    const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(key));
+    const shard=new Uint8Array(digest)[0].toString(16).padStart(2,'0');
+    try{
+     const part=await readJsonPublic('data/oc-candidatas/'+month+'/'+shard+'.json');
+     for(const row of part[key]||[])put(String(row[0]||''),{month,provider:row[1],amount:row[2],status:row[3],relation:'Candidata',reason:'Coincidencia de unidad compradora y proveedor; no verificada'},1);
+    }catch(e){if(!String(e.message).includes('404'))unavailable++}
+   }
   }
  }
  if(requestToken!==detailRequest)return;
- const verified=await readJsonPublic('data/vinculos-oc-verificados.json').catch(()=>({vinculos:[]}));
- const confirmed=new Set((verified.vinculos||[]).filter(x=>x.codigo_proceso===code).map(x=>x.codigo_oc));
- const unverified=candidates.filter(x=>!confirmed.has(x.code));
- target.replaceChildren();
- if(!unverified.length){note.textContent='No se identificaron OC candidatas con el mismo proveedor y unidad en los índices disponibles'+(unavailable?' (cobertura parcial)':'')+'.';target.append(note);return}
- const title=document.createElement('h5');title.textContent='OC candidatas por verificar ('+unverified.length+')';
- const explanation=document.createElement('p');explanation.className='muted';explanation.textContent='Coincidencia de unidad y proveedor, no prueba relación con la Compra Ágil ni adjudicación. Las candidatas NO forman parte del contador de OC vinculadas.';
- const list=document.createElement('ul');
- for(const item of unverified.slice(0,30)){
-  const li=document.createElement('li');
-  const b=document.createElement('button');b.className='code-link';b.type='button';b.textContent=item.code;b.addEventListener('click',()=>openCode(item.code,'codigo_oc'));
-  li.append(b,' · '+item.month+' · '+item.provider+' · '+moneyCLP(item.amount)+' · '+(item.status||'Estado no informado'));
-  list.append(li);
+ const rows=[...items.values()].sort((a,b)=>b.rank-a.rank||a.code.localeCompare(b.code));
+ const confirmed=rows.filter(x=>x.rank>=2).length,candidates=rows.length-confirmed;
+ $('total-oc').textContent=rows.length.toLocaleString('es-CL');
+ const title=document.createElement('h4');title.textContent='Órdenes de compra relacionadas';
+ const counts=document.createElement('p');counts.className='muted';
+ counts.textContent=confirmed+' con referencia oficial o documental · '+candidates+' candidatas por verificar'+(unavailable?' · cobertura parcial':'');
+ target.append(title,counts);
+ if(!rows.length){const empty=document.createElement('p');empty.className='muted';empty.textContent='No se identificaron órdenes relacionadas en las fuentes disponibles.';target.append(empty);return}
+ const table=document.createElement('table');table.className='oc-related-table';
+ const head=document.createElement('thead');const hr=document.createElement('tr');
+ for(const label of ['Orden de compra','Proveedor y monto','Estado','Tipo de relación']){const th=document.createElement('th');th.textContent=label;hr.append(th)}
+ head.append(hr);table.append(head);
+ const body=document.createElement('tbody');
+ for(const item of rows){
+  const tr=document.createElement('tr');
+  const first=document.createElement('td');const btn=document.createElement('button');btn.type='button';btn.className='code-link';btn.textContent=item.code;btn.addEventListener('click',()=>openCode(item.code,'codigo_oc'));
+  const period=document.createElement('div');period.className='muted';period.textContent=item.month||'Período no informado';first.append(btn,period);
+  const provider=document.createElement('td');provider.textContent=item.provider||'Proveedor no informado';
+  const money=document.createElement('div');money.textContent=item.amount!==undefined&&item.amount!==null&&item.amount!==''?moneyCLP(item.amount):'Monto no informado';provider.append(money);
+  const state=document.createElement('td');state.textContent=item.status||'Sin estado informado';
+  const rel=document.createElement('td');const label=document.createElement('strong');label.textContent=item.relation;rel.append(label);
+  const explanation=document.createElement('div');explanation.className='muted';explanation.textContent=item.reason;rel.append(explanation);
+  tr.append(first,provider,state,rel);body.append(tr);
  }
- target.append(title,explanation,list);
- if(unavailable){const warning=document.createElement('p');warning.textContent='No fue posible leer '+unavailable+' particiones de candidatos.';target.append(warning)}
+ table.append(body);target.append(table);
+ const foot=document.createElement('p');foot.className='muted';foot.textContent='Las candidatas no constituyen vínculos confirmados. Los importes informados no acreditan pagos.';target.append(foot);
 }
 async function loadRelated(code,period){
  const seq=++detailRequest;
  activateRelation('procesos');
  for(const kind of relationKinds)$('total-'+kind).textContent='…';
- for(const target of ['detalle-procesos','detalle-ofertas','detalle-resultados','detalle-oc','detalle-oc-candidatas','detalle-oc-verificadas'])$(target).replaceChildren();
+ for(const target of ['detalle-procesos','detalle-ofertas','detalle-resultados','detalle-oc'])$(target).replaceChildren();
  $('detalle-relaciones-estado').textContent='Buscando relaciones en todos los períodos publicados…';
  if(!code){$('detalle-relaciones-estado').textContent='Sin código de proceso para relacionar.';return}
  try{
@@ -500,13 +507,12 @@ async function loadRelated(code,period){
   }
   if(seq!==detailRequest)return;
   for(const [entity,target,kind] of [['procesos','detalle-procesos','procesos'],['ofertas','detalle-ofertas','ofertas'],['resultados','detalle-resultados','resultados'],['ordenescompra','detalle-oc','oc']]){
-   renderLinkedRecords(target,accum[entity],entity);
+   if(entity!=='ordenescompra')renderLinkedRecords(target,accum[entity],entity);
    $('total-'+kind).textContent=accum[entity].length.toLocaleString('es-CL');
   }
   const first=[['procesos','procesos'],['ofertas','ofertas'],['resultados','resultados'],['ordenescompra','oc']].find(([entity])=>accum[entity].length);
   activateRelation(first?.[1]||'procesos');
-  await showVerifiedOC(code,seq);
-  await showUnverifiedOC(code,accum,periods,seq);
+  await showUnifiedOC(code,accum,periods,seq);
   const total=Object.values(accum).reduce((n,rows)=>n+rows.length,0);
   $('detalle-relaciones-estado').textContent=total.toLocaleString('es-CL')+' registros vinculados al código '+code+' en '+checked+' períodos consultados'+(issues.length?'; '+issues.length+' fuentes no disponibles (cobertura parcial)':'')+'.';
  }catch(error){
