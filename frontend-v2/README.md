@@ -1,14 +1,14 @@
 # Frontend V2 — Guía funcional y estado vigente
 
-**Revisión:** 21-10-2026. **[Abrir V2](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)** · [README del proyecto](../README.md) · [Índice documental](../docs/INDICE_DOCUMENTACION.md).
+**Revisión:** 21–22-10-2026. **[Abrir V2](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)** · [README del proyecto](../README.md) · [Índice documental](../docs/INDICE_DOCUMENTACION.md).
 
 V2 es un **frontend paralelo** que publica extractos autorizados de Mercado Público. V1 continúa operando desde `../index.html`; no se modifica por el desarrollo V2.
 
 ## Cómo utilizarlo
 
-1. Seleccionar **mes de referencia y entidad** (Procesos, Ofertas, Resultados u Órdenes de compra).
+1. Seleccionar **entidad** y, para la exploración por bloques, un **mes de referencia** (Procesos, Ofertas, Resultados u Órdenes de compra).
 2. Para explorar rápidamente, pulsar **Mostrar registros del período**: carga el primer bloque (hasta 1.000 registros), presenta páginas de **10** y desplaza a la tabla de resultados. La exploración por bloques y sus filtros locales están en el panel avanzado.
-3. Para localizar un código, organismo o proveedor entre los registros de **todo el mes**, utilizar la **búsqueda global indexada**, que comprueba candidatos leyendo únicamente fragmentos necesarios. Puede incluir filtros según entidad. Las sugerencias son ayudas, no listas exhaustivas.
+3. Para localizar un código, organismo o proveedor entre **todos los períodos publicados** (o uno solo), utilizar la **búsqueda global indexada**, que comprueba candidatos leyendo únicamente fragmentos necesarios. Puede incluir filtros según entidad. Las sugerencias son ayudas, no listas exhaustivas.
 4. En la ficha de un registro, revisar resumen y campos desplegables; cuando existe un **código de proceso**, consultar mediante **pestañas con contadores** los Procesos, Ofertas, Resultados y OC relacionados en todos los meses publicados (junio–octubre 2026), con mes de origen visible.
 5. **Evolución mensual**: seleccionar una barra para examinar un período, comparar otro mes y cambiar perspectiva entre actividad, montos informados y actores frecuentes. Las vistas de **actores y montos** presentan gráficos horizontales, no listados extensos.
 6. Herramientas complementarias: perfiles de actores, comparación de hasta tres proveedores con sugerencias de razones sociales, favoritos guardados **solo en el navegador** y exportación CSV.
@@ -85,10 +85,12 @@ La cronología completa de implementación se conserva en documentos especializa
 
 La sección **Participación histórica de empresas y organismos** permite consultar por nombre normalizado todos los meses publicados (junio–octubre de 2026), con sugerencias, totales, gráfico mensual y accesos a las ofertas o procesos del mes. Incluye métricas de **procesos distintos por proveedor dentro de cada mes** y de **ofertas recibidas vinculadas por código al organismo dentro del mismo mes**, siempre que los índices generados estén disponibles. No equivale a identificación única por RUT ni a una deduplicación de procesos entre meses. Referencia: [documentación de participantes históricos](../docs/PARTICIPANTES_HISTORICOS_V2_2026-10-21.md).
 
-**Auditoría de relaciones CA–OC:** [Caso 839-4-COT26](../docs/AUDITORIA_VINCULO_CA_OC_2026-10-21.md). El 60,4 % de OC publicadas carece de `codigo_proceso`; cero enlaces exactos no demuestra que no exista orden de compra. La candidata identificada requiere verificación documental externa.
 
-**Vinculación asistida de OC (nueva):** la pestaña Órdenes de compra separa vínculos exactos por código de **candidatas no verificadas** basadas en misma unidad compradora y proveedor seleccionado. Fuente: índices estáticos `data/oc-candidatas/` de junio–octubre 2026. Ejemplo: `839-4-COT26` y candidata `839-10-AG26`; la coincidencia no demuestra adjudicación ni autoriza completar automáticamente `codigo_proceso`. Véase [auditoría CA–OC](../docs/AUDITORIA_VINCULO_CA_OC_2026-10-21.md).
+## Relaciones CA–OC y cambios recientes
 
-**Conciliación completa de agosto:** [informe de 153.221 OC](../docs/CONCILIACION_MASIVA_AGOSTO_CA_OC_2026-10-21.md), con vínculos por referencia exacta y candidatas separadas. Los datos originales y Sheets permanecen intactos.
+- [Enriquecimiento por descripciones OC](../docs/ENRIQUECIMIENTO_OC_DESCRIPCIONES_2026-10-21.md): 1.411 relaciones nuevas incorporadas y verificadas en MER, más una documental previa; 54 casos separados para revisión. No confundir con candidatos por similitud.
+- [Vista unificada de OC](../docs/VISTA_UNIFICADA_OC_FRONTEND_V2_2026-10-21.md): tabla única por OC con prioridad documental > referencia estructurada > candidata, sin duplicados y con contadores por certeza. La validación visual completa sigue siendo un hito diferente.
+- [Búsqueda transversal multimes](../docs/BUSQUEDA_TRANSVERSAL_MULTIMES_V2_2026-10-21.md): todos los períodos por defecto, filtro mensual opcional, columna de período y apertura del detalle del mes real. La incidencia de «Ver detalle» quedó corregida en código; la aprobación visual posterior no consta.
+- [Conciliación integral de junio, julio y septiembre](../docs/HOMOLOGACION_CONCILIACION_CA_OC_2026-10-21.md): motor y workflow publicados; verificar resultados antes de darla por concluida.
 
-**Corrección MER agosto aplicada (21-10-2026):** se incorporó exactamente **un vínculo CA–OC nuevo y acreditado** (`839-4-COT26` ↔ `839-10-AG26`) a la pestaña `VinculosCOT_OC` del libro histórico de agosto, con respaldo completo previo y verificación posterior. De los 7.709 enlaces exactos detectados en OC de agosto, todos son licitaciones de otra modalidad y **no** pertenecen a la tabla COT–OC; se excluyeron. Las 44.896 candidatas continúan sin confirmar. Se preservaron el cron diario de las 16:00, los ETL y los registros históricos originales. [Ver informe](../docs/CONCILIACION_MASIVA_AGOSTO_CA_OC_2026-10-21.md).
+Las reglas de presentación no modifican `codigo_proceso` original, adjudicaciones, pagos, históricos, cron o ETL. La observabilidad y enriquecimiento incremental de nuevas cargas se analizarán conforme al [plan del cron de las 16:00](../docs/PLAN_MEJORAS_CRON_1600_2026-10-21.md).
