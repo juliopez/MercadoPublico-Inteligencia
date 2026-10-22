@@ -34,7 +34,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Comprobar sintaxis del JavaScript antes del despliegue
-        run: node --check frontend-v2/js/app.js
+        run: |
+          node --check frontend-v2/js/app.js
+          node --check frontend-v2/js/analitica-visual.js
       - name: Validar catálogo, integridad de partes y aislamiento de v1
         run: |
           python3 - <<'PY'
@@ -56,6 +58,9 @@ jobs:
                   assert total==item['conteos'][entity],(item['periodo'],entity,total)
           assert pathlib.Path('index.html').is_file()
           assert pathlib.Path('data/observatorio.json').is_file()
+          a=json.loads((root/'data/analitica/2026-08/procesos.json').read_text())
+          assert a['registros']==83937
+          assert a.get('top_actores_monto') and a.get('modalidades'), 'Faltan agregados nuevos en Pages'
           print('PREVIEW_V2_INTEGRIDAD_OK')
           PY
       - uses: actions/configure-pages@v5
