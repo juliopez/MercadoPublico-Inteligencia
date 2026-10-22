@@ -82,6 +82,21 @@ async function searchParticipant(){
    metrics.push(['Resultados con empresa seleccionada',rows.reduce((sum,r)=>sum+r.outcome,0).toLocaleString('es-CL')]);
    metrics.push(['Procesos distintos con selección registrada',selectionIndicesReady?selectedCodes.size.toLocaleString('es-CL'):'Pendiente de publicar índice']);
    metrics.push(['Suma de ofertas seleccionadas informadas',selectionIndicesReady&&knownSelected?new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(selectedValue)+' ('+knownSelected+' procesos con monto)':'Sin cobertura suficiente']);
+   // Denominador único transversal, no la suma de procesos distintos de cada mes.
+   const participatingCodes=new Set();
+   const participationCoverage=active.every(r=>Array.isArray(r.extra?.codigos_participados));
+   if(participationCoverage)for(const r of active)for(const code of r.extra.codigos_participados)participatingCodes.add(code);
+   const base=participationCoverage?participatingCodes.size:processMonthCount;
+   const baseLabel=participationCoverage?'procesos únicos':'procesos/mes';
+   const selectedWithinBase=selectionIndicesReady?selectedCodes.size:0;
+   if(selectionIndicesReady&&base>0){
+    const rate=100*selectedWithinBase/base;
+    metrics.push(['Tasa de selección registrada',rate.toLocaleString('es-CL',{maximumFractionDigits:1})+' % ('+selectedWithinBase.toLocaleString('es-CL')+' de '+base.toLocaleString('es-CL')+' '+baseLabel+')']);
+   }
+   const offered=rows.reduce((sum,r)=>sum+r.monto,0);
+   if(selectionIndicesReady&&knownSelected&&offered>0)
+    metrics.push(['Relación monto seleccionado / ofertado',(100*selectedValue/offered).toLocaleString('es-CL',{maximumFractionDigits:1})+' % · indicador descriptivo']);
+
    metrics.push(['Procesos ganados verificados','Pendiente de verificar']);
    metrics.push(['Monto adjudicado verificado','Sin datos suficientes']);
   }else{
