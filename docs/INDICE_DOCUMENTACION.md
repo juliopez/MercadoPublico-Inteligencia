@@ -1,6 +1,6 @@
 # Índice documental — Observatorio de Mercado Público
 
-**Revisión:** 21-10-2026. Ruta recomendada: [README del proyecto](../README.md) → **este índice** → [decisiones técnicas](DECISIONES_TECNICAS.md) → documento especializado → código/evidencias.
+**Revisión:** 21–22-10-2026. Ruta recomendada: [README del proyecto](../README.md) → **este índice** → [decisiones técnicas](DECISIONES_TECNICAS.md) → documento especializado → código/evidencias.
 
 > Los documentos fechados conservan el contexto de una etapa y pueden contener pendientes ya resueltos. **No deben usarse como estado actual** sin contrastarlos con el README y el código. No borrar evidencia histórica ni credenciales operativas locales.
 
@@ -34,7 +34,16 @@
 - [Corrección de tablas y detalle OC](CORRECCION_TABLAS_Y_DETALLE_OC_V2_2026-10-21.md).
 - [Validación del detalle](VALIDACION_DETALLE_V2_2026-10-21.md).
 
+- [Vista unificada de OC relacionadas en V2](VISTA_UNIFICADA_OC_FRONTEND_V2_2026-10-21.md) — tabla consolidada, niveles de evidencia, deduplicación y validación pendiente.
+
+- [Corrección de navegación desde organismos compradores](CORRECCION_NAVEGACION_ORGANISMO_FRONTEND_V2_2026-10-21.md) — traspaso de nombres a la búsqueda indexada sin partículas cortas; revisión visual pendiente.
+
+- [Búsqueda transversal multimes V2](BUSQUEDA_TRANSVERSAL_MULTIMES_V2_2026-10-21.md) — todos los períodos por defecto, alcance mensual opcional; código publicado, prueba visual pendiente.
+
 ## 3. Operación MER v2 y ETL
+
+- **[Plan de continuidad del cron de las 16:00](PLAN_MEJORAS_CRON_1600_2026-10-21.md)** — diagnóstico y mejoras propuestas; cron/ETL no modificados.
+
 
 - **[Runbook: cierre de octubre, 10-11-2026](RUNBOOK_CIERRE_2026_10.md)** — pasos manuales supervisados.
 - **[Procedimiento de cierre mensual](PROCEDIMIENTO_CIERRE_MENSUAL.md)** — operación, respaldo, conciliación y recuperación.
@@ -43,6 +52,18 @@
 - [Cierre de carga histórica](cierre-carga-historica.md).
 - [Plan maestro de 21 tareas](PLAN_MAESTRO_21_TAREAS.md) — antecedente de planificación; no es lista de pendientes actual.
 - [Bitácora de orden y mantenimiento del repositorio](MANTENIMIENTO_REPOSITORIO_2026-10-21.md).
+
+- [Búsqueda de participantes históricos: proveedores y organismos](PARTICIPANTES_HISTORICOS_V2_2026-10-21.md) — consulta transversal, métricas y límites metodológicos.
+
+- [Auditoría de vínculo Compra Ágil–OC (839-4-COT26)](AUDITORIA_VINCULO_CA_OC_2026-10-21.md): diagnóstico de 693.688 OC, referencia incompleta y candidata aún no confirmada.
+
+- [Conciliación masiva CA–OC de agosto 2026](CONCILIACION_MASIVA_AGOSTO_CA_OC_2026-10-21.md) — vínculos exactos, candidatas y limitaciones, con reporte auditado.
+
+- [Auditoría diferencial COT–OC junio–septiembre](AUDITORIA_DIFERENCIAL_COT_OC_2026-10-21.md) — 240.649 pares explícitos conciliados en MER, sin faltantes; enriquecimiento descriptivo posterior documentado aparte.
+
+- [Enriquecimiento de vínculos COT–OC desde descripciones oficiales (junio–septiembre)](ENRIQUECIMIENTO_OC_DESCRIPCIONES_2026-10-21.md) — 1.411 vínculos incorporados y verificados en MER; JSON confirmado en GitHub; Pages y prueba visual pendientes.
+
+- [Homologación integral CA–OC junio, julio y septiembre](HOMOLOGACION_CONCILIACION_CA_OC_2026-10-21.md) — script y workflow parametrizados publicados; ejecución y métricas pendientes de confirmar.
 
 ## 4. Fuentes, integraciones y contratos anteriores
 
@@ -73,21 +94,3 @@ Referencias conservadas para trazabilidad; **no sustituyen** el MER v2 vigente.
 3. Distinguir claramente **codificado → CI aprobado → probado visualmente → ejecutado con datos operativos**.
 4. Los JSON públicos de gran volumen, scripts con dependencias, credenciales locales (nunca versionadas), workflows en uso y V1/V2 no se eliminan en una limpieza editorial.
 5. La auditoría integral del frontend V2, distinta de pruebas visuales puntuales, sigue pendiente y deberá planificarse independientemente.
-
-- [Búsqueda de participantes históricos: proveedores y organismos](PARTICIPANTES_HISTORICOS_V2_2026-10-21.md) — consulta transversal, métricas y límites metodológicos.
-
-- [Auditoría de vínculo Compra Ágil–OC (839-4-COT26)](AUDITORIA_VINCULO_CA_OC_2026-10-21.md): diagnóstico de 693.688 OC, referencia incompleta y candidata aún no confirmada.
-
-- [Conciliación masiva CA–OC de agosto 2026](CONCILIACION_MASIVA_AGOSTO_CA_OC_2026-10-21.md) — vínculos exactos, candidatas y limitaciones, con reporte auditado.
-
-- [Auditoría diferencial COT–OC junio–septiembre](AUDITORIA_DIFERENCIAL_COT_OC_2026-10-21.md) — 240.649 pares explícitos conciliados en MER, sin faltantes; enriquecimiento de OC sin referencias queda pendiente.
-
-- [Enriquecimiento de vínculos COT–OC desde descripciones oficiales (junio–septiembre)](ENRIQUECIMIENTO_OC_DESCRIPCIONES_2026-10-21.md) — 1.411 vínculos incorporados y verificados en MER; JSON confirmado en GitHub; Pages y prueba visual pendientes.
-
-- [Homologación integral CA–OC junio, julio y septiembre](HOMOLOGACION_CONCILIACION_CA_OC_2026-10-21.md) — script y workflow parametrizados publicados; ejecución y métricas pendientes de confirmar.
-
-- [Vista unificada de OC relacionadas en V2](VISTA_UNIFICADA_OC_FRONTEND_V2_2026-10-21.md) — tabla consolidada, niveles de evidencia, deduplicación y validación pendiente.
-
-- [Corrección de navegación desde organismos compradores](CORRECCION_NAVEGACION_ORGANISMO_FRONTEND_V2_2026-10-21.md) — traspaso de nombres a la búsqueda indexada sin partículas cortas; revisión visual pendiente.
-
-- [Búsqueda transversal multimes V2](BUSQUEDA_TRANSVERSAL_MULTIMES_V2_2026-10-21.md) — todos los períodos por defecto, alcance mensual opcional; código publicado, prueba visual pendiente.
