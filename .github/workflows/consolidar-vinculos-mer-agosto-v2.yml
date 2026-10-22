@@ -1,0 +1,53 @@
+name: Consolidar vínculos MER agosto V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/consolidar-vinculos-mer-agosto-v2.yml'
+      - 'scripts/consolidar_vinculos_mer_agosto_v2.py'
+permissions:
+  contents: write
+concurrency:
+  group: consolidar-vinculos-mer-agosto
+  cancel-in-progress: false
+jobs:
+  consolidar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Consolidar y verificar idempotencia
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/consolidar_vinculos_mer_agosto_v2.py
+          python scripts/consolidar_vinculos_mer_agosto_v2.py
+          python - <<'PY'
+          import csv,json,pathlib
+          p=pathlib.Path('frontend-v2/data/conciliacion/2026-08')
+          report=json.loads((p/'resultado_vinculos_mer.json').read_text())
+          with (p/'VinculosCOT_OC_conciliados_2026-08.csv').open(encoding='utf-8-sig',newline='') as f:rows=list(csv.DictReader(f))
+          assert len(rows)==report['vinculos_consolidados_sin_duplicados']
+          assert len({r['id_vinculo'] for r in rows})==len(rows)
+          assert report['vinculos_documentales']>=1
+          assert all(r['relacion_confiable'] in ('CODIGO_PROCESO_OFICIAL','DOCUMENTO_OFICIAL_VALIDADO') for r in rows)
+          print('CONSOLIDACION_MER_VERIFICADA',len(rows))
+          PY
+      - name: Publicar resultado derivado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frontend-v2/data/conciliacion/2026-08/VinculosCOT_OC_conciliados_2026-08.csv frontend-v2/data/conciliacion/2026-08/resultado_vinculos_mer.json
+          if ! git diff --cached --quiet; then
+            git commit -m "data(mer): consolidar vínculos acreditados de OC agosto"
+            for i in 1 2 3 4 5; do
+              git pull --rebase origin main
+              if git push origin main; then exit 0; fi
+              sleep 3
+            done
+            exit 1
+          fi
