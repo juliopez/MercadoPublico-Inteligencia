@@ -50,18 +50,24 @@ async function render(){
   money.append(moneyKpis,barRows(months,Math.max(1,...months.map(d=>d.value)),v=>short(v),''));
   for(const [i,r] of [...money.querySelectorAll('.viz-bar')].entries())if(!months[i].hasAmount)r.querySelector('strong').textContent='Sin monto';
   const actors=card(entity==='procesos'?'Organismos compradores':'Participantes por nombre','Registros publicados del período '+focus.periodo+'; no representa adjudicaciones.');
-  const tops=(focus.top_actores||[]).slice(0,7).map(([label,value])=>({label:String(label),value:Number(value)||0}));
+  const monetary=Array.isArray(focus.top_actores_monto)&&focus.top_actores_monto.length>0;
+  const tops=(monetary?focus.top_actores_monto:focus.top_actores||[]).slice(0,7).map(([label,value])=>({label:String(label),value:Number(value)||0}));
   const actorKpis=node('div','viz-kpis');
   actorKpis.append(metric('Nombres distintos',fmt.format(Number(focus.actores_distintos_por_nombre)||0)),
-   metric('Registros del top 3',fmt.format(tops.slice(0,3).reduce((n,x)=>n+x.value,0))));
+   metric(monetary?'Monto del top 3':'Registros del top 3',monetary?short(tops.slice(0,3).reduce((n,x)=>n+x.value,0)):fmt.format(tops.slice(0,3).reduce((n,x)=>n+x.value,0))));
   actors.append(actorKpis);
-  if(tops.length)actors.append(barRows(tops,Math.max(1,...tops.map(d=>d.value)),v=>fmt.format(v),''));
+  if(tops.length)actors.append(barRows(tops,Math.max(1,...tops.map(d=>d.value)),v=>monetary?short(v):fmt.format(v),''));
   else actors.append(node('p','muted','Sin participantes identificados en este período.'));
   const activity=card('Actividad mensual','Cantidad de registros disponibles por mes, no actividad diaria.');
   const activityKpis=node('div','viz-kpis');
   activityKpis.append(metric('Total de períodos publicados',fmt.format(counts.reduce((s,d)=>s+d.value,0))),
    metric('Promedio mensual',fmt.format(Math.round(counts.reduce((s,d)=>s+d.value,0)/counts.length))));
   activity.append(activityKpis,barRows(counts,Math.max(1,...counts.map(d=>d.value)),v=>fmt.format(v),focus.periodo));
+  if(Array.isArray(focus.modalidades)&&focus.modalidades.length){
+   const section=node('section','viz-breakdown');section.append(node('h4','','Modalidades · '+focus.periodo));
+   const modes=focus.modalidades.slice(0,6).map(([label,value])=>({label:String(label),value:Number(value)||0}));
+   section.append(barRows(modes,Math.max(1,...modes.map(x=>x.value)),v=>fmt.format(v),''));activity.append(section);
+  }
   const foot=node('p','muted viz-disclaimer','Octubre es un período parcial. Las comparaciones pueden reflejar cobertura y no cambios reales de actividad. Los actores se agregan por nombre publicado.');
   root.append(money,actors,activity,foot);
  }catch(e){if(token===request)root.replaceChildren(node('p','muted','No fue posible preparar las visualizaciones: '+e.message))}
