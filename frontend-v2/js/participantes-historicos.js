@@ -87,9 +87,9 @@ async function searchParticipant(){
    const participationCoverage=active.every(r=>Array.isArray(r.extra?.codigos_participados));
    if(participationCoverage)for(const r of active)for(const code of r.extra.codigos_participados)participatingCodes.add(code);
    const base=participationCoverage?participatingCodes.size:processMonthCount;
-   const baseLabel=participationCoverage?'procesos únicos':'procesos/mes';
-   const selectedWithinBase=selectionIndicesReady?selectedCodes.size:0;
-   if(selectionIndicesReady&&base>0){
+   const baseLabel='procesos únicos';
+   const selectedWithinBase=selectionIndicesReady?(participationCoverage?[...selectedCodes].filter(code=>participatingCodes.has(code)).length:selectedCodes.size):0;
+   if(selectionIndicesReady&&participationCoverage&&base>0){
     const rate=100*selectedWithinBase/base;
     metrics.push(['Tasa de selección registrada',rate.toLocaleString('es-CL',{maximumFractionDigits:1})+' % ('+selectedWithinBase.toLocaleString('es-CL')+' de '+base.toLocaleString('es-CL')+' '+baseLabel+')']);
    }
