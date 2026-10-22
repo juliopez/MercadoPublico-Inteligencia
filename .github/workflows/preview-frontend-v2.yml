@@ -2,7 +2,7 @@ name: Observatorio - vista previa frontend MER v2
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ['Publicacion V2 posterior al ETL Ubuntu']
+    workflows: ['Publicacion V2 posterior al ETL Ubuntu', 'Publicar participación histórica V2']
     types: [completed]
   push:
     branches: [main]
