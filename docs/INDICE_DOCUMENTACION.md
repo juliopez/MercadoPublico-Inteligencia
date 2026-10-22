@@ -79,3 +79,5 @@ Referencias conservadas para trazabilidad; **no sustituyen** el MER v2 vigente.
 - [Auditoría de vínculo Compra Ágil–OC (839-4-COT26)](AUDITORIA_VINCULO_CA_OC_2026-10-21.md): diagnóstico de 693.688 OC, referencia incompleta y candidata aún no confirmada.
 
 - [Conciliación masiva CA–OC de agosto 2026](CONCILIACION_MASIVA_AGOSTO_CA_OC_2026-10-21.md) — vínculos exactos, candidatas y limitaciones, con reporte auditado.
+
+- [Auditoría diferencial COT–OC junio–septiembre](AUDITORIA_DIFERENCIAL_COT_OC_2026-10-21.md) — 240.649 pares explícitos conciliados en MER, sin faltantes; enriquecimiento de OC sin referencias queda pendiente.
