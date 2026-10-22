@@ -3,6 +3,8 @@
   "oc_revisadas": 153221,
   "vinculos_exactos": 7709,
   "vinculos_documentales": 1,
+  "vinculos_exactos_cot": 7709,
+  "vinculos_exactos_no_cot_excluidos": 0,
   "vinculos_consolidados_sin_duplicados": 7710,
   "conflictos": [],
   "candidatas_excluidas": 44896,
