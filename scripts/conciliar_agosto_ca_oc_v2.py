@@ -18,18 +18,25 @@ def main():
  meta=next(x for x in cat["periodos"] if x["periodo"]==PERIOD)
  processes={};selected=collections.defaultdict(set);award=collections.defaultdict(set)
  count=collections.Counter()
- for row in rows(meta,"procesos"):
-  count["procesos"]+=1
-  code=str(row.get("codigo") or "").strip()
-  if code:processes[code]=row
- for row in rows(meta,"ofertas"):
-  count["ofertas"]+=1
-  code=str(row.get("codigo") or "").strip()
-  if code and norm(row.get("seleccionado")) in ("si","true","1"):selected[code].add(norm(row.get("proveedor")))
- for row in rows(meta,"resultados"):
-  count["resultados"]+=1
-  code=str(row.get("codigo") or "").strip()
-  if code and row.get("adjudicatario"):award[code].add(norm(row["adjudicatario"]))
+ # Consolidar actores y procesos de todos los meses publicados; OC objetivo solo agosto.
+ process_months=collections.defaultdict(set)
+ for entry in cat["periodos"]:
+  month=entry["periodo"]
+  for row in rows(entry,"procesos"):
+   if month==PERIOD:count["procesos"]+=1
+   code=str(row.get("codigo") or "").strip()
+   if code:
+    processes[code]=row
+    process_months[code].add(month)
+  for row in rows(entry,"ofertas"):
+   if month==PERIOD:count["ofertas"]+=1
+   code=str(row.get("codigo") or "").strip()
+   if code and norm(row.get("seleccionado")) in ("si","true","1"):
+    selected[code].add(norm(row.get("proveedor")))
+  for row in rows(entry,"resultados"):
+   if month==PERIOD:count["resultados"]+=1
+   code=str(row.get("codigo") or "").strip()
+   if code and row.get("adjudicatario"):award[code].add(norm(row["adjudicatario"]))
  # Clasificamos toda OC exactamente una vez, conservando evidencias separadas.
  direct=[];possible=[];unlinked=collections.Counter();repeated=collections.Counter()
  # Índice reducido por unidad y proveedor, solo para procesos CA con selección informada.
@@ -70,9 +77,9 @@ def main():
    (target/(shard+".json")).write_text(json.dumps(d,ensure_ascii=False,separators=(",",":")),encoding="utf8")
  report={"version":1,"periodo":PERIOD,"totales_fuente":dict(count),"oc_vinculadas_exactas_con_proceso_agosto":len(direct),
  "oc_candidatas_relaciones_agosto":len(possible),"oc_candidatas_distintas":len({x[1] for x in possible}),
- "oc_candidatas_ambiguas":repeated["oc_ambiguas"],"diagnostico":dict(unlinked),
+ "oc_candidatas_ambiguas":repeated["oc_ambiguas"],"procesos_de_todos_los_meses":len(processes),"diagnostico":dict(unlinked),
  "tipo_evidencia":{"directos":"codigo_proceso exacto, solo procesos del mismo mes","candidatos":"misma unidad compradora y proveedor seleccionado o en resultados, SIN verificación"},
- "limitaciones":["No cubre proceso de otro mes salvo vínculo exacto en índices multimes de V2","No hay descripción oficial de OC en el esquema público actual","No se completan referencias vacías ni se certifican candidatos como vínculos"],
+ "limitaciones":["Se consideran procesos y selecciones publicados en todos los meses actuales; para el futuro se debe regenerar al ampliar la cobertura","No hay descripción oficial de OC en el esquema público actual","No se completan referencias vacías ni se certifican candidatos como vínculos"],
  "ejemplo_839_4_COT26":{"candidatos":[x for x in possible if x[0]=="839-4-COT26"],"directos":[x for x in direct if x[0]=="839-4-COT26"]}}
  (out/"resumen.json").write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding="utf8")
  print("CONCILIACION_AGOSTO_COMPLETA",json.dumps({k:report[k] for k in ("totales_fuente","oc_vinculadas_exactas_con_proceso_agosto","oc_candidatas_distintas","oc_candidatas_ambiguas")}))
