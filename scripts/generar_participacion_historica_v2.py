@@ -52,7 +52,7 @@ def build(period,root=ROOT):
   shards=collections.defaultdict(dict)
   for name in keys:
    if entity=='proveedor':
-    value={'ofertas':offer_counts[name],'procesos_distintos':len(provider_codes[name]),'selecciones_distintas_mes':len(seleccion[name]),'codigos_seleccionados':sorted(seleccion[name]),'montos_seleccionados_por_codigo':[[code,amount] for code,amount in sorted(seleccion[name].items()) if amount is not None]}
+    value={'ofertas':offer_counts[name],'procesos_distintos':len(provider_codes[name]),'codigos_participados':sorted(provider_codes[name]),'selecciones_distintas_mes':len(seleccion[name]),'codigos_seleccionados':sorted(seleccion[name]),'montos_seleccionados_por_codigo':[[code,amount] for code,amount in sorted(seleccion[name].items()) if amount is not None]}
    else:
     value={'procesos_publicados':org_counts[name],'ofertas_recibidas_vinculadas':org_received[name],'procesos_con_ofertas_vinculadas':len(org_offer_codes[name])}
    shard=hashlib.sha256(name.encode('utf8')).hexdigest()[:2]
