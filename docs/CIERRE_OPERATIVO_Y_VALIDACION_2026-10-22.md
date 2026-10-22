@@ -55,3 +55,36 @@ Conservar evidencia y estado exacto de la integración diaria Ubuntu → Google 
 - Se corrigió la exportación mediante copia a archivo temporal **en el mismo directorio de destino** y reemplazo atómico local; commit `5f06d6aa`. **La corrección aún no se ha ejecutado ni verificado en Ubuntu**, por lo que no implica publicación automática exitosa hoy.
 - La orquestación de las **17:00 se ejecuta en GitHub Actions**, no en Ubuntu. Su workflow `publicacion-v2-post-etl.yml` verifica un commit fresco en `catalogo-publico.json` o `vinculos-oc-verificados.json` posterior a las 16:00. Como la publicación Ubuntu falló antes de generar ese commit, puede concluir en modo `SIN_ORIGEN_FRESCO` sin actualizar los derivados; no darla por fallida ni por exitosa hasta examinar su ejecución y fuente.
 - No volver a ejecutar el ETL de carga histórica ni alterar las hojas por este problema de publicación; cualquier reparación debe ser **solo de exportación** desde MER ya actualizado, con comprobaciones de integridad y sin escritura a Sheets. Mantener separados el publicador del MER y el workflow de derivados/Pages.
+
+## Bitácora de control y traspaso a revisión de las 17:00 — 22/10/2026
+
+### Línea de tiempo y nivel de evidencia
+| Hora Chile | Evento | Evidencia y conclusión |
+|---|---|---|
+| 16:00:01 | Activación del cron integrado de Ubuntu | Archivo local `logs/orquestador_integrado_20261022_160001.log` mostrado por el usuario |
+| 16:08 | Inspección del estado de carga | El estado de sincronización registra 8.458 OC nuevas, 8.426 modificadas y 90.832 sin cambios; 814 proveedores nuevos, 0 modificados y 19.292 sin cambios. No confirma por sí solo la conciliación |
+| 16:13 | Inspección del log del orquestador | Exportación de MER operativo alcanzó 2.094 Procesos y 108.269 OC, seguida de `PUBLICACION_V2_FALLIDA` y `OSError [Errno 18] Invalid cross-device link` al trasladar fragmentos desde `/tmp` |
+| Posterior a 16:13 | Corrección técnica publicada en GitHub | `scripts/exportar_mer_operativo_v2.py`, commit `5f06d6aa`: copia a temporal del mismo destino y `os.replace` local atómico; **no aplicada ni comprobada todavía en Ubuntu** |
+| Posterior a 16:13 | Actualización de esta bitácora | Commit anterior `07396811` y registro del presente traspaso; no constituye ejecución de ETL |
+| 17:00 (programado) | `.github/workflows/publicacion-v2-post-etl.yml` | Revisión pendiente; el disparador programado y sus resultados deberán confirmarse en GitHub Actions |
+
+### Semántica operacional
+1. **16:00, Ubuntu:** ETL de dos fuentes, persistencia MER en Sheets, conciliación COT–OC y exportación/publicación de fragmentos públicos. La prueba disponible confirma carga y error de publicación, pero no acredita por sí sola cierre correcto de todos los pasos.
+2. **17:00, GitHub Actions:** workflow independiente, encargado de construir índices, perfiles y analítica **a partir de un catálogo y fragmentos publicados recientemente**. No descarga ZIP ni actualiza Sheets.
+3. **Pages:** despliegue público independiente del éxito del workflow de derivados; validar siempre commit y contenido realmente servido.
+4. **Compra Ágil / tarea 5:** sin API diaria en este ciclo; permanece en pausa por decisión expresa.
+
+### Incidencia técnica y efecto esperado
+El fallo `EXDEV` ocurrió **después** de operaciones de carga del MER y **antes** de generar el commit público esperado. En consecuencia, a las 17:00 GitHub Actions podría ejecutarse correctamente, pero omitir la generación por ausencia de una publicación fresca. Diferenciar **ejecución del workflow** de **actualización efectiva de datos**.
+
+Los archivos locales parcialmente generados por una exportación interrumpida no se deben asumir coherentes. La recuperación debe regenerar íntegramente los fragmentos del mes operativo desde Sheets, comprobar catálogo, conteos y referencias de partes y solo entonces confirmar la publicación. No volver a ejecutar la carga del ETL ni repetir la escritura de Sheets para corregir este incidente.
+
+### Protocolo acordado
+El usuario regresará después de las 17:00 con el mensaje **«validar»**. En esa oportunidad:
+- Consultar ejecución y logs del workflow de las 17:00, incluyendo paso `Comprobar exportacion nueva y hora de Santiago` y resultado `ready`.
+- Verificar si existe un commit de **datos operativos** posterior a las 16:00 y si sus fragmentos y catálogo son coherentes. No confundir commits de código o documentación con exportación.
+- Comprobar los 2.094 Procesos y 108.269 OC reportados en la simulación de exportación únicamente como referencia a contrastar con la publicación final.
+- Comprobar vínculos documentales COT–OC, derivados, enlaces, índices y Pages; clasificar cada componente en **verificado**, **fallido** o **pendiente por falta de evidencia**.
+- Si falta el origen público, proponer **solo recuperación de exportación**, con la corrección GitHub ya registrada, sin intervenir los históricos ni Sheets.
+
+**Estado al cierre de esta bitácora:** ejecución Ubuntu con actualización de datos observada, publicación pública fallida, corrección documentada pero no instalada en Ubuntu, GitHub Actions 17:00 y Pages posteriores aún pendientes de comprobación.
