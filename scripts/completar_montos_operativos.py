@@ -57,7 +57,6 @@ def main():
  cfg=json.loads((ROOT/"config/catalogo_sheets.json").read_text())
  ws=auth.open_by_key(cfg["periodos"][a.periodo]["id"]).worksheet("Procesos")
  values=ws.get_all_values()
- schema=json.loads("null") # reserva compatible con importador del proyecto
  spec=spec_from_file_location("mer_schema",ROOT/"scripts/importador_historicos_v2.py")
  module=module_from_spec(spec);spec.loader.exec_module(module)
  expected=module.SCHEMA["Procesos"]
