@@ -11,7 +11,7 @@ def norm(v):
  return re.sub(r"\s+"," ","".join(c for c in s if unicodedata.category(c)!="Mn")).strip()
 def rows(meta,entity):
  for path in meta["partes"][entity]:
-  if not re.fullmatch(rf"data/partes/{entity}/{PERIOD}/[a-z0-9_-]+\.json",path):raise ValueError("Ruta inesperada")
+  if not re.fullmatch(rf"data/partes/{entity}/{meta['periodo']}/[a-z0-9_-]+\.json",path):raise ValueError("Ruta inesperada")
   for record in json.loads((ROOT/path).read_text(encoding="utf8")):yield record
 def main():
  cat=json.loads((ROOT/"data/catalogo-publico.json").read_text())
