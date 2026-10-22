@@ -1,28 +1,27 @@
 name: Publicacion V2 posterior al ETL Ubuntu
 on:
   schedule:
-    # 17:00 Santiago: 20 UTC en horario de verano, 21 UTC en invierno.
+    # Disparos UTC para 17:00 Santiago en verano e invierno
     - cron: '0 20,21 * * 1-5'
   workflow_dispatch:
 permissions:
-  contents: read
-  actions: write
+  contents: write
 concurrency:
   group: publicacion-v2-post-etl
   cancel-in-progress: false
 jobs:
-  validar-origen:
+  actualizar-derivados:
     runs-on: ubuntu-latest
-    outputs:
-      publicar: ${{ steps.validar.outputs.publicar }}
-      periodo: ${{ steps.validar.outputs.periodo }}
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Revisar hora Santiago y datos publicados
-        id: validar
-        shell: bash
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Comprobar exportacion nueva y hora de Santiago
+        id: origen
         env:
           EVENTO: ${{ github.event_name }}
         run: |
@@ -30,41 +29,65 @@ jobs:
           import datetime,json,os,pathlib,subprocess
           from zoneinfo import ZoneInfo
           now=datetime.datetime.now(ZoneInfo("America/Santiago"))
-          out=pathlib.Path(os.environ["GITHUB_OUTPUT"])
-          def mark(v, reason):
-              with out.open("a") as f:
-                  f.write(f"publicar={v}\nperiodo={now:%Y-%m}\n")
-              print(reason)
-          if os.environ["EVENTO"]=="schedule" and (now.weekday()>4 or now.hour!=17):
-              mark("false","FUERA_DE_HORARIO_SANTIAGO");raise SystemExit(0)
-          catalog=pathlib.Path("frontend-v2/data/catalogo-publico.json")
-          if not catalog.is_file(): raise SystemExit("No existe catalogo publico")
-          data=json.loads(catalog.read_text(encoding="utf-8"))
           period=f"{now:%Y-%m}"
-          if not any(p.get("periodo")==period for p in data.get("periodos",[])):
-              mark("false","SIN_PERIODO_PUBLICO");raise SystemExit(0)
-          # Condicion de seguridad: el catalogo debe haber cambiado HOY despues de
-          # las 16:00 locales. Un catalogo viejo NO certifica nuevas escrituras en Sheets.
-          stamp=subprocess.check_output(["git","log","-1","--format=%cI","--",str(catalog)],text=True).strip()
-          if not stamp:
-              mark("false","SIN_COMMIT_DEL_CATALOGO");raise SystemExit(0)
-          changed=datetime.datetime.fromisoformat(stamp).astimezone(ZoneInfo("America/Santiago"))
-          if changed.date()!=now.date() or changed.hour<16:
-              mark("false",f"SIN_EXPORTACION_RECIENTE; ultima={changed.isoformat()}")
-              raise SystemExit(0)
-          mark("true",f"CATALOGO_FRESCO {changed.isoformat()}")
+          output=pathlib.Path(os.environ["GITHUB_OUTPUT"])
+          def done(valid,msg):
+              with output.open("a") as f:f.write(f"ready={'true' if valid else 'false'}\nperiodo={period}\n")
+              print(msg)
+          if os.environ["EVENTO"]=="schedule" and (now.weekday()>4 or now.hour!=17):
+              done(False,"Fuera de las 17:00 Santiago");raise SystemExit(0)
+          path="frontend-v2/data/catalogo-publico.json"
+          catalog=json.loads(pathlib.Path(path).read_text())
+          if sum(x.get("periodo")==period for x in catalog["periodos"])!=1:
+              done(False,"Mes vigente sin registro unico");raise SystemExit(0)
+          last=subprocess.check_output(["git","log","-1","--format=%cI","--",path],text=True).strip()
+          timestamp=datetime.datetime.fromisoformat(last).astimezone(ZoneInfo("America/Santiago"))
+          if timestamp.date()!=now.date() or timestamp.hour<16:
+              done(False,"No hay exportacion fresca del dia posterior a las 16h");raise SystemExit(0)
+          done(True,f"Origen listo {last}")
           PY
-  regenerar-derivados:
-    needs: validar-origen
-    if: needs.validar-origen.outputs.publicar == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Activar generadores existentes
+      - name: Generar índices, perfiles y analítica del mes operativo
+        if: steps.origen.outputs.ready == 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
+          PERIODO: ${{ steps.origen.outputs.periodo }}
         run: |
           set -euo pipefail
-          gh workflow run generar-analitica-v2.yml --repo "$REPO"
-          gh workflow run publicar-relaciones-procesos-v2.yml --repo "$REPO"
-          echo "GENERADORES_SOLICITADOS; comprobar sus resultados antes de afirmar despliegue completo"
+          python -m py_compile scripts/indexar_busqueda_frontend_v2.py scripts/generar_perfiles_v2.py scripts/generar_analitica_v2.py scripts/indexar_relaciones_frontend_v2.py scripts/indexar_relaciones_procesos_v2.py
+          for entidad in procesos ordenescompra; do
+            python scripts/indexar_busqueda_frontend_v2.py --periodo "$PERIODO" --entidad "$entidad"
+            python scripts/generar_perfiles_v2.py --periodo "$PERIODO" --entidad "$entidad"
+            python scripts/generar_analitica_v2.py --periodo "$PERIODO" --entidad "$entidad"
+          done
+          python scripts/indexar_relaciones_frontend_v2.py --periodo "$PERIODO"
+          python scripts/indexar_relaciones_procesos_v2.py --periodo "$PERIODO"
+          python - <<'PY'
+          import json,os,pathlib
+          p=os.environ["PERIODO"];root=pathlib.Path("frontend-v2/data")
+          catalog=json.loads((root/"catalogo-publico.json").read_text())
+          entry=next(x for x in catalog["periodos"] if x["periodo"]==p)
+          for entity in ("procesos","ordenescompra"):
+              n=entry["conteos"][entity]
+              paths=entry["partes"][entity]
+              assert sum(len(json.loads((root/rel.removeprefix("data/")).read_text())) for rel in paths)==n
+              assert json.loads((root/"analitica"/p/(entity+".json")).read_text())["registros"]==n
+              assert json.loads((root/"perfiles"/p/entity/"meta.json").read_text())["registros"]==n
+              assert json.loads((root/"busqueda"/p/entity/"meta.json").read_text())["conteo"]==n
+          assert json.loads((root/"relaciones-procesos"/p/"meta.json").read_text())["registros"]==entry["conteos"]["procesos"]
+          print("DERIVADOS_VERIFICADOS",p)
+          PY
+      - name: Publicar derivados solamente al pasar validaciones
+        if: steps.origen.outputs.ready == 'true'
+        env:
+          PERIODO: ${{ steps.origen.outputs.periodo }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "frontend-v2/data/busqueda/$PERIODO/" "frontend-v2/data/perfiles/$PERIODO/" "frontend-v2/data/analitica/$PERIODO/" "frontend-v2/data/relaciones-procesos/$PERIODO/" "frontend-v2/data/indices/$PERIODO.json"
+          git add -u "frontend-v2/data/busqueda/$PERIODO/" "frontend-v2/data/perfiles/$PERIODO/" "frontend-v2/data/analitica/$PERIODO/" "frontend-v2/data/relaciones-procesos/$PERIODO/"
+          git diff --cached --check
+          if git diff --cached --quiet; then echo "SIN_CAMBIOS_DERIVADOS";exit 0;fi
+          git commit -m "data(v2): actualizar indices y agregados $PERIODO"
+          git pull --rebase origin main
+          git push origin main
+          echo "DERIVADOS_PUBLICADOS"
