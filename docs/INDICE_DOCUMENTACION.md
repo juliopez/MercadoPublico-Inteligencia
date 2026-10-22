@@ -87,3 +87,5 @@ Referencias conservadas para trazabilidad; **no sustituyen** el MER v2 vigente.
 - [Homologación integral CA–OC junio, julio y septiembre](HOMOLOGACION_CONCILIACION_CA_OC_2026-10-21.md) — script y workflow parametrizados publicados; ejecución y métricas pendientes de confirmar.
 
 - [Vista unificada de OC relacionadas en V2](VISTA_UNIFICADA_OC_FRONTEND_V2_2026-10-21.md) — tabla consolidada, niveles de evidencia, deduplicación y validación pendiente.
+
+- [Corrección de navegación desde organismos compradores](CORRECCION_NAVEGACION_ORGANISMO_FRONTEND_V2_2026-10-21.md) — traspaso de nombres a la búsqueda indexada sin partículas cortas; revisión visual pendiente.
