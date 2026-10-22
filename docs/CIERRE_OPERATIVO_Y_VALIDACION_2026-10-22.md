@@ -95,3 +95,23 @@ El usuario regresará después de las 17:00 con el mensaje **«validar»**. En e
 - `frontend-v2/data/catalogo-publico.json` continúa con `fecha_publicacion=2026-10-21T17:40:40.753435+00:00` y octubre `procesos=1558`, `ordenescompra=91070`, mientras que el exportador Ubuntu reportó 2094 y 108269. Nuevos registros no están publicados.
 - El workflow de analítica genérica V2 (lanzado por cambios del frontend) tuvo ejecuciones exitosas previas. No implica regeneración de derivados del cron diario.
 - Incidencia pendiente de recuperación controlada: instalar el arreglo EXDEV, revisar estado Git local tras exportación parcial, **no repetir carga Sheets**, exportar solo MER desde estado ya persistido y verificar commit fresco, luego reconstruir los derivados en GitHub. No registrar éxito hasta comprobarlo.
+
+## Cierre de incidencia monetaria y endurecimiento de automatización — 22/10, 18:49
+**Validación visible del frontend:** el usuario mostró octubre con 2.094 procesos, ranking monetario y dona de concentración del presupuesto. Github JSON de octubre comprobado: 794 registros con monto y presupuesto agregado CLP 18.441.856.682. Pages finalizó con éxito tras el enlace al workflow de derivados.
+
+**Mejoras para el 23/10 incorporadas en repositorio:**
+1. El importador de licitaciones selecciona `MontoEstimado` únicamente si `CodigoMoneda=CLP`, `Estimacion=1` y `VisibilidadMonto=1`; el rescatador monetario sigue siendo herramienta de reparación controlada, **no un segundo ETL diario**.
+2. `scripts/ubuntu_cron_integrado.sh`: prueba preoperativa del helper CLP y compilación de importador, conciliación y exportadores antes de comenzar a escribir Sheets. Si el código local es antiguo, aborta antes de cargar datos. No cambia las 16:00.
+3. `.github/workflows/publicacion-v2-post-etl.yml`: comprobaciones programadas a los minutos 00/15/30/45 en las horas UTC correspondientes a las 17:00 de Santiago (verano e invierno). La guarda de `America/Santiago` impide generación fuera de 17:00, y `git diff --cached --quiet` evita nuevos commits sin cambios. El reintento del mismo día permite que una publicación atrasada sea recogida sin ejecutar ETL adicional. Se valida conteo monetario en rango, monto no negativo y piso de 794 procesos con presupuesto CLP para octubre (regresión de incidente).
+4. `.github/workflows/preview-frontend-v2.yml`: recibe `workflow_run` exitoso de derivados y despliega Pages, sin depender de `push` ejecutado con `GITHUB_TOKEN`.
+5. Publicador Ubuntu sigue usando staging temporal en el mismo filesystem para evitar `EXDEV`, mantiene exportaciones sin escrituras Sheets y publica solo fragmentos, catálogo y vínculos de mes operativo.
+
+**Pendiente que impide certificar automatización futura:** instalar commits en Ubuntu con `git pull --ff-only` y ejecutar `bash scripts/ubuntu_cron_integrado.sh --verificar` (sin ETL); confirmar que los workflows modificados validan en Actions. La ejecución desatendida del viernes 23/10 aún no ha ocurrido. No declarar éxito automático de mañana por la recuperación manual de hoy.
+
+**Prueba local no destructiva:**
+```bash
+cd "$HOME/Julio Lopez/chilecompra/MercadoPublico-Inteligencia" || exit 1
+git pull --ff-only origin main
+bash scripts/ubuntu_cron_integrado.sh --verificar
+crontab -l | grep 'ubuntu_cron_integrado.sh'
+```
