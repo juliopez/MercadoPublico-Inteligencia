@@ -288,3 +288,8 @@ label:has(> .mer-help-inline){padding-right:25px}
 .mer-help-trigger:hover,.mer-help-trigger:focus-visible{background:#d6ebf7;color:#153b55;outline:2px solid #226d9c;outline-offset:2px}
 .mer-help-tooltip{position:fixed;z-index:99999;box-sizing:border-box;max-width:calc(100vw - 32px);padding:12px 14px;background:#17324b;color:#fff;border:1px solid #6e9ab7;border-radius:9px;box-shadow:0 8px 26px #142e4655;font-size:13px;line-height:1.48;font-weight:400;letter-spacing:normal;text-transform:none;white-space:normal;pointer-events:none}
 @media(max-width:750px){.mer-help-trigger{width:24px;height:24px}.mer-help-tooltip{font-size:14px}}
+
+/* Navegación persistente: se fija al borde superior sin cubrir las secciones. */
+.quicknav{position:sticky;top:0;z-index:500;background:rgba(244,247,251,.97);padding:10px 8px;margin:0 -8px 18px;border-bottom:1px solid #c9dce9;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+#busqueda-global,#consulta,#evolucion-mensual,#participantes-historicos,#favoritos-v2{scroll-margin-top:88px}
+@media(max-width:750px){.quicknav{padding:8px 6px;gap:6px}.quicknav a{white-space:nowrap}#busqueda-global,#consulta,#evolucion-mensual,#participantes-historicos,#favoritos-v2{scroll-margin-top:78px}}
