@@ -1,0 +1,70 @@
+name: Publicacion V2 posterior al ETL Ubuntu
+on:
+  schedule:
+    # 17:00 Santiago: 20 UTC en horario de verano, 21 UTC en invierno.
+    - cron: '0 20,21 * * 1-5'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: publicacion-v2-post-etl
+  cancel-in-progress: false
+jobs:
+  validar-origen:
+    runs-on: ubuntu-latest
+    outputs:
+      publicar: ${{ steps.validar.outputs.publicar }}
+      periodo: ${{ steps.validar.outputs.periodo }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Revisar hora Santiago y datos publicados
+        id: validar
+        shell: bash
+        env:
+          EVENTO: ${{ github.event_name }}
+        run: |
+          python - <<'PY'
+          import datetime,json,os,pathlib,subprocess
+          from zoneinfo import ZoneInfo
+          now=datetime.datetime.now(ZoneInfo("America/Santiago"))
+          out=pathlib.Path(os.environ["GITHUB_OUTPUT"])
+          def mark(v, reason):
+              with out.open("a") as f:
+                  f.write(f"publicar={v}\nperiodo={now:%Y-%m}\n")
+              print(reason)
+          if os.environ["EVENTO"]=="schedule" and (now.weekday()>4 or now.hour!=17):
+              mark("false","FUERA_DE_HORARIO_SANTIAGO");raise SystemExit(0)
+          catalog=pathlib.Path("frontend-v2/data/catalogo-publico.json")
+          if not catalog.is_file(): raise SystemExit("No existe catalogo publico")
+          data=json.loads(catalog.read_text(encoding="utf-8"))
+          period=f"{now:%Y-%m}"
+          if not any(p.get("periodo")==period for p in data.get("periodos",[])):
+              mark("false","SIN_PERIODO_PUBLICO");raise SystemExit(0)
+          # Condicion de seguridad: el catalogo debe haber cambiado HOY despues de
+          # las 16:00 locales. Un catalogo viejo NO certifica nuevas escrituras en Sheets.
+          stamp=subprocess.check_output(["git","log","-1","--format=%cI","--",str(catalog)],text=True).strip()
+          if not stamp:
+              mark("false","SIN_COMMIT_DEL_CATALOGO");raise SystemExit(0)
+          changed=datetime.datetime.fromisoformat(stamp).astimezone(ZoneInfo("America/Santiago"))
+          if changed.date()!=now.date() or changed.hour<16:
+              mark("false",f"SIN_EXPORTACION_RECIENTE; ultima={changed.isoformat()}")
+              raise SystemExit(0)
+          mark("true",f"CATALOGO_FRESCO {changed.isoformat()}")
+          PY
+  regenerar-derivados:
+    needs: validar-origen
+    if: needs.validar-origen.outputs.publicar == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Activar generadores existentes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh workflow run generar-analitica-v2.yml --repo "$REPO"
+          gh workflow run publicar-relaciones-procesos-v2.yml --repo "$REPO"
+          echo "GENERADORES_SOLICITADOS; comprobar sus resultados antes de afirmar despliegue completo"
