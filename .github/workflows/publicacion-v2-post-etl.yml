@@ -40,7 +40,7 @@ jobs:
           catalog=json.loads(pathlib.Path(path).read_text())
           if sum(x.get("periodo")==period for x in catalog["periodos"])!=1:
               done(False,"Mes vigente sin registro unico");raise SystemExit(0)
-          last=subprocess.check_output(["git","log","-1","--format=%cI","--",path],text=True).strip()
+          last=subprocess.check_output(["git","log","-1","--format=%cI","--",path,"frontend-v2/data/vinculos-oc-verificados.json"],text=True).strip()
           timestamp=datetime.datetime.fromisoformat(last).astimezone(ZoneInfo("America/Santiago"))
           if timestamp.date()!=now.date() or timestamp.hour<16:
               done(False,"No hay exportacion fresca del dia posterior a las 16h");raise SystemExit(0)
