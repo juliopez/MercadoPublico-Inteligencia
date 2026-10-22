@@ -88,3 +88,5 @@ La sección **Participación histórica de empresas y organismos** permite consu
 **Auditoría de relaciones CA–OC:** [Caso 839-4-COT26](../docs/AUDITORIA_VINCULO_CA_OC_2026-10-21.md). El 60,4 % de OC publicadas carece de `codigo_proceso`; cero enlaces exactos no demuestra que no exista orden de compra. La candidata identificada requiere verificación documental externa.
 
 **Vinculación asistida de OC (nueva):** la pestaña Órdenes de compra separa vínculos exactos por código de **candidatas no verificadas** basadas en misma unidad compradora y proveedor seleccionado. Fuente: índices estáticos `data/oc-candidatas/` de junio–octubre 2026. Ejemplo: `839-4-COT26` y candidata `839-10-AG26`; la coincidencia no demuestra adjudicación ni autoriza completar automáticamente `codigo_proceso`. Véase [auditoría CA–OC](../docs/AUDITORIA_VINCULO_CA_OC_2026-10-21.md).
+
+**Conciliación completa de agosto:** [informe de 153.221 OC](../docs/CONCILIACION_MASIVA_AGOSTO_CA_OC_2026-10-21.md), con vínculos por referencia exacta y candidatas separadas. Los datos originales y Sheets permanecen intactos.
