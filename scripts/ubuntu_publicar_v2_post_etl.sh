@@ -9,7 +9,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS:-$HOME/.
 MES="$(date +%Y-%m)"
 if [[ "${1:-}" != "--aplicar" ]]; then
   echo "Modo de simulación: no publica en GitHub"
-  "$ROOT/.venv/bin/python" scripts/exportar_mer_operativo_v2.py --periodo "$MES"
+  "$ROOT/.venv/bin/python" scripts/exportar_mer_operativo_v2.py --periodo "$MES"\n  "$ROOT/.venv/bin/python" scripts/exportar_vinculos_documentales_v2.py
   exit 0
 fi
 "$ROOT/.venv/bin/python" - <<'PY'
@@ -29,8 +29,8 @@ test -z "$(git status --porcelain --untracked-files=no)" || {
  echo "BLOQUEADO: cambios locales rastreados, conservar para revisión";exit 6;
 }
 git pull --ff-only origin main
-"$ROOT/.venv/bin/python" scripts/exportar_mer_operativo_v2.py --periodo "$MES" --aplicar
-git add frontend-v2/data/catalogo-publico.json "frontend-v2/data/partes/procesos/$MES" "frontend-v2/data/partes/ordenescompra/$MES"
+"$ROOT/.venv/bin/python" scripts/exportar_mer_operativo_v2.py --periodo "$MES" --aplicar\n"$ROOT/.venv/bin/python" scripts/exportar_vinculos_documentales_v2.py --aplicar
+git add frontend-v2/data/vinculos-oc-verificados.json frontend-v2/data/catalogo-publico.json "frontend-v2/data/partes/procesos/$MES" "frontend-v2/data/partes/ordenescompra/$MES"
 # Eliminar fragmentos antiguos del índice, cuando corresponda
 git add -u "frontend-v2/data/partes/procesos/$MES" "frontend-v2/data/partes/ordenescompra/$MES"
 if git diff --cached --quiet; then
