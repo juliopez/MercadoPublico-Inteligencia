@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "periodo": "2026-09",
+  "totales_fuente": {
+    "procesos": 79376,
+    "ofertas": 398018,
+    "resultados": 48637,
+    "ordenescompra": 147966
+  },
+  "oc_vinculadas_exactas_con_proceso": 9687,
+  "oc_candidatas_relaciones": 198714,
+  "oc_candidatas_distintas": 47635,
+  "oc_candidatas_ambiguas": 21396,
+  "procesos_de_todos_los_meses": 326765,
+  "diagnostico": {
+    "sin_codigo_proceso": 89909,
+    "ag_sin_candidato_proveedor": 13157,
+    "con_referencia_fuera_procesos_publicados": 48370
+  },
+  "tipo_evidencia": {
+    "directos": "codigo_proceso exacto, buscando procesos publicados junio-octubre",
+    "candidatos": "misma unidad compradora y proveedor seleccionado o en resultados, SIN verificación"
+  },
+  "limitaciones": [
+    "Se consideran procesos y selecciones publicados en todos los meses actuales; para el futuro se debe regenerar al ampliar la cobertura",
+    "No hay descripción oficial de OC en el esquema público actual",
+    "No se completan referencias vacías ni se certifican candidatos como vínculos"
+  ],
+  "ejemplo_839_4_COT26": {
+    "candidatos": [],
+    "directos": []
+  }
+}
