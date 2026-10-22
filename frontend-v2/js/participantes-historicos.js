@@ -63,11 +63,25 @@ async function searchParticipant(){
   const active=rows.filter(r=>r.count>0);
   const coverageReady=active.every(r=>r.extra!==null);
   const processMonthCount=active.reduce((sum,r)=>sum+(r.extra?.procesos_distintos||0),0);
+  const selectionIndicesReady=type==='proveedor'&&rows.filter(r=>r.outcome>0).every(r=>Array.isArray(r.extra?.codigos_seleccionados));
+  const selectedCodes=new Set();
+  const selectedAmounts=new Map();
+  if(selectionIndicesReady)for(const r of rows){
+   for(const code of r.extra?.codigos_seleccionados||[])selectedCodes.add(code);
+   for(const [code,amount] of r.extra?.montos_seleccionados_por_codigo||[]){
+    if(!selectedAmounts.has(code))selectedAmounts.set(code,amount);
+    else if(selectedAmounts.get(code)!==amount)selectedAmounts.set(code,null);
+   }
+  }
+  const selectedValue=[...selectedAmounts.values()].reduce((sum,n)=>sum+(Number.isFinite(n)?n:0),0);
+  const knownSelected=Array.from(selectedAmounts.values()).filter(Number.isFinite).length;
   const metrics=[['Registros de '+(type==='proveedor'?'ofertas':'procesos'),total.toLocaleString('es-CL')],['Meses con actividad',String(months)],[type==='proveedor'?'Monto total ofertado informado':'Presupuesto disponible informado',new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(rows.reduce((s,r)=>s+r.monto,0))]];
   if(type==='proveedor'){
    metrics.push(['Procesos distintos por mes',coverageReady?processMonthCount.toLocaleString('es-CL'):'Cobertura incompleta']);
    metrics.push(['Ofertas con monto informado',rows.reduce((sum,r)=>sum+r.coverage,0).toLocaleString('es-CL')+' de '+total.toLocaleString('es-CL')]);
    metrics.push(['Resultados con empresa seleccionada',rows.reduce((sum,r)=>sum+r.outcome,0).toLocaleString('es-CL')]);
+   metrics.push(['Procesos distintos con selección registrada',selectionIndicesReady?selectedCodes.size.toLocaleString('es-CL'):'Pendiente de publicar índice']);
+   metrics.push(['Suma de ofertas seleccionadas informadas',selectionIndicesReady&&knownSelected?new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(selectedValue)+' ('+knownSelected+' procesos con monto)':'Sin cobertura suficiente']);
    metrics.push(['Procesos ganados verificados','Pendiente de verificar']);
    metrics.push(['Monto adjudicado verificado','Sin datos suficientes']);
   }else{
