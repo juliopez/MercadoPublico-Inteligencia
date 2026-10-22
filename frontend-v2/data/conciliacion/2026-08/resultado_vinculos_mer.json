@@ -1,0 +1,13 @@
+{
+  "periodo": "2026-08",
+  "oc_revisadas": 153221,
+  "vinculos_exactos": 7709,
+  "vinculos_documentales": 1,
+  "vinculos_consolidados_sin_duplicados": 7710,
+  "conflictos": [],
+  "candidatas_excluidas": 44896,
+  "destino": "CSV MER v2 preparado, sin escritura a la Sheet histórica ni al cron",
+  "sin_descripcion_oficial_en_json": true,
+  "archivo_csv": "VinculosCOT_OC_conciliados_2026-08.csv",
+  "estado": "PREPARADO_SOLO_LECTURA_REQUIERE_IMPORTACION_CONTROLADA"
+}
