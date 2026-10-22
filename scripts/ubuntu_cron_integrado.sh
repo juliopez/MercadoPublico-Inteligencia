@@ -17,7 +17,19 @@ bash "$ROOT/scripts/ubuntu_cron_etl.sh" --verificar
 for f in "$ROOT/scripts/ubuntu_etl_dos_fuentes.sh" "$ROOT/scripts/etl_conciliacion_cot_oc.py" "$ROOT/scripts/registrar_sincronizacion.py"; do
   [[ -f "$f" ]] || { echo "Falta $f" >&2;exit 3; }
 done
-"$ROOT/.venv/bin/python" -m py_compile "$ROOT/scripts/etl_conciliacion_cot_oc.py"
+"$ROOT/.venv/bin/python" -m py_compile "$ROOT/scripts/etl_conciliacion_cot_oc.py" "$ROOT/scripts/importador_historicos_v2.py" "$ROOT/scripts/exportar_mer_operativo_v2.py" "$ROOT/scripts/completar_montos_operativos.py"
+# Prevenir nuevas cargas con el mapeo de licitaciones anterior al arreglo del 22/10.
+"$ROOT/.venv/bin/python" - <<'PY'
+import importlib.util,pathlib
+path=pathlib.Path("scripts/importador_historicos_v2.py")
+spec=importlib.util.spec_from_file_location("mer_importador",path)
+mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+assert callable(getattr(mod,"monto_presupuesto_clp",None)), "Importador desactualizado: falta mapeo de presupuesto CLP visible"
+assert mod.monto_presupuesto_clp({"CodigoMoneda":"CLP","Estimacion":"1","VisibilidadMonto":"1","MontoEstimado":"1234"})=="1234"
+assert mod.monto_presupuesto_clp({"CodigoMoneda":"USD","Estimacion":"1","VisibilidadMonto":"1","MontoEstimado":"1234"})==""
+assert mod.monto_presupuesto_clp({"CodigoMoneda":"CLP","Estimacion":"2","VisibilidadMonto":"1","MontoEstimado":"1234"})==""
+print("MAPEO_PRESUPUESTO_CLP_VERIFICADO")
+PY
 if [[ "$MODE" == --verificar ]]; then
   echo "INTEGRACION_VERIFICADA: sin descargas ni escrituras; cron no modificado"
   exit 0
