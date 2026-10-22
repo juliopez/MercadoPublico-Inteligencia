@@ -48,3 +48,10 @@ Conservar evidencia y estado exacto de la integración diaria Ubuntu → Google 
 - `docs/PUBLICACION_MER_V2_POST_ETL_2026-10-22.md`
 - `docs/ENRIQUECIMIENTO_OC_DESCRIPCIONES_2026-10-21.md`
 - `docs/AUDITORIA_DIFERENCIAL_COT_OC_2026-10-21.md`
+
+## Incidencia real del cron 16:00, observada a las 16:13 de Santiago
+- El ETL actualizó MER operativo en Google Sheets (captura del registro local): Procesos 2.094, ÓrdenesCompra 108.269 en exportación; los conteos de carga incluyeron 8.458 OC nuevas, 8.426 modificadas, 814 proveedores nuevos.
+- El publicador de Ubuntu falló en `scripts/exportar_mer_operativo_v2.py`, en `os.replace` desde `/tmp/export_mer_v2_*/procesos/2026-10/0003.json` hasta el repositorio, con `OSError: [Errno 18] Invalid cross-device link` (EXDEV). Mensaje local: `PUBLICACION_V2_FALLIDA`.
+- Se corrigió la exportación mediante copia a archivo temporal **en el mismo directorio de destino** y reemplazo atómico local; commit `5f06d6aa`. **La corrección aún no se ha ejecutado ni verificado en Ubuntu**, por lo que no implica publicación automática exitosa hoy.
+- La orquestación de las **17:00 se ejecuta en GitHub Actions**, no en Ubuntu. Su workflow `publicacion-v2-post-etl.yml` verifica un commit fresco en `catalogo-publico.json` o `vinculos-oc-verificados.json` posterior a las 16:00. Como la publicación Ubuntu falló antes de generar ese commit, puede concluir en modo `SIN_ORIGEN_FRESCO` sin actualizar los derivados; no darla por fallida ni por exitosa hasta examinar su ejecución y fuente.
+- No volver a ejecutar el ETL de carga histórica ni alterar las hojas por este problema de publicación; cualquier reparación debe ser **solo de exportación** desde MER ya actualizado, con comprobaciones de integridad y sin escritura a Sheets. Mantener separados el publicador del MER y el workflow de derivados/Pages.
