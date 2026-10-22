@@ -33,6 +33,9 @@ jobs:
           with (p/'VinculosCOT_OC_conciliados_2026-08.csv').open(encoding='utf-8-sig',newline='') as f:rows=list(csv.DictReader(f))
           assert len(rows)==report['vinculos_consolidados_sin_duplicados']
           assert len({r['id_vinculo'] for r in rows})==len(rows)
+          assert all(r['codigo_cot'].endswith('-COT26') for r in rows), 'No insertar LE/LP en vínculos COT–OC'
+          assert report['vinculos_exactos_no_cot_excluidos']==7709
+          assert report['vinculos_consolidados_sin_duplicados']==1
           assert report['vinculos_documentales']>=1
           assert all(r['relacion_confiable'] in ('CODIGO_PROCESO_OFICIAL','DOCUMENTO_OFICIAL_VALIDADO') for r in rows)
           print('CONSOLIDACION_MER_VERIFICADA',len(rows))
