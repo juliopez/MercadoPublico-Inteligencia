@@ -81,6 +81,7 @@ async function searchParticipant(){
     // El buscador indexado admite términos de 3+ caracteres: omitir partículas cortas de organismos.
     const query=type==='organismo'?name.split(/\s+/).filter(word=>normalizeActor(word).replace(/[^a-z0-9]/g,'').length>=3).join(' '):name;
     ph('busqueda-global-texto').value=query;
+    ph('busqueda-global-alcance').value='mes';
     ph('global-estado').value='';ph('global-modalidad').value='';
     ph('busqueda-global-boton').click();ph('busqueda-global').scrollIntoView({behavior:'smooth'});
    });
