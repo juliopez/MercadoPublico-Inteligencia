@@ -89,3 +89,5 @@ Referencias conservadas para trazabilidad; **no sustituyen** el MER v2 vigente.
 - [Vista unificada de OC relacionadas en V2](VISTA_UNIFICADA_OC_FRONTEND_V2_2026-10-21.md) — tabla consolidada, niveles de evidencia, deduplicación y validación pendiente.
 
 - [Corrección de navegación desde organismos compradores](CORRECCION_NAVEGACION_ORGANISMO_FRONTEND_V2_2026-10-21.md) — traspaso de nombres a la búsqueda indexada sin partículas cortas; revisión visual pendiente.
+
+- [Búsqueda transversal multimes V2](BUSQUEDA_TRANSVERSAL_MULTIMES_V2_2026-10-21.md) — todos los períodos por defecto, alcance mensual opcional; código publicado, prueba visual pendiente.
