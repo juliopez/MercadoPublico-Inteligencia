@@ -638,15 +638,29 @@ $('prev').addEventListener('click',()=>{if(state.page===0&&state.chunkIndex>0)lo
 $('next').addEventListener('click',()=>{const count=filteredBlock().length;if((state.page+1)*state.perPage>=count&&state.chunkIndex<state.parts.length-1)loadChunk(state.chunkIndex+1);else{state.page++;render()}});
 // API mínima para abrir resultados indexados sin duplicar el lector de fragmentos.
 window.openIndexedRecord=async function(part,row,period,entity){
- if($('periodo').value!==period||$('entidad').value!==entity){
-  status('El período o la entidad cambiaron. Ejecute nuevamente la búsqueda.');
-  return;
- }
  if(!Number.isInteger(part)||part<0||!Number.isInteger(row)||row<0)return;
- if(!state.parts.length)await consult();
- if(part>=state.parts.length)return;
- const token=state.token;
+ const info=state.manifest?.periodos?.find(p=>p.periodo===period);
+ const paths=info?.partes?.[entity];
+ if(!allowed.includes(entity)||!Array.isArray(paths)||part>=paths.length){
+  status('El registro no está disponible en el catálogo publicado.');return;
+ }
+ // La búsqueda transversal conserva el período de cada fila: usarlo para abrir su detalle.
+ const changed=$('periodo').value!==period||$('entidad').value!==entity;
+ if(changed){
+  $('periodo').value=period;$('entidad').value=entity;
+  $('stat-periodo').textContent=period;
+  renderMonthlyEvolution();
+  ++state.token;state.cache.clear();state.parts=paths;state.total=info.conteos?.[entity]??0;
+  state.records=[];state.page=0;state.chunkIndex=0;
+  closeDetail();closeContextProfile();refreshLocalFilters();render();
+ }
+ if(!state.parts.length){
+  ++state.token;state.cache.clear();state.parts=paths;state.total=info.conteos?.[entity]??0;
+ }
  await loadChunk(part);
- if(token===state.token&&state.chunkIndex===part&&state.records[row])showDetail(state.records[row]);
+ if(state.chunkIndex===part&&state.records[row]){
+  showDetail(state.records[row]);
+  $('detalle').scrollIntoView({behavior:'smooth',block:'start'});
+ }else status('No fue posible abrir la ficha del registro seleccionado.');
 };
 init();
