@@ -288,6 +288,11 @@ function showDetail(record){
     a.target='_blank';a.rel='noopener noreferrer';a.textContent='Abrir ficha de licitación';a.className='detail-official-link';
     dd.append(' ',a);
    }
+  }else if(key==='url_detalle'&&(!value||String(value).trim()==='')&&entity==='procesos'&&/^\d{1,7}-\d{1,9}-COT\d{2,4}$/i.test(String(record.codigo??'').trim())){
+   const code=String(record.codigo).trim();
+   const link=document.createElement('a');link.href='https://buscador.mercadopublico.cl/ficha?code='+encodeURIComponent(code);
+   link.target='_blank';link.rel='noopener noreferrer';link.textContent='Abrir detalle oficial en Mercado Público ↗';
+   dd.append(link);
   }else if(codeField(key)&&value)dd.append(displayedCell(record,key).firstChild);else dd.textContent=moneyField(key)?moneyCLP(value):formatTableValue(record,key);
   body.append(dt,dd);
  }
