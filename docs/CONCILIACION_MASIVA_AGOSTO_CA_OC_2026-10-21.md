@@ -39,3 +39,25 @@ La base pública mejoró por incorporación de índices derivados y un reporte d
 
 ## Próximo trabajo técnico (no requerido para ejecutar este lote)
 Para elevar candidatos a vínculos acreditados de forma general, incorporar descripción y referencia de origen de las OC desde históricos oficiales completos, extraer códigos COT y validar cruzadamente en lotes. No asignar 44.896 candidatas de forma automática. Extender a otros meses solo mediante una intervención separada.
+
+
+## Cierre de intervención en MER histórico — 21 de octubre de 2026
+
+**Corrección de criterio por entidad:** los 7.709 vínculos por `codigo_proceso` exacto de las OC de agosto correspondían a procesos de **licitación** (LP/LE y otras modalidades), no a Compras Ágiles COT. No se deben insertar en la tabla `VinculosCOT_OC`: el generador `scripts/consolidar_vinculos_mer_agosto_v2.py` se corrigió para aceptar únicamente códigos `-COT26`, dejando un test de regresión. El paquete resultante tiene **1 vínculo documental nuevo** y **0 vínculos COT directos nuevos** entre los 7.709 evaluados; las **44.896 OC candidatas** continúan pendientes de evidencia.
+
+**Base operativa efectivamente editada:** pestaña `VinculosCOT_OC` de `MER_2026_08` (Google Sheets histórica); se buscó el par `839-4-COT26` / `839-10-AG26` en las 68.592 filas existentes y no figuraba. Tras respaldo integral en Drive, carpeta `04_Respaldos`, documento `RESGUARDO_PRE_CONCILIACION_CA_OC_MER_2026_08_20261021`, se insertó **una fila** mediante Google Sheets API, con PK `SHA256(codigo_cot|codigo_oc)` y campo `relacion_confiable=DOCUMENTO_OFICIAL_VALIDADO`:
+
+| Campo | Valor |
+|---|---|
+| codigo_cot | `839-4-COT26` |
+| codigo_oc | `839-10-AG26` |
+| origen_vinculo | `DESCRIPCION_OFICIAL_OC_EVIDENCIA_DOCUMENTAL` |
+| estado_oc_historico | `Aceptada` |
+| fecha_aceptacion_oc | `2026-08-03` |
+| relacion_confiable | `DOCUMENTO_OFICIAL_VALIDADO` |
+
+Se realizó lectura independiente y se confirmó la fila `VinculosCOT_OC!A68594:G68594`. La pestaña pasó de **68.592 a 68.593 vínculos** (sin contar la cabecera); el total de filas de agosto pasó de **834.370 a 834.371**. Se actualizó `config/catalogo_sheets.json` exclusivamente después de verificar esos valores.
+
+**Fuentes y alcance:** la evidencia documental fue aportada por el usuario desde las fichas oficiales de Mercado Público; ver [auditoría CA–OC](AUDITORIA_VINCULO_CA_OC_2026-10-21.md). La nueva fila no modifica ni la referencia vacía en el registro original OC, ni el ETL de las 16:00, ni el cron, ni los ZIP históricos. El vínculo también figura en `frontend-v2/data/vinculos-oc-verificados.json` y ya se presenta como confirmado en V2.
+
+**Límite:** no hay descripciones completas de OC en el esquema público actual; por lo tanto, este lote no pudo convertir automáticamente las 44.896 candidatas en vínculos acreditados. No afirmar que esas candidatas fueron incorporadas a Sheets. El siguiente avance técnico dependerá de una fuente oficial que proporcione descripción/código de origen para cada OC, mediante enriquecimiento selectivo y **sin recargar el histórico**.
