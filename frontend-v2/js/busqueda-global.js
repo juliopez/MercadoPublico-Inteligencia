@@ -174,10 +174,10 @@ async function exportGlobal(){
    message('La consulta excede 20.000 coincidencias o aún requiere demasiados registros. Refina las palabras clave antes de exportar para evitar un CSV incompleto.');
    return;
   }
-  const cols=fields[t.entity].map(([key])=>key);
+  const cols=[...(t.multi?['periodo']:[]),...fields[t.entity].map(([key])=>key)];
   const safe=x=>'"'+String(x??'').replaceAll('"','""').replace(/^[=+@\-\t\r]/,m=>"'"+m)+'"';
   const all=globalSort.key?[...t.found].sort((a,b)=>globalSort.direction*String(a.record[globalSort.key]??'').localeCompare(String(b.record[globalSort.key]??''),'es',{numeric:true})):t.found;
-  const csv='\uFEFF'+[cols.join(';'),...all.map(x=>cols.map(key=>safe(x.record[key])).join(';'))].join('\r\n');
+  const csv='\uFEFF'+[cols.join(';'),...all.map(x=>cols.map(key=>safe(key==='periodo'?x.month:x.record[key])).join(';'))].join('\r\n');
   const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   const a=document.createElement('a');a.href=url;a.download='busqueda-global-'+t.entity+'-'+t.period+'.csv';
   document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
