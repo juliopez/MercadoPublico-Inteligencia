@@ -1,6 +1,9 @@
 name: Observatorio - vista previa frontend MER v2
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Publicacion V2 posterior al ETL Ubuntu']
+    types: [completed]
   push:
     branches: [main]
     paths:
@@ -26,6 +29,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   vista-previa:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment:
