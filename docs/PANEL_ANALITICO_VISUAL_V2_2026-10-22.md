@@ -28,3 +28,11 @@ El generador `scripts/generar_analitica_v2.py` añade `top_actores_monto` (sumas
 - Selección de mes desde barras o columnas; nombres largos resumidos visualmente con su nombre completo en atributo `title`.
 - No se han modificado fuentes históricas, hojas operativas ni el cron. Los agregados monetarios y de modalidades para los meses antiguos requieren una regeneración pública separada y verificada.
 - **Estado de evidencia:** implementación en GitHub; pendiente revisión visual en Pages, sintaxis de módulo nuevo y regresiones funcionales. La aprobación de un mockup no acredita ejecución correcta del frontend.
+
+
+## Consolidación UX aprobada (22/10): reemplazo del bloque legado
+La versión unificada deja visibles solamente tres tarjetas de Montos, Organismos y Actividad, sus visualizaciones y una comparación opcional. Se retira de la página el módulo legado `analitica-interactiva.js` para eliminar el ranking duplicado; se conservan los nodos ocultos `evolucion-resumen`, `evolucion-barras` y `analitica-detalle` porque el controlador principal utiliza algunos para su contrato de datos y eventos. La selección «Perspectiva» destaca una tarjeta y «Comparar con» muestra registros y montos de los dos meses seleccionados; la selección de mes desde las columnas conserva el período visible. Se impide mostrar la variación del mes actual como una caída intermensual comparable.
+
+**Alcance de entrega:** HTML, JavaScript y CSS de V2; no se tocaron históricos, hojas MER ni la programación Ubuntu. Los nuevos agregados `top_actores_monto` y `modalidades` necesitan publicación real para desplegar dona monetaria y desgloses de modalidad. No declarar completa la reproducción del mockup antes de regenerar esos JSON y probar Pages.
+
+**Prueba de regresión necesaria:** entrada y cambio de entidad; selección de perspectiva; comparación intermensual; cambio de mes; acceso a registros del mes; mostrar/ocultar datos faltantes; meses sin desglose monetario; métricas correctas al distinguir octubre parcial. Verificar despliegue por commit, no por presencia del archivo local.
