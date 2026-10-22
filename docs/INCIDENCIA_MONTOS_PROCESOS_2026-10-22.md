@@ -37,3 +37,6 @@ export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/mercadopublico/servicio-goo
 .venv/bin/python scripts/completar_montos_operativos.py --aplicar
 ```
 No ejecutar la carga histórica ni la actualización ETL completa. Los valores marcados como **precio referencial** no se deben sumar como presupuestos disponibles.
+
+## Recuperación aplicada en Ubuntu — 22/10/2026, 18:15 Chile
+Captura de ejecución entregada por el usuario: `scripts/completar_montos_operativos.py --aplicar` reportó 2.094 filas MER, 794 celdas monetarias a completar, 1.300 sin presupuesto CLP visible, 0 ambigüedades, generó respaldo local `salida_operativa/respaldo_montos_procesos_2026-10_20261022_181505.csv` y terminó con `MONTOS_OPERATIVOS_COMPLETADOS_Y_VERIFICADOS 794`. Esto verifica la corrección en Google Sheets, **no** su reflejo todavía en JSON/Pages. El respaldo y credenciales permanecen exclusivamente en Ubuntu; no subirlos a GitHub. Próximos pasos: republicar solo MER operativo desde Sheets (`scripts/ubuntu_publicar_v2_post_etl.sh --aplicar`), activar generación de derivados V2 con workflow `publicacion-v2-post-etl.yml`, confirmar conteos de 2.094 Procesos y 794 `registros_con_monto` en analítica, cotejar montos y Pages. Nunca repetir el ETL de carga para esta recuperación.
