@@ -64,7 +64,16 @@ def exportar(periodo, aplicar):
    destination.mkdir(parents=True,exist_ok=True)
    # Conservar fragmentos previos hasta completar la generación.
    for p in (work/entity/periodo).glob("*.json"):
-    os.replace(p,destination/p.name)
+    # /tmp y el repositorio pueden estar en sistemas de archivos diferentes.
+    # Copiar primero a un temporal dentro del destino y reemplazar allí.
+    staged=None
+    try:
+     with tempfile.NamedTemporaryFile(prefix=".export_mer_",suffix=".tmp",dir=destination,delete=False) as temp:
+      staged=pathlib.Path(temp.name)
+      with p.open("rb") as source:shutil.copyfileobj(source,temp)
+     os.replace(staged,destination/p.name)  # mismo filesystem: reemplazo atómico
+    finally:
+     if staged is not None:staged.unlink(missing_ok=True)
    desired={pathlib.Path(p).name for p in changes[entity]["paths"]}
    for old in destination.glob("*.json"):
     if old.name not in desired:old.unlink()
