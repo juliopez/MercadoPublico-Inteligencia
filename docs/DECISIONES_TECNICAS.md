@@ -42,3 +42,9 @@
 3. Evitar añadir código o pruebas redundantes: reutilizar la experiencia de las cargas masivas. Consolidar verificaciones automáticas en GitHub Actions.
 4. Actualizar este documento solo cuando cambien **decisiones aprobadas**. Registrar detalles, intentos y resultados en documentación técnica específica y no convertir el README en bitácora.
 5. Ante contradicción documental, prevalecen este registro de decisiones y el runbook vigente **solo si son consistentes con la implementación y la evidencia real**; si no, señalar la discrepancia sin presuponer funcionamiento.
+
+## Cierre de mejoras V2 y siguiente decisión pendiente (21–22/10/2026)
+
+- La búsqueda transversal indexada entre períodos, apertura de detalle al mes real, navegación de participantes y vista unificada de OC se encuentran **implementadas en código**. No confundir sintaxis revisada con validación visual integral.
+- La clasificación de vínculos distingue evidencia documental explícita, referencia estructurada y candidato inferido por unidad/proveedor; solo los primeros acreditan el vínculo en los términos documentados. La actualización puntual de 1.411 pares ya fue ejecutada y verificada en MER; no volver a insertarlos.
+- **No se aprueba todavía alterar cron diario ni ETL** para añadir esta conciliación. La próxima decisión depende de la auditoría de estado, diseño incremental, controles de duplicados, respaldos, lock compartido y pruebas. Consultar [plan para cron 16:00](PLAN_MEJORAS_CRON_1600_2026-10-21.md).
