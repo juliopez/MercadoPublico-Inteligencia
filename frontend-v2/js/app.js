@@ -296,9 +296,13 @@ function showDetail(record){
  let url=null;
  try{
   const candidate=new URL(raw);
-  if(candidate.protocol==='https:'&&['www.mercadopublico.cl','mercadopublico.cl'].includes(candidate.hostname))url=candidate.href;
+  if(candidate.protocol==='https:'&&['www.mercadopublico.cl','mercadopublico.cl','buscador.mercadopublico.cl'].includes(candidate.hostname))url=candidate.href;
  }catch{}
- const code=String(record.codigo??'');
+ const code=String(record.codigo??'').trim();
+ // El buscador oficial dispone de una ficha directa para Compra Ágil.
+ // No depende del campo url_detalle, que suele venir vacío en el histórico.
+ if(!url&&$('entidad').value==='procesos'&&/^\d{1,7}-\d{1,9}-COT\d{2,4}$/i.test(code))
+  url='https://buscador.mercadopublico.cl/ficha?code='+encodeURIComponent(code);
  if(!url&&$('entidad').value==='procesos'&&/^[a-z0-9-]+-[A-Z]{2}\d{2}$/i.test(code)&&!/-COT\d+$/i.test(code))
   url='https://www.mercadopublico.cl/fichaLicitacion.html?idLicitacion='+encodeURIComponent(code);
  external.hidden=!url;
