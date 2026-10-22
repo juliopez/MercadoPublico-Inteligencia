@@ -27,6 +27,13 @@ def money(x):
   d=Decimal(s)
   return str(d.quantize(Decimal("1"),rounding=ROUND_HALF_UP)) if d.is_finite() else ""
  except InvalidOperation:return ""
+def monto_presupuesto_clp(row):
+ """No confundir presupuesto con precio referencial, adjudicación u otra moneda."""
+ if str(row.get("CodigoMoneda") or "").strip().upper()!="CLP":return ""
+ if str(row.get("Estimacion") or "").strip()!="1":return ""
+ if str(row.get("VisibilidadMonto") or "").strip()!="1":return ""
+ return money(row.get("MontoEstimado"))
+
 def rut(x):return re.sub(r"[^0-9K]","",str(x or "").upper())
 def h(*parts):return hashlib.sha256("|".join(map(str,parts)).encode()).hexdigest()
 def proveedor(rut_raw,nombre,origen):
@@ -106,7 +113,7 @@ def process_licitaciones(db,path,counts):
   # El campo CodigoExterno se prefiere al identificador interno histórico.
   data=[code,val(r,"Nombre"),val(r,"Estado"),val(r,"Convocatoria"),
    val(r,"FechaPublicacion"),val(r,"FechaCierre"),
-   money(r.get("MontoDisponible")),val(r,"NombreOrganismo"),val(r,"Region"),
+   monto_presupuesto_clp(r),val(r,"NombreOrganismo"),val(r,"Region"),
    val(r,"TotalOfertasRecibidas"),val(r,"MotivoSeleccion"),val(r,"Link"),
    "","","","Licitación"]
   insert(db,"Procesos",code,data)
