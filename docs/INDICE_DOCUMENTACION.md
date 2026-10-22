@@ -85,3 +85,5 @@ Referencias conservadas para trazabilidad; **no sustituyen** el MER v2 vigente.
 - [Enriquecimiento de vínculos COT–OC desde descripciones oficiales (junio–septiembre)](ENRIQUECIMIENTO_OC_DESCRIPCIONES_2026-10-21.md) — 1.411 vínculos incorporados y verificados en MER; JSON confirmado en GitHub; Pages y prueba visual pendientes.
 
 - [Homologación integral CA–OC junio, julio y septiembre](HOMOLOGACION_CONCILIACION_CA_OC_2026-10-21.md) — script y workflow parametrizados publicados; ejecución y métricas pendientes de confirmar.
+
+- [Vista unificada de OC relacionadas en V2](VISTA_UNIFICADA_OC_FRONTEND_V2_2026-10-21.md) — tabla consolidada, niveles de evidencia, deduplicación y validación pendiente.
