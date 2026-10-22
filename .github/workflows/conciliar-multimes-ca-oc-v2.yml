@@ -1,0 +1,57 @@
+name: Conciliacion multimes CA OC V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/conciliar_multimes_ca_oc_v2.py'
+      - '.github/workflows/conciliar-multimes-ca-oc-v2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: conciliar-multimes-ca-oc-v2
+  cancel-in-progress: false
+jobs:
+  conciliacion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar script y conciliar tres meses
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/conciliar_multimes_ca_oc_v2.py
+          for mes in 2026-06 2026-07 2026-09; do
+            python scripts/conciliar_multimes_ca_oc_v2.py --periodo "$mes"
+          done
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          cat=json.loads(Path('frontend-v2/data/catalogo-publico.json').read_text())
+          for mes in ('2026-06','2026-07','2026-09'):
+              m=next(x for x in cat['periodos'] if x['periodo']==mes)
+              r=json.loads((Path('frontend-v2/data/conciliacion')/mes/'resumen.json').read_text())
+              assert r['periodo']==mes
+              for k in ('procesos','ofertas','resultados','ordenescompra'):
+                  assert r['totales_fuente'][k]==m['conteos'][k], (mes,k)
+              assert r['oc_candidatas_distintas']<=r['totales_fuente']['ordenescompra']
+              print(mes, r['oc_vinculadas_exactas_con_proceso'],r['oc_candidatas_distintas'])
+          PY
+      - name: Publicar exclusivamente reportes nuevos
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frontend-v2/data/conciliacion/2026-06/ frontend-v2/data/conciliacion/2026-07/ frontend-v2/data/conciliacion/2026-09/
+          if ! git diff --cached --quiet; then
+            git commit -m "data(v2): publicar conciliacion multientidad junio julio septiembre"
+            for attempt in 1 2 3 4 5; do
+              git pull --rebase origin main
+              if git push origin main; then exit 0; fi
+              sleep 3
+            done
+            exit 1
+          fi
