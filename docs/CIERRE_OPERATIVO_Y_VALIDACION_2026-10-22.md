@@ -88,3 +88,10 @@ El usuario regresará después de las 17:00 con el mensaje **«validar»**. En e
 - Si falta el origen público, proponer **solo recuperación de exportación**, con la corrección GitHub ya registrada, sin intervenir los históricos ni Sheets.
 
 **Estado al cierre de esta bitácora:** ejecución Ubuntu con actualización de datos observada, publicación pública fallida, corrección documentada pero no instalada en Ubuntu, GitHub Actions 17:00 y Pages posteriores aún pendientes de comprobación.
+
+## Auditoría 17:34 Chile — estado post-16/17 (22/10/2026)
+- Con evidencia de las capturas locales de las 16:08 y 16:13, el ETL Ubuntu cargó los datos MER; exportador falló por EXDEV antes del commit público. Conciliación COT–OC aún no confirmada en el log.
+- Inspección GitHub Actions a las 17:34: ningún run de `Publicacion V2 posterior al ETL Ubuntu` identificado entre las ejecuciones actuales ni entre las recientes de tipo `schedule`. No equiparar ausencia observada a deshabilitación demostrada: Actions programadas pueden presentar retrasos; verificar el workflow y su historial específico.
+- `frontend-v2/data/catalogo-publico.json` continúa con `fecha_publicacion=2026-10-21T17:40:40.753435+00:00` y octubre `procesos=1558`, `ordenescompra=91070`, mientras que el exportador Ubuntu reportó 2094 y 108269. Nuevos registros no están publicados.
+- El workflow de analítica genérica V2 (lanzado por cambios del frontend) tuvo ejecuciones exitosas previas. No implica regeneración de derivados del cron diario.
+- Incidencia pendiente de recuperación controlada: instalar el arreglo EXDEV, revisar estado Git local tras exportación parcial, **no repetir carga Sheets**, exportar solo MER desde estado ya persistido y verificar commit fresco, luego reconstruir los derivados en GitHub. No registrar éxito hasta comprobarlo.
