@@ -83,3 +83,5 @@ Referencias conservadas para trazabilidad; **no sustituyen** el MER v2 vigente.
 - [Auditoría diferencial COT–OC junio–septiembre](AUDITORIA_DIFERENCIAL_COT_OC_2026-10-21.md) — 240.649 pares explícitos conciliados en MER, sin faltantes; enriquecimiento de OC sin referencias queda pendiente.
 
 - [Enriquecimiento de vínculos COT–OC desde descripciones oficiales (junio–septiembre)](ENRIQUECIMIENTO_OC_DESCRIPCIONES_2026-10-21.md) — 1.411 vínculos incorporados y verificados en MER; JSON confirmado en GitHub; Pages y prueba visual pendientes.
+
+- [Homologación integral CA–OC junio, julio y septiembre](HOMOLOGACION_CONCILIACION_CA_OC_2026-10-21.md) — script y workflow parametrizados publicados; ejecución y métricas pendientes de confirmar.
