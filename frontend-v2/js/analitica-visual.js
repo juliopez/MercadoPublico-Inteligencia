@@ -6,8 +6,9 @@ const currency=n=>'$'+(Math.abs(n)>=1e9?(n/1e9).toLocaleString('es-CL',{maximumF
 const create=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e};
 const svg=(tag,attrs)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,String(v));return e};
 const cache=new Map();let catalog=null,request=0;
+const reloadAnalytic=()=>{for(const key of cache.keys())if(key.startsWith('data/analitica/'))cache.delete(key)};
 const currentMonth=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Santiago',year:'numeric',month:'2-digit'}).format(new Date());
-async function fetchData(path){if(cache.has(path))return cache.get(path);const p=fetch('./'+path).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()});cache.set(path,p);try{return await p}catch(e){cache.delete(path);throw e}}
+async function fetchData(path){if(cache.has(path))return cache.get(path);const p=fetch('./'+path,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()});cache.set(path,p);try{return await p}catch(e){cache.delete(path);throw e}}
 const total=a=>a.reduce((s,v)=>s+Number(v||0),0);
 function kpis(items){const root=create('div','viz-kpis');for(const [a,b] of items){const k=create('div','viz-kpi');k.append(create('small','',a),create('strong','',b));root.append(k)}return root}
 function section(name,sub){const c=create('section','viz-card');c.append(create('h3','',name),create('p','muted',sub));return c}
@@ -69,6 +70,7 @@ function variation(data){
  root.append(plot);return root;
 }
 async function render(){
+ reloadAnalytic();
  const token=++request,root=V('analitica-visual');if(!root)return;
  root.replaceChildren(create('p','muted','Cargando gráficos analíticos…'));
  const entity=V('entidad').value,selected=V('periodo').value;
