@@ -234,3 +234,34 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 /* Desgloses analíticos publicados por modalidad, disponibles tras regeneración. */
 .viz-breakdown{margin-top:18px;padding-top:12px;border-top:1px solid #d8e5ed}
 .viz-breakdown h4{font-size:.85rem;margin:0 0 10px;color:#173e5a}
+
+/* Segunda iteración visual aprobada: tendencia, concentración y actividad. */
+.analytics-visual .viz-card{display:flex;flex-direction:column;gap:8px}
+.analytics-visual .viz-card>p{min-height:0;margin:0 0 5px}
+.analytics-visual .viz-card>.viz-kpis{margin:4px 0 14px}
+.analytics-visual .viz-bar{grid-template-columns:minmax(95px,36%) minmax(55px,1fr) minmax(80px,26%);gap:9px;min-height:29px}
+.analytics-visual .viz-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.76rem}
+.analytics-visual .viz-bar .viz-label{min-width:0}
+.viz-trend,.viz-donut-area,.viz-variation{margin-top:auto;border:1px solid #e0eaf2;background:#f5f9fc;padding:12px;border-radius:9px}
+.viz-trend h4,.viz-donut-area h4,.viz-variation h4{margin:0 0 10px;font-size:.87rem}
+.viz-trend svg{width:100%;height:auto;display:block}
+.viz-donut-content{display:flex;gap:13px;align-items:center}
+.viz-donut{position:relative;width:126px;height:126px;border-radius:50%;flex:none}
+.viz-donut-center{position:absolute;inset:27px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.viz-donut-center strong{font-size:1.05rem;color:#164c73}
+.viz-donut-center small{font-size:.69rem;color:#52697a}
+.viz-donut-legend{flex:1;min-width:0;display:grid;gap:10px}
+.viz-legend-row{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:7px;align-items:center;font-size:.72rem;color:#294b64}
+.viz-legend-dot{width:10px;height:10px;border-radius:50%;background:#176b92}
+.viz-legend-dot.shade-1{background:#63a9dc}.viz-legend-dot.shade-2{background:#c7dfef}
+.viz-columns{display:flex;gap:9px;align-items:end;min-height:210px;border-bottom:1px solid #b5cddd;padding-bottom:6px;margin:5px 0 14px}
+.viz-column{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px;background:transparent;border:0;padding:5px 2px;color:#28475d;font-size:.7rem;cursor:pointer}
+.viz-column strong{font-size:.68rem}
+.viz-column-track{width:min(100%,52px);height:147px;display:flex;align-items:flex-end;background:#edf3f8;border-radius:5px 5px 0 0;overflow:hidden}
+.viz-column-fill{width:100%;background:linear-gradient(180deg,#81b9e4,#176b92);border-radius:5px 5px 0 0}
+.viz-column:hover,.viz-column:focus-visible,.viz-column.selected{outline:2px solid #2479a4;border-radius:5px}
+.viz-change-list{display:flex;justify-content:space-around;gap:8px}
+.viz-change{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:.72rem}
+.viz-change strong.negative{color:#ba3651}.viz-change strong.positive{color:#147b51}
+@media(max-width:1200px){.viz-donut-content{flex-direction:column}.viz-donut-legend{width:100%}}
+@media(max-width:700px){.viz-column strong{font-size:.63rem}.viz-column-track{height:115px}.analytics-visual .viz-bar{grid-template-columns:minmax(86px,35%) minmax(40px,1fr) minmax(78px,28%)}}
