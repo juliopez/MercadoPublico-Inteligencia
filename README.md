@@ -61,7 +61,7 @@ GitHub Pages V2 (sin acceso directo a Sheets)
 
 ## Operación y mantenimiento
 
-La operación diaria y el cierre mensual pertenecen a un flujo separado del frontend. El primer cierre de octubre está **programado, no ejecutado**; requiere tres ZIP oficiales, respaldos, conciliación y autorización supervisada. No instalar cron mensual ni cambiar el ETL diario antes de la aprobación del ciclo.
+La operación diaria utiliza desde el 22/10/2026 el orquestador integrado Ubuntu de las 16:00, con ETL de licitaciones y OC, conciliación documental COT–OC y publicación condicionada en V2. La primera ejecución automática integral Ubuntu → GitHub Actions → Pages está pendiente de comprobar; no confundir instalación con operación validada. El cierre mensual permanece separado del frontend. El primer cierre de octubre está **programado, no ejecutado**; requiere tres ZIP oficiales, respaldos, conciliación y autorización supervisada. No instalar cron mensual ni cambiar el ETL diario antes de la aprobación del ciclo.
 
 - [Runbook del cierre de octubre](docs/RUNBOOK_CIERRE_2026_10.md)
 - [Procedimiento general de cierre mensual](docs/PROCEDIMIENTO_CIERRE_MENSUAL.md)
@@ -80,4 +80,4 @@ La operación diaria y el cierre mensual pertenecen a un flujo separado del fron
 
 **Últimas mejoras V2:** [búsqueda transversal multimes](docs/BUSQUEDA_TRANSVERSAL_MULTIMES_V2_2026-10-21.md) con detalle navegable, [participantes históricos](docs/PARTICIPANTES_HISTORICOS_V2_2026-10-21.md) y [vista unificada de OC](docs/VISTA_UNIFICADA_OC_FRONTEND_V2_2026-10-21.md). Verificación visual de funciones puntuales en curso; no equivale a auditoría integral.
 
-**Continuidad operativa:** [plan de mejoras del cron de las 16:00](docs/PLAN_MEJORAS_CRON_1600_2026-10-21.md). Es una propuesta, no un cambio autorizado ni ejecutado. El ETL diario actual y su horario permanecen intactos.
+**Continuidad operativa vigente:** [cierre técnico y validación del 22/10](docs/CIERRE_OPERATIVO_Y_VALIDACION_2026-10-22.md), [publicación V2](docs/PUBLICACION_MER_V2_POST_ETL_2026-10-22.md) y [cron integrado](docs/CRON_INTEGRADO_UBUNTU_2026-10-22.md). El [plan anterior](docs/PLAN_MEJORAS_CRON_1600_2026-10-21.md) se conserva como antecedente histórico. La integración API Compra Ágil continúa pendiente.
