@@ -34,12 +34,25 @@ def build(period,root=ROOT):
    org_received[org]+=1
    org_offer_codes[org].add(code)
   else:unmatched+=1
+ # Resultados identifican selección informada, no adjudicación contractual probada.
+ # Se guardan códigos por participante para deduplicar entre períodos en el navegador.
+ seleccion=collections.defaultdict(dict)
+ for result in records(root,info['partes']['resultados']):
+  actor=norm(result.get('adjudicatario'))
+  code=str(result.get('codigo') or '').strip().upper()
+  if not actor or not code:continue
+  raw=str(result.get('monto_oferta_seleccionada_clp') or '').strip()
+  importe=int(raw) if raw.isdigit() else None
+  # La calidad de selección histórica es distinta de la adjudicación verificada.
+  row=seleccion[actor]
+  if code not in row:row[code]=importe
+  elif row[code]!=importe:row[code]=None
  out=root/'data/participacion'/period
- for entity,keys in [('proveedor',offer_counts.keys()),('organismo',org_counts.keys())]:
+ for entity,keys in [('proveedor',offer_counts.keys() | seleccion.keys()),('organismo',org_counts.keys())]:
   shards=collections.defaultdict(dict)
   for name in keys:
    if entity=='proveedor':
-    value={'ofertas':offer_counts[name],'procesos_distintos':len(provider_codes[name])}
+    value={'ofertas':offer_counts[name],'procesos_distintos':len(provider_codes[name]),'selecciones_distintas_mes':len(seleccion[name]),'codigos_seleccionados':sorted(seleccion[name]),'montos_seleccionados_por_codigo':[[code,amount] for code,amount in sorted(seleccion[name].items()) if amount is not None]}
    else:
     value={'procesos_publicados':org_counts[name],'ofertas_recibidas_vinculadas':org_received[name],'procesos_con_ofertas_vinculadas':len(org_offer_codes[name])}
    shard=hashlib.sha256(name.encode('utf8')).hexdigest()[:2]
