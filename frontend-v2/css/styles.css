@@ -188,3 +188,14 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 .oc-related-table th{background:#eef5f9;color:#213e51}
 .oc-related-table td .muted{font-size:.84em;margin-top:.25rem}
 @media(max-width:700px){.oc-related-table{display:block;overflow-x:auto}.oc-related-table th,.oc-related-table td{min-width:125px}}
+
+/* UX 22-10: búsqueda como acceso principal, sin alterar contrato de datos. */
+#busqueda-global{border-color:#b7d6e9;box-shadow:0 5px 20px #18314910;scroll-margin-top:18px}
+#busqueda-global .global-filters{align-items:end}
+#busqueda-global .global-filters label:has(#busqueda-global-texto){flex:2 1 350px}
+#busqueda-global .global-filters label:has(#entidad){flex:1 1 190px}
+#busqueda-global .global-filters label:has(#busqueda-global-alcance){flex:1 1 225px}
+#busqueda-global-boton{font-weight:700;min-height:45px}
+#busqueda-global-texto{min-height:45px}
+#consulta,#resultados,#participantes-historicos,#favoritos-v2{scroll-margin-top:16px}
+@media(max-width:700px){#busqueda-global .global-filters{display:grid;grid-template-columns:1fr}#busqueda-global .global-filters label{min-width:0}#busqueda-global-boton{width:100%}}
