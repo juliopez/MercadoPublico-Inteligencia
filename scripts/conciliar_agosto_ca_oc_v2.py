@@ -53,7 +53,7 @@ def main():
   provider=norm(oc.get("proveedor"))
   if process:
    if process in processes:direct.append([process,oc_code,"coincidencia_exacta_codigo_proceso","2026-08"])
-   else:unlinked["con_referencia_fuera_procesos_agosto"]+=1
+   else:unlinked["con_referencia_fuera_procesos_publicados"]+=1
    continue
   unlinked["sin_codigo_proceso"]+=1
   if not re.fullmatch(r"[0-9]+-[0-9]+-AG[0-9]{2}",oc_code,re.I):continue
@@ -78,7 +78,7 @@ def main():
  report={"version":1,"periodo":PERIOD,"totales_fuente":dict(count),"oc_vinculadas_exactas_con_proceso_agosto":len(direct),
  "oc_candidatas_relaciones_agosto":len(possible),"oc_candidatas_distintas":len({x[1] for x in possible}),
  "oc_candidatas_ambiguas":repeated["oc_ambiguas"],"procesos_de_todos_los_meses":len(processes),"diagnostico":dict(unlinked),
- "tipo_evidencia":{"directos":"codigo_proceso exacto, solo procesos del mismo mes","candidatos":"misma unidad compradora y proveedor seleccionado o en resultados, SIN verificación"},
+ "tipo_evidencia":{"directos":"codigo_proceso exacto, buscando procesos publicados junio-octubre","candidatos":"misma unidad compradora y proveedor seleccionado o en resultados, SIN verificación"},
  "limitaciones":["Se consideran procesos y selecciones publicados en todos los meses actuales; para el futuro se debe regenerar al ampliar la cobertura","No hay descripción oficial de OC en el esquema público actual","No se completan referencias vacías ni se certifican candidatos como vínculos"],
  "ejemplo_839_4_COT26":{"candidatos":[x for x in possible if x[0]=="839-4-COT26"],"directos":[x for x in direct if x[0]=="839-4-COT26"]}}
  (out/"resumen.json").write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding="utf8")
