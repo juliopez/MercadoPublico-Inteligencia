@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/auditoria-montos-operativos.yml'
+      - 'scripts/auditar_montos_licitaciones.py'
 permissions:
   contents: read
 jobs:
