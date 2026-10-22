@@ -45,7 +45,7 @@ Para elevar candidatos a vínculos acreditados de forma general, incorporar desc
 
 **Corrección de criterio por entidad:** los 7.709 vínculos por `codigo_proceso` exacto de las OC de agosto correspondían a procesos de **licitación** (LP/LE y otras modalidades), no a Compras Ágiles COT. No se deben insertar en la tabla `VinculosCOT_OC`: el generador `scripts/consolidar_vinculos_mer_agosto_v2.py` se corrigió para aceptar únicamente códigos `-COT26`, dejando un test de regresión. El paquete resultante tiene **1 vínculo documental nuevo** y **0 vínculos COT directos nuevos** entre los 7.709 evaluados; las **44.896 OC candidatas** continúan pendientes de evidencia.
 
-**Base operativa efectivamente editada:** pestaña `VinculosCOT_OC` de `MER_2026_08` (Google Sheets histórica); se buscó el par `839-4-COT26` / `839-10-AG26` en las 68.592 filas existentes y no figuraba. Tras respaldo integral en Drive, carpeta `04_Respaldos`, documento `RESGUARDO_PRE_CONCILIACION_CA_OC_MER_2026_08_20261021`, se insertó **una fila** mediante Google Sheets API, con PK `SHA256(codigo_cot|codigo_oc)` y campo `relacion_confiable=DOCUMENTO_OFICIAL_VALIDADO`:
+**Base operativa efectivamente editada:** pestaña `VinculosCOT_OC` de `MER_2026_08` (Google Sheets histórica); se buscó el par `839-4-COT26` / `839-10-AG26` en las 68.592 filas existentes y no figuraba. Tras respaldo integral en Drive, carpeta `03_Respaldos`, documento `RESGUARDO_PRE_CONCILIACION_CA_OC_MER_2026_08_20261021`, se insertó **una fila** mediante Google Sheets API, con PK `SHA256(codigo_cot|codigo_oc)` y campo `relacion_confiable=DOCUMENTO_OFICIAL_VALIDADO`:
 
 | Campo | Valor |
 |---|---|
