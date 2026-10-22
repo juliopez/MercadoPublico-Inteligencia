@@ -42,6 +42,8 @@
 
 ## 3. Operación MER v2 y ETL
 
+- **[Cierre operativo y protocolo de validación 22/10](CIERRE_OPERATIVO_Y_VALIDACION_2026-10-22.md)** — resultados verificables, componentes publicados, pendientes de las 16:00/17:00 y tarea API diferida.
+- [Publicación del MER operativo a V2](PUBLICACION_MER_V2_POST_ETL_2026-10-22.md) — exportador, agenda GitHub y límites de cobertura.
 - **[Plan de continuidad del cron de las 16:00](PLAN_MEJORAS_CRON_1600_2026-10-21.md)** — diagnóstico y mejoras propuestas; cron/ETL no modificados.
 
 
