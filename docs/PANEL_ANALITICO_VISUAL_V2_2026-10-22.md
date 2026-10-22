@@ -14,3 +14,8 @@ Los agregados actuales proporcionan `registros`, `monto_total_clp`, `registros_c
 
 ## Iteración futura
 Si se aprueba ampliar el generador `scripts/generar_analitica_v2.py`, se pueden incorporar agregados diarios y montos por organismo. Requiere validar cobertura de fechas y exactitud de nombre/identificador; no inventar indicadores.
+
+## Segunda iteración técnica (22/10, pendiente de regeneración)
+El generador `scripts/generar_analitica_v2.py` añade `top_actores_monto` (sumas por nombre de organismo o participante) y `modalidades` (conteos por modalidad/tipo). Ambos se derivan EXCLUSIVAMENTE de los fragmentos públicos, sin intervenir Sheets o ZIP. `analitica-visual.js` detecta estos campos de manera opcional: usa ranking monetario si existe y, si no, mantiene el ranking de registros anterior; muestra el desglose de modalidades solo cuando está presente. Los archivos JSON analíticos históricos existentes siguen en versión 1 y **no se han regenerado**. Por tanto, aún no es correcto declarar visible el nuevo ranking monetario ni el desglose de modalidades en producción.
+
+**Pendiente**: pruebas de sintaxis y consistencia del generador; regeneración selectiva con respaldo y comparación de totales; despliegue y prueba visual. No hacer estas operaciones durante el ciclo del ETL 16:00/17:00. La agrupación es por nombre publicado y las modalidades pueden tener valores heterogéneos; no interpretarlas como categorías oficiales homogéneas sin homologación.
