@@ -10,8 +10,8 @@ for(const id of ['periodo','entidad','consulta-avanzada','ir-busqueda-global',
   'busqueda-global','global-estado','global-modalidad','detalle-resumen',
   'detalle-secundario','detalle-campos','volver-contexto','busqueda-global-progreso'])
   assert(html.includes('id="'+id+'"'),'No existe el control '+id);
-assert(html.includes('Saltar a la consulta'),'Falta enlace de accesibilidad');
-assert(html.includes('Recomendado'),'Búsqueda principal no priorizada');
+assert(html.includes('Saltar a la búsqueda'),'Falta enlace de accesibilidad');
+assert(html.includes('Principal'),'Búsqueda principal no priorizada');
 assert(css.includes('.skip-link:focus')&&css.includes(':focus-visible'));
 assert(css.includes('@media(max-width:600px)'));
 
