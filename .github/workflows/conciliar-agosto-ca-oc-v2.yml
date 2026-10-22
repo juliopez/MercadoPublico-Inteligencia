@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/conciliar-agosto-ca-oc-v2.yml'
+      - 'scripts/conciliar_agosto_ca_oc_v2.py'
 permissions:
   contents: write
 concurrency:
