@@ -49,7 +49,7 @@ async function read(path){
  }
  throw last;
 }
-function valid(s,t){return seq===s&&session===t&&el('periodo').value===(t.multi||el('periodo').value===t.period)&&el('entidad').value===t.entity}
+function valid(s,t){return seq===s&&session===t&&(t.multi||el('periodo').value===t.period)&&el('entidad').value===t.entity}
 async function collect(s,t,target){
  // Explorar solo los fragmentos requeridos para las páginas solicitadas.
  while(valid(s,t)&&t.found.length<target&&t.cursor<t.refs.length){
@@ -59,7 +59,7 @@ async function collect(s,t,target){
   const group=[];
   while(t.cursor<t.refs.length&&(t.multi?t.refs[t.cursor][0]===month&&t.refs[t.cursor][1]===part:t.refs[t.cursor][0]===part))group.push(t.refs[t.cursor++]);
   if(!/^data\/partes\/[a-z]+\/20\d{2}-\d{2}\/[a-z0-9_-]+\.json$/.test(t.parts[month][part]))throw Error('Ruta de datos inválida');
-  const rows=await read(t.parts[part]);
+  const rows=await read(t.parts[month][part]);
   if(!valid(s,t))return;
   if(!Array.isArray(rows))throw Error('Fragmento inválido');
   const progress=el('busqueda-global-progreso');progress.hidden=false;progress.value=t.refs.length?Math.round(t.cursor/t.refs.length*100):100;
@@ -119,9 +119,9 @@ async function search(){
  const query=[...new Set(terms(raw))];
  const codeQuery=/^[a-z0-9]+(?:-[a-z0-9]+)+$/i.test(raw);
  const indexedTokens=query.filter(t=>t.length>=3);
- if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period)||!fields[entity]){clear('Seleccione un período y una entidad.');return}
+ if((!multi&&!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period))||!fields[entity]){clear('Seleccione un período y una entidad.');return}
  if(!indexedTokens.length||(!codeQuery&&query.some(t=>t.length<3))){clear('Introduce palabras de al menos 3 caracteres o un código completo.');return}
- message('Consultando índice de '+period+'…');
+ message(multi?'Consultando índices de todos los períodos publicados…':'Consultando índice de '+period+'…');
  try{
   const response=await fetch('./data/catalogo-publico.json');
   if(!response.ok)throw Error('No se pudo consultar el catálogo');
