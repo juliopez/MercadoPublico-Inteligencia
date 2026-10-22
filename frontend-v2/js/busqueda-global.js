@@ -24,8 +24,8 @@ function controls(){
  if(!keys[1])el('global-modalidad').value='';
  const names={procesos:['Estado de licitación','Modalidad del proceso'],ofertas:['Selección informada','No corresponde'],resultados:['No corresponde: verificación interna','No corresponde'],ordenescompra:['Estado de orden','Tipo de OC']}[entity];
  if(entity==='resultados')el('global-estado').disabled=true;
- el('global-estado').placeholder=names[0];
- el('global-modalidad').placeholder=names[1];
+ el('global-estado').setAttribute('aria-label',names[0]);
+ el('global-modalidad').setAttribute('aria-label',names[1]);
 }
 let seq=0,session=null;
 let globalSort={key:null,direction:1};
