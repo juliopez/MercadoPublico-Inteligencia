@@ -7,26 +7,34 @@
     "resultados": 65945,
     "ordenescompra": 153221
   },
-  "oc_vinculadas_exactas_con_proceso_agosto": 886,
-  "oc_candidatas_relaciones_agosto": 80167,
-  "oc_candidatas_distintas": 38295,
-  "oc_candidatas_ambiguas": 11803,
+  "oc_vinculadas_exactas_con_proceso_agosto": 7709,
+  "oc_candidatas_relaciones_agosto": 197910,
+  "oc_candidatas_distintas": 44896,
+  "oc_candidatas_ambiguas": 20914,
+  "procesos_de_todos_los_meses": 326765,
   "diagnostico": {
-    "con_referencia_fuera_procesos_agosto": 59813,
     "sin_codigo_proceso": 92522,
-    "ag_sin_candidato_proveedor": 23466
+    "ag_sin_candidato_proveedor": 16865,
+    "con_referencia_fuera_procesos_agosto": 52990
   },
   "tipo_evidencia": {
     "directos": "codigo_proceso exacto, solo procesos del mismo mes",
     "candidatos": "misma unidad compradora y proveedor seleccionado o en resultados, SIN verificación"
   },
   "limitaciones": [
-    "No cubre proceso de otro mes salvo vínculo exacto en índices multimes de V2",
+    "Se consideran procesos y selecciones publicados en todos los meses actuales; para el futuro se debe regenerar al ampliar la cobertura",
     "No hay descripción oficial de OC en el esquema público actual",
     "No se completan referencias vacías ni se certifican candidatos como vínculos"
   ],
   "ejemplo_839_4_COT26": {
-    "candidatos": [],
+    "candidatos": [
+      [
+        "839-4-COT26",
+        "839-10-AG26",
+        "unico_candidato_por_unidad_y_proveedor",
+        "2026-08"
+      ]
+    ],
     "directos": []
   }
 }
