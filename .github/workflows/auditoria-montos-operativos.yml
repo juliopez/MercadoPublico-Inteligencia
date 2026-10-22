@@ -1,0 +1,20 @@
+name: Auditoria montos licitaciones operativas
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/auditoria-montos-operativos.yml'
+permissions:
+  contents: read
+jobs:
+  revisar-fuente:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Auditar campos de presupuesto y monto en ZIP oficial (solo lectura)
+        run: python scripts/auditar_montos_licitaciones.py
