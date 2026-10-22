@@ -35,3 +35,11 @@ Registrar el saneamiento documental y la revisión segura de GitHub durante la v
 - Verificación automática de enlaces Markdown y documentación de nuevos períodos cuando se publiquen.
 
 **Regla:** toda eliminación futura debe citar ruta exacta, justificación, sustitución y verificación posterior. No atribuir a este mantenimiento borrados de código, datos o workflows que no se hayan efectuado.
+
+## Cierre documental de jornada (21–22/10/2026)
+
+Se actualizaron `README.md`, `frontend-v2/README.md` y `docs/INDICE_DOCUMENTACION.md` para reflejar búsqueda transversal, detalle multimes, relación unificada de OC, enriquecimiento por ZIP y tareas pendientes. Se incorporó [plan de continuidad para cron 16:00](PLAN_MEJORAS_CRON_1600_2026-10-21.md).
+
+**Limpieza efectuada: documental, no destructiva.** Se reorganizaron referencias del índice y retiraron afirmaciones de estado desactualizadas del manual V2, conservando los documentos de evidencia histórica. **No se borraron ramas, scripts, workflows, índices JSON ni logs**, porque sus dependencias no fueron auditadas individualmente. La depuración física sigue condicionada a inventario de uso, equivalencia y autorización.
+
+El cron y ETL siguen intactos; no se ejecutaron trabajos operativos en el cierre documental. Verificar estado de Actions y despliegue real de las mejoras recientes antes de dar por aprobada la revisión visual.
