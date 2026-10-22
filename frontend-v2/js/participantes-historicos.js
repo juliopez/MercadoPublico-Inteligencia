@@ -78,7 +78,9 @@ async function searchParticipant(){
    action.addEventListener('click',()=>{
     ph('periodo').value=row.period;ph('periodo').dispatchEvent(new Event('change'));
     ph('entidad').value=entity;ph('entidad').dispatchEvent(new Event('change'));
-    ph('busqueda-global-texto').value=name;
+    // El buscador indexado admite términos de 3+ caracteres: omitir partículas cortas de organismos.
+    const query=type==='organismo'?name.split(/\\s+/).filter(word=>normalizeActor(word).replace(/[^a-z0-9]/g,'').length>=3).join(' '):name;
+    ph('busqueda-global-texto').value=query;
     ph('global-estado').value='';ph('global-modalidad').value='';
     ph('busqueda-global-boton').click();ph('busqueda-global').scrollIntoView({behavior:'smooth'});
    });
