@@ -37,6 +37,7 @@ def main():
  for file in sorted((OUT/"directos").glob("*.json")):
   chunk=json.loads(file.read_text(encoding="utf8"))
   for code,links in chunk.items():
+   if not code.endswith('-COT26'):continue
    for x in links:
     oc=x["codigo_oc"]
     if str(reference[oc].get("codigo_proceso") or "").strip()!=code:raise ValueError("Reference mismatch "+oc)
