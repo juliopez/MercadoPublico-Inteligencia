@@ -180,3 +180,11 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 .oc-verified{margin:12px 0;padding:10px 14px;border-left:4px solid #278468;background:#edf8f3;border-radius:5px}
 .oc-verified h5{margin:3px 0 8px;color:#175c46}
 .oc-verified li{margin:5px 0;overflow-wrap:anywhere}
+
+
+/* Presentación consolidada de relaciones OC, 2026-10-21 */
+.oc-related-table{width:100%;border-collapse:collapse;margin-top:.75rem;table-layout:auto}
+.oc-related-table th,.oc-related-table td{text-align:left;padding:.7rem .65rem;border-bottom:1px solid #dbe5ed;vertical-align:top;overflow-wrap:anywhere}
+.oc-related-table th{background:#eef5f9;color:#213e51}
+.oc-related-table td .muted{font-size:.84em;margin-top:.25rem}
+@media(max-width:700px){.oc-related-table{display:block;overflow-x:auto}.oc-related-table th,.oc-related-table td{min-width:125px}}
