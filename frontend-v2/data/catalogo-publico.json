@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "fecha_publicacion": "2026-10-21T17:40:40.753435+00:00",
+  "fecha_publicacion": "2026-10-22T20:39:49.593866+00:00",
   "fuente": "Extractos públicos MER v2 de Google Sheets privadas, exportados por período",
   "periodos": [
     {
@@ -2953,15 +2953,16 @@
       "periodo": "2026-10",
       "tipo": "operativo",
       "conteos": {
-        "procesos": 1558,
+        "procesos": 2094,
         "ofertas": 0,
         "resultados": 0,
-        "ordenescompra": 91070
+        "ordenescompra": 108269
       },
       "partes": {
         "procesos": [
           "data/partes/procesos/2026-10/0001.json",
-          "data/partes/procesos/2026-10/0002.json"
+          "data/partes/procesos/2026-10/0002.json",
+          "data/partes/procesos/2026-10/0003.json"
         ],
         "ofertas": [],
         "resultados": [],
@@ -3057,7 +3058,24 @@
           "data/partes/ordenescompra/2026-10/0089.json",
           "data/partes/ordenescompra/2026-10/0090.json",
           "data/partes/ordenescompra/2026-10/0091.json",
-          "data/partes/ordenescompra/2026-10/0092.json"
+          "data/partes/ordenescompra/2026-10/0092.json",
+          "data/partes/ordenescompra/2026-10/0093.json",
+          "data/partes/ordenescompra/2026-10/0094.json",
+          "data/partes/ordenescompra/2026-10/0095.json",
+          "data/partes/ordenescompra/2026-10/0096.json",
+          "data/partes/ordenescompra/2026-10/0097.json",
+          "data/partes/ordenescompra/2026-10/0098.json",
+          "data/partes/ordenescompra/2026-10/0099.json",
+          "data/partes/ordenescompra/2026-10/0100.json",
+          "data/partes/ordenescompra/2026-10/0101.json",
+          "data/partes/ordenescompra/2026-10/0102.json",
+          "data/partes/ordenescompra/2026-10/0103.json",
+          "data/partes/ordenescompra/2026-10/0104.json",
+          "data/partes/ordenescompra/2026-10/0105.json",
+          "data/partes/ordenescompra/2026-10/0106.json",
+          "data/partes/ordenescompra/2026-10/0107.json",
+          "data/partes/ordenescompra/2026-10/0108.json",
+          "data/partes/ordenescompra/2026-10/0109.json"
         ]
       },
       "huellas": {
