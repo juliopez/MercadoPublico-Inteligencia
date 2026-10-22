@@ -55,7 +55,8 @@ async function searchParticipant(){
     if(!cache.has(path))cache.set(path,await fetchPublic(path));
     extra=cache.get(path)[actor]||null;
    }catch(error){if(!String(error).includes('404'))throw error}
-   rows.push({period:p.periodo,count:record?.registros||0,monto:record?.monto_total_clp||0,coverage:record?.registros_con_monto||0,extra});
+   const outcome=type==='proveedor'?await profile(p.periodo,'resultados',name):null;
+   rows.push({period:p.periodo,count:record?.registros||0,monto:record?.monto_total_clp||0,coverage:record?.registros_con_monto||0,extra,outcome:outcome?.registros||0});
   }
   if(req!==seq)return;
   const total=rows.reduce((s,r)=>s+r.count,0),months=rows.filter(r=>r.count).length;
@@ -66,7 +67,8 @@ async function searchParticipant(){
   if(type==='proveedor'){
    metrics.push(['Procesos distintos por mes',coverageReady?processMonthCount.toLocaleString('es-CL'):'Cobertura incompleta']);
    metrics.push(['Ofertas con monto informado',rows.reduce((sum,r)=>sum+r.coverage,0).toLocaleString('es-CL')+' de '+total.toLocaleString('es-CL')]);
-   metrics.push(['Adjudicaciones verificadas','Sin datos suficientes']);
+   metrics.push(['Resultados con empresa seleccionada',rows.reduce((sum,r)=>sum+r.outcome,0).toLocaleString('es-CL')]);
+   metrics.push(['Procesos ganados verificados','Pendiente de verificar']);
    metrics.push(['Monto adjudicado verificado','Sin datos suficientes']);
   }else{
    metrics.push(['Ofertas recibidas vinculadas',coverageReady?active.reduce((sum,r)=>sum+(r.extra.ofertas_recibidas_vinculadas||0),0).toLocaleString('es-CL'):'En preparación']);
@@ -93,7 +95,7 @@ async function searchParticipant(){
    line.append(label,track,number);ph('participante-evolucion').append(line);
    ph('participante-enlaces').append(action);
   }
-  ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. '+(type==='proveedor'?'El monto corresponde a ofertas informadas, no a contratos ganados. Los procesos distintos se deduplican dentro de cada mes; un código repetido en distintos meses puede contarse más de una vez. Sin resultados validados por empresa no es correcto clasificar ofertas como ganadas o perdidas.':'Los conteos se basan en nombres de organismos sin homologación y la relación con ofertas exige código y período coincidentes.'):'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
+  ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. '+(type==='proveedor'?'El monto corresponde a ofertas informadas, no a contratos ganados. Los procesos distintos se deduplican dentro de cada mes; un código repetido en distintos meses puede contarse más de una vez. Los resultados identifican a la empresa seleccionada, pero pueden repetir procesos y no equivalen automáticamente a contratos adjudicados. No clasificar ofertas como perdidas sin un resultado concluyente.':'Los conteos se basan en nombres de organismos sin homologación y la relación con ofertas exige código y período coincidentes.'):'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
  }catch(e){if(req===seq)ph('participante-estado').textContent='No fue posible consultar los índices: '+e.message}
 }
 ph('participante-buscar').addEventListener('click',searchParticipant);
