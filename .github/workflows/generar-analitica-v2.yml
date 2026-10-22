@@ -23,7 +23,7 @@ jobs:
       - name: Comprobar sintaxis
         run: |
           python -m py_compile scripts/generar_analitica_v2.py
-          node --check frontend-v2/js/analitica-interactiva.js
+          node --check frontend-v2/js/analitica-visual.js
           node --check frontend-v2/js/app.js
       - name: Generar y publicar agregados verificables
         run: |
@@ -49,6 +49,9 @@ jobs:
           count=next(r for r in d['periodos'] if r['periodo']==p)['conteos'][e]
           a=json.loads((pathlib.Path('frontend-v2/data/analitica')/p/(e+'.json')).read_text())
           assert a['registros']==count and a['version']==1
+          assert 'top_actores_monto' in a and 'modalidades' in a
+          assert sum(int(v) for _,v in a['modalidades']) <= count
+          assert sum(int(v) for _,v in a['top_actores_monto']) <= a['monto_total_clp']
           print('ANALITICA_VERIFICADA',p,e,count)
           PY
             done
