@@ -59,12 +59,17 @@ async function searchParticipant(){
   }
   if(req!==seq)return;
   const total=rows.reduce((s,r)=>s+r.count,0),months=rows.filter(r=>r.count).length;
-  const counted=rows.filter(r=>r.extra!==null);
-  const metrics=[['Registros de '+(type==='proveedor'?'ofertas':'procesos'),total.toLocaleString('es-CL')],['Meses con actividad',String(months)],['Montos informados',new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(rows.reduce((s,r)=>s+r.monto,0))]];
+  const active=rows.filter(r=>r.count>0);
+  const coverageReady=active.every(r=>r.extra!==null);
+  const processMonthCount=active.reduce((sum,r)=>sum+(r.extra?.procesos_distintos||0),0);
+  const metrics=[['Registros de '+(type==='proveedor'?'ofertas':'procesos'),total.toLocaleString('es-CL')],['Meses con actividad',String(months)],[type==='proveedor'?'Monto total ofertado informado':'Presupuesto disponible informado',new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(rows.reduce((s,r)=>s+r.monto,0))]];
   if(type==='proveedor'){
-   metrics.push(['Participaciones por proceso/mes',counted.length===rows.length?counted.reduce((sum,r)=>sum+(r.extra.procesos_distintos||0),0).toLocaleString('es-CL'):'En preparación']);
+   metrics.push(['Procesos distintos por mes',coverageReady?processMonthCount.toLocaleString('es-CL'):'Cobertura incompleta']);
+   metrics.push(['Ofertas con monto informado',rows.reduce((sum,r)=>sum+r.coverage,0).toLocaleString('es-CL')+' de '+total.toLocaleString('es-CL')]);
+   metrics.push(['Adjudicaciones verificadas','Sin datos suficientes']);
+   metrics.push(['Monto adjudicado verificado','Sin datos suficientes']);
   }else{
-   metrics.push(['Ofertas recibidas vinculadas',counted.length===rows.length?counted.reduce((sum,r)=>sum+(r.extra.ofertas_recibidas_vinculadas||0),0).toLocaleString('es-CL'):'En preparación']);
+   metrics.push(['Ofertas recibidas vinculadas',coverageReady?active.reduce((sum,r)=>sum+(r.extra.ofertas_recibidas_vinculadas||0),0).toLocaleString('es-CL'):'En preparación']);
   }
   for(const [label,val] of metrics){const card=document.createElement('div');card.className='evolution-metric';const caption=document.createElement('small');caption.textContent=label;const number=document.createElement('strong');number.textContent=val;card.append(caption,number);ph('participante-resumen').append(card)}
   const max=Math.max(1,...rows.map(r=>r.count));
@@ -88,7 +93,7 @@ async function searchParticipant(){
    line.append(label,track,number);ph('participante-evolucion').append(line);
    ph('participante-enlaces').append(action);
   }
-  ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. Los conteos de procesos distintos se calculan por mes; un mismo código en meses diferentes podría contarse nuevamente. Las ofertas recibidas se vinculan solo cuando el proceso aparece en el mismo período de la oferta.':'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
+  ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. '+(type==='proveedor'?'El monto corresponde a ofertas informadas, no a contratos ganados. Los procesos distintos se deduplican dentro de cada mes; un código repetido en distintos meses puede contarse más de una vez. Sin resultados validados por empresa no es correcto clasificar ofertas como ganadas o perdidas.':'Los conteos se basan en nombres de organismos sin homologación y la relación con ofertas exige código y período coincidentes.'):'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
  }catch(e){if(req===seq)ph('participante-estado').textContent='No fue posible consultar los índices: '+e.message}
 }
 ph('participante-buscar').addEventListener('click',searchParticipant);
