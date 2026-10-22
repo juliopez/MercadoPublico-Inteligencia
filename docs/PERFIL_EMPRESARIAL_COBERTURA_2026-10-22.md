@@ -20,3 +20,6 @@ Para reportar ganadas/perdidas y sumas adjudicadas confiables se requerirá un �
 
 ## Validación
 Revisar Actions del commit y Pages, consultas de participantes con meses vacíos y no vacíos, cantidad de procesos distintos en los meses activos, sumas monetarias y ayudas. Sin cambios en Sheets, ETL Ubuntu o históricos.
+
+## Corrección funcional del perfil (22/10)
+El perfil de proveedor ahora lee también los índices públicos de `resultados` por nombre normalizado en todos los períodos y muestra **Resultados con empresa seleccionada**. Para MULTITODO SPA los índices disponibles registran junio 49, julio 43, agosto 40 y septiembre 40 (172 registros). El contador no se etiqueta «procesos ganados» porque podría haber repeticiones entre períodos y falta verificar cada adjudicación. `Procesos ganados verificados` permanece pendiente y el monto adjudicado no se sustituye por el monto ofertado. Cambio frontend `433c74de`. Verificar despliegue Pages y concordancia de los 172 resultados.
