@@ -275,3 +275,6 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 .viz-comparison strong{font-size:.88rem}
 .viz-comparison span{font-size:.82rem}
 @media(max-width:800px){.analytics-visual{grid-template-columns:1fr}.analytics-visual>.viz-card:last-of-type{grid-column:auto}}
+
+/* La perspectiva seleccionada destaca una tarjeta sin duplicar visualizaciones. */
+.analytics-visual>.viz-card.viz-emphasis{border-color:#297ca8;box-shadow:0 0 0 1px #297ca833,0 4px 14px #12395612}
