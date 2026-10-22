@@ -36,3 +36,11 @@ La versión unificada deja visibles solamente tres tarjetas de Montos, Organismo
 **Alcance de entrega:** HTML, JavaScript y CSS de V2; no se tocaron históricos, hojas MER ni la programación Ubuntu. Los nuevos agregados `top_actores_monto` y `modalidades` necesitan publicación real para desplegar dona monetaria y desgloses de modalidad. No declarar completa la reproducción del mockup antes de regenerar esos JSON y probar Pages.
 
 **Prueba de regresión necesaria:** entrada y cambio de entidad; selección de perspectiva; comparación intermensual; cambio de mes; acceso a registros del mes; mostrar/ocultar datos faltantes; meses sin desglose monetario; métricas correctas al distinguir octubre parcial. Verificar despliegue por commit, no por presencia del archivo local.
+
+## Ajustes de indicadores y regresión (22/10)
+- Importes formateados en CLP completo o expresados en millones/mil millones sin abreviatura ambigua «mil MM».
+- Gráfico de montos excluye del trazado los períodos sin montos informados; evita inventar una caída a cero.
+- Mes operativo parcial identificado usando año/mes de Chile con `Intl.DateTimeFormat(...).formatToParts`, sin depender de interpretación local de una cadena de fecha.
+- Variaciones del mes parcial se rotulan «Parcial»; las comparaciones que lo incluyen no calculan una diferencia porcentual ordinaria.
+- Se actualizaron las pruebas estructurales de analítica/UX que aún exigían los textos y el módulo legado eliminado; **pendiente comprobar su ejecución exitosa en Actions**.
+- **Pendiente crítico:** regeneración y publicación de los agregados analíticos históricos `top_actores_monto` y `modalidades`; los históricos JSON siguen sin esas claves hasta ejecutar `generar-analitica-v2.yml`. Este paso solo transforma los fragmentos públicos en JSON derivados, pero debe ejecutarse separadamente y validarse. No se ha autorizado una alteración de Google Sheets ni del cron.
