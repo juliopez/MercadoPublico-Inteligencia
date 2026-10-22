@@ -68,6 +68,15 @@ then
   write_status OMITIDA 'Falta certificacion del ETL principal'
   exit 11
 fi
+# Publicar solamente tras carga de Sheets verificada; la publicación es independiente
+# del estado de éxito del ETL y deja log propio en el orquestador.
+publicar_v2() {
+  if ! bash "$ROOT/scripts/ubuntu_publicar_v2_post_etl.sh" --aplicar; then
+    echo 'PUBLICACION_V2_FALLIDA: Sheets fue actualizada; revisar GitHub y reintentar de forma controlada' >&2
+    return 20
+  fi
+  echo 'PUBLICACION_V2_OK_O_SIN_CAMBIOS'
+}
 # Descarga SOLO OC vigente, no COT diario; se cachea por mes.
 OC_PATH="$ROOT/salida_operativa/cache_oc/${MES}.zip"
 mkdir -p "$(dirname "$OC_PATH")"
@@ -82,6 +91,7 @@ HASHFILE="$ROOT/salida_operativa/cache_oc/${MES}.conciliado.sha256"
 if [[ -f "$HASHFILE" && "$(cat "$HASHFILE")" == "$HASH" ]]; then
   write_status CONCILIACION_VERIFICADA 'ZIP OC sin cambios; conciliacion verificada anteriormente'
   echo 'CONCILIACION omitida: SHA256 idéntico y verificado'
+  publicar_v2
   exit 0
 fi
 # El conciliador gestiona el lock compartido, respaldo y lectura posterior.
@@ -103,4 +113,5 @@ fi
 printf '%s\n' "$HASH" > "$HASHFILE.tmp"
 mv -f "$HASHFILE.tmp" "$HASHFILE"
 write_status CONCILIACION_VERIFICADA 'Conciliacion y lectura posterior verificadas'
+publicar_v2
 echo "ORQUESTADOR OK: $(date --iso-8601=seconds)"
