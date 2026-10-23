@@ -118,7 +118,7 @@ async function compare(){
 }
 byId('comparar-ejecutar').addEventListener('click',compare);
 byId('comparar-mes').addEventListener('change',()=>clear('Mes de comparación actualizado. Ejecute nuevamente la comparación.'));
-byId('comparar-alcance').addEventListener('change',()=>{byId('comparar-mes-contenedor').hidden=byId('comparar-alcance').value!=='mes';clear('Alcance cambiado. Ejecute nuevamente la comparación.');});
+byId('comparar-alcance').addEventListener('change',()=>{const scope=byId('comparar-alcance').value;byId('comparar-mes-contenedor').hidden=scope!=='mes';suggestionSeq++;byId('comparar-sugerencias').replaceChildren();byId('comparar-ayuda').textContent=scope==='mes'?'Selecciona el mes y escribe al menos dos letras para buscar proveedores.':'Escribe al menos dos letras para buscar proveedores en todos los períodos publicados.';clear('Alcance cambiado. Ejecute nuevamente la comparación.');});
 
 let suggestionSeq=0;
 const suggestionTimers=new Map(),suggestionCache=new Map();
@@ -175,7 +175,7 @@ async function suggest(input){
   }
   const missing=results.filter(x=>x.status==='rejected').length;
   byId('comparar-ayuda').textContent=names.size?
-   names.size+' proveedores coincidentes en '+periods.length+' período(s). Selecciona el nombre completo; alcance: '+(byId('comparar-alcance').value==='mes'?period:'todos los períodos publicados')+'.':
+   names.size+' '+(names.size===1?'proveedor coincidente':'proveedores coincidentes')+' en '+periods.length+' '+(periods.length===1?'período':'períodos')+'. Selecciona el nombre completo; alcance: '+(byId('comparar-alcance').value==='mes'?period:'todos los períodos publicados')+'.':
    (missing===periods.length?'No fue posible cargar los índices. Puedes ingresar una razón social manualmente.':'Sin proveedores coincidentes en la cobertura consultada.');
  }catch(error){if(seq===suggestionSeq)byId('comparar-ayuda').textContent='No se pudieron obtener las sugerencias. Puedes ingresar el nombre completo manualmente.'}
 }
