@@ -102,7 +102,29 @@ async function searchParticipant(){
   }else{
    metrics.push(['Ofertas recibidas vinculadas',coverageReady?active.reduce((sum,r)=>sum+(r.extra.ofertas_recibidas_vinculadas||0),0).toLocaleString('es-CL'):'En preparación']);
   }
-  for(const [label,val] of metrics){const card=document.createElement('div');card.className='evolution-metric';const caption=document.createElement('small');caption.textContent=label;const number=document.createElement('strong');number.textContent=val;card.append(caption,number);ph('participante-resumen').append(card)}
+  const groups=type==='proveedor'?[
+   {title:'Participación',description:'Volumen de ofertas y procesos publicados.',labels:['Registros de ofertas','Meses con actividad','Procesos distintos por mes','Ofertas con monto informado']},
+   {title:'Efectividad',description:'Selecciones documentadas; no equivalen a contratos adjudicados.',labels:['Resultados con empresa seleccionada','Procesos distintos con selección registrada','Tasa de selección registrada','Procesos ganados verificados']},
+   {title:'Resultados económicos',description:'Distingue importes ofertados, seleccionados y adjudicados.',labels:['Monto total ofertado informado','Suma de ofertas seleccionadas informadas','Relación monto seleccionado / ofertado','Monto adjudicado verificado']}
+  ]:[{title:'Actividad del organismo',description:'Información disponible según el nombre publicado.',labels:metrics.map(m=>m[0])}];
+  const target=ph('participante-resumen');
+  target.classList.add('participant-groups');
+  for(const group of groups){
+   const entries=metrics.filter(([label])=>group.labels.includes(label));
+   if(!entries.length)continue;
+   const section=document.createElement('section');section.className='participant-metric-group';
+   const heading=document.createElement('h3');heading.textContent=group.title;
+   const summary=document.createElement('p');summary.className='participant-group-description';summary.textContent=group.description;
+   const grid=document.createElement('div');grid.className='participant-metric-grid';
+   for(const [label,val] of entries){
+    const card=document.createElement('div');card.className='evolution-metric';
+    const caption=document.createElement('small');caption.textContent=label;
+    const number=document.createElement('strong');number.textContent=val;
+    if(label==='Tasa de selección registrada'||label==='Procesos distintos con selección registrada')card.classList.add('participant-metric-emphasis');
+    card.append(caption,number);grid.append(card);
+   }
+   section.append(heading,summary,grid);target.append(section);
+  }
   const max=Math.max(1,...rows.map(r=>r.count));
   for(const row of rows){
    const line=document.createElement('div');line.className='amount-bar';
@@ -124,7 +146,7 @@ async function searchParticipant(){
    line.append(label,track,number);ph('participante-evolucion').append(line);
    ph('participante-enlaces').append(action);
   }
-  ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. '+(type==='proveedor'?'El monto corresponde a ofertas informadas, no a contratos ganados. Los procesos distintos se deduplican dentro de cada mes; un código repetido en distintos meses puede contarse más de una vez. Los resultados identifican a la empresa seleccionada, pero pueden repetir procesos y no equivalen automáticamente a contratos adjudicados. No clasificar ofertas como perdidas sin un resultado concluyente.':'Los conteos se basan en nombres de organismos sin homologación y la relación con ofertas exige código y período coincidentes.'):'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
+  ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. '+(type==='proveedor'?'Las selecciones registradas no acreditan adjudicaciones ni pagos. Consulta las ayudas de cada indicador.':'Los organismos se agrupan por nombre publicado, sin homologación.'):'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
  }catch(e){if(req===seq)ph('participante-estado').textContent='No fue posible consultar los índices: '+e.message}
 }
 ph('participante-buscar').addEventListener('click',searchParticipant);
