@@ -12,6 +12,15 @@ fi
 if [[ "$MODE" == --cron ]]; then
   [[ "$(date +%u)" -le 5 && "$(date +%H)" == 16 ]] || exit 0
 fi
+# Capturar fallas tempranas antes de cualquier verificación: cron no tiene terminal.
+# --verificar mantiene su comportamiento de solo lectura, sin nuevos logs.
+if [[ "$MODE" != --verificar ]]; then
+  mkdir -p "$ROOT/logs"
+  PRELOG="$ROOT/logs/arranque_integrado_$(date +%Y%m%d_%H%M%S).log"
+  exec >>"$PRELOG" 2>&1
+  echo "ARRANQUE_CRON fecha=$(date --iso-8601=seconds) modo=$MODE usuario=$(id -un) pid=$ TZ=$TZ"
+  trap 'code=$?; if (( code != 0 )); then echo "ERROR_PREVIO_ORQUESTACION exit=$code linea=$LINENO fecha=$(date --iso-8601=seconds)"; fi' EXIT
+fi
 # --verificar es totalmente no destructivo; no dispara ETL ni descarga.
 bash "$ROOT/scripts/ubuntu_cron_etl.sh" --verificar
 for f in "$ROOT/scripts/ubuntu_etl_dos_fuentes.sh" "$ROOT/scripts/etl_conciliacion_cot_oc.py" "$ROOT/scripts/registrar_sincronizacion.py"; do
