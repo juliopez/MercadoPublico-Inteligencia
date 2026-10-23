@@ -320,3 +320,8 @@ label:has(> .mer-help-inline){padding-right:25px}
 .participant-distribution-note{padding:18px 16px;background:#edf6fb;color:#3d6381;border-radius:11px;font-size:.86rem;line-height:1.55}
 @media(max-width:950px){.participant-distribution-body{grid-template-columns:minmax(190px,1fr) minmax(220px,1.2fr)}.participant-distribution-note{grid-column:1/-1}}
 @media(max-width:600px){.participant-distribution{padding:12px}.participant-distribution-body{grid-template-columns:1fr;gap:12px}.participant-distribution-note{grid-column:auto}.participant-donut{max-width:270px}.participant-legend-row{gap:8px}}
+
+/* Panel mensual: un solo control funcional, sin espacios reservados para perspectiva. */
+.analytics-controls.analytics-controls-single{display:flex;align-items:end;justify-content:flex-start;gap:12px;margin:12px 0}
+.analytics-controls.analytics-controls-single label{flex:0 1 480px;min-width:min(100%,260px)}
+@media(max-width:600px){.analytics-controls.analytics-controls-single label{flex:1;min-width:0}}
