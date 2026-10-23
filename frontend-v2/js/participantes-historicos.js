@@ -176,7 +176,7 @@ async function searchParticipant(){
    action.addEventListener('click',()=>{
     ph('periodo').value=row.period;ph('periodo').dispatchEvent(new Event('change'));
     ph('entidad').value=entity;ph('entidad').dispatchEvent(new Event('change'));
-    const query=type==='organismo'?name.split(/\\s+/).filter(word=>normalizeActor(word).replace(/[^a-z0-9]/g,'').length>=3).join(' '):name;
+    const query=type==='organismo'?name.split(/\s+/).filter(word=>normalizeActor(word).replace(/[^a-z0-9]/g,'').length>=3).join(' '):name;
     ph('busqueda-global-texto').value=query;
     ph('busqueda-global-alcance').value='mes';
     ph('global-estado').value='';ph('global-modalidad').value='';
