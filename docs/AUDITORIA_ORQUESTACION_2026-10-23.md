@@ -36,3 +36,8 @@ Omitir datos privados de respaldos y credenciales. No ejecutar `--aplicar` duran
 
 ## Próximos pasos
 Recibir logs Ubuntu y determinar **última etapa confirmada**. Corregir solo la etapa fallida, con nueva auditoría de logs y datos; no repetir ETL ni modificar fuentes históricas mientras el estado de Sheets esté indeterminado.
+
+## Evidencia complementaria, 17:54 Santiago
+El usuario entregó `syslog` con invocación efectiva de `ubuntu_cron_integrado.sh --cron` a las **16:00:01** del viernes 23/10 (también invocaciones a otras horas); servicio `cron` activo y reloj sincronizado en America/Santiago. La verificación `bash scripts/ubuntu_cron_integrado.sh --verificar` en entorno mínimo `env -i HOME USER LOGNAME PATH SHELL` terminó con **código 0** y produjo `INTEGRACION_VERIFICADA`. No aparecen logs `orquestador_integrado_20261023*.log`, y los estados operativos consultados permanecen en el 22/10. Por tanto, **el disparo fue real pero la causa de la salida temprana sigue sin prueba concluyente**; el éxito de la simulación posterior no demuestra que las condiciones fueran idénticas a las 16:00.
+
+Mitigación aplicada al repositorio: commit `2edcb2da` adelanta el registro de arranque para ejecuciones reales antes de prerrequisitos, en `logs/arranque_integrado_AAAAMMDD_HHMMSS.log`, incluyendo salida y código de error; `--verificar` no genera logs ni datos. **Este cambio solo regirá en Ubuntu después de actualizar el repositorio local**. El problema de la ejecución del día 23 permanece abierto. No reejecutar el ETL de forma especulativa.
