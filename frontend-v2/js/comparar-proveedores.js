@@ -75,49 +75,74 @@ async function compare(){
 byId('comparar-ejecutar').addEventListener('click',compare);
 byId('periodo').addEventListener('change',()=>clear('El período cambió. Ejecute nuevamente la comparación.'));
 
-let suggestionSeq=0, suggestionTimer;
-const suggestionCache=new Map();
+let suggestionSeq=0;
+const suggestionTimers=new Map(),suggestionCache=new Map();
+let cachedPeriods=null;
+async function suggestionPeriods(){
+ if(cachedPeriods)return cachedPeriods;
+ const response=await fetch('./data/catalogo-publico.json',{cache:'no-store'});
+ if(!response.ok)throw Error('Catálogo HTTP '+response.status);
+ const catalog=await response.json();
+ const available=[...new Set((catalog.periodos||[]).map(x=>x.periodo).filter(x=>/^20\d{2}-(0[1-9]|1[0-2])$/.test(x)))];
+ cachedPeriods=available;
+ return available;
+}
+async function suggestionShard(period,shard){
+ const key=period+'/'+shard;
+ if(!suggestionCache.has(key)){
+  const task=(async()=>{
+   const response=await fetch('./data/autocompletar/'+key+'.json',{cache:'no-store'});
+   if(response.status===404)return [];
+   if(!response.ok)throw Error('Índice '+period+' HTTP '+response.status);
+   const entries=await response.json();
+   if(!Array.isArray(entries))throw Error('Índice de proveedores inválido');
+   return entries;
+  })();
+  suggestionCache.set(key,task);
+  if(suggestionCache.size>35)suggestionCache.delete(suggestionCache.keys().next().value);
+  task.catch(()=>{if(suggestionCache.get(key)===task)suggestionCache.delete(key)});
+ }
+ return suggestionCache.get(key);
+}
 async function suggest(input){
- const seq=++suggestionSeq,period=byId('periodo').value;
- const term=canonical(input.value);
- const list=byId('comparar-sugerencias');
+ const seq=++suggestionSeq,term=canonical(input.value),list=byId('comparar-sugerencias');
  list.replaceChildren();
- if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period)||term.length<2)return;
+ if(term.length<2)return;
+ const period=byId('periodo').value;
  const prefix=term.slice(0,2);
  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(prefix));
  const shard=new Uint8Array(digest)[0].toString(16).padStart(2,'0');
- const cacheKey=period+'/'+shard;
  try{
-  let entries=suggestionCache.get(cacheKey);
-  if(!entries){
-   const relative='data/autocompletar/'+cacheKey+'.json';
-   let lastError;
-   for(const url of ['./'+relative,'https://raw.githubusercontent.com/juliopez/MercadoPublico-Inteligencia/main/frontend-v2/'+relative]){
-    try{
-     const response=await fetch(url,{cache:'no-store'});
-     if(!response.ok)throw Error('HTTP '+response.status);
-     entries=await response.json();
-     break;
-    }catch(e){lastError=e}
+  const periods= /^20\d{2}-(0[1-9]|1[0-2])$/.test(period)?[period]:await suggestionPeriods();
+  const results=await Promise.allSettled(periods.map(p=>suggestionShard(p,shard)));
+  if(seq!==suggestionSeq||!input.matches(':focus'))return;
+  const names=new Map();
+  for(const result of results){
+   if(result.status!=='fulfilled')continue;
+   for(const entry of result.value){
+    if(!Array.isArray(entry)||entry.length<2)continue;
+    const [key,name]=entry;
+    if(typeof key==='string'&&typeof name==='string'&&key.startsWith(term)&&!names.has(key))names.set(key,name);
    }
-   if(!entries)throw lastError||Error('Índice temporalmente inaccesible');
-   if(!Array.isArray(entries))throw Error('Formato inválido');
-   suggestionCache.set(cacheKey,entries);
-   if(suggestionCache.size>12)suggestionCache.delete(suggestionCache.keys().next().value);
   }
-  if(seq!==suggestionSeq||byId('periodo').value!==period)return;
-  const matching=entries.filter(([key])=>key.startsWith(term)).slice(0,40);
-  for(const [,name] of matching){const option=document.createElement('option');option.value=name;list.append(option)}
-  byId('comparar-ayuda').textContent=matching.length+' sugerencias de proveedores para el texto ingresado. Selecciona una razón social completa.';
- }catch(error){if(seq===suggestionSeq)byId('comparar-ayuda').textContent='No se pudieron cargar las sugerencias (acceso a los archivos públicos). Puedes escribir el nombre manualmente y volver a intentarlo.'}
+  for(const name of [...names.values()].sort((a,b)=>a.localeCompare(b,'es',{sensitivity:'base'})).slice(0,40)){
+   const option=document.createElement('option');option.value=name;list.append(option);
+  }
+  const missing=results.filter(x=>x.status==='rejected').length;
+  byId('comparar-ayuda').textContent=names.size?
+   names.size+' proveedores coincidentes en '+periods.length+' período(s). Selecciona el nombre completo; la comparación se realiza en el período elegido.':
+   (missing===periods.length?'No fue posible cargar los índices. Puedes ingresar una razón social manualmente.':'Sin proveedores coincidentes en la cobertura consultada.');
+ }catch(error){if(seq===suggestionSeq)byId('comparar-ayuda').textContent='No se pudieron obtener las sugerencias. Puedes ingresar el nombre completo manualmente.'}
 }
 for(const n of [1,2,3]){
- byId('comparar-nombre-'+n).addEventListener('input',event=>{
-  clearTimeout(suggestionTimer);
-  suggestionTimer=setTimeout(()=>suggest(event.target),200);
+ const input=byId('comparar-nombre-'+n);
+ input.addEventListener('input',()=>{
+  clearTimeout(suggestionTimers.get(n));
+  suggestionTimers.set(n,setTimeout(()=>suggest(input),180));
  });
+ input.addEventListener('focus',()=>{if(canonical(input.value).length>=2)suggest(input)});
 }
 byId('periodo').addEventListener('change',()=>{
  suggestionSeq++;byId('comparar-sugerencias').replaceChildren();
- byId('comparar-ayuda').textContent='Escribe al menos dos letras iniciales para ver proveedores del nuevo período.';
+ byId('comparar-ayuda').textContent='Escribe al menos dos letras para ver proveedores de '+(byId('periodo').value||'los períodos publicados')+'.';
 });
