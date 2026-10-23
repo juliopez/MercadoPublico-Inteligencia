@@ -333,3 +333,6 @@ label:has(> .mer-help-inline){padding-right:25px}
 .header-status strong{font-size:.95rem;color:#fff;font-weight:650}
 header .reference{font-size:.84rem;margin-top:10px}
 @media(max-width:560px){.header-status{gap:8px}.header-status>div{width:100%;min-width:0}}
+
+/* Comparación multimes: alcance en fila independiente; conserva campos legibles. */
+@media(min-width:1001px){.compare-inputs{grid-template-columns:repeat(3,minmax(0,1fr)) auto}.compare-inputs>label:first-child{grid-column:1/-1;max-width:380px}}
