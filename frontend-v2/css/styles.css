@@ -293,3 +293,14 @@ label:has(> .mer-help-inline){padding-right:25px}
 .quicknav{position:sticky;top:0;z-index:500;background:rgba(244,247,251,.97);padding:10px 8px;margin:0 -8px 18px;border-bottom:1px solid #c9dce9;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 #busqueda-global,#consulta,#evolucion-mensual,#participantes-historicos,#favoritos-v2{scroll-margin-top:88px}
 @media(max-width:750px){.quicknav{padding:8px 6px;gap:6px}.quicknav a{white-space:nowrap}#busqueda-global,#consulta,#evolucion-mensual,#participantes-historicos,#favoritos-v2{scroll-margin-top:78px}}
+
+/* Perfil empresarial: grupos semánticos para lectura pública de indicadores. */
+#participante-resumen.participant-groups{display:grid;grid-template-columns:1fr;gap:16px}
+.participant-metric-group{min-width:0;padding:14px;border:1px solid #d6e4ef;background:#fff;border-radius:12px}
+.participant-metric-group h3{font-size:1rem;color:#183c59;margin:0 0 3px}
+.participant-group-description{font-size:.82rem;color:#587081;margin:0 0 11px}
+.participant-metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.participant-metric-emphasis{background:#e6f3fb;border-color:#91c8e9}
+.participant-metric-grid .evolution-metric strong{overflow-wrap:anywhere}
+@media(max-width:1050px){.participant-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.participant-metric-grid{grid-template-columns:1fr}.participant-metric-group{padding:12px}}
