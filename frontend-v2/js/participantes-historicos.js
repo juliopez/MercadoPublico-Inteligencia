@@ -125,25 +125,63 @@ async function searchParticipant(){
    }
    section.append(heading,summary,grid);target.append(section);
   }
-  const max=Math.max(1,...rows.map(r=>r.count));
+  // Distribución real por período; SVG nativo, sin librerías ni datos externos.
+  const fmt=n=>new Intl.NumberFormat('es-CL').format(n);
+  const pct=n=>total?(100*n/total).toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})+' %':'0,0 %';
+  const palette=['#0c497d','#277fbf','#45a1e5','#86bfee','#b8d8f1','#5b8fb7','#4a6e93'];
+  const visual=document.createElement('section');visual.className='participant-distribution';
+  const title=document.createElement('h3');title.textContent='Distribución de participaciones por período';
+  const subtitle=document.createElement('p');subtitle.className='participant-distribution-subtitle';
+  subtitle.textContent='Distribución de '+(type==='proveedor'?'registros de ofertas':'registros de procesos')+' por mes publicado. No representa contratos adjudicados.';
+  const body=document.createElement('div');body.className='participant-distribution-body';
+  const chart=document.createElement('div');chart.className='participant-donut';
+  chart.setAttribute('role','img');
+  chart.setAttribute('aria-label',rows.map(r=>r.period+': '+fmt(r.count)+' registros, '+pct(r.count)).join('; '));
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 260 260');svg.setAttribute('aria-hidden','true');
+  const cx=130,cy=130,radius=88,thickness=48,circ=2*Math.PI*radius;
+  const circle=(color,width)=>{const c=document.createElementNS(svg.namespaceURI,'circle');c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',radius);c.setAttribute('fill','none');c.setAttribute('stroke',color);c.setAttribute('stroke-width',width);return c};
+  svg.append(circle('#e5eef5',thickness));
+  let offset=0;
+  rows.forEach((row,i)=>{
+   if(!total||!row.count)return;
+   const frac=row.count/total;
+   const segment=circle(palette[i%palette.length],thickness);
+   segment.setAttribute('stroke-dasharray',Math.max(0,frac*circ-.8)+' '+circ);
+   segment.setAttribute('stroke-dashoffset',String(-offset*circ));
+   segment.setAttribute('transform','rotate(-90 130 130)');
+   svg.append(segment);
+   const angle=(-Math.PI/2)+(offset+frac/2)*2*Math.PI;
+   if(frac>=.08){
+    const text=document.createElementNS(svg.namespaceURI,'text');text.setAttribute('x',String(cx+radius*Math.cos(angle)));text.setAttribute('y',String(cy+radius*Math.sin(angle)+5));text.setAttribute('text-anchor','middle');text.setAttribute('fill',i<3?'#fff':'#183d5d');text.setAttribute('font-size','12');text.setAttribute('font-weight','600');text.textContent=pct(row.count);svg.append(text);
+   }
+   offset+=frac;
+  });
+  const center=document.createElementNS(svg.namespaceURI,'text');center.setAttribute('x','130');center.setAttribute('y','126');center.setAttribute('text-anchor','middle');center.setAttribute('fill','#123d61');center.setAttribute('font-size','28');center.setAttribute('font-weight','700');center.textContent=fmt(total);svg.append(center);
+  const centerLabel=document.createElementNS(svg.namespaceURI,'text');centerLabel.setAttribute('x','130');centerLabel.setAttribute('y','147');centerLabel.setAttribute('text-anchor','middle');centerLabel.setAttribute('fill','#46637c');centerLabel.setAttribute('font-size','13');centerLabel.textContent='participaciones';svg.append(centerLabel);
+  chart.append(svg);
+  const legend=document.createElement('div');legend.className='participant-distribution-legend';
+  for(const [i,row] of rows.entries()){
+   const item=document.createElement('div');item.className='participant-legend-row';
+   const dot=document.createElement('span');dot.className='participant-legend-dot';dot.style.background=row.count?palette[i%palette.length]:'#d6e2ec';
+   const month=document.createElement('span');month.textContent=row.period;
+   const count=document.createElement('strong');count.textContent=fmt(row.count);
+   const share=document.createElement('span');share.textContent=pct(row.count);share.className='participant-legend-percent';
+   item.append(dot,month,count,share);legend.append(item);
+  }
+  const explanation=document.createElement('aside');explanation.className='participant-distribution-note';
+  explanation.textContent='La gráfica muestra cómo se distribuyen '+fmt(total)+' '+(type==='proveedor'?'ofertas registradas':'registros de procesos')+' entre los meses publicados. Los porcentajes utilizan ese total, no los procesos únicos ni las adjudicaciones. Los meses sin registros se muestran con 0 %.';
+  body.append(chart,legend,explanation);visual.append(title,subtitle,body);ph('participante-evolucion').append(visual);
   for(const row of rows){
-   const line=document.createElement('div');line.className='amount-bar';
-   const label=document.createElement('span');label.textContent=row.period;
-   const track=document.createElement('div');track.className='actor-track';
-   const fill=document.createElement('div');fill.className='actor-fill';fill.style.width=(row.count/max*100).toFixed(1)+'%';track.append(fill);
-   const number=document.createElement('strong');number.textContent=row.count.toLocaleString('es-CL');
    const action=document.createElement('button');action.type='button';action.className='secondary';action.textContent='Examinar '+row.period;action.disabled=!row.count;
    action.addEventListener('click',()=>{
     ph('periodo').value=row.period;ph('periodo').dispatchEvent(new Event('change'));
     ph('entidad').value=entity;ph('entidad').dispatchEvent(new Event('change'));
-    // El buscador indexado admite términos de 3+ caracteres: omitir partículas cortas de organismos.
-    const query=type==='organismo'?name.split(/\s+/).filter(word=>normalizeActor(word).replace(/[^a-z0-9]/g,'').length>=3).join(' '):name;
+    const query=type==='organismo'?name.split(/\\s+/).filter(word=>normalizeActor(word).replace(/[^a-z0-9]/g,'').length>=3).join(' '):name;
     ph('busqueda-global-texto').value=query;
     ph('busqueda-global-alcance').value='mes';
     ph('global-estado').value='';ph('global-modalidad').value='';
     ph('busqueda-global-boton').click();ph('busqueda-global').scrollIntoView({behavior:'smooth'});
    });
-   line.append(label,track,number);ph('participante-evolucion').append(line);
    ph('participante-enlaces').append(action);
   }
   ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. '+(type==='proveedor'?'Las selecciones registradas no acreditan adjudicaciones ni pagos. Consulta las ayudas de cada indicador.':'Los organismos se agrupan por nombre publicado, sin homologación.'):'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
