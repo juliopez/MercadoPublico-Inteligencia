@@ -158,7 +158,7 @@ async function suggest(input){
  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(prefix));
  const shard=new Uint8Array(digest)[0].toString(16).padStart(2,'0');
  try{
-  const periods= /^20\d{2}-(0[1-9]|1[0-2])$/.test(period)?[period]:await suggestionPeriods();
+  const periods=byId('comparar-alcance').value==='mes'&&/^20\d{2}-(0[1-9]|1[0-2])$/.test(period)?[period]:await suggestionPeriods();
   const results=await Promise.allSettled(periods.map(p=>suggestionShard(p,shard)));
   if(seq!==suggestionSeq||!input.matches(':focus'))return;
   const names=new Map();
