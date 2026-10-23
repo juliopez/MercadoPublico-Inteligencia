@@ -325,3 +325,11 @@ label:has(> .mer-help-inline){padding-right:25px}
 .analytics-controls.analytics-controls-single{display:flex;align-items:end;justify-content:flex-start;gap:12px;margin:12px 0}
 .analytics-controls.analytics-controls-single label{flex:0 1 480px;min-width:min(100%,260px)}
 @media(max-width:600px){.analytics-controls.analytics-controls-single label{flex:1;min-width:0}}
+
+/* Estado de actualización del catálogo en la cabecera. */
+.header-status{display:flex;flex-wrap:wrap;gap:12px;margin:15px 0 9px}
+.header-status>div{display:flex;flex-direction:column;gap:4px;padding:10px 15px;border:1px solid #416783;border-radius:9px;background:#1b3c59;min-width:210px}
+.header-status span{font-size:.78rem;color:#c3d9e9}
+.header-status strong{font-size:.95rem;color:#fff;font-weight:650}
+header .reference{font-size:.84rem;margin-top:10px}
+@media(max-width:560px){.header-status{gap:8px}.header-status>div{width:100%;min-width:0}}
