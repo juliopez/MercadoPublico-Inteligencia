@@ -103,8 +103,6 @@ async function render(){
   const acsum=total(activityRows.map(x=>x.value));activity.append(kpis([['Total de registros publicados',number.format(acsum)],['Promedio mensual',number.format(Math.round(acsum/activityRows.length))]]));
   activity.append(columns(activityRows,focus.periodo),variation(activityRows));
   if(Array.isArray(focus.modalidades)&&focus.modalidades.length){const modes=create('div','viz-breakdown');modes.append(create('h4','','Modalidades del mes '+focus.periodo));const rows=focus.modalidades.slice(0,5).map(([label,value])=>({label:String(label),value:+value||0}));modes.append(bars(rows,v=>number.format(v),''));activity.append(modes)}
-  const view=V('analitica-vista').value;
-  [money,actors,activity].forEach((card,i)=>card.classList.toggle('viz-emphasis',(['montos','actores','actividad'][i]===view)));
   root.replaceChildren(money,actors,activity,create('p','muted viz-disclaimer','Cifras descriptivas de registros públicos. Octubre es un mes parcial; no interpretar variaciones como evolución contractual. Los nombres de organismos no están homologados.'));
   if(comparison){
    const comparisonPanel=create('div','viz-comparison');comparisonPanel.append(create('strong','','Comparación '+focus.periodo+' / '+comparison.periodo));
@@ -118,4 +116,4 @@ async function render(){
  }catch(e){if(token===request)root.replaceChildren(create('p','muted','No se pudo cargar el panel visual: '+e.message))}
 }
 V('analitica-ver-registros').addEventListener('click',()=>{const p=V('periodo').value;if(p)V('ir-busqueda-global').click()});
-['entidad','periodo','analitica-vista','analitica-comparar'].forEach(id=>V(id).addEventListener('change',render));render();
+['entidad','periodo','analitica-comparar'].forEach(id=>V(id).addEventListener('change',render));render();
