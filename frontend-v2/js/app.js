@@ -622,9 +622,9 @@ async function init(){
   const publication=Number.isNaN(date.getTime())?'Fecha no disponible':new Intl.DateTimeFormat('es-CL',{timeZone:'America/Santiago',dateStyle:'long',timeStyle:'short'}).format(date)+' (Chile)';
   $('stat-fecha').textContent=Number.isNaN(date.getTime())?(payload.fecha_publicacion||'Pendiente'):publication;
   $('header-actualizacion').textContent=publication;
-  const operational=payload.periodos.filter(p=>p.tipo==='operativo' && /^20\d{2}-(0[1-9]|1[0-2])$/.test(p.periodo)).map(p=>p.periodo);
   const published=payload.periodos.filter(p=>/^20\d{2}-(0[1-9]|1[0-2])$/.test(p.periodo)).map(p=>p.periodo);
-  $('header-cobertura').textContent=(operational.length?operational:published).sort().at(-1)||'Sin períodos publicados';
+  const firstPeriod=published.sort()[0];
+  $('header-cobertura').textContent=firstPeriod?new Intl.DateTimeFormat('es-CL',{timeZone:'UTC',month:'long',year:'numeric'}).format(new Date(firstPeriod+'-01T12:00:00Z')):'Sin períodos publicados';
   $('consultar').disabled=payload.periodos.length===0;
   status(payload.periodos.length?'Seleccione un período y una entidad.':'Frontend v2 preparado. Aún no se han publicado extractos MER v2; la versión 1 sigue disponible.');
  }catch(e){status('Catálogo v2 todavía no publicado: '+e.message)}
