@@ -42,7 +42,7 @@ const HELP={
  "Ofertas vinculadas":"Ofertas encontradas para el código del proceso. No implica que todas hayan sido seleccionadas.",
  "Registros de ofertas":"Número de ofertas publicadas asociadas al nombre consultado. Una empresa puede presentar varias ofertas para un mismo proceso.",
  "Meses con actividad":"Cantidad de meses publicados con al menos un registro asociado al participante.",
- "Procesos distintos por mes":"Número de códigos distintos dentro de cada mes. Un mismo proceso puede aparecer en varios meses y contarse nuevamente en este indicador.",
+ "Procesos únicos participados":"Cantidad de códigos únicos de procesos con una oferta de la empresa en todos los períodos publicados. Si un proceso aparece en varios meses, se contabiliza solo una vez.",
  "Ofertas con monto informado":"Cantidad de ofertas que incluyen monto económico utilizable sobre el total de ofertas identificadas.",
  "Monto total ofertado informado":"Suma de importes de las ofertas publicadas. No representa ventas, adjudicaciones ni pagos.",
  "Resultados con empresa seleccionada":"Número de registros que identifican a la empresa como seleccionada. Puede incluir registros repetidos de un proceso.",
