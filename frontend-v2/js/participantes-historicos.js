@@ -77,7 +77,7 @@ async function searchParticipant(){
   const knownSelected=Array.from(selectedAmounts.values()).filter(Number.isFinite).length;
   const metrics=[['Registros de '+(type==='proveedor'?'ofertas':'procesos'),total.toLocaleString('es-CL')],['Meses con actividad',String(months)],[type==='proveedor'?'Monto total ofertado informado':'Presupuesto disponible informado',new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(rows.reduce((s,r)=>s+r.monto,0))]];
   if(type==='proveedor'){
-   metrics.push(['Procesos distintos por mes',coverageReady?processMonthCount.toLocaleString('es-CL'):'Cobertura incompleta']);
+   metrics.push(['Procesos únicos participados',active.every(r=>Array.isArray(r.extra?.codigos_participados))?new Set(active.flatMap(r=>r.extra.codigos_participados)).size.toLocaleString('es-CL'):'Cobertura incompleta']);
    metrics.push(['Ofertas con monto informado',rows.reduce((sum,r)=>sum+r.coverage,0).toLocaleString('es-CL')+' de '+total.toLocaleString('es-CL')]);
    metrics.push(['Resultados con empresa seleccionada',rows.reduce((sum,r)=>sum+r.outcome,0).toLocaleString('es-CL')]);
    metrics.push(['Procesos distintos con selección registrada',selectionIndicesReady?selectedCodes.size.toLocaleString('es-CL'):'Pendiente de publicar índice']);
@@ -103,7 +103,7 @@ async function searchParticipant(){
    metrics.push(['Ofertas recibidas vinculadas',coverageReady?active.reduce((sum,r)=>sum+(r.extra.ofertas_recibidas_vinculadas||0),0).toLocaleString('es-CL'):'En preparación']);
   }
   const groups=type==='proveedor'?[
-   {title:'Participación',description:'Volumen de ofertas y procesos publicados.',labels:['Registros de ofertas','Meses con actividad','Procesos distintos por mes','Ofertas con monto informado']},
+   {title:'Participación',description:'Volumen de ofertas y procesos publicados.',labels:['Registros de ofertas','Meses con actividad','Procesos únicos participados','Ofertas con monto informado']},
    {title:'Efectividad',description:'Selecciones documentadas; no equivalen a contratos adjudicados.',labels:['Resultados con empresa seleccionada','Procesos distintos con selección registrada','Tasa de selección registrada','Procesos ganados verificados']},
    {title:'Resultados económicos',description:'Distingue importes ofertados, seleccionados y adjudicados.',labels:['Monto total ofertado informado','Suma de ofertas seleccionadas informadas','Relación monto seleccionado / ofertado','Monto adjudicado verificado']}
   ]:[{title:'Actividad del organismo',description:'Información disponible según el nombre publicado.',labels:metrics.map(m=>m[0])}];
