@@ -2,10 +2,10 @@ name: Publicar participación histórica V2
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - '.github/workflows/publicar-participacion-v2.yml'
       - 'scripts/generar_participacion_historica_v2.py'
-      - 'frontend-v2/js/participantes-historicos.js'
 permissions:
   contents: write
 concurrency:
@@ -26,21 +26,32 @@ jobs:
         run: |
           python -m py_compile scripts/generar_participacion_historica_v2.py
           node --check frontend-v2/js/participantes-historicos.js
-      - name: Publicar índices mensuales
+      - name: Generar índices y publicar una transacción coherente
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for p in 2026-06 2026-07 2026-08 2026-09 2026-10; do
-            python scripts/generar_participacion_historica_v2.py --periodo "$p"
-            git add "frontend-v2/data/participacion/$p/"
-            if ! git diff --cached --quiet; then
-              git commit -m "data(v2): índices de participación $p"
-              for attempt in 1 2 3 4 5; do
-                git pull --rebase origin main
-                if git push origin main; then break; fi
-                if [ "$attempt" -eq 5 ]; then exit 1; fi
-                sleep 3
-              done
+          # Los índices se derivan del catálogo actual. Nunca rebasear un
+          # commit de índices obsoleto sobre fragmentos nuevos: regenerar.
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            for p in 2026-06 2026-07 2026-08 2026-09 2026-10; do
+              python scripts/generar_participacion_historica_v2.py --periodo "$p"
+            done
+            git add frontend-v2/data/participacion/
+            if git diff --cached --quiet; then
+              echo "PARTICIPACION_SIN_CAMBIOS"
+              exit 0
             fi
+            git commit -m "data(v2): regenerar índices de participación históricos"
+            if git push origin HEAD:main; then
+              echo "PARTICIPACION_PUBLICADA"
+              exit 0
+            fi
+            echo "Conflicto de concurrencia: regenerando índices sobre main fresco ($attempt/4)"
+            sleep 4
           done
+          echo "::error::No fue posible publicar índices tras 4 intentos"
+          exit 1
