@@ -98,3 +98,7 @@ Las reglas de presentación no modifican `codigo_proceso` original, adjudicacion
 ## Comparación transversal de proveedores (23-10-2026)
 
 El alcance predeterminado es **todos los períodos publicados**, independiente del mes utilizado para consultar registros. La opción **Mes específico** habilita un selector propio de comparación. Se emplean los agregados históricos e índices de participación ya publicados; no requiere ejecutar ETL ni modificar Google Sheets. La tasa de selección utiliza códigos de proceso únicos. La selección registrada no acredita por sí sola una adjudicación contractual, y los montos se presentan con sus límites de cobertura.
+
+### Interpretación de resultados y autocompletado (23-10-2026)
+
+La interfaz aclara que el valor **0** indica ausencia de registros coincidentes **en la cobertura publicada**, no ausencia absoluta de actividad del proveedor. Ofertas y órdenes de compra son entidades diferentes. El autocompletado informa expresamente el alcance efectivo (todos los períodos o un mes), con concordancia singular/plural. Cambio exclusivamente visual y de ayuda; sin alteraciones en ETL, datos, índices ni indicadores.
