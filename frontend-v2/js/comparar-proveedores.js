@@ -94,6 +94,23 @@ async function compare(){
    body.append(row);
   }
   byId('comparar-cabecera').replaceChildren(head);byId('comparar-cuerpo').replaceChildren(body);
+  // Ordenamiento ascendente/descendente conservado en la tabla comparativa.
+  const tbody=byId('comparar-cuerpo'),headers=[...head.children];let activeSort=null,direction=1;
+  headers.forEach((th,index)=>{
+   const label=th.textContent,button=document.createElement('button');button.type='button';button.className='sort-heading';button.textContent=label+' ⇅';
+   button.addEventListener('click',()=>{
+    direction=activeSort===index?-direction:1;activeSort=index;
+    const numeric=value=>Number(value.replace(/[^0-9,.-]/g,'').replaceAll('.','').replace(',','.'));
+    const rows=[...tbody.children].sort((aa,bb)=>{
+     const aaText=aa.children[index]?.textContent||'',bbText=bb.children[index]?.textContent||'';
+     const x=numeric(aaText),y=numeric(bbText);
+     return direction*(index>0&&aaText&&!/^(Sin|No |Pendiente)/.test(aaText)&&bbText&&!/^(Sin|No |Pendiente)/.test(bbText)&&Number.isFinite(x)&&Number.isFinite(y)?x-y:aaText.localeCompare(bbText,'es',{numeric:true}));
+    });
+    tbody.replaceChildren(...rows);
+    headers.forEach((h,i)=>h.firstChild.textContent=h.dataset.label+(activeSort===i?(direction===1?' ↑':' ↓'):' ⇅'));
+   });
+   th.dataset.label=label;th.replaceChildren(button);
+  });
   byId('comparar-estado').textContent='Comparación de '+names.length+' proveedores · '+(scope==='mes'?selectedPeriod:'todos los períodos ('+periods.length+' meses)')+'. Tasa basada en códigos únicos; selección registrada no equivale a adjudicación contractual. Los nombres no sustituyen el RUT.';
  }catch(error){
   if(seq===comparisonSeq)byId('comparar-estado').textContent='No fue posible completar la comparación: '+error.message;
