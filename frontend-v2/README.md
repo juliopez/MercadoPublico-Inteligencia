@@ -1,6 +1,6 @@
 # Frontend V2 — Guía funcional y estado vigente
 
-**Revisión:** 21–22-10-2026. **[Abrir V2](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)** · [README del proyecto](../README.md) · [Índice documental](../docs/INDICE_DOCUMENTACION.md).
+**Revisión:** 23-10-2026. **[Abrir V2](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)** · [README del proyecto](../README.md) · [Índice documental](../docs/INDICE_DOCUMENTACION.md).
 
 V2 es un **frontend paralelo** que publica extractos autorizados de Mercado Público. V1 continúa operando desde `../index.html`; no se modifica por el desarrollo V2.
 
@@ -94,3 +94,7 @@ La sección **Participación histórica de empresas y organismos** permite consu
 - [Conciliación integral de junio, julio y septiembre](../docs/HOMOLOGACION_CONCILIACION_CA_OC_2026-10-21.md): motor y workflow publicados; verificar resultados antes de darla por concluida.
 
 Las reglas de presentación no modifican `codigo_proceso` original, adjudicaciones, pagos, históricos, cron o ETL. La observabilidad y enriquecimiento incremental de nuevas cargas se analizarán conforme al [plan del cron de las 16:00](../docs/PLAN_MEJORAS_CRON_1600_2026-10-21.md).
+
+## Comparación transversal de proveedores (23-10-2026)
+
+El alcance predeterminado es **todos los períodos publicados**, independiente del mes utilizado para consultar registros. La opción **Mes específico** habilita un selector propio de comparación. Se emplean los agregados históricos e índices de participación ya publicados; no requiere ejecutar ETL ni modificar Google Sheets. La tasa de selección utiliza códigos de proceso únicos. La selección registrada no acredita por sí sola una adjudicación contractual, y los montos se presentan con sus límites de cobertura.
