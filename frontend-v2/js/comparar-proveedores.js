@@ -31,7 +31,7 @@ async function participationExtra(period,name){
 }
 async function compare(){
  const seq=++comparisonSeq;
- const scope=byId('comparar-alcance').value,selectedPeriod=byId('periodo').value;
+ const scope=byId('comparar-alcance').value,selectedPeriod=byId('comparar-mes').value;
  const names=[1,2,3].map(i=>byId('comparar-nombre-'+i).value.trim()).filter(Boolean);
  const keys=names.map(canonical);
  if(names.length<2||new Set(keys).size!==names.length||keys.some(k=>k.length<2)){clear('Ingrese dos o tres proveedores distintos con nombre completo.');return}
@@ -70,7 +70,7 @@ async function compare(){
     selectedAmount:selectedReady&&[...selectedAmounts.values()].some(Number.isFinite)?amount:null,
     ocCount:sum('oc','registros'),ocAmount:sum('oc','monto_total_clp')};
   }));
-  if(seq!==comparisonSeq||byId('comparar-alcance').value!==scope||(scope==='mes'&&byId('periodo').value!==selectedPeriod))return;
+  if(seq!==comparisonSeq||byId('comparar-alcance').value!==scope||(scope==='mes'&&byId('comparar-mes').value!==selectedPeriod))return;
   const metrics=[
    ['Ofertas registradas',v=>v.offerCount.toLocaleString('es-CL')],
    ['Meses con ofertas',v=>String(v.months)],
@@ -117,8 +117,8 @@ async function compare(){
  }finally{if(seq===comparisonSeq)byId('comparar-ejecutar').disabled=false}
 }
 byId('comparar-ejecutar').addEventListener('click',compare);
-byId('periodo').addEventListener('change',()=>{if(byId('comparar-alcance').value==='mes')clear('El período cambió. Ejecute nuevamente la comparación.');});
-byId('comparar-alcance').addEventListener('change',()=>clear('Alcance cambiado. Ejecute nuevamente la comparación.'));
+byId('comparar-mes').addEventListener('change',()=>clear('Mes de comparación actualizado. Ejecute nuevamente la comparación.'));
+byId('comparar-alcance').addEventListener('change',()=>{byId('comparar-mes-contenedor').hidden=byId('comparar-alcance').value!=='mes';clear('Alcance cambiado. Ejecute nuevamente la comparación.');});
 
 let suggestionSeq=0;
 const suggestionTimers=new Map(),suggestionCache=new Map();
@@ -153,7 +153,7 @@ async function suggest(input){
  const seq=++suggestionSeq,term=canonical(input.value),list=byId('comparar-sugerencias');
  list.replaceChildren();
  if(term.length<2)return;
- const period=byId('periodo').value;
+ const period=byId('comparar-mes').value;
  const prefix=term.slice(0,2);
  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(prefix));
  const shard=new Uint8Array(digest)[0].toString(16).padStart(2,'0');
@@ -175,7 +175,7 @@ async function suggest(input){
   }
   const missing=results.filter(x=>x.status==='rejected').length;
   byId('comparar-ayuda').textContent=names.size?
-   names.size+' proveedores coincidentes en '+periods.length+' período(s). Selecciona el nombre completo; la comparación se realiza en el período elegido.':
+   names.size+' proveedores coincidentes en '+periods.length+' período(s). Selecciona el nombre completo; alcance: '+(byId('comparar-alcance').value==='mes'?period:'todos los períodos publicados')+'.':
    (missing===periods.length?'No fue posible cargar los índices. Puedes ingresar una razón social manualmente.':'Sin proveedores coincidentes en la cobertura consultada.');
  }catch(error){if(seq===suggestionSeq)byId('comparar-ayuda').textContent='No se pudieron obtener las sugerencias. Puedes ingresar el nombre completo manualmente.'}
 }
@@ -187,7 +187,10 @@ for(const n of [1,2,3]){
  });
  input.addEventListener('focus',()=>{if(canonical(input.value).length>=2)suggest(input)});
 }
-byId('periodo').addEventListener('change',()=>{
+byId('comparar-mes').addEventListener('change',()=>{
  suggestionSeq++;byId('comparar-sugerencias').replaceChildren();
- byId('comparar-ayuda').textContent='Escribe al menos dos letras para ver proveedores de '+(byId('periodo').value||'los períodos publicados')+'.';
+ byId('comparar-ayuda').textContent='Escribe al menos dos letras para buscar proveedores en '+(byId('comparar-alcance').value==='mes'?(byId('comparar-mes').value||'el mes elegido'):'todos los períodos publicados')+'.';
 });
+
+// El selector de comparación es independiente del mes usado para explorar registros.
+suggestionPeriods().then(periods=>{const select=byId('comparar-mes');select.replaceChildren(new Option('Seleccionar mes',''),...periods.slice().sort().reverse().map(p=>new Option(p,p)));}).catch(()=>{byId('comparar-ayuda').textContent='No se pudo cargar el catálogo de meses de comparación.';});
