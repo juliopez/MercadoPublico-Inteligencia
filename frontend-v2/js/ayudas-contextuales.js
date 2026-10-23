@@ -40,6 +40,18 @@ const HELP={
  "Fecha Cierre":"Plazo de cierre consignado en la fuente; puede cambiar o no estar disponible.",
  "OC relacionadas":"Relaciones documentales o estructuradas entre procesos y órdenes de compra. La coincidencia o vinculación no sustituye verificar el estado contractual en Mercado Público.",
  "Ofertas vinculadas":"Ofertas encontradas para el código del proceso. No implica que todas hayan sido seleccionadas.",
+ "Registros de ofertas":"Número de ofertas publicadas asociadas al nombre consultado. Una empresa puede presentar varias ofertas para un mismo proceso.",
+ "Meses con actividad":"Cantidad de meses publicados con al menos un registro asociado al participante.",
+ "Procesos distintos por mes":"Número de códigos distintos dentro de cada mes. Un mismo proceso puede aparecer en varios meses y contarse nuevamente en este indicador.",
+ "Ofertas con monto informado":"Cantidad de ofertas que incluyen monto económico utilizable sobre el total de ofertas identificadas.",
+ "Monto total ofertado informado":"Suma de importes de las ofertas publicadas. No representa ventas, adjudicaciones ni pagos.",
+ "Resultados con empresa seleccionada":"Número de registros que identifican a la empresa como seleccionada. Puede incluir registros repetidos de un proceso.",
+ "Procesos distintos con selección registrada":"Códigos únicos de procesos donde los resultados históricos nombran a la empresa como seleccionada; no confirma una adjudicación contractual.",
+ "Tasa de selección registrada":"Procesos únicos en los que la empresa ofertó y figura seleccionada, divididos por procesos únicos con oferta registrada. No equivale a una tasa de adjudicación contractual.",
+ "Procesos ganados verificados":"Adjudicaciones acreditadas con evidencia suficiente. Permanece pendiente cuando la fuente pública no permite confirmar la adjudicación.",
+ "Suma de ofertas seleccionadas informadas":"Suma de valores de las ofertas seleccionadas con importe conocido, deduplicada por código de proceso. No es el monto adjudicado ni pagado.",
+ "Relación monto seleccionado / ofertado":"Cociente entre la suma de valores seleccionados informados y la suma de ofertas publicadas. Es una relación económica descriptiva, no una tasa de contratos ganados.",
+ "Monto adjudicado verificado":"Monto de contratos cuya adjudicación está verificada. No se sustituye por la oferta seleccionada cuando no hay acreditación.",
  "Resultados vinculados":"Datos de selección o adjudicación encontrados en la fuente. Su fiabilidad depende de los estados de verificación disponibles."
 };
 const normalize=s=>String(s||'').replace(/ⓘ/g,'').replace(/\s+/g,' ').replace(/\s*[↗→].*$/,'').replace(/\s+\d[\d.,]*$/,'').trim();
@@ -74,7 +86,7 @@ function attach(el,title,description){
 }
 function scan(){
  const root=document.querySelector('main');if(!root)return;
- for(const el of root.querySelectorAll('h2,h3,h4,label,.viz-card h3,.viz-card h4,.viz-kpi span,.stat>span')){
+ for(const el of root.querySelectorAll('h2,h3,h4,label,.viz-card h3,.viz-card h4,.viz-kpi span,.stat>span,.participant-metric-grid .evolution-metric small')){
   const txt=normalize(el.childNodes[0]?.textContent||el.textContent);
   const desc=HELP[txt];
   if(desc)attach(el,txt,desc);
