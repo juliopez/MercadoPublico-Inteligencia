@@ -304,3 +304,19 @@ label:has(> .mer-help-inline){padding-right:25px}
 .participant-metric-grid .evolution-metric strong{overflow-wrap:anywhere}
 @media(max-width:1050px){.participant-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.participant-metric-grid{grid-template-columns:1fr}.participant-metric-group{padding:12px}}
+
+/* Distribución de participantes: versión funcional del mockup aprobado. */
+.participant-distribution{margin:20px 0 12px;padding:18px;border:1px solid #cfe1ef;border-radius:14px;background:#fff}
+.participant-distribution h3{font-size:1.08rem;color:#173a57;margin:0 0 4px}
+.participant-distribution-subtitle{color:#61788b;font-size:.85rem;margin:0 0 14px}
+.participant-distribution-body{display:grid;grid-template-columns:minmax(190px,1fr) minmax(250px,1.3fr) minmax(230px,1fr);gap:24px;align-items:center}
+.participant-donut{width:min(100%,300px);margin:auto}.participant-donut svg{width:100%;display:block;height:auto}
+.participant-distribution-legend{min-width:0}
+.participant-legend-row{display:grid;grid-template-columns:16px minmax(70px,1fr) 65px 66px;align-items:center;gap:12px;padding:9px 2px;border-bottom:1px solid #dfebf3;color:#254765;font-size:.9rem}
+.participant-legend-row:last-child{border-bottom:0}
+.participant-legend-row strong{text-align:right;color:#173c5c;font-variant-numeric:tabular-nums}
+.participant-legend-dot{height:15px;width:15px;border-radius:50%}
+.participant-legend-percent{text-align:right;font-variant-numeric:tabular-nums}
+.participant-distribution-note{padding:18px 16px;background:#edf6fb;color:#3d6381;border-radius:11px;font-size:.86rem;line-height:1.55}
+@media(max-width:950px){.participant-distribution-body{grid-template-columns:minmax(190px,1fr) minmax(220px,1.2fr)}.participant-distribution-note{grid-column:1/-1}}
+@media(max-width:600px){.participant-distribution{padding:12px}.participant-distribution-body{grid-template-columns:1fr;gap:12px}.participant-distribution-note{grid-column:auto}.participant-donut{max-width:270px}.participant-legend-row{gap:8px}}
