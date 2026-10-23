@@ -115,3 +115,22 @@ git pull --ff-only origin main
 bash scripts/ubuntu_cron_integrado.sh --verificar
 crontab -l | grep 'ubuntu_cron_integrado.sh'
 ```
+
+## Cierre integral de frontend V2 — jornada del 22/10/2026
+
+**Confirmaciones del usuario:** las ayudas metodológicas, el menú superior sticky, la navegación y la nueva visualización circular de participación empresarial recibieron aprobación visual y funcional expresa. Los datos y las definiciones se mantuvieron separados de las afirmaciones contractuales.
+
+### Cambios entregados
+1. **Usabilidad global:** ayudas contextuales centralizadas (`frontend-v2/js/ayudas-contextuales.js`), con activación mediante teclado/clic y CSS adaptable; navegación principal sticky y compensación de anclajes. Se ajustaron contrastes, jerarquía y organización de consultas y gráficos.
+2. **Evolución mensual:** tarjetas simultáneas de montos registrados, concentración monetaria por organismo y actividad; advertencias de meses parciales, unidades CLP y variaciones. El último ajuste aprobado elimina `analitica-vista` y el resaltado arbitrario de tarjetas; **permanece el selector funcional «Comparar con»**. Cambios `4f05616d`, `c3aa3681`, `b7383731`.
+3. **Perfil de participantes:** métricas por participación, efectividad y resultados económicos; nuevos registros de selección histórica, procesos seleccionados únicos y suma de ofertas seleccionadas. Sin interpretar selección como contrato ni pago. Monto adjudicado y procesos ganados contractualmente continúan pendientes de acreditación.
+4. **Deduplicación y tasas:** se agregaron códigos de participación y selección a los índices JSON mensuales; la tasa es selección registrada sobre procesos únicos ofertados, no adjudicación. Caso MULTITODO SPA: 845 ofertas, 834 procesos únicos (222 jun, 202 jul, 208 ago, 202 sep; 0 duplicados intermes), 172 selecciones únicas, 20,6 % y $140.085.411 en ofertas seleccionadas.
+5. **Gráfico empresarial:** reemplazo de barras por dona SVG dinámica basada en recuentos públicos; leyenda mes/registro/porcentaje, total central, explicación clara y botones «Examinar período». La distribución 224/205/213/203/0 fue validada visualmente por el usuario.
+6. **Datos/operación:** incidencia presupuestaria de octubre subsanada. 794 procesos con monto CLP, 2.094 procesos publicados, agregación $18.441.856.682, perfiles y analítica regenerados; Pages comprobado por capturas después de ajustes.
+7. **GitHub Actions:** corrección de propagación derivados→Pages mediante `workflow_run`; conflicto al publicar participación mes por mes resuelto mediante regeneración del conjunto y un commit, con gestión de concurrencia. Las ejecuciones canceladas por pushes cercanos no implican fallo del ETL. Cron Ubuntu 16:00 y workflow principal 17:00 preservados.
+
+### Alcance y límites de cierre
+No se reescribieron históricos ni se alteró la BBDD Google Sheets para implementar UX. El cron local fue instalado y comprobado con `--verificar`, pero **la ejecución desatendida del viernes 23/10 sigue pendiente de auditoría real**. La tarea 5 de API Compra Ágil se abordará después de esa auditoría. Se requiere verificar éxito del último despliegue Pages del ajuste de perspectiva; los commits en GitHub no demuestran por sí solos que ya estén visibles.
+
+### Auditoría del 23/10
+Revisar la secuencia cron Ubuntu 16:00 → Sheets y conciliación → exportación catalogada y vínculos → GitHub Actions cerca de 17:00 Santiago → índices/analítica y validación → Pages público. Confirmar logs, idempotencia, conteos y estado de los workflows sin repetir manualmente el ETL.
