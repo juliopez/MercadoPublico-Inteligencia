@@ -1,0 +1,61 @@
+name: Supervisar publicación diaria MER V2
+on:
+  schedule:
+    # 18:12 Santiago, considerando UTC-3 y UTC-4; no depende de Ubuntu.
+    - cron: '12 21,22 * * 1-5'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: supervision-diaria-v2
+  cancel-in-progress: false
+jobs:
+  comprobar-publicacion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verificar actualidad del MER y de los índices
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import datetime,json,os,pathlib,subprocess
+          from zoneinfo import ZoneInfo
+          now=datetime.datetime.now(ZoneInfo("America/Santiago"))
+          manual=os.environ.get("GITHUB_EVENT_NAME")=="workflow_dispatch"
+          if not manual and (now.weekday()>=5 or now.hour!=18):
+              print("FUERA_DE_VENTANA_DE_SUPERVISION",now.isoformat());raise SystemExit(0)
+          period=now.strftime("%Y-%m")
+          root=pathlib.Path("frontend-v2/data")
+          catalog=json.loads((root/"catalogo-publico.json").read_text())
+          entries=[x for x in catalog["periodos"] if x["periodo"]==period]
+          errors=[]
+          if len(entries)!=1:
+              errors.append("Catálogo sin período vigente único")
+          else:
+              entry=entries[0]
+              for ent in ("procesos","ordenescompra"):
+                  n=entry["conteos"].get(ent)
+                  analytic=root/"analitica"/period/(ent+".json")
+                  if not analytic.exists():errors.append(f"Falta analítica {ent}")
+                  elif json.loads(analytic.read_text()).get("registros")!=n:
+                      errors.append(f"Diferencia catálogo-analítica {ent}: {n}")
+                  if not entry["partes"].get(ent):errors.append(f"Sin fragmentos {ent}")
+          def last_commit(*paths):
+              raw=subprocess.check_output(["git","log","-1","--format=%cI","--",*paths],text=True).strip()
+              return datetime.datetime.fromisoformat(raw).astimezone(ZoneInfo("America/Santiago")) if raw else None
+          export=last_commit("frontend-v2/data/catalogo-publico.json")
+          derived=last_commit(f"frontend-v2/data/analitica/{period}/procesos.json",f"frontend-v2/data/analitica/{period}/ordenescompra.json")
+          # Si la exportación aún no existe hoy, es imposible acreditar la cadena.
+          if not export or export.date()!=now.date() or export.hour<16:
+              errors.append(f"Exportación de Ubuntu no publicada hoy después de las 16:00; última={export}")
+          if not derived or derived.date()!=now.date() or (export and derived<export):
+              errors.append(f"Índices/analítica no actualizados tras exportación del día; última={derived}")
+          print("SUPERVISION_MER",json.dumps({"ahora":now.isoformat(),"periodo":period,"exportacion":str(export),"derivados":str(derived),"errores":errors},ensure_ascii=False))
+          if errors:
+              for error in errors:print("::error::"+error)
+              raise SystemExit(1)
+          print("PUBLICACION_DIARIA_VERIFICADA")
+          PY
