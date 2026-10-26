@@ -1,8 +1,14 @@
 # Índice documental — Observatorio de Mercado Público
 
-**Revisión:** 21–22-10-2026. Ruta recomendada: [README del proyecto](../README.md) → **este índice** → [decisiones técnicas](DECISIONES_TECNICAS.md) → documento especializado → código/evidencias.
+**Reorganización de navegación:** 26-10-2026. Ruta recomendada: [README del proyecto](../README.md) → **este índice** → [decisiones técnicas](DECISIONES_TECNICAS.md) → documento especializado → código/evidencias.
 
 > Los documentos fechados conservan el contexto de una etapa y pueden contener pendientes ya resueltos. **No deben usarse como estado actual** sin contrastarlos con el README y el código. No borrar evidencia histórica ni credenciales operativas locales.
+
+## Comenzar una nueva sesión
+
+- **[Guía de continuidad: cron → API → ciclo mensual](GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md)** — lectura inicial, alcance, orden y controles de la siguiente etapa.
+- La validación del **26/10** no consta aún en los documentos revisados; consultar evidencia del cron de las 16:00 y del workflow de las 17:00 antes de afirmar su resultado.
+- El [plan del 21/10](PLAN_MEJORAS_CRON_1600_2026-10-21.md) es antecedente y **no describe el estado del cron integrado instalado el 22/10**.
 
 ## 1. Estado, arquitectura y decisiones
 
@@ -44,7 +50,7 @@
 
 - **[Cierre operativo y protocolo de validación 22/10](CIERRE_OPERATIVO_Y_VALIDACION_2026-10-22.md)** — resultados verificables, componentes publicados, pendientes de las 16:00/17:00 y tarea API diferida.
 - [Publicación del MER operativo a V2](PUBLICACION_MER_V2_POST_ETL_2026-10-22.md) — exportador, agenda GitHub y límites de cobertura.
-- **[Plan de continuidad del cron de las 16:00](PLAN_MEJORAS_CRON_1600_2026-10-21.md)** — diagnóstico y mejoras propuestas; cron/ETL no modificados.
+- [Plan histórico, anterior a integración del 22/10, del cron de las 16:00](PLAN_MEJORAS_CRON_1600_2026-10-21.md)** — diagnóstico y mejoras propuestas; cron/ETL no modificados.
 
 
 - **[Runbook: cierre de octubre, 10-11-2026](RUNBOOK_CIERRE_2026_10.md)** — pasos manuales supervisados.
