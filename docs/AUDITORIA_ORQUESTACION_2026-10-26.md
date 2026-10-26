@@ -26,3 +26,10 @@ Verificación del cron integrado Ubuntu 16:00 (hora Santiago), extracción y act
 
 ## Protección
 No se repitieron ETL ni cargas históricas, no se modificaron las seis tablas MER, no se publicaron credenciales o logs privados, y no se activaron cierres mensuales. 
+
+## Seguimiento y supervisión (segunda intervención)
+- Despliegue Pages de recuperación, run `40418302462`: **success** en `Desplegar preview v2 manteniendo raíz v1`. Eso acredita despliegue en GitHub Pages; la respuesta HTTP del JSON publicado aún no fue comprobable independientemente desde este entorno.
+- Ausencia de `schedule` del supervisor el 26/10: confirmado en los últimos runs. Causa exacta del disparador no demostrada, por lo que no se presenta como solucionado.
+- Cambio `c9474802`: workflow `verificar-publicacion-diaria-v2.yml` escucha adicionalmente `workflow_run` completado de `Publicacion V2 posterior al ETL Ubuntu`; conserva `schedule` y `workflow_dispatch`. La guardia de hora 18:00 rige solo para `schedule`, de manera que el nuevo evento sí ejecuta los controles tras publicar derivados. Un workflow de origen fallido no inicia esta comprobación por la condición del job; sigue visible como fallo en Actions.
+- Limitación persistente: si ni Ubuntu publica ni GitHub ejecuta el cron del supervisor, un sistema puramente activado por estos eventos no puede detectar su propia ausencia. Se recomienda monitor externo independiente para alerta de silencio y verificar los próximos runs automáticos antes de certificar autonomía integral.
+- No se activaron ETL, escrituras en Sheets ni cierres mensuales.
