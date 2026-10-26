@@ -1,5 +1,8 @@
 # Procedimiento de cierre mensual — MER v2
 
+> **Nota de vigencia (26-10-2026):** este archivo conserva un diseño general de etapas anteriores. Para el primer cierre de octubre de 2026 prevalecen [Decisiones técnicas](DECISIONES_TECNICAS.md) y [Runbook del 10/11](RUNBOOK_CIERRE_2026_10.md): se traslada el **mismo Google Sheet y su ID** después de reconciliación oficial y autorización, no se crea automáticamente otro libro histórico. El cron mensual permanece deshabilitado hasta validar el primer cierre supervisado. Véase [Guía de continuidad](GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md).
+
+
 **Estado:** diseño operativo aprobado como documento técnico, **sin ejecución**. La hoja operativa del mes en curso contiene seis entidades MER v2 y recibe ZIP de Licitaciones y Órdenes de Compra mediante Ubuntu/cron y Compra Ágil mediante un flujo independiente aún pendiente. El histórico mensual definitivo se materializa **días después del cierre**, una vez disponibles los archivos oficiales.
 
 ## Ciclo mensual
