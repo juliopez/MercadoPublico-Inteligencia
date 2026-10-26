@@ -2,7 +2,9 @@
 
 Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes de compra** de Mercado Público. Este README describe el **estado vigente**; los procedimientos y antecedentes están separados en la documentación especializada.
 
-**Última revisión documental:** 21–22 de octubre de 2026.
+**Última organización documental:** 26 de octubre de 2026. **Última evidencia operativa consolidada en la documentación:** 22 de octubre; la ejecución del 26/10 debe comprobarse.
+
+**Para retomar el proyecto en un nuevo chat:** comenzar por la [Guía de continuidad del 26/10](docs/GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md). La guía fija prioridad de documentos, etapa inicial y salvaguardas; no sustituye la verificación operativa.**
 
 ## Acceder
 
