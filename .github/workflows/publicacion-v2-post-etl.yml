@@ -1,5 +1,10 @@
 name: Publicacion V2 posterior al ETL Ubuntu
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend-v2/data/catalogo-publico.json'
+      - '.github/workflows/publicacion-v2-post-etl.yml'
   schedule:
     # Disparos UTC para 17:00 Santiago en verano e invierno
     - cron: '0,15,30,45 20,21 * * 1-5'
