@@ -33,3 +33,17 @@ No se repitieron ETL ni cargas históricas, no se modificaron las seis tablas ME
 - Cambio `c9474802`: workflow `verificar-publicacion-diaria-v2.yml` escucha adicionalmente `workflow_run` completado de `Publicacion V2 posterior al ETL Ubuntu`; conserva `schedule` y `workflow_dispatch`. La guardia de hora 18:00 rige solo para `schedule`, de manera que el nuevo evento sí ejecuta los controles tras publicar derivados. Un workflow de origen fallido no inicia esta comprobación por la condición del job; sigue visible como fallo en Actions.
 - Limitación persistente: si ni Ubuntu publica ni GitHub ejecuta el cron del supervisor, un sistema puramente activado por estos eventos no puede detectar su propia ausencia. Se recomienda monitor externo independiente para alerta de silencio y verificar los próximos runs automáticos antes de certificar autonomía integral.
 - No se activaron ETL, escrituras en Sheets ni cierres mensuales.
+
+## Plan de comprobación — martes 27/10/2026, desde las 18:15 Santiago
+
+**No modificar cron, ETL ni workflows antes de observar una jornada completa sin intervenciones.**
+
+1. **Ubuntu 16:00:** comprobar invocación por cron y logs `arranque_integrado_20261027*.log` y `orquestador_integrado_20261027*.log`; finalizar `ORQUESTADOR OK`, con hora, código de salida y ausencia de preflight/lock fallido.
+2. **MER y conciliación:** comprobar `estado_sincronizacion.json` (fecha 27/10, `EXITOSA`, código 0), registros nuevos/modificados, `estado_conciliacion.json` (`CONCILIACION_VERIFICADA`) y lectura posterior; si Sheets requiere auditoría directa, indicar que los estados locales no la reemplazan.
+3. **Publicación origen:** buscar commit automático del publicador Ubuntu posterior a las 16:00 Chile; confirmar frescura del `frontend-v2/data/catalogo-publico.json`, entidad/proceso/OC, cobertura y fragmentos.
+4. **Derivados:** revisar corrida de `Publicacion V2 posterior al ETL Ubuntu` activada por `push` del catálogo y ejecución real (no solo `success` con pasos saltados); cotejar conteos catálogo vs `analitica/2026-10/{procesos,ordenescompra}.json`, meta de índices/perfiles/relaciones y commit de derivados.
+5. **Pages:** revisar `Observatorio - vista previa frontend MER v2`, job de deploy exitoso y —si es accesible— respuesta HTTP y valores servidos en `https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/data/catalogo-publico.json` y analítica; no confundir deploy con visibilidad real.
+6. **Supervisión:** revisar workflow `Supervisar publicación diaria MER V2` desde el evento `workflow_run` de derivados y también el `schedule` de 18:12; distinguir `completed/success`, skipped, falta de run y errores. La ausencia del disparador horario continúa como incidencia abierta.
+7. **Conclusión:** registrar horas, IDs de runs, commits, conteos y diferencias; declarar Etapa 1 validada solamente con evidencia de ejecución completa desatendida. No comenzar API Compra Ágil mientras haya bloqueos críticos.
+
+Referencia de base del 26/10: catálogo y analítica octubre con **2619 procesos, 125133 OC, 0 ofertas, 0 resultados**. No tomar esos conteos como expectativa de incrementos del día 27: pueden existir actualizaciones sin altas.
