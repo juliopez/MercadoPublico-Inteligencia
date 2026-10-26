@@ -1,6 +1,10 @@
 # Decisiones técnicas vigentes — Plataforma Mercado Público
 
-**Última revisión:** 21-10-2026. Documento de continuidad y decisiones **vigentes**, no bitácora de experimentos. Antes de desarrollar, consultar [README](../README.md), [índice](INDICE_DOCUMENTACION.md) y código/configuración real.
+**Aclaración editorial:** 26-10-2026. Las decisiones técnicas sustantivas se conservan; la ejecución de hoy requiere comprobación independiente.
+
+**Última revisión de reglas sustantivas:** 21-10-2026. Documento de continuidad y decisiones **vigentes**, no bitácora de experimentos. Antes de desarrollar, consultar [README](../README.md), [índice](INDICE_DOCUMENTACION.md) y código/configuración real.
+
+**Orden de continuidad:** consultar [Guía del 26/10](GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md) para iniciar con verificación del cron, luego API y solo después preparar automatización mensual. Para octubre prevalece el [runbook específico](RUNBOOK_CIERRE_2026_10.md) frente a descripciones generales anteriores del cierre.
 
 ## Arquitectura
 
