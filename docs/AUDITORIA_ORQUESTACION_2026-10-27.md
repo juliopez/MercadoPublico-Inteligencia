@@ -33,3 +33,28 @@
 
 ## Dictamen
 **Publicación desatendida en GitHub y regeneración/supervisión por evento validadas para el 27/10.** Para declarar toda la Etapa 1 como verificada extremo a extremo falta evidencia local de Ubuntu, persistencia y conciliación; y comprobación HTTP si se exige certificar contenido servido. No iniciar API Compra Ágil antes de cerrar lo pendiente de Etapa 1.
+
+## Cierre formal — evidencia local aportada el 27/10, 19:01 Santiago
+
+El operador ejecutó una auditoría de solo lectura en Ubuntu y aportó capturas completas del resumen de terminal. Se verifica:
+
+- Servicio `cron`: `active`, entrada `0 * * * * .../ubuntu_cron_integrado.sh --cron`. La guardia interna del script limita ejecución a lunes–viernes a las 16:00.
+- Archivo `logs/arranque_integrado_20261027_160001.log`: `ARRANQUE_CRON fecha=2026-10-27T16:00:01-03:00 modo=--cron`.
+- Archivo `logs/orquestador_integrado_20261027_160001.log`: `ORQUESTADOR inicio=2026-10-27T16:00:01-03:00 periodo=2026-10` y `ORQUESTADOR OK: 2026-10-27T16:11:22-03:00`.
+- `estado_sincronizacion.json`: `EXITOSA`, `codigo_salida=0`, `ejecucion_chile=2026-10-27T16:05:59.357315-03:00`. ZIP oficiales licitaciones y OC con URL de fuente, SHA256 y marca de verificación. Tablas: Procesos 565 nuevos / 110 modificados / 2509 sin cambios; OrdenesCompra 8069 nuevos / 8523 modificados / 115274 sin cambios; Proveedores 725 nuevos / 0 modificados / 21523 sin cambios.
+- `estado_conciliacion.json`: `CONCILIACION_VERIFICADA`, motivo «Conciliacion y lectura posterior verificadas», timestamp 2026-10-27T19:10:45.658584+00:00 (16:10:45 Chile).
+- Publicación del orquestador `PUBLICACION_V2_OK_O_SIN_CAMBIOS`, commit origen `dedcb47` a las 16:11:12 Chile.
+- Verificación HTTP externa desde Ubuntu: `catalogo-publico.json`, `analitica/2026-10/procesos.json` y `analitica/2026-10/ordenescompra.json`, los tres **HTTP 200**. Catálogo: 3184 Procesos, 133202 OC, Ofertas 0, Resultados 0; analítica coincide (3184 y 133202).
+- GitHub Actions auditados previamente: derivados run `40566833917`, supervisor por evento run `40566944013`, Pages run `40566943927`, todos completos y `success`, sin pasos críticos omitidos.
+
+### Dictamen definitivo de Etapa 1
+
+**ETAPA 1 CERRADA Y VALIDADA** para la cadena diaria vigente licitaciones/OC → MER (éxito informado por ETL y verificación local) → conciliación COT–OC → exportación → GitHub → derivados → supervisor por evento → Pages y lectura HTTP de los JSON públicos. Ejecución del 27/10 comprobada sin reejecución manual ni nuevas cargas durante la auditoría.
+
+Observaciones no bloqueantes:
+1. El programador independiente de GitHub Actions de las 18:12 no tiene una ejecución del 27/10 visible en la auditoría, pero el supervisor por evento sí ejecutó y aprobó controles.
+2. La revisión es evidencia operativa del sistema y lectura posterior registrada, no auditoría externa fila por fila del Google Sheet privado.
+3. Ofertas y Resultados de octubre siguen sin cobertura automatizada; corresponde a Etapa 2, no se interpreta como cero actividad oficial.
+4. No se autoriza por este cierre activar cierre mensual irreversible ni modificar históricos.
+
+La Etapa 2 queda habilitada para iniciar con auditoría técnica de fuentes/API sin alterar la cadena diaria probada.
