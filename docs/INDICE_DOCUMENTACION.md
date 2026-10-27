@@ -4,6 +4,12 @@
 
 > Los documentos fechados conservan el contexto de una etapa y pueden contener pendientes ya resueltos. **No deben usarse como estado actual** sin contrastarlos con el README y el código. No borrar evidencia histórica ni credenciales operativas locales.
 
+## Continuidad vigente — 28 de octubre de 2026
+
+- **[Etapa 2: preparación e integración incremental de API ChileCompra](PLAN_ETAPA2_API_2026-10-28.md)** — guía de trabajo del miércoles 28, riesgos de esquema, fuentes, claves y controles; sin nuevas escrituras autorizadas.
+- **[Cierre validado de Etapa 1 (27/10)](AUDITORIA_ORQUESTACION_2026-10-27.md)** — cron Ubuntu, ETL, conciliación, derivados, supervisor y HTTP Pages certificados en la operación del martes.
+- Documentos más antiguos que indiquen que la orquestación aún no está probada deben leerse como antecedentes fechados.
+
 ## Comenzar una nueva sesión
 
 - **[Guía de continuidad: cron → API → ciclo mensual](GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md)** — lectura inicial, alcance, orden y controles de la siguiente etapa.
