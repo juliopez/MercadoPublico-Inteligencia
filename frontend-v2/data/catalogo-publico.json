@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "fecha_publicacion": "2026-10-26T19:05:35.431483+00:00",
+  "fecha_publicacion": "2026-10-27T19:10:57.981113+00:00",
   "fuente": "Extractos públicos MER v2 de Google Sheets privadas, exportados por período",
   "periodos": [
     {
@@ -2953,16 +2953,17 @@
       "periodo": "2026-10",
       "tipo": "operativo",
       "conteos": {
-        "procesos": 2619,
+        "procesos": 3184,
         "ofertas": 0,
         "resultados": 0,
-        "ordenescompra": 125133
+        "ordenescompra": 133202
       },
       "partes": {
         "procesos": [
           "data/partes/procesos/2026-10/0001.json",
           "data/partes/procesos/2026-10/0002.json",
-          "data/partes/procesos/2026-10/0003.json"
+          "data/partes/procesos/2026-10/0003.json",
+          "data/partes/procesos/2026-10/0004.json"
         ],
         "ofertas": [],
         "resultados": [],
@@ -3092,7 +3093,15 @@
           "data/partes/ordenescompra/2026-10/0123.json",
           "data/partes/ordenescompra/2026-10/0124.json",
           "data/partes/ordenescompra/2026-10/0125.json",
-          "data/partes/ordenescompra/2026-10/0126.json"
+          "data/partes/ordenescompra/2026-10/0126.json",
+          "data/partes/ordenescompra/2026-10/0127.json",
+          "data/partes/ordenescompra/2026-10/0128.json",
+          "data/partes/ordenescompra/2026-10/0129.json",
+          "data/partes/ordenescompra/2026-10/0130.json",
+          "data/partes/ordenescompra/2026-10/0131.json",
+          "data/partes/ordenescompra/2026-10/0132.json",
+          "data/partes/ordenescompra/2026-10/0133.json",
+          "data/partes/ordenescompra/2026-10/0134.json"
         ]
       },
       "huellas": {
