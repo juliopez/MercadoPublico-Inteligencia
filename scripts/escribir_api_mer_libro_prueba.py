@@ -68,7 +68,9 @@ def main():
     ap.add_argument("--aplicar-en-prueba",action="store_true")
     a=ap.parse_args()
     if not a.aplicar_en_prueba:raise SystemExit("MODO_SIMULACION: sin escrituras; requiere --aplicar-en-prueba")
-    if os.environ.get("MER_API_TEST_SHEET_ID","")!=a.spreadsheet_prueba_id:\n        raise SystemExit("BLOQUEADO: requiere libro autorizado por MER_API_TEST_SHEET_ID")\n    if a.spreadsheet_prueba_id==a.operativo_id:raise SystemExit("BLOQUEADO: destino es MER operativo")
+    if os.environ.get("MER_API_TEST_SHEET_ID","")!=a.spreadsheet_prueba_id: 
+        raise SystemExit("BLOQUEADO: requiere libro autorizado por MER_API_TEST_SHEET_ID") 
+    if a.spreadsheet_prueba_id==a.operativo_id:raise SystemExit("BLOQUEADO: destino es MER operativo")
     # Defensa adicional: todos los ids de MER en catálogo prohibidos.
     root=pathlib.Path(__file__).resolve().parents[1]
     cat=json.loads((root/"config/catalogo_sheets.json").read_text())
