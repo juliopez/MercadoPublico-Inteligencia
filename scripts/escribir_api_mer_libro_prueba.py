@@ -12,6 +12,8 @@ from adaptar_detalle_compra_agil_mer import OFERTAS,RESULTADOS
 TABS=("Ofertas","Resultados","Proveedores")
 def leer(ws):return ws.get_all_values()
 def operar(book,transformacion,*,lockpath,respaldo):
+    if not isinstance(transformacion,dict) or not isinstance(transformacion.get("ofertas"),list) or not isinstance(transformacion.get("resultados"),list):
+        raise ValueError("Transformación incompatible")
     path=pathlib.Path(lockpath)
     path.parent.mkdir(parents=True,exist_ok=True)
     with path.open("a+") as lock:
@@ -31,24 +33,30 @@ def operar(book,transformacion,*,lockpath,respaldo):
             json.dump(snap,f,ensure_ascii=False)
             f.flush();os.fsync(f.fileno())
         before_sha=hashlib.sha256(dst.read_bytes()).hexdigest()
-        counts={}
-        for name,columns in (("Ofertas",OFERTAS),("Resultados",RESULTADOS)):
-            plan=plans[name];ws=sheets[name]
-            changes=sorted(plan["actualizar"],key=lambda x:x["fila"])
-            for update in changes:
-                n=update["fila"]
-                ws.update(range_name=f"A{n}:{chr(64+len(columns))}{n}",
-                          values=[[update["valores"][k] for k in columns]],value_input_option="RAW")
-            rows=[[row[k] for k in columns] for row in plan["insertar"]]
-            if rows:ws.append_rows(rows,value_input_option="RAW")
-            actual=leer(ws)
-            # Replanificar: no debe quedar ninguna escritura pendiente ni conflictos.
-            new=datos if name=="Ofertas" else transformacion["resultados"]
-            check=planificar(name,actual,new)
-            if check["insertar"] or check["actualizar"] or check["conflictos"]:
-                raise RuntimeError("Verificación posterior fallida para "+name)
-            counts[name]={"insertados":len(rows),"actualizados":len(changes),"total_filas":len(actual)-1}
-        return {"estado":"APLICADO_VERIFICADO","respaldo_sha256":before_sha,"tablas":counts}
+        try:
+            return _escribir_y_verificar(sheets,plans,datos,transformacion,before_sha)
+        except Exception as exc:
+            raise RuntimeError("ESCRITURA_PARCIAL_POSIBLE: conservar respaldo y revisar libro de prueba") from exc
+
+def _escribir_y_verificar(sheets,plans,datos,transformacion,before_sha):
+    counts={}
+    for name,columns in (("Ofertas",OFERTAS),("Resultados",RESULTADOS)):
+        plan=plans[name];ws=sheets[name]
+        changes=sorted(plan["actualizar"],key=lambda x:x["fila"])
+        for update in changes:
+            n=update["fila"]
+            ws.update(range_name=f"A{n}:{chr(64+len(columns))}{n}",
+                      values=[[update["valores"][k] for k in columns]],value_input_option="RAW")
+        rows=[[row[k] for k in columns] for row in plan["insertar"]]
+        if rows:ws.append_rows(rows,value_input_option="RAW")
+        actual=leer(ws)
+        # Replanificar: no debe quedar ninguna escritura pendiente ni conflictos.
+        new=datos if name=="Ofertas" else transformacion["resultados"]
+        check=planificar(name,actual,new)
+        if check["insertar"] or check["actualizar"] or check["conflictos"]:
+            raise RuntimeError("Verificación posterior fallida para "+name)
+        counts[name]={"insertados":len(rows),"actualizados":len(changes),"total_filas":len(actual)-1}
+    return {"estado":"APLICADO_VERIFICADO","respaldo_sha256":before_sha,"tablas":counts}
 
 def main():
     ap=argparse.ArgumentParser()
@@ -60,7 +68,7 @@ def main():
     ap.add_argument("--aplicar-en-prueba",action="store_true")
     a=ap.parse_args()
     if not a.aplicar_en_prueba:raise SystemExit("MODO_SIMULACION: sin escrituras; requiere --aplicar-en-prueba")
-    if a.spreadsheet_prueba_id==a.operativo_id:raise SystemExit("BLOQUEADO: destino es MER operativo")
+    if os.environ.get("MER_API_TEST_SHEET_ID","")!=a.spreadsheet_prueba_id:\n        raise SystemExit("BLOQUEADO: requiere libro autorizado por MER_API_TEST_SHEET_ID")\n    if a.spreadsheet_prueba_id==a.operativo_id:raise SystemExit("BLOQUEADO: destino es MER operativo")
     # Defensa adicional: todos los ids de MER en catálogo prohibidos.
     root=pathlib.Path(__file__).resolve().parents[1]
     cat=json.loads((root/"config/catalogo_sheets.json").read_text())
