@@ -6,6 +6,7 @@
 
 ## Continuidad vigente — 28 de octubre de 2026
 
+- **[Auditoría real API ↔ MER del 28/10](AUDITORIA_API_MER_2026-10-28.md)** — cabeceras de las seis tablas verificadas en Sheets y bloqueos precisos de los clientes actuales.
 - **[Etapa 2: preparación e integración incremental de API ChileCompra](PLAN_ETAPA2_API_2026-10-28.md)** — guía de trabajo del miércoles 28, riesgos de esquema, fuentes, claves y controles; sin nuevas escrituras autorizadas.
 - **[Cierre validado de Etapa 1 (27/10)](AUDITORIA_ORQUESTACION_2026-10-27.md)** — cron Ubuntu, ETL, conciliación, derivados, supervisor y HTTP Pages certificados en la operación del martes.
 - Documentos más antiguos que indiquen que la orquestación aún no está probada deben leerse como antecedentes fechados.
