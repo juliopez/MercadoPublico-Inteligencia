@@ -5,6 +5,7 @@ on:
       - 'scripts/escribir_api_mer_libro_prueba.py'
       - 'tests/test_escribir_api_mer_libro_prueba.py'
       - 'tests/test_integracion_api_mer_sin_api.py'
+      - 'scripts/validar_preview_api_mer_aislado.py'
       - '.github/workflows/pruebas-escritor-api-mer.yml'
   workflow_dispatch:
 permissions:
@@ -23,3 +24,4 @@ jobs:
           python -m py_compile scripts/escribir_api_mer_libro_prueba.py
           PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_escribir_api_mer_libro_prueba.py' -v
           PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_integracion_api_mer_sin_api.py' -v
+          PYTHONPATH=scripts python scripts/validar_preview_api_mer_aislado.py
