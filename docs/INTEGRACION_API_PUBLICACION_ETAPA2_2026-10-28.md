@@ -26,3 +26,8 @@ Se verificó código operativo actual, sin nuevas consultas API ni cambios de cr
 5. Validar con fixture → Sheets de prueba → JSON → Pages preview; sólo entonces activar piloto de producción.
 
 **Dictamen:** transformación y plan de upsert desarrollados, integración de escritura y publicación todavía no activada. No confundir código preparado con datos desplegados.
+
+## Resolución de identidad añadida
+- `scripts/resolver_proveedores_ofertas_mer.py`: empareja RUT normalizado con el `id_proveedor` ya existente en la tabla Proveedores. No asigna un identificador nuevo cuando no encuentra coincidencia; informa pendientes y rechaza ambigüedad.
+- `tests/test_resolver_proveedores_ofertas_mer.py`: tres casos sintéticos de coincidencia, no invención y duplicidad ambigua.
+- Esta resolución usa igualdad de RUT normalizado y no constituye una validación externa de titularidad o identidad jurídica.
