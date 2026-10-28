@@ -1,0 +1,23 @@
+name: Pruebas offline escritor API MER
+on:
+  pull_request:
+    paths:
+      - 'scripts/escribir_api_mer_libro_prueba.py'
+      - 'tests/test_escribir_api_mer_libro_prueba.py'
+      - '.github/workflows/pruebas-escritor-api-mer.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Sintaxis y pruebas completamente offline
+        run: |
+          python -m py_compile scripts/escribir_api_mer_libro_prueba.py
+          PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_escribir_api_mer_libro_prueba.py' -v
