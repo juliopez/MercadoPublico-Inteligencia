@@ -1,0 +1,22 @@
+name: Probar campos API ChileCompra MER (solo lectura)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/probar-campos-api-mer.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    env:
+      CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Consultar dos detalles oficiales, sin escribir ni imprimir datos sensibles
+        run: python scripts/probar_campos_api_mer.py
