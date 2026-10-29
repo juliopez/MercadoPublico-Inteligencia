@@ -1,0 +1,39 @@
+name: Comprobar acceso GHA al MER operativo
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verificar-acceso-gha-mer.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'gspread>=6,<7' 'google-auth>=2,<3'
+      - name: Comprobar secretos y cabeceras sin escrituras
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python - <<'PY'
+          import json,os
+          print("TICKET_CONFIGURADO",bool(os.getenv("CHILECOMPRA_TICKET")))
+          raw=os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON","")
+          print("CREDENCIAL_GOOGLE_GHA_CONFIGURADA",bool(raw))
+          if not raw:raise SystemExit("BLOQUEADO: no existe GOOGLE_SERVICE_ACCOUNT_JSON en Actions")
+          import gspread
+          from google.oauth2.service_account import Credentials
+          from scripts.importador_historicos_v2 import SCHEMA
+          config=json.load(open("config/catalogo_sheets.json"))
+          book=gspread.authorize(Credentials.from_service_account_info(json.loads(raw),scopes=["https://www.googleapis.com/auth/spreadsheets"])).open_by_key(config["periodos"]["2026-10"]["id"])
+          for tab in ("Procesos","Ofertas","Resultados"):
+              assert book.worksheet(tab).row_values(1)==SCHEMA[tab]
+              print("LECTURA_VERIFICADA",tab)
+          PY
