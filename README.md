@@ -4,7 +4,7 @@ Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes d
 
 **Última organización documental:** 26 de octubre de 2026. **Última evidencia operativa consolidada en la documentación:** 22 de octubre; la ejecución del 26/10 debe comprobarse.
 
-**Para retomar el proyecto en un nuevo chat:** comenzar por la [Guía de continuidad del 26/10](docs/GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md). La guía fija prioridad de documentos, etapa inicial y salvaguardas; no sustituye la verificación operativa.**
+**Para retomar el proyecto en un nuevo chat (estado más reciente):** consultar primero la [Continuidad de orquestaciones del 29/10](docs/CONTINUIDAD_ORQUESTACIONES_2026-10-29.md). Incluye Ubuntu 16:00, GitHub Actions API reprogramada a 20:00 Chile, evidencia de validación y el desafío de escalamiento. Para antecedentes de cierre mensual, conservar también la [Guía del 26/10](docs/GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md).**
 
 ## Acceder
 
