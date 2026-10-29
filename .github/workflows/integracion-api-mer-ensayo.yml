@@ -1,0 +1,55 @@
+name: Integracion API MER — ensayo previo a consulta
+on:
+  workflow_dispatch:
+    inputs:
+      conectado:
+        description: "Usar copia Google Sheets (requiere secreto y allowlist)"
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+jobs:
+  probar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MER_API_TEST_SHEET_ID: ${{ vars.MER_API_TEST_SHEET_ID }}
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar cliente Sheets solo en modo conectado
+        if: inputs.conectado
+        run: python -m pip install 'gspread>=6,<7' 'google-auth>=2,<3'
+      - name: Preparar credencial privada solo para copia de prueba
+        if: inputs.conectado
+        run: |
+          set -euo pipefail
+          test -n "$MER_API_TEST_SHEET_ID" || { echo "FALTA_VARIABLE_MER_API_TEST_SHEET_ID"; exit 2; }
+          test -n "$GOOGLE_SERVICE_ACCOUNT_JSON" || { echo "FALTA_SECRETO_GOOGLE_SERVICE_ACCOUNT_JSON"; exit 2; }
+          umask 077
+          printf '%s' "$GOOGLE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/google-service-account.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/google-service-account.json" >> "$GITHUB_ENV"
+      - name: Ensayo integrado con salida aislada
+        env:
+          CONECTADO: ${{ inputs.conectado }}
+        run: |
+          set -euo pipefail
+          if [[ "$CONECTADO" == "true" ]]; then
+            PYTHONPATH=scripts python scripts/ensayo_integracion_api_mer_actions.py --modo conectado --spreadsheet-prueba-id "$MER_API_TEST_SHEET_ID" --salida "$RUNNER_TEMP/mer_preview"
+          else
+            PYTHONPATH=scripts python scripts/ensayo_integracion_api_mer_actions.py --modo offline --salida "$RUNNER_TEMP/mer_preview"
+          fi
+      - name: Verificar estructura sin publicar datos
+        run: |
+          python - <<'PY'
+          import os,json,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"mer_preview"/"manifest.json"
+          m=json.loads(p.read_text())
+          assert set(m["conteos"])=={"ofertas","resultados"}
+          assert all(v>=1 for v in m["conteos"].values())
+          print("MER_PREVIEW_CONTRATO_OK")
+          PY
