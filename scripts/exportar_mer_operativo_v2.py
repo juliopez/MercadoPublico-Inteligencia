@@ -9,10 +9,12 @@ DATA=ROOT/"frontend-v2/data"
 MAP={
  "Procesos":("procesos",["codigo","nombre","estado","convocatoria","fecha_publicacion","fecha_cierre","monto_disponible_clp","organismo_comprador","region","total_ofertas_recibidas","motivo_seleccion","url_detalle","categoria","subcategoria","modalidad"]),
  "OrdenesCompra":("ordenescompra",["codigo_oc","codigo_proceso","fecha_creacion","fecha_aceptacion","estado","proveedor","monto_total_oc_clp","tipo_oc","cantidad_lineas","total_lineas_neto"]),
+}
+API_MAP={
  "Ofertas":("ofertas",["id_cotizacion","codigo","proveedor","monto_ofertado_clp","fecha_oferta","seleccionado"]),
  "Resultados":("resultados",["codigo","id_cotizacion_ganadora","adjudicatario","monto_adjudicado_clp","fecha_resultado","motivo_seleccion","validado","monto_oferta_seleccionada_clp","estado_verificacion_oc"])
 }
-def exportar(periodo, aplicar):
+def exportar(periodo, aplicar, incluir_api=False):
  import gspread
  from google.oauth2.service_account import Credentials
  from importlib.util import spec_from_file_location,module_from_spec
@@ -33,7 +35,8 @@ def exportar(periodo, aplicar):
  work=pathlib.Path(tempfile.mkdtemp(prefix="export_mer_v2_"))
  changes={}
  try:
-  for sheet,(entity,fields) in MAP.items():
+  entidades={**MAP,**API_MAP} if incluir_api else MAP
+  for sheet,(entity,fields) in entidades.items():
    vals=book.worksheet(sheet).get_all_values()
    expected=mod.SCHEMA[sheet]
    if not vals or vals[0]!=expected:raise ValueError("Contrato MER inválido: "+sheet)
@@ -91,7 +94,8 @@ if __name__=="__main__":
  ap=argparse.ArgumentParser()
  ap.add_argument("--periodo",default=dt.datetime.now(ZoneInfo("America/Santiago")).strftime("%Y-%m"))
  ap.add_argument("--aplicar",action="store_true")
+ ap.add_argument("--incluir-api",action="store_true",help="Exportar también Ofertas y Resultados; solo orquestación nocturna")
  args=ap.parse_args()
  if args.periodo!=dt.datetime.now(ZoneInfo("America/Santiago")).strftime("%Y-%m"):
   ap.error("Solo se permite exportar el mes operativo actual")
- exportar(args.periodo,args.aplicar)
+ exportar(args.periodo,args.aplicar,args.incluir_api)
