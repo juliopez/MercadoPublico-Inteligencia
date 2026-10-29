@@ -163,7 +163,7 @@ def main():
     report["errores"]+=1
     if exc.code==429:break
    except Exception as exc:
-    cache[code]={"estado":"ERROR","ultima_consulta":today,"proxima_revision":(now.date()+dt.timedelta(days=2)).isoformat(),"intentos":int(cache.get(code,{}).get("intentos",0))+1,"error":type(exc).__name__}
+    cache[code]={"estado":"ERROR","ultima_consulta":today,"proxima_revision":(now.date()+dt.timedelta(days=1 if type(exc).__name__=="APIError" else 2)).isoformat(),"intentos":int(cache.get(code,{}).get("intentos",0))+1,"error":type(exc).__name__}
     report["errores"]+=1
  finally:
   if not test_code and not repair_all and can_advance and total_pages:
