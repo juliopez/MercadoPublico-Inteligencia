@@ -8,7 +8,9 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]
 DATA=ROOT/"frontend-v2/data"
 MAP={
  "Procesos":("procesos",["codigo","nombre","estado","convocatoria","fecha_publicacion","fecha_cierre","monto_disponible_clp","organismo_comprador","region","total_ofertas_recibidas","motivo_seleccion","url_detalle","categoria","subcategoria","modalidad"]),
- "OrdenesCompra":("ordenescompra",["codigo_oc","codigo_proceso","fecha_creacion","fecha_aceptacion","estado","proveedor","monto_total_oc_clp","tipo_oc","cantidad_lineas","total_lineas_neto"])
+ "OrdenesCompra":("ordenescompra",["codigo_oc","codigo_proceso","fecha_creacion","fecha_aceptacion","estado","proveedor","monto_total_oc_clp","tipo_oc","cantidad_lineas","total_lineas_neto"]),
+ "Ofertas":("ofertas",["id_cotizacion","codigo","proveedor","monto_ofertado_clp","fecha_oferta","seleccionado"]),
+ "Resultados":("resultados",["codigo","id_cotizacion_ganadora","adjudicatario","monto_adjudicado_clp","fecha_resultado","motivo_seleccion","validado","monto_oferta_seleccionada_clp","estado_verificacion_oc"])
 }
 def exportar(periodo, aplicar):
  import gspread
@@ -38,8 +40,10 @@ def exportar(periodo, aplicar):
    keys=set(); rows=[]
    for raw in vals[1:]:
     if not raw or not raw[0]:raise ValueError("PK vacía: "+sheet)
-    if raw[0] in keys:raise ValueError("PK duplicada: "+sheet)
-    keys.add(raw[0]);raw=(raw+[""]*len(expected))[:len(expected)]
+    raw=(raw+[""]*len(expected))[:len(expected)]
+    pk=(raw[expected.index("codigo")],raw[expected.index("id_cotizacion_ganadora")]) if sheet=="Resultados" else (raw[expected.index("codigo")],raw[expected.index("id_cotizacion")]) if sheet=="Ofertas" else (raw[0],)
+    if not all(pk) or pk in keys:raise ValueError("PK duplicada/incompleta: "+sheet)
+    keys.add(pk)
     rows.append({key:raw[pos] for key,pos in ix.items()})
    rows.sort(key=lambda r:r[fields[0]])
    folder=work/entity/periodo;folder.mkdir(parents=True)
