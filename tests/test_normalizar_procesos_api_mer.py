@@ -9,6 +9,14 @@ class NormalizadorTest(unittest.TestCase):
   self.assertEqual(etiqueta({"codigo":"cerrada","descripcion":"Cerrada"}),"Cerrada")
  def test_comprador_anidado(self):
   self.assertEqual(organismo({"organismo_comprador":{"razon_social":"Institución A"}}),"Institución A")
+ def test_campos_oficiales_anidados(self):
+  from datetime import datetime
+  p={"institucion":{"organismo_comprador":"Municipalidad X","nombre_region":"Valparaiso"},"presupuesto":{"monto_disponible_clp":120000},"resumen":{"total_ofertas_recibidas":8},"estado":{"glosa":"Proveedor seleccionado"}}
+  r=proceso(p,"123-COT26","2026-10-01",datetime(2026,10,28))
+  self.assertEqual(r["organismo_comprador"],"Municipalidad X")
+  self.assertEqual(r["monto_disponible_clp"],"120000")
+  self.assertEqual(r["total_ofertas_recibidas"],"8")
+  self.assertEqual(r["estado"],"Proveedor seleccionado")
  def test_no_modifica_datos_verificados(self):
   old={"codigo":"123-COT26","nombre":"Nombre original","estado":"Cerrada","organismo_comprador":"Comprador oficial","fecha_cierre":"2026-10-03"}
   new={"codigo":"123-COT26","nombre":"Nombre API","estado":"Abierta","organismo_comprador":"Comprador API","fecha_cierre":"2026-10-04"}
