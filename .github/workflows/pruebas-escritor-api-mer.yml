@@ -7,6 +7,8 @@ on:
       - 'tests/test_integracion_api_mer_sin_api.py'
       - 'scripts/validar_preview_api_mer_aislado.py'
       - 'scripts/ensayo_integracion_api_mer_actions.py'
+      - 'scripts/cola_consultas_api_mer.py'
+      - 'tests/test_cola_consultas_api_mer.py'
       - '.github/workflows/pruebas-escritor-api-mer.yml'
   workflow_dispatch:
 permissions:
@@ -27,3 +29,4 @@ jobs:
           PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_integracion_api_mer_sin_api.py' -v
           PYTHONPATH=scripts python scripts/validar_preview_api_mer_aislado.py
           PYTHONPATH=scripts python scripts/ensayo_integracion_api_mer_actions.py --modo offline --salida "$RUNNER_TEMP/mer_integracion_test"
+          PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_cola_consultas_api_mer.py' -v
