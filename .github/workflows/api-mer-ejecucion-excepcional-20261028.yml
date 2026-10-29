@@ -1,0 +1,54 @@
+name: MER API - ejecucion excepcional inmediata 28 octubre
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/api-mer-ejecucion-excepcional-20261028.yml'
+permissions:
+  contents: write
+concurrency:
+  group: mer-api-nocturno
+  cancel-in-progress: false
+jobs:
+  ejecutar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'gspread>=6,<7' 'google-auth>=2,<3'
+      - name: Ejecutar una vez - máximo 10
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          MER_API_MAX_DETAIL: '10'
+          MER_API_RUN_NOW: '1'
+        run: python scripts/mer_api_incremental_10.py
+      - name: Exportar datos nuevos como en la orquestación habitual
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          r=json.load(open('control/ultimo_reporte_api_mer.json'))
+          if sum(r.get(x,0) for x in ('procesos','ofertas','resultados')):
+              subprocess.run(['python','scripts/exportar_mer_operativo_v2.py','--periodo',r['periodo'],'--aplicar','--incluir-api'],check=True)
+          else: print('SIN CAMBIOS: no exportar')
+          PY
+      - name: Guardar cola y publicar solo cambios
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add control/cola_api_mer.json control/ultimo_reporte_api_mer.json
+          git add frontend-v2/data/catalogo-publico.json
+          git add frontend-v2/data/partes/procesos/ frontend-v2/data/partes/ofertas/ frontend-v2/data/partes/resultados/ frontend-v2/data/partes/ordenescompra/ 2>/dev/null || true
+          git diff --cached --check
+          if git diff --cached --quiet; then echo "SIN CAMBIOS"; exit 0; fi
+          git commit -m "data(api): ejecución extraordinaria limitada 28-10"
+          git pull --rebase origin main
+          git push origin main
