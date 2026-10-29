@@ -1,7 +1,7 @@
-name: API ChileCompra - MER incremental diez procesos Chile 22h30
+name: API ChileCompra - MER incremental diez procesos Chile 20h00
 on:
   schedule:
-    - cron: '30 1,2 * * *'
+    - cron: '0 0,23 * * *' # 20:00 Santiago: UTC 23 verano / 00 del día siguiente invierno
   workflow_dispatch:
 permissions:
   contents: write
