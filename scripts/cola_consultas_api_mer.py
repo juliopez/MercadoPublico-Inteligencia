@@ -50,8 +50,8 @@ def build(processes,states,day,budget=120,new_cap=None,retry_cap=None,follow_cap
  if any(x is not None and x<0 for x in caps):raise ValueError("Cupo negativo")
  if all(x is None for x in caps):
   new_cap=(budget+1)//2
-  retry_cap=max(1,budget//4) if budget else 0
-  follow_cap=budget-new_cap-retry_cap
+  retry_cap=min(budget-new_cap,max(1,budget//4)) if budget else 0
+  follow_cap=max(0,budget-new_cap-retry_cap)
  caps={"nuevos":new_cap,"fallidos":retry_cap,"seguimiento":follow_cap}
  selected=[];used=set()
  for group in ("nuevos","fallidos","seguimiento"):
