@@ -54,7 +54,7 @@ jobs:
           git push origin main
       - name: Lanzar generadores V2 existentes tras exportación
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           python - <<'PY'
           import json,subprocess
