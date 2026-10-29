@@ -52,10 +52,11 @@
           "intentos": 0
         },
         "608-6187-COT26": {
-          "estado": "EN_SEGUIMIENTO",
+          "estado": "ERROR",
           "ultima_consulta": "2026-10-28",
-          "proxima_revision": "2026-10-31",
-          "intentos": 0
+          "proxima_revision": "2026-10-30",
+          "intentos": 1,
+          "error": "APIError"
         },
         "5542-126-COT26": {
           "estado": "EN_SEGUIMIENTO",
