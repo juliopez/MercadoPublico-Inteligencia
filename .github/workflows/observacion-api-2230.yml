@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: mer-api-nocturno
   cancel-in-progress: false
@@ -51,3 +52,14 @@ jobs:
           git commit -m "data(api): lote incremental Compra Agil MER"
           git pull --rebase origin main
           git push origin main
+      - name: Lanzar generadores V2 existentes tras exportación
+        env:
+          GH_TOKEN: \${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          r=json.load(open('control/ultimo_reporte_api_mer.json'))
+          if sum(r.get(k,0) for k in ('procesos','ofertas','resultados')):
+              subprocess.run(['gh','workflow','run','publicacion-v2-post-etl.yml','--ref','main'],check=True)
+          else: print('SIN CAMBIOS: no regenerar índices')
+          PY
