@@ -1,0 +1,16 @@
+{
+  "version": 3,
+  "periodo": "2026-10",
+  "entidad": "ofertas",
+  "conteo": 0,
+  "fragmentos": 0,
+  "tipo": "prefijo_palabra_agrupado",
+  "longitud_prefijo": 3,
+  "particiones": 0,
+  "grupos": 0,
+  "formato": "referencias_fragmento_fila",
+  "campos": [
+    "codigo",
+    "proveedor"
+  ]
+}
