@@ -54,7 +54,7 @@
         "608-6187-COT26": {
           "estado": "ERROR",
           "ultima_consulta": "2026-10-28",
-          "proxima_revision": "2026-10-30",
+          "proxima_revision": "2026-10-29",
           "intentos": 1,
           "error": "APIError"
         },
