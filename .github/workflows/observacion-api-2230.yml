@@ -1,26 +1,53 @@
-name: API ChileCompra - MER tres tablas 22h30 Chile
+name: API ChileCompra - MER incremental diez procesos Chile 22h30
 on:
   schedule:
     - cron: '30 1,2 * * *'
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: mer-api-nocturno
   cancel-in-progress: false
 jobs:
-  lote-acotado:
+  sincronizacion:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python -m pip install 'gspread>=6,<7' 'google-auth>=2,<3'
-      - name: Actualizar Procesos, Ofertas y Resultados
+      - name: Dependencias existentes de Google Sheets
+        run: python -m pip install 'gspread>=6,<7' 'google-auth>=2,<3'
+      - name: Sincronizar maximo diez y registrar progreso
         env:
           CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
-          MER_API_MAX_DETAIL: '2'
-        run: python scripts/sincronizar_tres_tablas_api_2230.py
+          MER_API_MAX_DETAIL: '10'
+        run: python scripts/mer_api_incremental_10.py
+      - name: Publicar exportacion solo si hay nuevas filas
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          r=json.load(open("control/ultimo_reporte_api_mer.json"))
+          if sum(r.get(x,0) for x in ("procesos","ofertas","resultados")):
+              subprocess.run(["python","scripts/exportar_mer_operativo_v2.py","--periodo",r["periodo"],"--aplicar"],check=True)
+          else: print("SIN CAMBIOS MER; no exportar")
+          PY
+      - name: Guardar progreso y publicacion en main
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add control/cola_api_mer.json control/ultimo_reporte_api_mer.json
+          git add frontend-v2/data/catalogo-publico.json
+          git add frontend-v2/data/partes/procesos/ frontend-v2/data/partes/ofertas/ frontend-v2/data/partes/resultados/ frontend-v2/data/partes/ordenescompra/ 2>/dev/null || true
+          git diff --cached --check
+          if git diff --cached --quiet; then echo "SIN CAMBIOS"; exit 0;fi
+          git commit -m "data(api): lote incremental Compra Agil MER"
+          git pull --rebase origin main
+          git push origin main
