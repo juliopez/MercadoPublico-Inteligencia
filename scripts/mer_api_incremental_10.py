@@ -26,7 +26,7 @@ def main():
  import gspread
  from google.oauth2.service_account import Credentials
  now=dt.datetime.now(TZ)
- if now.weekday()>4 or now.hour!=22:
+ if os.getenv("MER_API_RUN_NOW")!="1" and (now.weekday()>4 or now.hour!=22):
   print("SKIP: fuera de las 22 horas America/Santiago");return
  ticket=os.getenv("CHILECOMPRA_TICKET","").strip()
  secret=os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON","").strip()
