@@ -1,0 +1,37 @@
+name: Auditoria acotada esquema Compra Agil
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/auditar-esquema-api-20261028.yml'
+permissions:
+  contents: read
+jobs:
+  esquema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspeccionar estructura, sin publicar datos personales
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+        run: |
+          python - <<'PY'
+          import json,os,urllib.request,urllib.error
+          code='5668-57-COT26'
+          req=urllib.request.Request('https://api2.mercadopublico.cl/v2/compra-agil/'+code,headers={'ticket':os.environ['CHILECOMPRA_TICKET'],'Accept':'application/json'})
+          try:
+              with urllib.request.urlopen(req,timeout=30) as f: obj=json.load(f)
+          except urllib.error.HTTPError as e:
+              print('HTTP',e.code);raise SystemExit(0)
+          p=obj.get('payload') or {}
+          print('CAMPOS_RAIZ',sorted(p))
+          for key,value in p.items():
+              if isinstance(value,dict):print('OBJETO',key,sorted(value))
+              elif isinstance(value,list):print('LISTA',key,'cantidad',len(value),'keys',sorted(value[0]) if value and isinstance(value[0],dict) else [])
+          if p.get('proveedores_cotizando'):
+              a=p['proveedores_cotizando'][0]
+              print('CLAVES_OFERTA',sorted(a))
+              for k,v in a.items():
+                  if 'moneda' in k.lower() or 'divisa' in k.lower():print('MONEDA_CAMPO',k,str(v)[:50])
+          PY
