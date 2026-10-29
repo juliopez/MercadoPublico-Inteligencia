@@ -9,10 +9,10 @@ def etiqueta(value):
         if val:return val
     return ""
 def organismo(payload):
-    for key in ("organismo_comprador","comprador","organismo","unidad_compradora"):
+    for key in ("institucion","organismo_comprador","comprador","organismo","unidad_compradora"):
         obj=payload.get(key)
         if isinstance(obj,dict):
-            for field in ("razon_social","nombre","nombre_organismo","nombre_unidad","descripcion"):
+            for field in ("organismo_comprador","razon_social","nombre","nombre_organismo","nombre_unidad","descripcion"):
                 val=scalar(obj.get(field))
                 if val:return val
         elif scalar(obj):return scalar(obj)
@@ -22,13 +22,17 @@ def proceso(payload,code,fecha,now):
     if not isinstance(fechas,dict):fechas={}
     return {"codigo":code,"nombre":scalar(payload.get("nombre") or payload.get("titulo")),
      "estado":etiqueta(payload.get("estado")),"organismo_comprador":organismo(payload),
+     "region":scalar((payload.get("institucion") or {}).get("nombre_region")) if isinstance(payload.get("institucion"),dict) else "",
+     "monto_disponible_clp":scalar((payload.get("presupuesto") or {}).get("monto_disponible_clp")) if isinstance(payload.get("presupuesto"),dict) else "",
+     "total_ofertas_recibidas":scalar((payload.get("resumen") or {}).get("total_ofertas_recibidas")) if isinstance(payload.get("resumen"),dict) else "",
+     "convocatoria":etiqueta(payload.get("convocatoria")),
      "fecha_publicacion":fecha[:10],"fecha_cierre":scalar(fechas.get("fecha_cierre"))[:10],
      "url_detalle":"https://buscador.mercadopublico.cl/ficha?code="+code,
      "fecha_sincronizacion":now.isoformat(),"categoria":"Compra Ágil","modalidad":"Compra Ágil"}
 def completar_proceso(existente,nuevo):
     """Completar solo vacíos y reparar estado serializado; respetar las demás columnas."""
     merged=dict(existente)
-    for field in ("nombre","organismo_comprador","fecha_cierre","fecha_publicacion","categoria","modalidad"):
+    for field in ("nombre","organismo_comprador","region","monto_disponible_clp","total_ofertas_recibidas","convocatoria","fecha_cierre","fecha_publicacion","categoria","modalidad"):
         if not merged.get(field) and nuevo.get(field):merged[field]=nuevo[field]
     old=merged.get("estado","")
     if (not old or old.lstrip().startswith(("{","["))) and nuevo.get("estado"):
