@@ -1,0 +1,30 @@
+name: Piloto unico API Compra Agil cifrado
+on:
+  push:
+    branches: [etapa2/escritor-prueba-20261028]
+    paths:
+      - '.github/workflows/piloto-unico-api-cifrado.yml'
+permissions:
+  contents: read
+jobs:
+  capturar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Dependencia para cifrado del respaldo
+        run: python -m pip install 'cryptography>=42,<47'
+      - name: Ejecutar UNA consulta y cifrar su respuesta
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+        run: python scripts/captura_cifrada_piloto_api_mer.py
+      - name: Guardar solo respaldo cifrado
+        uses: actions/upload-artifact@v4
+        with:
+          name: mer-api-piloto-839-4-COT26-cifrado
+          path: ${{ runner.temp }}/mer_captura_cifrada.json
+          if-no-files-found: error
+          retention-days: 7
