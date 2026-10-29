@@ -1,10 +1,11 @@
 {
   "periodo": "2026-10",
   "fecha": "2026-10-28",
-  "consultados": 10,
-  "procesos": 10,
-  "ofertas": 68,
-  "resultados": 6,
+  "consultados": 1,
+  "procesos": 0,
+  "ofertas": 0,
+  "resultados": 0,
   "errores": 0,
-  "pagina": 1
+  "pagina": 2,
+  "procesos_enriquecidos": 1
 }
