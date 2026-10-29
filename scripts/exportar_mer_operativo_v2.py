@@ -36,6 +36,17 @@ def exportar(periodo, aplicar, incluir_api=False):
  changes={}
  try:
   entidades={**MAP,**API_MAP} if incluir_api else MAP
+  seleccionados={}
+  if incluir_api:
+   cotizaciones=book.worksheet("Ofertas").get_all_values()
+   columnas=mod.SCHEMA["Ofertas"]
+   if not cotizaciones or cotizaciones[0]!=columnas:raise ValueError("Contrato de Ofertas incompatible")
+   for raw in cotizaciones[1:]:
+    r=dict(zip(columnas,(raw+[""]*len(columnas))[:len(columnas)]))
+    if str(r["seleccionado"]).strip() in ("1","True","true") and r["codigo"] and r["id_cotizacion"] and r["proveedor"]:
+     k=(r["codigo"],r["id_cotizacion"])
+     if k in seleccionados and seleccionados[k]!=r["proveedor"]:raise ValueError("Identidades de oferta en conflicto")
+     seleccionados[k]=r["proveedor"]
   for sheet,(entity,fields) in entidades.items():
    vals=book.worksheet(sheet).get_all_values()
    expected=mod.SCHEMA[sheet]
@@ -48,7 +59,10 @@ def exportar(periodo, aplicar, incluir_api=False):
     pk=(raw[expected.index("codigo")],raw[expected.index("id_cotizacion_ganadora")]) if sheet=="Resultados" else (raw[expected.index("codigo")],raw[expected.index("id_cotizacion")]) if sheet=="Ofertas" else (raw[0],)
     if not all(pk) or pk in keys:raise ValueError("PK duplicada/incompleta: "+sheet)
     keys.add(pk)
-    rows.append({key:raw[pos] for key,pos in ix.items()})
+    record={key:raw[pos] for key,pos in ix.items()}
+    if sheet=="Resultados":
+     record["proveedor_seleccionado"]=seleccionados.get((record["codigo"],record["id_cotizacion_ganadora"]),"")
+    rows.append(record)
    rows.sort(key=lambda r:r[fields[0]])
    folder=work/entity/periodo;folder.mkdir(parents=True)
    paths=[]
