@@ -1,4 +1,5 @@
 name: Publicacion V2 posterior al ETL Ubuntu
+# Se reutiliza también para publicar enriquecimientos API validados.
 on:
   push:
     branches: [main]
