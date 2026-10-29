@@ -15,11 +15,15 @@ def main():
   print("SKIP fuera de ventana Chile 22:25-22:55 lunes-viernes");return
  ticket=os.getenv("CHILECOMPRA_TICKET","").strip()
  credential=os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON","").strip()
- if not ticket or not credential:
-  raise SystemExit("BLOQUEADO: se necesitan CHILECOMPRA_TICKET y GOOGLE_SERVICE_ACCOUNT_JSON")
+ credential_file=os.getenv("GOOGLE_APPLICATION_CREDENTIALS","").strip()
+ if not ticket or not (credential or credential_file):
+  raise SystemExit("BLOQUEADO: falta ticket o identidad Google existente")
  limits=int(os.getenv("MER_API_MAX_DETAIL","2"))
  if limits<1 or limits>5:raise SystemExit("BLOQUEADO: límite inválido")
- creds=Credentials.from_service_account_info(json.loads(credential),scopes=["https://www.googleapis.com/auth/spreadsheets"])
+ if credential_file:
+  creds=Credentials.from_service_account_file(credential_file,scopes=["https://www.googleapis.com/auth/spreadsheets"])
+ else:
+  creds=Credentials.from_service_account_info(json.loads(credential),scopes=["https://www.googleapis.com/auth/spreadsheets"])
  cat=json.load(open("config/catalogo_sheets.json",encoding="utf8"))
  period=now.strftime("%Y-%m")
  target=cat["periodos"].get(period)
