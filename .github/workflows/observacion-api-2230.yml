@@ -35,7 +35,7 @@ jobs:
           import json,subprocess
           r=json.load(open("control/ultimo_reporte_api_mer.json"))
           if sum(r.get(x,0) for x in ("procesos","ofertas","resultados")):
-              subprocess.run(["python","scripts/exportar_mer_operativo_v2.py","--periodo",r["periodo"],"--aplicar"],check=True)
+              subprocess.run(["python","scripts/exportar_mer_operativo_v2.py","--periodo",r["periodo"],"--aplicar","--incluir-api"],check=True)
           else: print("SIN CAMBIOS MER; no exportar")
           PY
       - name: Guardar progreso y publicacion en main
