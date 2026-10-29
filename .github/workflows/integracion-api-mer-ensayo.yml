@@ -1,5 +1,9 @@
 name: Integracion API MER — ensayo previo a consulta
 on:
+  pull_request:
+    paths:
+      - 'scripts/ensayo_integracion_api_mer_actions.py'
+      - '.github/workflows/integracion-api-mer-ensayo.yml'
   workflow_dispatch:
     inputs:
       conectado:
