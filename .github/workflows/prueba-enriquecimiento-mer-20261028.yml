@@ -1,0 +1,53 @@
+name: Prueba puntual enriquecimiento MER 28 octubre
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/prueba-enriquecimiento-mer-20261028.yml']
+permissions:
+  contents: write
+concurrency:
+  group: mer-api-nocturno
+  cancel-in-progress: false
+jobs:
+  unico:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'gspread>=6,<7' 'google-auth>=2,<3'
+      - name: Reconsultar solo un codigo ya cargado
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          MER_API_RUN_NOW: '1'
+          MER_API_TEST_CODE: '5668-57-COT26'
+          MER_API_MAX_DETAIL: '10'
+        run: python scripts/mer_api_incremental_10.py
+      - name: Exportar si hubo enriquecimiento
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          r=json.load(open('control/ultimo_reporte_api_mer.json'))
+          if sum(r.get(x,0) for x in ('procesos','ofertas','resultados','procesos_enriquecidos','ofertas_enriquecidos','resultados_enriquecidos')):
+              subprocess.run(['python','scripts/exportar_mer_operativo_v2.py','--periodo',r['periodo'],'--aplicar','--incluir-api'],check=True)
+          else: print('SIN_CAMBIOS')
+          PY
+      - name: Guardar reporte y datos sin duplicados
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add control/cola_api_mer.json control/ultimo_reporte_api_mer.json frontend-v2/data/catalogo-publico.json
+          git add frontend-v2/data/partes/procesos/ frontend-v2/data/partes/ofertas/ frontend-v2/data/partes/resultados/ frontend-v2/data/partes/ordenescompra/ 2>/dev/null || true
+          git diff --cached --check
+          if git diff --cached --quiet; then echo SIN_CAMBIOS; exit 0; fi
+          git commit -m "data(api): prueba acotada enriquecimiento de un proceso"
+          git pull --rebase origin main
+          git push origin main
