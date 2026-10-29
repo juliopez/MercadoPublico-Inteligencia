@@ -27,8 +27,8 @@ def main():
  import gspread
  from google.oauth2.service_account import Credentials
  now=dt.datetime.now(TZ)
- if os.getenv("MER_API_RUN_NOW")!="1" and (now.weekday()>4 or now.hour!=22):
-  print("SKIP: fuera de las 22 horas America/Santiago");return
+ if os.getenv("MER_API_RUN_NOW")!="1" and (now.weekday()>4 or now.hour!=20):
+  print("SKIP: fuera de las 20 horas America/Santiago");return
  ticket=os.getenv("CHILECOMPRA_TICKET","").strip()
  secret=os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON","").strip()
  if not ticket or not secret:raise SystemExit("BLOQUEO: falta secreto de API o de escritura Google Sheets")
