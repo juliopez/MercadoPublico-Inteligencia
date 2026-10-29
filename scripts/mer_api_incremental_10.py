@@ -58,12 +58,16 @@ def main():
  # Primero reintentos vencidos y seguimientos vencidos; después nuevos por fecha ascendente.
  follow=sorted([c for c,e in cache.items() if e.get("estado") in ("ERROR","EN_SEGUIMIENTO","SIN_DATOS") and e.get("proxima_revision","9999")<=today],key=lambda c:(cache[c].get("proxima_revision",""),c))
  candidates=follow[:2]
+ test_code=os.getenv("MER_API_TEST_CODE","").strip()
+ if test_code:
+  if test_code not in cache or test_code not in keys["Procesos"]:raise SystemExit("BLOQUEO: el código de prueba debe existir en cola y MER")
+  candidates=[test_code]
  page=int(window.get("pagina",1))
  date_cursor=window.get("fecha_cursor",period+"-01")
  if date_cursor>today:
   print("Sin nuevas fechas publicadas pendientes; revisar seguimientos")
  total_pages=None
- if len(candidates)<maximum:
+ if len(candidates)<maximum and not test_code:
   query=urllib.parse.urlencode({"publicado_desde":date_cursor+"T00:00:00","publicado_hasta":date_cursor+"T23:59:59",
           "tamano_pagina":"10","numero_pagina":str(page),"ordenar_por":"FechaPublicacion"})
   try:listed=fetch("https://api2.mercadopublico.cl/v2/compra-agil?"+query,ticket)
@@ -159,7 +163,7 @@ def main():
     cache[code]={"estado":"ERROR","ultima_consulta":today,"proxima_revision":(now.date()+dt.timedelta(days=2)).isoformat(),"intentos":int(cache.get(code,{}).get("intentos",0))+1,"error":type(exc).__name__}
     report["errores"]+=1
  finally:
-  if can_advance and total_pages:
+  if not test_code and can_advance and total_pages:
    if page<total_pages:window["pagina"]=page+1
    else:
     window["pagina"]=1
