@@ -8,7 +8,7 @@ function textCell(value){const td=document.createElement('td');td.textContent=St
 const tableColumns={
  procesos:[['codigo','Código'],['nombre','Nombre del proceso'],['modalidad','Modalidad'],['organismo_comprador','Organismo comprador'],['estado','Estado'],['fecha_publicacion','Publicación'],['fecha_cierre','Cierre'],['monto_disponible_clp','Monto disponible']],
  ofertas:[['codigo','Proceso'],['proveedor','Proveedor'],['monto_ofertado_clp','Monto ofertado'],['seleccionado','Oferta seleccionada'],['fecha_oferta','Fecha de oferta']],
- resultados:[['codigo','Proceso'],['adjudicatario','Proveedor informado'],['monto_adjudicado_clp','Monto adjudicado'],['monto_oferta_seleccionada_clp','Oferta seleccionada']],
+ resultados:[['codigo','Proceso'],['proveedor_seleccionado','Proveedor seleccionado'],['adjudicatario','Adjudicatario verificado'],['monto_adjudicado_clp','Monto adjudicado'],['monto_oferta_seleccionada_clp','Oferta seleccionada']],
  ordenescompra:[['codigo_oc','Orden de compra'],['codigo_proceso','Proceso asociado'],['proveedor','Proveedor'],['estado','Estado'],['monto_total_oc_clp','Monto total'],['fecha_creacion','Creación']]
 };
 function formatTableValue(record,key){
@@ -252,7 +252,7 @@ function showDetail(record){
  const entity=$('entidad').value;
  const priority={procesos:['codigo','nombre','organismo_comprador','estado','monto_disponible_clp'],
  ofertas:['codigo','proveedor','seleccionado','monto_ofertado_clp'],
- resultados:['codigo','adjudicatario','monto_adjudicado_clp'],
+ resultados:['codigo','proveedor_seleccionado','adjudicatario','monto_adjudicado_clp'],
  ordenescompra:['codigo_oc','codigo_proceso','proveedor','estado','monto_total_oc_clp']}[entity]||[];
  for(const key of priority){
   const val=record[key];if(val===undefined||val===null||String(val).trim()==='')continue;
