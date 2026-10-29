@@ -8,7 +8,7 @@ on:
   schedule:
     # Disparos UTC para 17:00 Santiago en verano e invierno
     - cron: '0,15,30,45 20,21 * * 1-5'
-  workflow_dispatch:
+  workflow_dispatch: # invocado también tras cargas API nocturnas
 permissions:
   contents: write
 concurrency:
