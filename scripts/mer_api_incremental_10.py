@@ -130,5 +130,6 @@ def main():
    window["pagina"]=page+1
   STATE.write_text(json.dumps(state,ensure_ascii=False,indent=2)+"\n")
   pathlib.Path(os.environ.get("GITHUB_STEP_SUMMARY","/tmp/mer_summary")).write_text("MER API: "+json.dumps(report,ensure_ascii=False)+"\n")
+  pathlib.Path("control/ultimo_reporte_api_mer.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n")
   print(json.dumps(report,ensure_ascii=False))
 if __name__=="__main__":main()
