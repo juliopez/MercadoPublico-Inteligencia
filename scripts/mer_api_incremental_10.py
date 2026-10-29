@@ -107,6 +107,29 @@ def main():
       "Ofertas":[r for r in result["ofertas"] if (r["codigo"],r["id_cotizacion"]) not in keys["Ofertas"]],
       "Resultados":[r for r in result["resultados"] if (r["codigo"],r["id_cotizacion_ganadora"]) not in keys["Resultados"]]
     }
+    # Completar únicamente celdas vacías en ofertas y resultados anteriores.
+    # Proteger identidades, selección y validaciones ya establecidas.
+    for name,newrows,key_fields in (("Ofertas",result["ofertas"],("codigo","id_cotizacion")),
+                                    ("Resultados",result["resultados"],("codigo","id_cotizacion_ganadora"))):
+     columns=SCHEMA[name]
+     oldindex={}
+     for row_number,rawrow in enumerate(existing[name][1:],2):
+      if not rawrow:continue
+      previous=dict(zip(columns,rawrow+[""]*len(columns)))
+      oldindex[tuple(previous.get(k,"") for k in key_fields)]=(row_number,previous)
+     for fresh in newrows:
+      k=tuple(str(fresh.get(field,"") or "") for field in key_fields)
+      if k not in oldindex:continue
+      row_number,previous=oldindex[k]
+      merged=dict(previous)
+      for field in columns:
+       if field in ("seleccionado","validado","id_proveedor","id_cotizacion","codigo","id_cotizacion_ganadora"):continue
+       new_value=str(fresh.get(field,"") or "")
+       if not merged.get(field) and new_value:merged[field]=new_value
+      if merged!=previous:
+       sheets[name].update(range_name=f"A{row_number}:{'I' if name=='Ofertas' else 'J'}{row_number}",values=[[str(merged.get(field,"") or "") for field in columns]],value_input_option="RAW")
+       existing[name][row_number-1]=[str(merged.get(field,"") or "") for field in columns]
+       report[name.lower()+"_enriquecidos"]=report.get(name.lower()+"_enriquecidos",0)+1
     # Se revalidan claves justo antes de insertar: no sobrescribir valores previos.
     for name in names:
      if proposed[name]:
