@@ -127,7 +127,7 @@ def main():
       row_number,previous=oldindex[k]
       merged=dict(previous)
       for field in columns:
-       if field in ("seleccionado","validado","id_proveedor","id_cotizacion","codigo","id_cotizacion_ganadora"):continue
+       if field in ("seleccionado","validado","id_cotizacion","codigo","id_cotizacion_ganadora"):continue
        new_value=str(fresh.get(field,"") or "")
        if not merged.get(field) and new_value:merged[field]=new_value
       if merged!=previous:
