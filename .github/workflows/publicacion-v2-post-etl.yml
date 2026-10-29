@@ -58,7 +58,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m py_compile scripts/indexar_busqueda_frontend_v2.py scripts/generar_perfiles_v2.py scripts/generar_analitica_v2.py scripts/indexar_relaciones_frontend_v2.py scripts/indexar_relaciones_procesos_v2.py
-          for entidad in procesos ordenescompra; do
+          for entidad in procesos ordenescompra ofertas resultados; do
             python scripts/indexar_busqueda_frontend_v2.py --periodo "$PERIODO" --entidad "$entidad"
             python scripts/generar_perfiles_v2.py --periodo "$PERIODO" --entidad "$entidad"
             python scripts/generar_analitica_v2.py --periodo "$PERIODO" --entidad "$entidad"
@@ -70,7 +70,7 @@ jobs:
           p=os.environ["PERIODO"];root=pathlib.Path("frontend-v2/data")
           catalog=json.loads((root/"catalogo-publico.json").read_text())
           entry=next(x for x in catalog["periodos"] if x["periodo"]==p)
-          for entity in ("procesos","ordenescompra"):
+          for entity in ("procesos","ordenescompra","ofertas","resultados"):
               n=entry["conteos"][entity]
               paths=entry["partes"][entity]
               assert sum(len(json.loads((root/rel.removeprefix("data/")).read_text())) for rel in paths)==n
