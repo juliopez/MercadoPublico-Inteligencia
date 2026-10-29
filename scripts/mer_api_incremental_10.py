@@ -4,6 +4,7 @@ import datetime as dt,json,os,pathlib,time,urllib.error,urllib.parse,urllib.requ
 from zoneinfo import ZoneInfo
 from adaptar_detalle_compra_agil_mer import adaptar_detalle
 from importador_historicos_v2 import SCHEMA
+from normalizar_procesos_api_mer import proceso as normalizar_proceso, completar_proceso
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 STATE=ROOT/"control"/"cola_api_mer.json"
@@ -89,13 +90,18 @@ def main():
     raw=fetch("https://api2.mercadopublico.cl/v2/compra-agil/"+urllib.parse.quote(code,safe=""),ticket)
     p,pub=period_ok(raw,code,period)
     result=adaptar_detalle(raw)
-    # No inventar campos que no estén presentes; mantener contrato MER.
-    fechas=p.get("fechas") or {}
-    process={"codigo":code,"nombre":str(p.get("nombre") or p.get("titulo") or ""),
-       "estado":str(p.get("estado") or ""),"fecha_publicacion":pub[:10],
-       "fecha_cierre":str(fechas.get("fecha_cierre") or "")[:10],
-       "url_detalle":"https://buscador.mercadopublico.cl/ficha?code="+code,
-       "fecha_sincronizacion":now.isoformat(),"categoria":"Compra Ágil","modalidad":"Compra Ágil"}
+    # Aplanar campos oficiales; no escribir objetos en celdas.
+    process=normalizar_proceso(p,code,pub,now)
+    if code in keys["Procesos"]:
+     for i,old_row in enumerate(existing["Procesos"][1:],2):
+      if old_row and old_row[0]==code:
+       old=dict(zip(SCHEMA["Procesos"],old_row+[""]*len(SCHEMA["Procesos"])))
+       merged=completar_proceso(old,process)
+       if merged!=old:
+        sheets["Procesos"].update(range_name=f"A{i}:P{i}",values=[[str(merged.get(k,"") or "") for k in SCHEMA["Procesos"]]],value_input_option="RAW")
+        existing["Procesos"][i-1]=[str(merged.get(k,"") or "") for k in SCHEMA["Procesos"]]
+        report["procesos_enriquecidos"]=report.get("procesos_enriquecidos",0)+1
+       break
     proposed={
       "Procesos":[process] if code not in keys["Procesos"] else [],
       "Ofertas":[r for r in result["ofertas"] if (r["codigo"],r["id_cotizacion"]) not in keys["Ofertas"]],
