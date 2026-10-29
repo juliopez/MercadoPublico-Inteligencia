@@ -17,11 +17,12 @@ def exportar(periodo, aplicar):
  from google.oauth2.service_account import Credentials
  from importlib.util import spec_from_file_location,module_from_spec
  cred=os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
- if not cred or not pathlib.Path(cred).is_file():raise RuntimeError("Falta credencial local")
+ secret=os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON","")
+ if not secret and (not cred or not pathlib.Path(cred).is_file()):raise RuntimeError("Falta credencial autorizada")
  cat=json.loads((ROOT/"config/catalogo_sheets.json").read_text())
  dest=cat["periodos"][periodo]
  if dest["tipo"]!="operativo":raise RuntimeError("El mes no es operativo")
- creds=Credentials.from_service_account_file(cred,scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"])
+ creds=Credentials.from_service_account_file(cred,scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"]) if cred and pathlib.Path(cred).is_file() else Credentials.from_service_account_info(json.loads(secret),scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"])
  book=gspread.authorize(creds).open_by_key(dest["id"])
  spec=spec_from_file_location("mer_schema",ROOT/"scripts/importador_historicos_v2.py")
  mod=module_from_spec(spec);spec.loader.exec_module(mod)
