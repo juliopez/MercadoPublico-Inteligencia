@@ -19,5 +19,5 @@ jobs:
           python-version: '3.11'
       - name: Sintaxis y esquemas offline
         run: |
-          python -m py_compile scripts/mer_api_incremental_10.py scripts/exportar_mer_operativo_v2.py scripts/adaptar_detalle_compra_agil_mer.py
+          python -m py_compile scripts/mer_api_incremental_10.py scripts/exportar_mer_operativo_v2.py scripts/adaptar_detalle_compra_agil_mer.py scripts/normalizar_procesos_api_mer.py
           PYTHONPATH=scripts python -c "from importador_historicos_v2 import SCHEMA; assert all(k in SCHEMA for k in ('Procesos','Ofertas','Resultados'))"
