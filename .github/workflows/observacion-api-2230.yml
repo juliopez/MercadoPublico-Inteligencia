@@ -35,7 +35,7 @@ jobs:
           python - <<'PY'
           import json,subprocess
           r=json.load(open("control/ultimo_reporte_api_mer.json"))
-          if sum(r.get(x,0) for x in ("procesos","ofertas","resultados")):
+          if sum(r.get(x,0) for x in ("procesos","ofertas","resultados","procesos_enriquecidos","ofertas_enriquecidos","resultados_enriquecidos")):
               subprocess.run(["python","scripts/exportar_mer_operativo_v2.py","--periodo",r["periodo"],"--aplicar","--incluir-api"],check=True)
           else: print("SIN CAMBIOS MER; no exportar")
           PY
@@ -59,7 +59,7 @@ jobs:
           python - <<'PY'
           import json,subprocess
           r=json.load(open('control/ultimo_reporte_api_mer.json'))
-          if sum(r.get(k,0) for k in ('procesos','ofertas','resultados')):
+          if sum(r.get(k,0) for k in ('procesos','ofertas','resultados','procesos_enriquecidos','ofertas_enriquecidos','resultados_enriquecidos')):
               subprocess.run(['gh','workflow','run','publicacion-v2-post-etl.yml','--ref','main'],check=True)
           else: print('SIN CAMBIOS: no regenerar índices')
           PY
