@@ -114,8 +114,9 @@ def main():
       for r in proposed[name]:
        k=r["codigo"] if name=="Procesos" else (r["codigo"],r["id_cotizacion"] if name=="Ofertas" else r["id_cotizacion_ganadora"])
        if k not in real:raise RuntimeError("Verificación de escritura fallida "+name)
-    status="EN_SEGUIMIENTO" if not result["resultados"] else "COMPLETO"
-    cache[code]={"estado":status,"ultima_consulta":today,"proxima_revision":(now.date()+dt.timedelta(days=3)).isoformat() if status!="COMPLETO" else "", "intentos":0}
+    # Selección API no acredita resultado jurídico definitivo.
+    status="EN_SEGUIMIENTO"
+    cache[code]={"estado":status,"ultima_consulta":today,"proxima_revision":(now.date()+dt.timedelta(days=3)).isoformat(), "intentos":0}
     report["consultados"]+=1
    except urllib.error.HTTPError as exc:
     wait=2 if exc.code==429 else 1
