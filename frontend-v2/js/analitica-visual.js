@@ -55,6 +55,40 @@ function columns(data,active){
   cell.append(create('strong','',number.format(d.value)));const track=create('div','viz-column-track'),fill=create('div','viz-column-fill');fill.style.height=(100*d.value/max)+'%';track.append(fill);cell.append(track,create('span','',d.key.slice(5)));root.append(cell)}
  return root;
 }
+function compositionColumns(data,active){
+ const root=create('div','viz-columns viz-composition');
+ const legend=create('div','viz-composition-legend');
+ for(const [name,cls] of [['Licitación','licitacion'],['Compra Ágil','agil']]){
+  const item=create('span','viz-composition-key');
+  item.append(create('i','viz-composition-dot '+cls),document.createTextNode(name));
+  legend.append(item);
+ }
+ root.append(legend);
+ const panel=create('div','viz-composition-columns');
+ for(const d of data){
+  const cell=create('button','viz-column'+(d.key===active?' selected':''));cell.type='button';
+  const modes=Array.isArray(d.modalidades)?d.modalidades:[];
+  const agile=modes.reduce((n,[label,value])=>n+(/compra\s*ágil|compra\s*agil/i.test(String(label))?Number(value)||0:0),0);
+  const lic=modes.reduce((n,[label,value])=>n+(/licitaci[oó]n/i.test(String(label))?Number(value)||0:0),0);
+  const other=Math.max(0,d.value-agile-lic);
+  const denom=Math.max(1,d.value);
+  const agilePct=100*agile/denom,licPct=100*lic/denom,otherPct=100*other/denom;
+  const detail=d.key+': '+number.format(d.value)+' procesos; '+number.format(lic)+' licitaciones ('+pct(licPct)+'); '+number.format(agile)+' Compras Ágiles ('+pct(agilePct)+')'+(other?' y '+number.format(other)+' otras modalidades':'');
+  cell.title=detail;cell.setAttribute('aria-label',detail+'; seleccionar mes');cell.addEventListener('click',()=>choose(d.key));
+  cell.append(create('strong','',number.format(d.value)));
+  const track=create('div','viz-column-track viz-stack-track');
+  for(const [value,cls] of [[other,'other'],[agile,'agil'],[lic,'licitacion']]){
+   if(!value)continue;
+   const part=create('div','viz-stack-segment '+cls);part.style.height=(100*value/denom)+'%';track.append(part);
+  }
+  cell.append(track,create('span','',d.key.slice(5)),create('small','viz-composition-ratio',agile?pct(agilePct)+' ágil':'0 % ágil'));
+  if(d.key===active)cell.setAttribute('aria-current','true');
+  panel.append(cell);
+ }
+ root.append(panel);
+ root.append(create('p','muted viz-composition-note','Columnas de igual altura: muestran proporciones, no volumen. Los totales figuran arriba; el desglose inferior muestra las cantidades, incluso cuando una modalidad representa menos del 1 %.'));
+ return root;
+}
 function variation(data){
  const root=create('div','viz-variation');
  root.append(create('h4','','Variación mensual de registros'));
@@ -99,10 +133,10 @@ async function render(){
   actors.append(bars(rank,monetary?currency:v=>number.format(v),''));
   if(monetary&&base>0)actors.append(donut(rank,base));
   else actors.append(create('p','muted','La concentración monetaria estará disponible al regenerar los agregados públicos.'));
-  const activity=section('Actividad','Cantidad de registros publicados por mes.');
+  const activity=section('Cobertura mensual de registros','Cantidad de procesos o registros disponibles en el Observatorio por período. El mes operativo es parcial y no representa una caída de actividad del mercado.');
   const acsum=total(activityRows.map(x=>x.value));activity.append(kpis([['Total de registros publicados',number.format(acsum)],['Promedio mensual',number.format(Math.round(acsum/activityRows.length))]]));
-  activity.append(columns(activityRows,focus.periodo),variation(activityRows));
-  if(Array.isArray(focus.modalidades)&&focus.modalidades.length){const modes=create('div','viz-breakdown');modes.append(create('h4','','Modalidades del mes '+focus.periodo));const rows=focus.modalidades.slice(0,5).map(([label,value])=>({label:String(label),value:+value||0}));modes.append(bars(rows,v=>number.format(v),''));activity.append(modes)}
+  activity.append(entity==='procesos'?compositionColumns(data.map(d=>({key:d.periodo,value:+d.registros||0,modalidades:d.modalidades})),focus.periodo):columns(activityRows,focus.periodo),variation(activityRows));
+  if(entity==='procesos'&&Array.isArray(focus.modalidades)&&focus.modalidades.length){const modes=create('div','viz-breakdown');modes.append(create('h4','','Modalidades del mes '+focus.periodo+(focus.periodo===currentMonth()?' · Parcial':'')));const rows=focus.modalidades.slice(0,5).map(([label,value])=>({label:String(label),value:+value||0}));const modeTotal=total(rows.map(x=>x.value));modes.append(bars(rows,v=>number.format(v)+' · '+pct(modeTotal?100*v/modeTotal:0),''));activity.append(modes)}
   root.replaceChildren(money,actors,activity,create('p','muted viz-disclaimer','Cifras descriptivas de registros públicos. Octubre es un mes parcial; no interpretar variaciones como evolución contractual. Los nombres de organismos no están homologados.'));
   if(comparison){
    const comparisonPanel=create('div','viz-comparison');comparisonPanel.append(create('strong','','Comparación '+focus.periodo+' / '+comparison.periodo));
