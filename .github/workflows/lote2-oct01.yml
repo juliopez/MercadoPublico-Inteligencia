@@ -1,0 +1,21 @@
+name: Lote incremental 2 Compra Agil octubre
+on:
+  push:
+    branches: [etapa2/escritor-prueba-20261028]
+    paths:
+      - '.github/workflows/lote2-oct01.yml'
+permissions:
+  contents: read
+jobs:
+  lote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Dos consultas de detalle maximo, sin escritura
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+        run: python scripts/lote2_oct01_safe_logs.py
