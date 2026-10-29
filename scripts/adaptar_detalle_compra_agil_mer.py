@@ -22,7 +22,7 @@ def adaptar_detalle(data,*,clp_verificado=False):
         if not cid or cid in ids: raise ValueError("ID cotización vacío o duplicado")
         ids.add(cid)
         elegido=x.get("proveedor_seleccionado") in (True,1,"1")
-        o=fila(dict(id_cotizacion=cid,codigo=codigo,id_proveedor="",
+        o=fila(dict(id_cotizacion=cid,codigo=codigo,id_proveedor=x.get("codigo_empresa"),
           proveedor=x.get("razon_social"),monto_ofertado_clp=x.get("monto_total") if clp_verificado else "",
           fecha_oferta=x.get("fecha_creacion"),fuente=FUENTE,seleccionado="1" if elegido else "0",
           rut_proveedor_cot=x.get("rut_proveedor")),OFERTAS)
