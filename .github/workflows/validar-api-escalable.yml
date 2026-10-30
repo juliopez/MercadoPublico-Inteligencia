@@ -1,0 +1,33 @@
+name: Validar API local escalable
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/mer_api_incremental_10.py'
+      - 'scripts/cron_api_compra_agil_ubuntu.sh'
+      - 'deploy/systemd/mercadopublico-api.*'
+      - '.github/workflows/validar-api-escalable.yml'
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sintaxis y reglas de protección, sin consultar API
+        run: |
+          python3 -m py_compile scripts/mer_api_incremental_10.py
+          bash -n scripts/cron_api_compra_agil_ubuntu.sh
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('scripts/mer_api_incremental_10.py').read_text()
+          assert 'maximum<1 or maximum>50' in s
+          assert 'page_batches.append' in s
+          assert 'time.sleep(delay)' in s
+          assert 'code in cache for code in codes' in s
+          r=Path('scripts/cron_api_compra_agil_ubuntu.sh').read_text()
+          assert 'MER_API_RUN_NOW=1' in r
+          assert '.mer_escritura_compartida.lock' in r
+          assert 'reporte API anterior' in r
+          print('VALIDACION_API_LOCAL_ESCALABLE_OK')
+          PY
