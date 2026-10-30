@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compra Ágil MER: hasta 10 detalles/día, estado persistido en Git, sin Ubuntu."""
+"""Compra Ágil MER: hasta 10 detalles/ejecución; admite GitHub Actions o Ubuntu."""
 import datetime as dt,json,os,pathlib,time,urllib.error,urllib.parse,urllib.request
 from zoneinfo import ZoneInfo
 from adaptar_detalle_compra_agil_mer import adaptar_detalle
@@ -31,14 +31,15 @@ def main():
   print("SKIP: fuera de las 20 horas America/Santiago");return
  ticket=os.getenv("CHILECOMPRA_TICKET","").strip()
  secret=os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON","").strip()
- if not ticket or not secret:raise SystemExit("BLOQUEO: falta secreto de API o de escritura Google Sheets")
+ credential_path=os.getenv("GOOGLE_APPLICATION_CREDENTIALS","").strip()
+ if not ticket or not (secret or (credential_path and pathlib.Path(credential_path).is_file())):raise SystemExit("BLOQUEO: falta ticket API o credencial Google Sheets")
  maximum=int(os.getenv("MER_API_MAX_DETAIL","10"))
  if maximum!=10:raise SystemExit("BLOQUEO: se requieren exactamente 10 como máximo")
  period=now.strftime("%Y-%m")
  cat=json.loads((ROOT/"config/catalogo_sheets.json").read_text())
  dest=cat["periodos"].get(period)
  if not dest or dest.get("tipo")!="operativo":raise SystemExit("BLOQUEO: mes operativo inexistente")
- creds=Credentials.from_service_account_info(json.loads(secret),scopes=["https://www.googleapis.com/auth/spreadsheets"])
+ creds=(Credentials.from_service_account_info(json.loads(secret),scopes=["https://www.googleapis.com/auth/spreadsheets"]) if secret else Credentials.from_service_account_file(credential_path,scopes=["https://www.googleapis.com/auth/spreadsheets"]))
  book=gspread.authorize(creds).open_by_key(dest["id"])
  names=("Procesos","Ofertas","Resultados")
  sheets={k:book.worksheet(k) for k in names}
