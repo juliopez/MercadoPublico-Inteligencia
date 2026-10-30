@@ -23,3 +23,12 @@ En `scripts/exportar_mer_operativo_v2.py`, el exportador ahora registra en el ca
 - La carga API de noviembre debe iniciar una ventana nueva en `control/cola_api_mer.json`, preservando el cursor e historial de octubre.
 - Resguardar datos y evitar dos cron simultáneos con escrituras a las mismas tablas; el script local de API deberá utilizar la exclusión compartida con el cron principal o ejecutarse fuera de su ventana.
 - **Estado de preparación:** código GitHub preparado, validación de permisos del Sheet noviembre y despliegue real noviembre pendientes.
+
+## Verificación directa en Google Drive — 30/10
+- **Octubre:** `MER_2026_10_OPERATIVO`, en carpeta operativa; conserva 6 pestañas; cuenta de servicio del Observatorio con rol **writer**.
+- **Noviembre:** `MER_2026_11_OPERATIVO`, ID `1faLUhyB13Qty7dSNqbRHLCmpq-cxgW8bIOgPN0KCWnE`, en carpeta operativa `1m3feqWXUNtur6v17qvhZ9bQrB38-ruVS`; cuenta de servicio `observatorio-mercadopublico@mercadopublico-inteligencia.iam.gserviceaccount.com` con rol **writer**.
+- Pestañas verificadas en noviembre mediante metadatos y lectura de la primera fila: `Procesos` (16 columnas), `Proveedores` (6), `Ofertas` (9), `OrdenesCompra` (13), `VinculosCOT_OC` (7), `Resultados` (10). La segunda fila está vacía en todas.
+- **NO se realizó traslado de octubre, cierre oficial, creación adicional ni alteración de Google Sheets.** El rol writer registrado en Drive no sustituye una prueba real de escritura usando el archivo de credenciales de Ubuntu.
+
+## Decisión sobre automatización permanente
+El usuario solicita un proceso recurrente el **último día hábil**: preservar cierre del período, archivar el archivo y dejar un único destino operativo para el mes nuevo. Esto **no está automatizado aún** y no debe declararse listo para meses futuros. La implementación deberá contemplar calendario de feriados de Chile (no basta último lunes–viernes), evidencia del ETL final, bloqueo compartido, permisos de movimiento (cuenta de servicio writer puede no tener derechos de mover archivo del propietario), respaldo, reversión de fallos, creación/reutilización idempotente, seis encabezados, actualización de catálogo y continuidad del cierre oficial diferido. No activar un cron de rotación sin completar y probar esas condiciones.
