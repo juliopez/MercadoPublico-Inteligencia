@@ -1,0 +1,8 @@
+[Unit]
+Description=Compra Agil: una ejecucion cada hora, cuando sea autorizada
+[Timer]
+OnCalendar=*-*-* *:10:00
+Persistent=true
+Unit=mercadopublico-api.service
+[Install]
+WantedBy=timers.target
