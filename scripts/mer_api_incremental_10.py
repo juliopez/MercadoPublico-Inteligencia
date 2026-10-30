@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compra Ágil MER: hasta 10 detalles/ejecución; admite GitHub Actions o Ubuntu."""
+"""Compra Ágil MER: lotes incrementales configurables, con control de cola y cuota."""
 import datetime as dt,json,os,pathlib,time,urllib.error,urllib.parse,urllib.request
 from zoneinfo import ZoneInfo
 from adaptar_detalle_compra_agil_mer import adaptar_detalle
@@ -34,7 +34,9 @@ def main():
  credential_path=os.getenv("GOOGLE_APPLICATION_CREDENTIALS","").strip()
  if not ticket or not (secret or (credential_path and pathlib.Path(credential_path).is_file())):raise SystemExit("BLOQUEO: falta ticket API o credencial Google Sheets")
  maximum=int(os.getenv("MER_API_MAX_DETAIL","10"))
- if maximum!=10:raise SystemExit("BLOQUEO: se requieren exactamente 10 como máximo")
+ if maximum<1 or maximum>50:raise SystemExit("BLOQUEO: lote fuera de rango 1..50 (etapa de prueba)")
+ delay=float(os.getenv("MER_API_DELAY_SECONDS","3"))
+ if delay<3:raise SystemExit("BLOQUEO: pausa mínima 3 segundos")
  period=now.strftime("%Y-%m")
  cat=json.loads((ROOT/"config/catalogo_sheets.json").read_text())
  dest=cat["periodos"].get(period)
@@ -71,29 +73,36 @@ def main():
  if date_cursor>today:
   print("Sin nuevas fechas publicadas pendientes; revisar seguimientos")
  total_pages=None
- if len(candidates)<maximum and not test_code and not repair_all:
-  query=urllib.parse.urlencode({"publicado_desde":date_cursor+"T00:00:00","publicado_hasta":date_cursor+"T23:59:59",
-          "tamano_pagina":"10","numero_pagina":str(page),"ordenar_por":"FechaPublicacion"})
-  try:listed=fetch("https://api2.mercadopublico.cl/v2/compra-agil?"+query,ticket)
-  except urllib.error.HTTPError as e:
-   if e.code==429:
-    print("STOP HTTP 429 listado sin escrituras");return
-   raise
-  payload=listed.get("payload") or {}
-  if listed.get("success") not in (True,"OK") or not isinstance(payload.get("items"),list):raise ValueError("Listado API incompatible")
-  total_pages=int((payload.get("paginacion") or {}).get("total_paginas") or page)
-  items=payload["items"]
-  listing_codes=[str(i.get("codigo") or "") for i in items if isinstance(i,dict)]
-  for code in listing_codes:
-   if code.endswith("-COT26") and code not in cache and code not in candidates and len(candidates)<maximum:candidates.append(code)
-  # Avance solo si los registros de esta página están en cache o fueron seleccionados.
-  can_advance=all(not c.endswith("-COT26") or c in cache or c in candidates for c in listing_codes)
- else:
-  can_advance=False
+ # Recorrer varias páginas de listado sin perder los candidatos no seleccionados.
+ # El cursor solamente avanza después de procesar completamente cada página.
+ page_batches=[]
+ if len(candidates)<maximum and not test_code and not repair_all and date_cursor<=today:
+  scanning_page=page
+  while len(candidates)<maximum:
+   query=urllib.parse.urlencode({"publicado_desde":date_cursor+"T00:00:00","publicado_hasta":date_cursor+"T23:59:59",
+           "tamano_pagina":"10","numero_pagina":str(scanning_page),"ordenar_por":"FechaPublicacion"})
+   try:listed=fetch("https://api2.mercadopublico.cl/v2/compra-agil?"+query,ticket)
+   except urllib.error.HTTPError as e:
+    if e.code==429:
+     print("STOP HTTP 429 listado, sin procesar nuevos detalles")
+     break
+    raise
+   payload=listed.get("payload") or {}
+   if listed.get("success") not in (True,"OK") or not isinstance(payload.get("items"),list):raise ValueError("Listado API incompatible")
+   total_pages=int((payload.get("paginacion") or {}).get("total_paginas") or scanning_page)
+   listing_codes=[str(i.get("codigo") or "") for i in payload["items"] if isinstance(i,dict)]
+   # Guardar exactamente las páginas completas que podremos declarar procesadas.
+   needed=[c for c in listing_codes if c.endswith("-COT26") and c not in cache and c not in candidates]
+   available=maximum-len(candidates)
+   candidates.extend(needed[:available])
+   page_batches.append((scanning_page,listing_codes))
+   if len(needed)>available or scanning_page>=total_pages or len(candidates)>=maximum:break
+   scanning_page+=1
+   time.sleep(delay)
  report={"periodo":period,"fecha":today,"consultados":0,"procesos":0,"ofertas":0,"resultados":0,"errores":0,"pagina":page}
  try:
   for code in candidates:
-   time.sleep(3)
+   time.sleep(delay)
    try:
     raw=fetch("https://api2.mercadopublico.cl/v2/compra-agil/"+urllib.parse.quote(code,safe=""),ticket)
     p,pub=period_ok(raw,code,period)
@@ -167,11 +176,16 @@ def main():
     cache[code]={"estado":"ERROR","ultima_consulta":today,"proxima_revision":(now.date()+dt.timedelta(days=1 if type(exc).__name__=="APIError" else 2)).isoformat(),"intentos":int(cache.get(code,{}).get("intentos",0))+1,"error":type(exc).__name__}
     report["errores"]+=1
  finally:
-  if not test_code and not repair_all and can_advance and total_pages:
-   if page<total_pages:window["pagina"]=page+1
-   else:
-    window["pagina"]=1
-    window["fecha_cursor"]=(dt.date.fromisoformat(date_cursor)+dt.timedelta(days=1)).isoformat()
+  if not test_code and not repair_all and page_batches and total_pages:
+   # No pasar página hasta que todas las cotizaciones estén confirmadas en la cola.
+   # Los códigos fallidos también se guardan en cola como ERROR para reintentar.
+   for number,codes in page_batches:
+    if all(not code.endswith("-COT26") or code in cache for code in codes):
+     if number<total_pages:window["pagina"]=number+1
+     else:
+      window["pagina"]=1
+      window["fecha_cursor"]=(dt.date.fromisoformat(date_cursor)+dt.timedelta(days=1)).isoformat()
+    else:break
   STATE.write_text(json.dumps(state,ensure_ascii=False,indent=2)+"\n")
   pathlib.Path(os.environ.get("GITHUB_STEP_SUMMARY","/tmp/mer_summary")).write_text("MER API: "+json.dumps(report,ensure_ascii=False)+"\n")
   pathlib.Path("control/ultimo_reporte_api_mer.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n")
