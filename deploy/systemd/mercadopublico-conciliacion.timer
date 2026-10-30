@@ -1,0 +1,9 @@
+[Unit]
+Description=Comprobar conciliacion cada dia y recuperar al encender Ubuntu
+[Timer]
+OnCalendar=*-*-* 10:00:00
+OnBootSec=10min
+Persistent=true
+Unit=mercadopublico-conciliacion.service
+[Install]
+WantedBy=timers.target
