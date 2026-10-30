@@ -1,0 +1,8 @@
+[Unit]
+Description=Evaluar rotacion mensual al cierre de jornada
+[Timer]
+OnCalendar=Mon..Fri *-*-* 19:00:00
+Persistent=true
+Unit=mercadopublico-rotacion.service
+[Install]
+WantedBy=timers.target
