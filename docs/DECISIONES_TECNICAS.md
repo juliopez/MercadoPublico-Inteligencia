@@ -1,10 +1,10 @@
 # Decisiones técnicas vigentes — Plataforma Mercado Público
 
-**Aclaración editorial:** 26-10-2026. Las decisiones técnicas sustantivas se conservan; la ejecución de hoy requiere comprobación independiente.
+**Revisión editorial:** 30-10-2026. Fuente de estado actual: [Estado y continuidad 30/10](ESTADO_Y_CONTINUIDAD_2026-10-30.md). Mantener por separado rotación operativa y conciliación histórica definitiva.
 
 **Última revisión de reglas sustantivas:** 21-10-2026. Documento de continuidad y decisiones **vigentes**, no bitácora de experimentos. Antes de desarrollar, consultar [README](../README.md), [índice](INDICE_DOCUMENTACION.md) y código/configuración real.
 
-**Orden de continuidad:** consultar [Guía del 26/10](GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md) para iniciar con verificación del cron, luego API y solo después preparar automatización mensual. Para octubre prevalece el [runbook específico](RUNBOOK_CIERRE_2026_10.md) frente a descripciones generales anteriores del cierre.
+**Orden de continuidad actual:** confirmar la instalación local de los dos timers (rotación y preparación de conciliación) y solo después probar API Compra Ágil local. La [Guía del 26/10](GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md) queda como antecedente. Para octubre prevalece el [runbook específico](RUNBOOK_CIERRE_2026_10.md) frente a descripciones generales anteriores del cierre.
 
 ## Arquitectura
 
@@ -23,11 +23,14 @@
 
 ## Operación de noviembre
 
+- **Último día hábil:** rotación **operativa** separada del cierre oficial. El archivo del período anterior conserva su ID y puede archivarse antes de disponer de los ZIP oficiales; queda pendiente de conciliación. El siguiente mes se crea o reutiliza y se valida antes de cambiar el catálogo. Implementado pero no instalado/verificado en Ubuntu al 30/10.
+- **Día 10 o hábil siguiente:** se preparan los tres ZIP oficiales con recuperación al encender Ubuntu; aplicación conciliada y auditoría definitiva permanecen supervisadas.
+
 - **10 de noviembre de 2026:** primer cierre **manual y supervisado** de `MER_2026_10_OPERATIVO` empleando los tres ZIP oficiales de octubre. La fecha es para ejecutar el procedimiento, **no desarrollar scripts**.
-- Tras cargar y verificar, mover el **mismo archivo**, conservando ID, desde `02_Operativo_MER` a `01_Historicos_MER`; actualizar catálogo GitHub solo después de confirmar Drive.
+- El traslado de Drive corresponde ahora a la **rotación operativa** anterior al día 10. En el cierre oficial posterior, reconocer el archivo ya archivado, conciliar y actualizar su estado definitivo; no intentar trasladarlo de nuevo.
 - Guía de operación: [RUNBOOK_CIERRE_2026_10.md](RUNBOOK_CIERRE_2026_10.md). La cuenta de servicio utiliza el JSON local en Ubuntu `~/.config/mercadopublico/servicio-google.json`; **el JSON no demuestra automáticamente capacidad de mover archivos entre carpetas**. Comprobar permisos efectivos con la herramienta no destructiva antes del cierre, sin exponer secretos.
 - Si faltan ZIP, respaldo, permisos, autorización o verificaciones, **detener el cierre y registrar bloqueo**, sin traslado.
-- El cron **mensual no está instalado**. Solo se habilitará si el cierre manual resulta satisfactorio; primer ciclo previsto el **10 de diciembre de 2026**. No modificar el cron diario vigente por esta tarea.
+- Los dos **timers locales están preparados pero no instalados ni probados en Ubuntu**. No cambiar el cron diario de las 16:00. La conciliación definitiva sigue supervisada.
 
 ## Frontend V2 — decisiones de arquitectura vigentes (21-10-2026)
 
