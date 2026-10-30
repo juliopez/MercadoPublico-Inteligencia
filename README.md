@@ -4,6 +4,8 @@ Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes d
 
 **Última organización documental:** 26 de octubre de 2026. **Última evidencia operativa consolidada en la documentación:** 22 de octubre; la ejecución del 26/10 debe comprobarse.
 
+**Apertura de noviembre (02/11/2026):** preparada en código la incorporación automática del nuevo período público tras el primer ETL del mes. Octubre conserva su hoja y queda pendiente del cierre histórico supervisado del 10/11. [Ver preparación y comprobaciones](docs/APERTURA_NOVIEMBRE_2026_PREPARACION_30-10.md).
+
 **Migración API a cron Ubuntu (30/10/2026):** código preparado y programación automática de GitHub desactivada; instalación local pendiente. Ver [instrucciones de activación segura](docs/CRON_LOCAL_API_COMPRA_AGIL_2026-10-30.md). **No afirmar que el cron API local está activo antes de verificarlo en Ubuntu.**
 
 **Para retomar el proyecto en un nuevo chat (estado más reciente):** consultar primero la [Continuidad de orquestaciones del 29/10](docs/CONTINUIDAD_ORQUESTACIONES_2026-10-29.md). Incluye Ubuntu 16:00, GitHub Actions API reprogramada a 20:00 Chile, evidencia de validación y el desafío de escalamiento. Para antecedentes de cierre mensual, conservar también la [Guía del 26/10](docs/GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md).**
