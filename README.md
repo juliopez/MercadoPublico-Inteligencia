@@ -2,15 +2,9 @@
 
 Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes de compra** de Mercado Público. Este README describe el **estado vigente**; los procedimientos y antecedentes están separados en la documentación especializada.
 
-**Última organización documental:** 26 de octubre de 2026. **Última evidencia operativa consolidada en la documentación:** 22 de octubre; la ejecución del 26/10 debe comprobarse.
+**Estado documental verificado: 30 de octubre de 2026.** La operación Ubuntu de las 16:00 fue comprobada el 30/10 mediante exportación, publicación V2 y supervisor de GitHub. La instalación de los nuevos servicios locales no se ha verificado.
 
-**Apertura de noviembre (02/11/2026):** preparada en código la incorporación automática del nuevo período público tras el primer ETL del mes. Octubre conserva su hoja y queda pendiente del cierre histórico supervisado del 10/11. [Ver preparación y comprobaciones](docs/APERTURA_NOVIEMBRE_2026_PREPARACION_30-10.md).
-
-**Ciclo mensual Ubuntu (30/10/2026):** código de rotación operativa del último día hábil y preparación recuperable de la conciliación del día 10 desarrollado, todavía sin instalación de servicios en Ubuntu. [Guía única de instalación, pruebas y límites](docs/INSTALACION_ROTACION_CONCILIACION_2026-10-30.md). El cron de las 16:00 no se modificó.
-
-**Migración API a cron Ubuntu (30/10/2026):** código preparado y programación automática de GitHub desactivada; instalación local pendiente. Ver [instrucciones de activación segura](docs/CRON_LOCAL_API_COMPRA_AGIL_2026-10-30.md). **No afirmar que el cron API local está activo antes de verificarlo en Ubuntu.**
-
-**Para retomar el proyecto en un nuevo chat (estado más reciente):** consultar primero la [Continuidad de orquestaciones del 29/10](docs/CONTINUIDAD_ORQUESTACIONES_2026-10-29.md). Incluye Ubuntu 16:00, GitHub Actions API reprogramada a 20:00 Chile, evidencia de validación y el desafío de escalamiento. Para antecedentes de cierre mensual, conservar también la [Guía del 26/10](docs/GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md).**
+**[Punto único de continuidad y estado real](docs/ESTADO_Y_CONTINUIDAD_2026-10-30.md).** [Instalación de rotación y conciliación](docs/INSTALACION_ROTACION_CONCILIACION_2026-10-30.md) · [API local — etapa siguiente](docs/CRON_LOCAL_API_COMPRA_AGIL_2026-10-30.md) · [Índice documental](docs/INDICE_DOCUMENTACION.md).
 
 ## Acceder
 
@@ -69,7 +63,7 @@ GitHub Pages V2 (sin acceso directo a Sheets)
 
 ## Operación y mantenimiento
 
-La operación diaria utiliza desde el 22/10/2026 el orquestador integrado Ubuntu de las 16:00, con ETL de licitaciones y OC, conciliación documental COT–OC y publicación condicionada en V2. La primera ejecución automática integral Ubuntu → GitHub Actions → Pages está pendiente de comprobar; no confundir instalación con operación validada. El cierre mensual permanece separado del frontend. El primer cierre de octubre está **programado, no ejecutado**; requiere tres ZIP oficiales, respaldos, conciliación y autorización supervisada. No instalar cron mensual ni cambiar el ETL diario antes de la aprobación del ciclo.
+La operación diaria utiliza desde el 22/10/2026 el orquestador integrado Ubuntu de las 16:00, con ETL de licitaciones y OC, conciliación documental COT–OC y publicación condicionada en V2. La cadena Ubuntu → GitHub Actions → Pages quedó verificada el viernes 30/10; comprobar diariamente su continuidad mediante los logs y supervisión. La rotación operativa y la preparación recuperable de conciliación están implementadas en código y con temporizadores preparados, **todavía no instalados ni probados con Drive desde Ubuntu**. Octubre no se ha archivado definitivamente; la conciliación oficial sigue requiriendo tres ZIP, respaldos, auditoría y aprobación. No alterar el cron diario.
 
 - [Runbook del cierre de octubre](docs/RUNBOOK_CIERRE_2026_10.md)
 - [Procedimiento general de cierre mensual](docs/PROCEDIMIENTO_CIERRE_MENSUAL.md)
@@ -88,4 +82,4 @@ La operación diaria utiliza desde el 22/10/2026 el orquestador integrado Ubuntu
 
 **Últimas mejoras V2:** [búsqueda transversal multimes](docs/BUSQUEDA_TRANSVERSAL_MULTIMES_V2_2026-10-21.md) con detalle navegable, [participantes históricos](docs/PARTICIPANTES_HISTORICOS_V2_2026-10-21.md) y [vista unificada de OC](docs/VISTA_UNIFICADA_OC_FRONTEND_V2_2026-10-21.md). Verificación visual de funciones puntuales en curso; no equivale a auditoría integral.
 
-**Continuidad operativa vigente:** [cierre técnico y validación del 22/10](docs/CIERRE_OPERATIVO_Y_VALIDACION_2026-10-22.md), [publicación V2](docs/PUBLICACION_MER_V2_POST_ETL_2026-10-22.md) y [cron integrado](docs/CRON_INTEGRADO_UBUNTU_2026-10-22.md). El [plan anterior](docs/PLAN_MEJORAS_CRON_1600_2026-10-21.md) se conserva como antecedente histórico. La integración API Compra Ágil continúa pendiente.
+**Antecedentes operativos fechados (no son estado vigente):** [cierre técnico y validación del 22/10](docs/CIERRE_OPERATIVO_Y_VALIDACION_2026-10-22.md), [publicación V2](docs/PUBLICACION_MER_V2_POST_ETL_2026-10-22.md) y [cron integrado](docs/CRON_INTEGRADO_UBUNTU_2026-10-22.md). El [plan anterior](docs/PLAN_MEJORAS_CRON_1600_2026-10-21.md) se conserva como antecedente histórico. El ejecutor API local está preparado pero no activado; su prueba es la siguiente etapa.
