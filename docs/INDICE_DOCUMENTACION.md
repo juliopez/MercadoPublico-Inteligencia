@@ -1,10 +1,17 @@
 # Índice documental — Observatorio de Mercado Público
 
-**Reorganización de navegación:** 26-10-2026. Ruta recomendada: [README del proyecto](../README.md) → **este índice** → [decisiones técnicas](DECISIONES_TECNICAS.md) → documento especializado → código/evidencias.
+**Última revisión de navegación:** 30-10-2026. Ruta recomendada: [README del proyecto](../README.md) → **este índice** → [decisiones técnicas](DECISIONES_TECNICAS.md) → documento especializado → código/evidencias.
 
 > Los documentos fechados conservan el contexto de una etapa y pueden contener pendientes ya resueltos. **No deben usarse como estado actual** sin contrastarlos con el README y el código. No borrar evidencia histórica ni credenciales operativas locales.
 
-## Continuidad vigente — 28 de octubre de 2026
+## Continuidad vigente — 30 de octubre de 2026
+
+- **[Estado real y continuidad del proyecto, 30/10](ESTADO_Y_CONTINUIDAD_2026-10-30.md)** — documento principal para retomar; cron 16:00 verificado, rotación y conciliación pendientes de instalación, API local siguiente.
+- **[Instalación Ubuntu de rotación y conciliación](INSTALACION_ROTACION_CONCILIACION_2026-10-30.md)** — dos timers, verificaciones y limitaciones de Drive.
+- **[Preparación verificada de noviembre](APERTURA_NOVIEMBRE_2026_PREPARACION_30-10.md)** — seis pestañas y permisos declarados; aún sin carga real de noviembre.
+- **[API Compra Ágil local, pendiente de prueba](CRON_LOCAL_API_COMPRA_AGIL_2026-10-30.md)** — no está instalada; schedule GitHub desactivado.
+
+## Antecedentes de 27–28 de octubre
 
 - **[Auditoría real API ↔ MER del 28/10](AUDITORIA_API_MER_2026-10-28.md)** — cabeceras de las seis tablas verificadas en Sheets y bloqueos precisos de los clientes actuales.
 - **[Etapa 2: preparación e integración incremental de API ChileCompra](PLAN_ETAPA2_API_2026-10-28.md)** — guía de trabajo del miércoles 28, riesgos de esquema, fuentes, claves y controles; sin nuevas escrituras autorizadas.
@@ -13,7 +20,7 @@
 
 ## Comenzar una nueva sesión
 
-- **[Guía de continuidad: cron → API → ciclo mensual](GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md)** — lectura inicial, alcance, orden y controles de la siguiente etapa.
+- **[Guía histórica de continuidad 26/10 (no vigente)](GUIA_CONTINUIDAD_AUTOMATIZACION_2026-10-26.md)** — lectura inicial, alcance, orden y controles de la siguiente etapa.
 - La validación del **26/10** no consta aún en los documentos revisados; consultar evidencia del cron de las 16:00 y del workflow de las 17:00 antes de afirmar su resultado.
 - El [plan del 21/10](PLAN_MEJORAS_CRON_1600_2026-10-21.md) es antecedente y **no describe el estado del cron integrado instalado el 22/10**.
 
