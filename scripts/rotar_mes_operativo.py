@@ -28,15 +28,26 @@ def run(dry):
  import gspread
  from google.oauth2.service_account import Credentials
  from google.auth.transport.requests import Request
- now=dt.datetime.now(TZ);day=now.date();period=day.strftime("%Y-%m")
+ now=dt.datetime.now(TZ);day=now.date()
  hol=json.loads((ROOT/"config/feriados_chile_conciliacion.json").read_text())
  if str(day.year) not in hol["anios_verificados"]:raise SystemExit("BLOQUEO: validar feriados del año antes de rotar")
- last=last_business(day,set(hol["fechas"]))
- if day!=last:
-  print("NO_CORRESPONDE_ROTACION",period,"ultimo_habil",last);return
- if not dry and now.hour<18:raise SystemExit("BLOQUEO: cierre solo después de las 18:00 Chile")
+ holidays=set(hol["fechas"])
+ current_last=last_business(day,holidays)
+ recovery=False
+ if day==current_last:
+  closing_day=day
+ else:
+  previous=day.replace(day=1)-dt.timedelta(days=1)
+  first=day.replace(day=1)
+  while first.weekday()>=5 or first.isoformat() in holidays:first+=dt.timedelta(days=1)
+  if day==first and now.hour<16:
+   closing_day=last_business(previous,holidays);recovery=True
+  else:
+   print("NO_CORRESPONDE_ROTACION",day,"ultimo_habil",current_last);return
+ period=closing_day.strftime("%Y-%m")
+ if not dry and not recovery and now.hour<18:raise SystemExit("BLOQUEO: cierre solo después de las 18:00 Chile")
  cat=json.loads((ROOT/"config/catalogo_sheets.json").read_text())
- current=cat["periodos"].get(period);nperiod=next_month(day).strftime("%Y-%m")
+ current=cat["periodos"].get(period);nperiod=next_month(closing_day).strftime("%Y-%m")
  following=cat["periodos"].get(nperiod)
  if not current or current.get("tipo")!="operativo" or not current.get("id"):raise SystemExit("BLOQUEO: mes actual no operativo")
  secret=os.getenv("GOOGLE_APPLICATION_CREDENTIALS",str(pathlib.Path.home()/".config/mercadopublico/servicio-google.json"))
@@ -95,7 +106,7 @@ def run(dry):
  # Exigir evidencia reciente del ETL de las 16:00 antes de archivar.
  status=json.loads((ROOT/"salida_operativa/estado_sincronizacion.json").read_text())["ultima_ejecucion"]
  stamp=dt.datetime.fromisoformat(status["ejecucion_chile"])
- if status["estado"]!="EXITOSA" or status["periodo"]!=period or stamp.date()!=day or stamp.hour<16:
+ if status["estado"]!="EXITOSA" or status["periodo"]!=period or stamp.date()!=closing_day or stamp.hour<16:
   raise SystemExit("BLOQUEO: falta ETL validado del último día hábil")
  statefile=FOLDER/(period+".json")
  state=json.loads(statefile.read_text()) if statefile.exists() else {"periodo":period,"siguiente":nperiod,"id":current["id"]}
