@@ -1,0 +1,9 @@
+[Unit]
+Description=Rotacion operativa MER protegida
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Julio Lopez/chilecompra/MercadoPublico-Inteligencia
+ExecStart=/bin/bash scripts/ubuntu_rotacion_mensual.sh
+TimeoutStartSec=20min
