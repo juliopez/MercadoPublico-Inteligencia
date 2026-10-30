@@ -46,7 +46,7 @@ def main():
  month=prev
  cat=json.loads((ROOT/"config/catalogo_sheets.json").read_text(encoding="utf8"))
  src=cat["periodos"].get(month)
- if not src or src.get("tipo")!="operativo" or not src.get("id"):p.error("Mes anterior no es operativo catalogado")
+ if not src or src.get("tipo") not in ("operativo","historico") or not src.get("id"):p.error("Mes anterior no está catalogado")
  cur=cat["periodos"].get(now.strftime("%Y-%m"))
  if not cur or cur.get("tipo")!="operativo" or not cur.get("id"):p.error("Falta mes operativo vigente")
  banned=set(cat.get("excluidos",{}).values())
