@@ -1,5 +1,7 @@
 # Guía de continuidad — automatización del Observatorio (26-10-2026)
 
+> **Archivo histórico, sustituido para continuidad actual** por [Estado y continuidad del 30/10](ESTADO_Y_CONTINUIDAD_2026-10-30.md).
+
 **Propósito:** punto de entrada para una nueva conversación. Esta guía es un mapa de trabajo, **no acredita una ejecución del cron del 26/10** ni autoriza escrituras.
 
 ## Orden de lectura y autoridad
