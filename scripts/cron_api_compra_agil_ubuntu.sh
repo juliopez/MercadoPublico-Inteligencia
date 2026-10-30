@@ -17,12 +17,18 @@ flock -n 8 || { echo "MER ocupado por ETL Ubuntu o conciliación; API omitida si
 git pull --ff-only origin main
 [[ -x "$REPO/.venv/bin/python" ]] || { echo "Falta .venv local validado" >&2; exit 1; }
 "$REPO/.venv/bin/python" -c "import gspread, google.auth"
-export MER_API_MAX_DETAIL=10
+export MER_API_MAX_DETAIL="${MER_API_MAX_DETAIL:-10}"
+export MER_API_DELAY_SECONDS="${MER_API_DELAY_SECONDS:-3}"
+export MER_API_RUN_NOW=1
+# Solo ejecución local manual o timer autorizado.
 "$REPO/.venv/bin/python" scripts/mer_api_incremental_10.py
-python3 - <<'PY'
-import json,subprocess
+"$REPO/.venv/bin/python" - <<'PY'
+import json,subprocess,datetime
+from zoneinfo import ZoneInfo
 r=json.load(open('control/ultimo_reporte_api_mer.json'))
 changed=sum(int(r.get(k,0)) for k in ('procesos','ofertas','resultados','procesos_enriquecidos','ofertas_enriquecidos','resultados_enriquecidos'))
+if r.get('fecha') != datetime.datetime.now(ZoneInfo('America/Santiago')).date().isoformat():
+ raise SystemExit('BLOQUEO: reporte API anterior a esta ejecución')
 if changed:
  subprocess.run(['.venv/bin/python','scripts/exportar_mer_operativo_v2.py','--periodo',r['periodo'],'--aplicar','--incluir-api'],check=True)
  print('EXPORTACION_API_REALIZADA',changed)
