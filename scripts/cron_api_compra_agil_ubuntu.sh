@@ -13,7 +13,8 @@ flock -n 9 || { echo "Otra sincronización API local está ejecutándose"; exit 
 mkdir -p "$REPO/logs"
 exec 8>"$REPO/logs/.mer_escritura_compartida.lock"
 flock -n 8 || { echo "MER ocupado por ETL Ubuntu o conciliación; API omitida sin consultas"; exit 0; }
-[[ -z "$(git status --porcelain)" ]] || { echo "Árbol Git con cambios; detener antes de sincronizar" >&2; exit 1; }
+[[ -z "$(git status --porcelain --untracked-files=no)" ]] || { echo "Archivos versionados con cambios; detener para evitar sobrescritura" >&2; exit 1; }
+# logs/, salida_operativa/ y scripts locales no versionados permanecen intactos.
 git pull --ff-only origin main
 [[ -x "$REPO/.venv/bin/python" ]] || { echo "Falta .venv local validado" >&2; exit 1; }
 "$REPO/.venv/bin/python" -c "import gspread, google.auth"
