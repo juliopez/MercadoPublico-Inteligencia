@@ -31,7 +31,7 @@ systemctl --user enable --now mercadopublico-rotacion.timer mercadopublico-conci
 systemctl --user list-timers
 ```
 
-Si Ubuntu no conserva una sesión de usuario, configurar linger conscientemente para servicio de usuario con el equipo encendido. `Persistent=true` recupera eventos perdidos en un apagado, **pero el script de rotación exige fecha del último día hábil y por tanto no recupera aún una rotación fuera de plazo**; si el equipo está apagado esa tarde, es necesaria revisión controlada antes de reanudar ETL. No confundir con la recuperación de conciliación, que sí permite días posteriores al 10.
+Si Ubuntu no conserva una sesión de usuario, configurar linger conscientemente para servicio de usuario con el equipo encendido. `Persistent=true` recupera eventos perdidos en un apagado, **y el script permite recuperar la rotación en el primer día hábil siguiente, antes de las 16:00**, siempre que exista constancia del ETL exitoso del último día hábil. Si el equipo vuelve a encenderse después de esa ventana, el proceso bloquea la rotación automática y requiere intervención supervisada. No confundir con la recuperación de conciliación, que sí permite días posteriores al 10.
 
 ## Verificación y limitaciones reales
 - `journalctl --user -u mercadopublico-rotacion.service -n 100 --no-pager`
