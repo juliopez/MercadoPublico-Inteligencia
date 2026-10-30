@@ -66,11 +66,12 @@ def run(dry):
   return b
  book=check(current["id"],False)
  old=meta(current["id"]);opf=cat["carpetas"]["operativo"];histf=cat["carpetas"]["historicos"]
- if old["id"]!=current["id"] or opf not in old.get("parents",[]):raise ValueError("Origen no está en carpeta operativa")
+ if old["id"]!=current["id"] or opf not in old.get("parents",[]):
+  raise ValueError("BLOQUEO DRIVE ORIGEN: id_esperado="+current["id"]+" id_observado="+str(old.get("id"))+" carpeta_esperada="+opf+" carpetas_visibles="+repr(old.get("parents",[]))+" nombre="+repr(old.get("name"))+"; comprobar visibilidad de carpetas para la cuenta de servicio, no forzar traslado")
  if following:
   if following.get("tipo")!="operativo" or following["id"]==current["id"]:raise ValueError("Destino preexistente inválido")
   target=meta(following["id"])
-  if opf not in target.get("parents",[]):raise ValueError("Destino fuera de carpeta operativa")
+  if opf not in target.get("parents",[]):raise ValueError("BLOQUEO DRIVE DESTINO: carpeta_esperada="+opf+" carpetas_visibles="+repr(target.get("parents",[]))+"; verificar cuenta de servicio")
   if target.get("name")!="MER_"+nperiod.replace("-","_")+"_OPERATIVO":raise ValueError("Nombre destino inesperado")
   check(following["id"],True)
  elif dry:
