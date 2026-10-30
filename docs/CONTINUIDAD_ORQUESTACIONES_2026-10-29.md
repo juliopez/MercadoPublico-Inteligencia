@@ -1,5 +1,7 @@
 # Continuidad operativa — 29 de octubre de 2026
 
+> **Documento histórico.** Para el estado vigente desde el 30/10, usar [Estado y continuidad 30/10](ESTADO_Y_CONTINUIDAD_2026-10-30.md). El schedule nocturno de API que aquí se describe fue **desactivado**, y la ejecución local quedó preparada pero no instalada.
+
 ## Estado del Observatorio
 - Repositorio: `juliopez/MercadoPublico-Inteligencia`, rama `main`. Frontend V2: https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/.
 - MER de octubre: Google Sheets operativo, seis pestañas internas (`Procesos`, `Ofertas`, `Resultados`, `OrdenesCompra`, `Proveedores`, `VinculosCOT_OC`). Cuatro entidades exportadas al frontend.
