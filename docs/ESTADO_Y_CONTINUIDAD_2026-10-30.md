@@ -69,3 +69,13 @@ Esto explica el fallo anterior: la consulta del archivo octubre con la cuenta de
 **Próxima acción, sin bucle:** corregir permisos de las dos carpetas en Drive con la cuenta propietaria, o adoptar explícitamente la vía OAuth de propietario; después realizar **una sola** prueba de acceso y, si es positiva, una prueba controlada del cierre. Hasta entonces rotación mensual = **BLOQUEADA**, no operativa. El timer habilitado no demuestra traslado correcto.
 
 **Control preventivo:** considerar pausar temporalmente el timer de rotación mientras permanezca el bloqueo, evitando intentos automáticos fallidos. La conciliación sigue separada y octubre permanece íntegro.
+
+## Causa corroborada por metadatos del propietario — 30/10, 20:20 Chile
+La lectura directa de metadatos de las carpetas con la cuenta propietaria confirmó:
+- `02_Operativo_MER` ID `1m3feqWXUNtur6v17qvhZ9bQrB38-ruVS`: **único permiso explícito: propietario**, carpeta no compartida.
+- `01_Historicos_MER` ID `1YC-1MT1QCnAvpKgDACCH-NKnV9caIFyW`: **único permiso explícito: propietario**, carpeta no compartida.
+- Cuenta de servicio que ya tiene acceso directo de edición a las hojas: `observatorio-mercadopublico@mercadopublico-inteligencia.iam.gserviceaccount.com`.
+
+**Causa raíz confirmada:** carpetas Drive sin permisos para la cuenta de servicio; su consulta de carpeta devuelve 404 y las hojas devuelven `parents=[]`. La solución es compartir **ambas carpetas** con esa cuenta como **Editor** desde la interfaz de Drive de la persona propietaria. La integración conectada permite consultar metadatos, pero no concede actualmente permisos a carpetas (su acción de compartir admite archivos, no URLs de carpetas). No simular que se corrigió el acceso.
+
+**Después de compartir**, realizar una única verificación de acceso con la misma credencial local en Ubuntu, validar que la cuenta puede trasladar archivos entre estas carpetas y solo entonces ejecutar la rotación con respaldo y evidencia de ETL. Google puede restringir movimientos entre propietarios o carpetas incluso a editores; si ocurre, conservar el bloqueo y ejecutar el traslado con credenciales OAuth de propietario. **No desactivar el control de padres ni intentar más veces sin cambiar permisos**.
