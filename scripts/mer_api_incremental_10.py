@@ -37,10 +37,18 @@ def main():
  if maximum<1 or maximum>50:raise SystemExit("BLOQUEO: lote fuera de rango 1..50 (etapa de prueba)")
  delay=float(os.getenv("MER_API_DELAY_SECONDS","3"))
  if delay<3:raise SystemExit("BLOQUEO: pausa mínima 3 segundos")
- period=now.strftime("%Y-%m")
  cat=json.loads((ROOT/"config/catalogo_sheets.json").read_text())
- dest=cat["periodos"].get(period)
- if not dest or dest.get("tipo")!="operativo":raise SystemExit("BLOQUEO: mes operativo inexistente")
+ calendar_period=now.strftime("%Y-%m")
+ active=[(p,v) for p,v in cat["periodos"].items() if v.get("tipo")=="operativo"]
+ if len(active)!=1:raise SystemExit("BLOQUEO: se requiere un único mes operativo en catálogo")
+ period,dest=active[0]
+ if period<calendar_period:raise SystemExit("BLOQUEO: mes operativo atrasado respecto de Santiago")
+ if period>calendar_period:
+  # Cambio de mes adelantado: no consultar ni poblar noviembre con registros de octubre.
+  if os.getenv("MER_API_RUN_NOW")=="1":
+   print("BLOQUEO_CONTROLADO: mes operativo futuro "+period+"; primera consulta autorizada a partir de "+period+"-01");return
+  raise SystemExit("BLOQUEO: mes operativo futuro")
+
  creds=(Credentials.from_service_account_info(json.loads(secret),scopes=["https://www.googleapis.com/auth/spreadsheets"]) if secret else Credentials.from_service_account_file(credential_path,scopes=["https://www.googleapis.com/auth/spreadsheets"]))
  book=gspread.authorize(creds).open_by_key(dest["id"])
  names=("Procesos","Ofertas","Resultados")
