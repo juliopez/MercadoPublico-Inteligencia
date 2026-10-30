@@ -1,4 +1,6 @@
-# Cierre supervisado MER v2 — Octubre 2026
+# Cierre histórico definitivo supervisado MER v2 — Octubre 2026
+
+> **Actualización de arquitectura 30/10/2026:** consultar primero [Estado y continuidad vigente](ESTADO_Y_CONTINUIDAD_2026-10-30.md). La **rotación operativa** puede haber trasladado octubre a históricos antes del día 10. Verificar carpeta, nombre e ID reales antes de ejecutar; no mover de nuevo un archivo ya archivado. La conciliación oficial sigue supervisada, exige tres ZIP y aprobación. Las instrucciones de traslado anteriores a esta actualización describen el diseño previo.
 
 **Fecha:** 10 de noviembre de 2026. **Objetivo:** solo ejecutar y verificar; **no desarrollar código**.
 
