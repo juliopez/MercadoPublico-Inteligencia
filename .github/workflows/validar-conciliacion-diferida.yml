@@ -1,0 +1,31 @@
+name: Validar conciliacion diferida mes habil
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verificar_ventana_conciliacion.py'
+      - 'scripts/ubuntu_preparar_conciliacion_persistente.sh'
+      - 'scripts/orquestar_cierre_mensual.py'
+      - 'config/feriados_chile_conciliacion.json'
+      - '.github/workflows/validar-conciliacion-diferida.yml'
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar programación sin escribir en Sheets
+        run: |
+          python3 -m py_compile scripts/verificar_ventana_conciliacion.py scripts/orquestar_cierre_mensual.py
+          bash -n scripts/ubuntu_preparar_conciliacion_persistente.sh
+          python3 - <<'PY'
+          import datetime as dt,json,pathlib
+          from scripts.verificar_ventana_conciliacion import first_eligible
+          cfg=json.loads(pathlib.Path('config/feriados_chile_conciliacion.json').read_text())
+          h=set(cfg['fechas'])
+          assert first_eligible(dt.date(2026,11,2),h)==dt.date(2026,11,10)
+          assert first_eligible(dt.date(2026,10,1),h)==dt.date(2026,10,13)  # día 10 sábado, 12 feriado
+          assert first_eligible(dt.date(2026,12,1),h)==dt.date(2026,12,10)
+          print('CALENDARIO_HABIL_VALIDADO')
+          PY
