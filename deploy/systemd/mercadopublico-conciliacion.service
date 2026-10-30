@@ -1,0 +1,9 @@
+[Unit]
+Description=Preparacion mensual historica MER sin escritura final
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Julio Lopez/chilecompra/MercadoPublico-Inteligencia
+ExecStart=/bin/bash scripts/ubuntu_preparar_conciliacion_persistente.sh
+TimeoutStartSec=6h
