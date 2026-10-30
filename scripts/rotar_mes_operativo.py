@@ -63,13 +63,35 @@ def run(dry):
   if target.get("name")!="MER_"+nperiod.replace("-","_")+"_OPERATIVO":raise ValueError("Nombre destino inesperado")
   check(following["id"],True)
  elif dry:
-  print("DESTINO_NO_CREADO: se creará una copia vacía de plantilla solo al aplicar")
- else:
-  # Por seguridad se exige que el archivo del mes siguiente ya exista y esté verificado.
-  # La creación automática de un Drive de tercero podría fallar por cuota/permisos.
-  raise SystemExit("BLOQUEO: registrar/crear destino del mes siguiente antes del cierre")
+  print("DESTINO_NO_REGISTRADO: se requerirá creación controlada con permisos Drive")
  if dry:
-  print("ROTACION_PREPARADA",period,"->",nperiod,"destino",following["id"] if following else "PENDIENTE");return
+  print("ROTACION_PREPARADA",period,"->",nperiod,"destino",following["id"] if following else "POR_CREAR");return
+ if not following:
+  # Preparar Sheets desde cero; no copiar datos de otro mes.
+  title="MER_"+nperiod.replace("-","_")+"_OPERATIVO"
+  created=g.create(title)
+  try:
+   for tab,cols in SCHEMA.items():
+    sheet=created.worksheet("Sheet1") if tab==next(iter(SCHEMA)) else created.add_worksheet(title=tab,rows=1000,cols=len(cols))
+    if sheet.title!=tab:sheet.update_title(tab)
+    sheet.update(range_name="A1",values=[cols])
+   info=meta(created.id)
+   oldparents=info.get("parents",[])
+   q=urllib.parse.urlencode({"addParents":opf,"removeParents":",".join(oldparents),"fields":"id,name,parents","supportsAllDrives":"true"})
+   api("https://www.googleapis.com/drive/v3/files/"+created.id+"?"+q,token,"PATCH",{"name":title})
+   check(created.id,True)
+   # El ID debe existir en GitHub antes de marcar octubre histórico.
+   out=subprocess.run(["gh","api","repos/juliopez/MercadoPublico-Inteligencia/contents/config/catalogo_sheets.json"],capture_output=True,text=True,check=True)
+   import base64
+   info=json.loads(out.stdout);remote=json.loads(base64.b64decode(info["content"]))
+   if nperiod in remote["periodos"]:raise RuntimeError("Destino apareció concurrentemente en catálogo")
+   remote["periodos"][nperiod]={"tipo":"operativo","id":created.id,"estado":"preparado_vacio_para_"+nperiod,"filas":0}
+   content=base64.b64encode((json.dumps(remote,ensure_ascii=False,indent=2)+"\\n").encode()).decode()
+   subprocess.run(["gh","api","--method","PUT","repos/juliopez/MercadoPublico-Inteligencia/contents/config/catalogo_sheets.json","-f","message=chore(mer): crear mes operativo "+nperiod,"-f","sha="+info["sha"],"-f","branch=main","-f","content="+content],check=True)
+   following=remote["periodos"][nperiod]
+  except Exception:
+   print("BLOQUEO: creación incompleta; revisar archivo",created.id,"antes de reintentar",file=sys.stderr)
+   raise
  # Exigir evidencia reciente del ETL de las 16:00 antes de archivar.
  status=json.loads((ROOT/"salida_operativa/estado_sincronizacion.json").read_text())["ultima_ejecucion"]
  stamp=dt.datetime.fromisoformat(status["ejecucion_chile"])
