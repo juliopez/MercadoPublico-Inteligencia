@@ -55,3 +55,17 @@ Probar **API Compra Ágil desde Ubuntu**, inicialmente diez procesos, sin schedu
 - **Bloqueo operativo**: no ejecutar `--aplicar` ni eliminar el control `parents`. Confirmar si la cuenta de servicio tiene acceso real a ambas carpetas y capacidad para mover el archivo; el permiso de edición sobre la hoja no implica permiso para moverla. Si no lo tiene, requerir movimiento por cuenta propietaria o ajustar permisos con seguridad, y adaptar la verificación sin comprometer integridad.
 - Los temporizadores `mercadopublico-rotacion.timer` y `mercadopublico-conciliacion.timer` figuran `enabled, active (waiting)` en Ubuntu; esto **no acredita que sus tareas hayan funcionado**.
 - Para evitar falsas certezas, revisar logs y resultado de una prueba no destructiva antes de considerar cerrado octubre o comenzar API local.
+
+## Diagnóstico definitivo de permisos Drive — 30/10, 20:19 Chile
+
+**Evidencia aportada desde Ubuntu:** `bash scripts/ubuntu_cierre_supervisado.sh verificar-acceso` terminó con **código 1**, porque la API Drive respondió `HTTP 404 File not found` para la **carpeta operativa** configurada (`1m3feqWXUNtur6v17qvhZ9bQrB38-ruVS`).
+
+Esto explica el fallo anterior: la consulta del archivo octubre con la cuenta de servicio devolvió `parents=[]`. **La cuenta de servicio tiene acceso a la hoja, pero no acceso suficiente a sus carpetas padre por la API Drive.** La cuenta propietaria sí confirmó que ambas hojas están en la carpeta operativa correcta. No hay evidencia de que se hayan perdido archivos o que su ubicación sea incorrecta.
+
+**NO repetir:** `rotar_mes_operativo.py` en simulación, `ubuntu_cierre_supervisado.sh verificar-acceso`, ni múltiples `git pull` para diagnosticar el mismo HTTP 404; la causa está identificada. Ninguno de esos comandos solucionará permisos de carpeta.
+
+**Resolución estructural, una sola vez:** la persona propietaria debe conceder permisos adecuados a la identidad de servicio sobre **las carpetas** `02_Operativo_MER` y `01_Historicos_MER`, no solamente sobre las hojas, y comprobar si Google permite mover entre ambas con esa identidad (la propiedad del documento puede imponer restricciones adicionales). Si esa ruta no fuera viable, diseñar una rotación por la identidad propietaria con autorización OAuth, no saltarse el chequeo `parents` ni suponer que permiso `writer` de Sheets autoriza movimientos. Mantener inalterado el cron 16:00 y el destino de noviembre ya existente.
+
+**Próxima acción, sin bucle:** corregir permisos de las dos carpetas en Drive con la cuenta propietaria, o adoptar explícitamente la vía OAuth de propietario; después realizar **una sola** prueba de acceso y, si es positiva, una prueba controlada del cierre. Hasta entonces rotación mensual = **BLOQUEADA**, no operativa. El timer habilitado no demuestra traslado correcto.
+
+**Control preventivo:** considerar pausar temporalmente el timer de rotación mientras permanezca el bloqueo, evitando intentos automáticos fallidos. La conciliación sigue separada y octubre permanece íntegro.
