@@ -72,7 +72,7 @@ def run(dry):
   created=g.create(title)
   try:
    for tab,cols in SCHEMA.items():
-    sheet=created.worksheet("Sheet1") if tab==next(iter(SCHEMA)) else created.add_worksheet(title=tab,rows=1000,cols=len(cols))
+    sheet=created.get_worksheet(0) if tab==next(iter(SCHEMA)) else created.add_worksheet(title=tab,rows=1000,cols=len(cols))
     if sheet.title!=tab:sheet.update_title(tab)
     sheet.update(range_name="A1",values=[cols])
    info=meta(created.id)
