@@ -1,0 +1,11 @@
+[Unit]
+Description=Sincronizacion incremental Compra Agil MER desde Ubuntu
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Julio Lopez/chilecompra/MercadoPublico-Inteligencia
+Environment=MER_API_MAX_DETAIL=25
+Environment=MER_API_DELAY_SECONDS=3
+ExecStart=/bin/bash scripts/cron_api_compra_agil_ubuntu.sh
+TimeoutStartSec=55min
