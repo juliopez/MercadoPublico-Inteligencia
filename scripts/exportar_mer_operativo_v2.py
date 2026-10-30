@@ -30,12 +30,24 @@ def exportar(periodo, aplicar, incluir_api=False):
  mod=module_from_spec(spec);spec.loader.exec_module(mod)
  public=json.loads((DATA/"catalogo-publico.json").read_text())
  matches=[p for p in public["periodos"] if p["periodo"]==periodo]
- if len(matches)!=1:raise RuntimeError("Periodo publico inexistente o duplicado")
+ if len(matches)>1:raise RuntimeError("Periodo publico duplicado")
+ if not matches:
+  # Alta automática únicamente para un mes operativo autorizado en catálogo privado.
+  # No convertir el mes anterior en histórico: eso requiere cierre oficial posterior.
+  previous=max((x["periodo"] for x in public["periodos"]),default="")
+  if periodo<=previous:raise RuntimeError("Alta de período no consecutivo o ya publicado")
+  entry={"periodo":periodo,"tipo":"operativo","conteos":{e:0 for e in ("procesos","ofertas","resultados","ordenescompra")},
+         "partes":{e:[] for e in ("procesos","ofertas","resultados","ordenescompra")}}
+  public["periodos"].append(entry)
+  matches=[entry]
  current=matches[0]
  work=pathlib.Path(tempfile.mkdtemp(prefix="export_mer_v2_"))
  changes={}
  try:
   entidades={**MAP,**API_MAP} if incluir_api else MAP
+  if not incluir_api and not current["partes"].get("ofertas") and not current["partes"].get("resultados"):
+   # Primer día del mes: producir las cuatro entidades antes de indexar.
+   entidades={**MAP,**API_MAP}
   seleccionados={}
   if incluir_api:
    cotizaciones=book.worksheet("Ofertas").get_all_values()
