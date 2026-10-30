@@ -47,3 +47,11 @@ Probar **API Compra Ágil desde Ubuntu**, inicialmente diez procesos, sin schedu
 ## Texto para continuar en otro chat
 
 > Continúa Observatorio Mercado Público desde `docs/ESTADO_Y_CONTINUIDAD_2026-10-30.md`. El cron Ubuntu 16:00 fue validado; rotación y preparación recuperable de conciliación quedaron codificadas pero pendientes de instalación local y prueba Drive; noviembre existe con seis tablas verificadas. Primero confirma instalación y logs de los timers y el estado real de Drive, sin volver a desarrollar la rotación. Luego inicia prueba de API Compra Ágil desde Ubuntu con diez procesos, sin activar el schedule GitHub ni tocar el cron de las 16:00. Mantén README, índice, decisiones y procedimientos sincronizados, diferenciando implementado, probado e instalado.
+
+## Incidencia de rotación detectada el 30/10 a las 20:18 Chile
+- Ubuntu ejecutó `python scripts/rotar_mes_operativo.py` en modo de comprobación, **sin `--aplicar`**.
+- Validó acceso a los datos de octubre, pero la API Drive invocada con cuenta de servicio devolvió `parents=[]` para el archivo `MER_2026_10_OPERATIVO`. El script detuvo la operación en `BLOQUEO DRIVE ORIGEN`; **no ocurrió traslado ni actualización de catálogo**.
+- Verificación separada mediante Drive de la cuenta propietaria confirma que la hoja sí pertenece a la carpeta operativa configurada. La discrepancia es de visibilidad/permisos entre identidades, **no demuestra que el archivo esté fuera de la carpeta**.
+- **Bloqueo operativo**: no ejecutar `--aplicar` ni eliminar el control `parents`. Confirmar si la cuenta de servicio tiene acceso real a ambas carpetas y capacidad para mover el archivo; el permiso de edición sobre la hoja no implica permiso para moverla. Si no lo tiene, requerir movimiento por cuenta propietaria o ajustar permisos con seguridad, y adaptar la verificación sin comprometer integridad.
+- Los temporizadores `mercadopublico-rotacion.timer` y `mercadopublico-conciliacion.timer` figuran `enabled, active (waiting)` en Ubuntu; esto **no acredita que sus tareas hayan funcionado**.
+- Para evitar falsas certezas, revisar logs y resultado de una prueba no destructiva antes de considerar cerrado octubre o comenzar API local.
