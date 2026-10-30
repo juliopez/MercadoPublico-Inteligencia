@@ -86,7 +86,7 @@ def run(dry):
    info=json.loads(out.stdout);remote=json.loads(base64.b64decode(info["content"]))
    if nperiod in remote["periodos"]:raise RuntimeError("Destino apareció concurrentemente en catálogo")
    remote["periodos"][nperiod]={"tipo":"operativo","id":created.id,"estado":"preparado_vacio_para_"+nperiod,"filas":0}
-   content=base64.b64encode((json.dumps(remote,ensure_ascii=False,indent=2)+"\\n").encode()).decode()
+   content=base64.b64encode((json.dumps(remote,ensure_ascii=False,indent=2)+"\n").encode()).decode()
    subprocess.run(["gh","api","--method","PUT","repos/juliopez/MercadoPublico-Inteligencia/contents/config/catalogo_sheets.json","-f","message=chore(mer): crear mes operativo "+nperiod,"-f","sha="+info["sha"],"-f","branch=main","-f","content="+content],check=True)
    following=remote["periodos"][nperiod]
   except Exception:
