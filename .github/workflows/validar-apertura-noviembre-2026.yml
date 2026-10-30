@@ -1,0 +1,27 @@
+name: Validar apertura automatica noviembre
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/validar-apertura-noviembre-2026.yml'
+      - 'scripts/exportar_mer_operativo_v2.py'
+permissions:
+  contents: read
+jobs:
+  preparar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificación estática sin consultar Sheets ni alterar catálogos
+        run: |
+          python3 -m py_compile scripts/exportar_mer_operativo_v2.py
+          python3 - <<'PY'
+          import json,pathlib
+          p=json.loads(pathlib.Path('config/catalogo_sheets.json').read_text())['periodos']
+          assert p['2026-10']['tipo']=='operativo'
+          assert p['2026-11']['tipo']=='operativo'
+          assert p['2026-10']['id']!=p['2026-11']['id']
+          c=json.loads(pathlib.Path('frontend-v2/data/catalogo-publico.json').read_text())
+          assert sum(x['periodo']=='2026-11' for x in c['periodos']) <= 1
+          print('CONFIGURACION_APERTURA_VALIDADA_ SIN_ESCRITURAS')
+          PY
