@@ -85,3 +85,10 @@ Se verificó directamente en Drive que `02_Operativo_MER` y `01_Historicos_MER` 
 
 ## Permisos verificados desde Ubuntu — 30/10/2026 20:27 Chile
 El usuario ejecutó `bash scripts/ubuntu_cierre_supervisado.sh verificar-acceso` con credencial local y obtuvo **CODIGO=0**. La cuenta de servicio reportó `canAddChildren=True` para `02_Operativo_MER` y `01_Historicos_MER`; sobre `MER_2026_10_OPERATIVO` reportó `canEdit=True`, `canMoveItemWithinDrive=True` y `canMoveItemOutOfDrive=False`. El último valor no impide por sí solo el movimiento dentro de Drive. **Bloqueo anterior HTTP 404 resuelto.** La salida declara explícitamente que el traslado no se ha ejecutado. Siguiente paso: comprobación no destructiva de rotación con `python scripts/rotar_mes_operativo.py`, seguida de revisión del ETL del 30/10 antes de cualquier `--aplicar`. No declarar octubre archivado hasta constancia de Drive y catálogo.
+
+## ROTACIÓN DE OCTUBRE CONFIRMADA — 30/10/2026 20:29 Chile
+El usuario ejecutó `bash scripts/ubuntu_rotacion_mensual.sh`, que terminó con `ROTACION_OPERATIVA_CONFIRMADA 2026-10 siguiente 2026-11` y commit del catálogo `48ae2983b561bb6aa89ccad0b56f97326c0db9b7`.
+
+**Verificación independiente posterior:** Google Drive confirma que el mismo archivo ID `1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4` se llama `MER_2026_10` y tiene como carpeta padre `01_Historicos_MER` (`1YC-1MT1QCnAvpKgDACCH-NKnV9caIFyW`). Noviembre, ID `1faLUhyB13Qty7dSNqbRHLCmpq-cxgW8bIOgPN0KCWnE`, permanece en `02_Operativo_MER` (`1m3feqWXUNtur6v17qvhZ9bQrB38-ruVS`). El catálogo remoto registra octubre `tipo=historico, estado=cierre_operativo_pendiente_conciliacion_oficial` y noviembre `tipo=operativo`. **Rotación operativa ejecutada y verificada**, no simplemente preparada. El cierre histórico oficial de octubre aún requiere conciliación diferida.
+
+**Pendiente de verificar:** primera carga real del ETL habitual en noviembre, publicación del nuevo período en V2 y funcionamiento efectivo del temporizador en otro fin de mes. El código de conciliación automática descarga y prepara; NO aplica la reconciliación definitiva de forma autónoma.
