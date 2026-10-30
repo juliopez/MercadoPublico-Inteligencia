@@ -78,7 +78,7 @@ def preflight(period,folder):
  cat=json.loads((ROOT/"config/catalogo_sheets.json").read_text(encoding="utf8"))
  this=cat["periodos"][period]
  vigente=cat["periodos"].get(hoy.strftime("%Y-%m"),{})
- if this["tipo"]!="operativo" or not vigente or vigente.get("id")==this["id"]:
+ if this["tipo"] not in ("operativo","historico") or not vigente or vigente.get("id")==this["id"]:
   raise ValueError("Catálogo operativo y destino de mes vigente incompatibles")
  status=json.loads((folder/"resumen_diagnostico_cierre.json").read_text(encoding="utf8"))
  if status.get("periodo")!=period or status.get("estado")!="DIAGNOSTICO_OFICIAL_MENSUAL_LISTO_PENDIENTE_CARGA":
@@ -128,7 +128,9 @@ def trasladar(period,folder):
   revisar_drive(live,id,before,orig)
   mover_drive(id,orig,dst,after,tok)
   live=read_drive(id,tok)
- revisar_drive(live,id,after,dst)
+ if live.get("name")==after and dst in live.get("parents",[]):
+  revisar_drive(live,id,after,dst)
+ else: raise ValueError("Archivo no ubicado en históricos después de rotación")
  print("DRIVE CONFIRMADO: ID conservado",id,flush=True)
  # Estado idempotente: no repetir movimiento si el catálogo falló.
  gt=git_token();url,remote,sha=github_catalog(gt)
@@ -141,7 +143,11 @@ def trasladar(period,folder):
   remote_entry.pop("filas",None)
   remote["actualizado"]=dt.datetime.now(ZoneInfo("America/Santiago")).date().isoformat()
   update_catalog(gt,url,sha,remote)
- elif remote_entry.get("tipo")!="historico":
+ elif remote_entry.get("tipo")=="historico":
+  remote_entry["estado"]="cerrado_tras_carga_oficial_verificada"
+  remote["actualizado"]=dt.datetime.now(ZoneInfo("America/Santiago")).date().isoformat()
+  update_catalog(gt,url,sha,remote)
+ else:
   raise ValueError("Tipo de catálogo inesperado")
  _,confirmed,_=github_catalog(gt)
  if confirmed["periodos"][period]["tipo"]!="historico" or confirmed["periodos"][period]["id"]!=id:
