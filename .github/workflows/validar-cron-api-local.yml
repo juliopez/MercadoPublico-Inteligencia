@@ -1,0 +1,22 @@
+name: Validar runner local API Compra Agil
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/validar-cron-api-local.yml'
+      - 'scripts/cron_api_compra_agil_ubuntu.sh'
+      - 'scripts/mer_api_incremental_10.py'
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sintaxis sin consultas API ni acceso a Sheets
+        run: |
+          bash -n scripts/cron_api_compra_agil_ubuntu.sh
+          python3 -m py_compile scripts/mer_api_incremental_10.py
+          grep -q 'flock -n 9' scripts/cron_api_compra_agil_ubuntu.sh
+          grep -q 'git pull --ff-only origin main' scripts/cron_api_compra_agil_ubuntu.sh
+          echo RUNNER_LOCAL_VALIDADO
