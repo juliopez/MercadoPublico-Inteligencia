@@ -10,17 +10,21 @@ if [[ -z "${GOOGLE_SERVICE_ACCOUNT_JSON:-}" && ! -f "${GOOGLE_APPLICATION_CREDEN
 fi
 exec 9>"/tmp/mercadopublico-api-$(id -u).lock"
 flock -n 9 || { echo "Otra sincronización API local está ejecutándose"; exit 0; }
+mkdir -p "$REPO/logs"
+exec 8>"$REPO/logs/.mer_escritura_compartida.lock"
+flock -n 8 || { echo "MER ocupado por ETL Ubuntu o conciliación; API omitida sin consultas"; exit 0; }
 [[ -z "$(git status --porcelain)" ]] || { echo "Árbol Git con cambios; detener antes de sincronizar" >&2; exit 1; }
 git pull --ff-only origin main
-python3 -m pip --version >/dev/null
+[[ -x "$REPO/.venv/bin/python" ]] || { echo "Falta .venv local validado" >&2; exit 1; }
+"$REPO/.venv/bin/python" -c "import gspread, google.auth"
 export MER_API_MAX_DETAIL=10
-python3 scripts/mer_api_incremental_10.py
+"$REPO/.venv/bin/python" scripts/mer_api_incremental_10.py
 python3 - <<'PY'
 import json,subprocess
 r=json.load(open('control/ultimo_reporte_api_mer.json'))
 changed=sum(int(r.get(k,0)) for k in ('procesos','ofertas','resultados','procesos_enriquecidos','ofertas_enriquecidos','resultados_enriquecidos'))
 if changed:
- subprocess.run(['python3','scripts/exportar_mer_operativo_v2.py','--periodo',r['periodo'],'--aplicar','--incluir-api'],check=True)
+ subprocess.run(['.venv/bin/python','scripts/exportar_mer_operativo_v2.py','--periodo',r['periodo'],'--aplicar','--incluir-api'],check=True)
  print('EXPORTACION_API_REALIZADA',changed)
 else:
  print('SIN_CAMBIOS_DATOS_API')
