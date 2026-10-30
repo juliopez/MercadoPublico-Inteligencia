@@ -49,7 +49,7 @@ def exportar(periodo, aplicar, incluir_api=False):
    # Primer día del mes: producir las cuatro entidades antes de indexar.
    entidades={**MAP,**API_MAP}
   seleccionados={}
-  if incluir_api:
+  if "Resultados" in entidades:
    cotizaciones=book.worksheet("Ofertas").get_all_values()
    columnas=mod.SCHEMA["Ofertas"]
    if not cotizaciones or cotizaciones[0]!=columnas:raise ValueError("Contrato de Ofertas incompatible")
@@ -78,6 +78,9 @@ def exportar(periodo, aplicar, incluir_api=False):
    rows.sort(key=lambda r:r[fields[0]])
    folder=work/entity/periodo;folder.mkdir(parents=True)
    paths=[]
+   if not rows:
+    (folder/"0001.json").write_text("[]",encoding="utf-8")
+    paths.append(f"data/partes/{entity}/{periodo}/0001.json")
    for i in range(0,len(rows),1000):
     name=f"{i//1000+1:04d}.json"
     (folder/name).write_text(json.dumps(rows[i:i+1000],ensure_ascii=False,separators=(",",":")),encoding="utf-8")
