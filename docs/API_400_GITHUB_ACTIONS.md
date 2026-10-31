@@ -56,6 +56,22 @@ El motor probado verifica el mes calendario Santiago y autoriza un único MES op
 4. Validar desempeño temporal y volumen diario, especialmente retrasos de GitHub y límites HTTP 429.
 5. Revisar eventual requisito de limitar cada ejecución estrictamente a la fecha de publicación del día de inicio, sin perder recuperación histórica. El motor protegido no se modificó para imponerlo.
 
+
+## Arquitectura revisada aprobada: jornadas por fecha (31/10/2026)
+
+**Alcance real:** implementado en GitHub, aún no validado en una noche productiva. La fecha de publicación objetivo se congela a las 22:00, lunes a viernes, según `America/Santiago`. A diferencia del cursor histórico, el motor nuevo `scripts/mer_api_actions_diaria.py` usa `MER_API_FECHA_OBJETIVO`, consulta exclusivamente el listado `publicado_desde=AAAA-MM-DDT00:00:00` a `publicado_hasta=AAAA-MM-DDT23:59:59`, comprueba en detalle que corresponde al mes operativo, y guarda `jornadas_actions[fecha]` con su propia página y estado de cotizaciones. El motor Ubuntu validado no fue modificado.
+
+- **Inicio**: cron GitHub en ventana UTC; guardia interna acepta únicamente alrededor de las 22:00 de lunes a viernes en hora de Santiago, sin ejecuciones en sábado/domingo y sin fijar UTC de forma incompatible con el horario de verano.
+- **Procesamiento**: un mismo job recorre lotes de hasta **400**, hasta que la paginación del listado de esa fecha se agota, se alcanza el límite de la ventana o hay enfriamiento por 429. Conserva la cola por fecha y evita repetir detalles confirmados. Un turno ejecuta hasta 12 lotes y no inicia nuevos lotes después de las 05:00 para dejar margen de finalización antes de las 07:00; ese margen no es garantía de término.
+- **Checkpoints**: tras cada lote se verifican `id_ejecucion` y `fecha_objetivo`; antes del siguiente lote se persisten cola y reporte por commit/push, con copia adicional como artefacto Actions. No se genera deliberadamente un segundo lote ante un fallo del checkpoint.
+- **Finalización/publicación**: exporta las cuatro entidades del mes operativo desde Sheets, regenera búsquedas, perfiles, analítica y relaciones, publica un commit, solicita despliegue Pages, espera que el workflow termine correctamente y contrasta los conteos del catálogo servido por HTTP con el catálogo local.
+- **Resultado de la jornada**: `jornada_completa=true` sólo indica agotamiento del listado en ese recorrido; no equivale por sí mismo a éxito de publicación, que se acredita con la verificación de Pages. Si se agota el margen de tiempo con pendientes, esos registros permanecen marcados y son recuperables en la cola, pero **no hay aún un programador separado para repasarlos al día siguiente**.
+- **Restricción de operación**: no volver a iniciar octubre sin reconciliar los 400 registros de la prueba fallida del 31/10. La programación nueva trabaja en noviembre operativo desde el 2/11. No modifica el ETL de las 16:00, la rotación de las 19:00, el cierre del día 10 ni el ejecutor Ubuntu 400.
+
+### Limitaciones aún pendientes de validar
+
+Los cron de GitHub pueden retrasarse u omitirse; puede haber conflictos de escritura si otro proceso actualiza `main` durante un lote, y el flujo los bloquea deliberadamente en vez de forzar un merge inseguro. El chequeo HTTP de Pages verifica conteos, no integridad byte a byte de todas las entidades. Una modificación posterior de Sheets/Pages fuera de este job puede cambiar resultados. Debe observarse una noche productiva completa antes de certificar operación autónoma sin incidencias.
+
 ## Requisito operativo acordado: desde lunes 02/11/2026
 
 **Objetivo obligatorio (todavía no implementado en su totalidad):** captar todos los procesos Compra Ágil publicados en la fecha objetivo del turno, en lotes de máximo 400, hasta agotar el listado del día; escribir y verificar MER del **mes operativo**, generar derivados y **comprobar** despliegue de GitHub Pages. La fecha objetivo de las 22:00 debe conservarse al cruzar medianoche; no basta con consultar fechas pendientes desde el primer día de mes. El límite 07:00 es de **no iniciar nuevas consultas** fuera de la franja y conservar cualquier pendiente. Evitar declarar cierre del día si faltan páginas, detalles o publicación.
