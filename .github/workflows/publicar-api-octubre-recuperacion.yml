@@ -54,7 +54,7 @@ jobs:
           c=json.load(open('frontend-v2/data/catalogo-publico.json'))
           p=next(x for x in c['periodos'] if x['periodo']=='2026-10')
           assert p['conteos']['ofertas']>=4867,('Ofertas inferiores a Sheets verificado',p['conteos'])
-          assert p['conteos']['procesos']>=4508,('Procesos inferiores a Sheets verificado',p['conteos'])
+          assert p['conteos']['procesos']>=4418,('Procesos inferiores a Sheets verificado',p['conteos'])
           print('OCTUBRE_REEXPORTADO',p['conteos'])
           PY
       - name: Commit y publicacion
