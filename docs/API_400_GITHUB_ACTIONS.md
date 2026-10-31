@@ -55,3 +55,11 @@ El motor probado verifica el mes calendario Santiago y autoriza un único MES op
 3. Comprobar el resultado de un conflicto de ramas o pérdida de red al guardar el checkpoint; hoy hay resguardo de estado, pero puede requerir recuperación manual.
 4. Validar desempeño temporal y volumen diario, especialmente retrasos de GitHub y límites HTTP 429.
 5. Revisar eventual requisito de limitar cada ejecución estrictamente a la fecha de publicación del día de inicio, sin perder recuperación histórica. El motor protegido no se modificó para imponerlo.
+
+## Requisito operativo acordado: desde lunes 02/11/2026
+
+**Objetivo obligatorio (todavía no implementado en su totalidad):** captar todos los procesos Compra Ágil publicados en la fecha objetivo del turno, en lotes de máximo 400, hasta agotar el listado del día; escribir y verificar MER del **mes operativo**, generar derivados y **comprobar** despliegue de GitHub Pages. La fecha objetivo de las 22:00 debe conservarse al cruzar medianoche; no basta con consultar fechas pendientes desde el primer día de mes. El límite 07:00 es de **no iniciar nuevas consultas** fuera de la franja y conservar cualquier pendiente. Evitar declarar cierre del día si faltan páginas, detalles o publicación.
+
+**Brechas constatadas del workflow actual**: seis disparos programados sin lógica de terminación por agotamiento del día; motor con cursor del mes en vez de filtro fijo día; comprobación de Pages no incluida; salvaguardas de conflicto de commits pendientes; sin verificación integral de primer turno real. No considerar estos puntos resueltos por la sola presencia del schedule.
+
+**Líneas base**: no modificar el ETL 16:00, el ejecutor Ubuntu validado, la rotación 19:00 ni la conciliación histórica 10:00 para este cambio; implementarlo en componentes Actions específicos con validación productiva.
