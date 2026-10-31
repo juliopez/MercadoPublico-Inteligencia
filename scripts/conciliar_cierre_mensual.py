@@ -63,7 +63,7 @@ def main():
  if now.day<10:p.error("Conciliación de cierre habilitada desde el día 10")
  catalogo=json.loads((ROOT/"config/catalogo_sheets.json").read_text(encoding="utf-8"))
  item=catalogo["periodos"].get(args.periodo)
- if not item or item.get("tipo")!="operativo":p.error("Período no catalogado como operativo")
+ if not item or item.get("tipo") not in ("operativo","historico"):p.error("Período no catalogado como operativo")
  dbpath=args.paquete/"preparado.sqlite";reportpath=args.paquete/"informe.json"
  if not dbpath.is_file() or not reportpath.is_file():p.error("Faltan paquete preparado o informe")
  report=json.loads(reportpath.read_text(encoding="utf-8"))
