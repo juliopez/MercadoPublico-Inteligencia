@@ -56,7 +56,8 @@ jobs:
           anchor=(now.date() if now.hour>=22 else now.date()-datetime.timedelta(days=1))
           # El último bloque empieza 05:30 y normalmente termina antes de 07:00.
           slots={(22,0),(23,30),(1,0),(2,30),(4,0),(5,30)}
-          allowed=(anchor.weekday()<5 and (now.hour,now.minute) in slots)
+          # GitHub no garantiza el segundo exacto de inicio del cron.
+          allowed=(anchor.weekday()<5 and any((now.hour*60+now.minute)-(h*60+m) in range(0,20) for h,m in slots))
           if os.environ['EVENTO']!='schedule':allowed=True
           # No iniciar un lote del mes anterior una vez cruzado el mes calendario.
           if os.environ['EVENTO']=='schedule' and anchor.strftime('%Y-%m')!=now.strftime('%Y-%m'):allowed=False
@@ -163,7 +164,7 @@ jobs:
           if changes: subprocess.run(['python','scripts/exportar_mer_operativo_v2.py','--periodo',r['periodo'],'--aplicar','--incluir-api'],check=True)
           PY
       - name: Regenerar indices y analitica del periodo antes de publicar
-        if: steps.ventana.outputs.allowed == 'true'
+        if: steps.ventana.outputs.allowed == 'true' && success()
         shell: bash
         run: |
           set -euo pipefail
@@ -175,7 +176,7 @@ jobs:
           python scripts/indexar_relaciones_frontend_v2.py --periodo "$PERIODO_SOLICITADO"
           python scripts/indexar_relaciones_procesos_v2.py --periodo "$PERIODO_SOLICITADO"
       - name: Publicar estado y datos de forma atomica en git
-        if: steps.ventana.outputs.allowed == 'true'
+        if: steps.ventana.outputs.allowed == 'true' && success()
         shell: bash
         run: |
           set -euo pipefail
