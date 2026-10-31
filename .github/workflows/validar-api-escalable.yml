@@ -21,13 +21,16 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           s=Path('scripts/mer_api_incremental_10.py').read_text()
-          assert 'maximum<1 or maximum>50' in s
+          assert 'maximum<1 or maximum>100' in s
           assert 'page_batches.append' in s
-          assert 'time.sleep(delay)' in s
+          assert 'time.sleep(max(10,spacing))' in s
           assert 'code in cache for code in codes' in s
+          assert 'window["pausa_hasta"]' in s
+          assert 'class LimiteAPI' in s
           r=Path('scripts/cron_api_compra_agil_ubuntu.sh').read_text()
           assert 'MER_API_RUN_NOW=1' in r
           assert '.mer_escritura_compartida.lock' in r
           assert 'reporte API anterior' in r
+          assert 'MER_API_RUN_ID' in r
           print('VALIDACION_API_LOCAL_ESCALABLE_OK')
           PY
