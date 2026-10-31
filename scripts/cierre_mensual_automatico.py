@@ -95,13 +95,13 @@ def main():
     # Releer seis tablas DESPUÉS de la carga, contrastándolas con fuente histórica.
     # La huella local documenta la evidencia auditable del paquete validado.
     digest=hashlib.sha256((package/"informe.json").read_bytes()).hexdigest()
-    final={**prior,"estado":"CONCILIACION_HISTORICA_VERIFICADA",
+    final={**prior,"estado":"CARGA_HISTORICA_VERIFICADA_PENDIENTE_PUBLICACION",
            "periodo":period,"fecha_verificacion_chile":dt.datetime.now(TZ).isoformat(),
            "spreadsheet_id":item["id"],"sha256_informe_oficial":digest,
            "respaldo":proof["backup"],"tablas":proof["datos"],
            "cierre_automatico":True,"rotacion_previa_confirmada":True}
     save(state,final)
-    print("CONCILIACION_HISTORICA_VERIFICADA",period)
+    print("CARGA_HISTORICA_VERIFICADA_PENDIENTE_PUBLICACION",period)
 
 if __name__=="__main__":
     main()
