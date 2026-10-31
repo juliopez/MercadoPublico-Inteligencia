@@ -60,9 +60,16 @@ def main():
  calendar_period=now.strftime("%Y-%m")
  active=[(p,v) for p,v in cat["periodos"].items() if v.get("tipo")=="operativo"]
  if len(active)!=1:raise SystemExit("BLOQUEO: se requiere un único mes operativo en catálogo")
- period,dest=active[0]
- if period<calendar_period:raise SystemExit("BLOQUEO: mes operativo atrasado respecto de Santiago")
- if period>calendar_period:
+ excepcional=os.getenv("MER_API_CIERRE_EXCEPCIONAL","").strip()
+ if excepcional:
+  if excepcional!=calendar_period or not (cat["periodos"].get(excepcional) or {}).get("estado")=="cierre_operativo_pendiente_conciliacion_oficial":
+   raise SystemExit("BLOQUEO: excepción solo mes recién archivado pendiente de conciliación")
+  period,dest=excepcional,cat["periodos"][excepcional]
+  print("MODO_EXCEPCIONAL_PRECONCILIACION",period,flush=True)
+ else:
+  period,dest=active[0]
+ if period<calendar_period and not excepcional:raise SystemExit("BLOQUEO: mes operativo atrasado respecto de Santiago")
+ if period>calendar_period and not excepcional:
   # Cambio de mes adelantado: no consultar ni poblar noviembre con registros de octubre.
   if os.getenv("MER_API_RUN_NOW")=="1":
    print("BLOQUEO_CONTROLADO: mes operativo futuro "+period+"; primera consulta autorizada a partir de "+period+"-01");return
