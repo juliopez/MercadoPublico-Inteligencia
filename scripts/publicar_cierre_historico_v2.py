@@ -49,6 +49,9 @@ def publish(period):
     if command("git","diff","--cached","--name-only"):
         run("git","-c","user.name=MER cierre automatico","-c","user.email=cierre-local@users.noreply.github.com","commit","-m",f"data(cierre): historico oficial conciliado {period}")
         run("git","push","origin","main")
+    else:
+        # Asegurar una ejecucion verificable de Pages aun sin cambios de datos.
+        run("gh","workflow","run","preview-frontend-v2.yml","--ref","main")
     sha=command("git","rev-parse","HEAD")
     # El push de índices dispara Pages; no despachar workflow duplicado.
     deadline=time.monotonic()+20*60
