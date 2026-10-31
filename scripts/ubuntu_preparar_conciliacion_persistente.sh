@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Ejecución recuperable systemd: prepara conciliación, nunca aplica ni traslada Sheets.
+# Ejecución recuperable systemd: prepara, concilia, publica y verifica el histórico.
 set -Eeuo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
@@ -18,6 +18,7 @@ r=json.loads(os.environ["STATUS"])
 sys.exit(0 if r["estado"]=="PENDIENTE_CONCILIACION" else 1)
 PY
 then exit 0; fi
-# Preparación oficial existente: descarga/importa/verifica, NO aplica ni traslada.
-"$ROOT/.venv/bin/python" scripts/orquestar_cierre_mensual.py
-echo "PREPARACION_HISTORICA_EJECUTADA: conciliación final aún requiere aprobación"
+# Cierre automático; ante errores no declara éxito y systemd reintentará.
+export GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS:-$HOME/.config/mercadopublico/servicio-google.json}"
+"$ROOT/.venv/bin/python" scripts/cierre_mensual_automatico.py
+echo "CIERRE_AUTOMATICO_EJECUTADO: verificar estado_cierre.json"
