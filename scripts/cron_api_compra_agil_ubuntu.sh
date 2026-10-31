@@ -60,8 +60,6 @@ if git diff --cached --quiet; then echo 'SIN_CAMBIOS_GIT'; exit 0; fi
 git -c user.name="Observatorio API local" -c user.email="api-local@users.noreply.github.com" commit -m "data(api): sincronización Compra Ágil desde cron Ubuntu"
 git pull --rebase origin main
 git push origin main
-if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
- gh workflow run publicacion-v2-post-etl.yml --ref main
-else
- echo 'ATENCION: falta gh autenticado; verificar generación derivada tras push' >&2
-fi
+# El push de catalogo-publico.json dispara automaticamente publicacion-v2-post-etl.yml.
+# No enviar workflow_dispatch adicional: duplicaba ejecuciones y generaba conflictos de rebase.
+echo "PUBLICACION_DERIVADA_ACTIVADA_POR_PUSH; verificar resultado en Actions"
