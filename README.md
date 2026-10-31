@@ -1,5 +1,7 @@
 # Observatorio de Inteligencia de Mercado Público · Chile
 
+**🔒 LÍNEA BASE OPERATIVA PROTEGIDA — CRON UBUNTU 16:00:** [Leer antes de cualquier modificación del proyecto](docs/LINEA_BASE_PROTEGIDA_CRON_1600.md). La cadena diaria de licitaciones, órdenes de compra, conciliación documental y publicación V2 está validada y **no debe modificarse** al desarrollar otras automatizaciones. Toda excepción requiere autorización expresa y control de cambios.
+
 Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes de compra** de Mercado Público. Este README describe el **estado vigente**; los procedimientos y antecedentes están separados en la documentación especializada.
 
 **Estado documental verificado: 30 de octubre de 2026.** [Plan de operación nocturna API Compra Ágil (21:00–07:00)](docs/PLAN_OPERACION_NOCTURNA_API_COMPRA_AGIL_2026-10-30.md). [Bitácora actual de prueba API 400, iniciada 22:30](docs/BITACORA_PRUEBA_API_400_2026-10-30.md). La operación Ubuntu de las 16:00 fue comprobada el 30/10 mediante exportación, publicación V2 y supervisor de GitHub. La instalación de los nuevos servicios locales no se ha verificado.
