@@ -92,16 +92,18 @@ def main():
         raise RuntimeError("Falta respaldo comprobable")
     if set(proof.get("datos",{}))!=set(TABLES):
         raise RuntimeError("No hay evidencia de seis tablas conciliadas")
+    # Publicación independiente, con validación de índices y del sitio Pages.
+    run("publicar_cierre_historico_v2.py","--periodo",period)
     # Releer seis tablas DESPUÉS de la carga, contrastándolas con fuente histórica.
     # La huella local documenta la evidencia auditable del paquete validado.
     digest=hashlib.sha256((package/"informe.json").read_bytes()).hexdigest()
-    final={**prior,"estado":"CARGA_HISTORICA_VERIFICADA_PENDIENTE_PUBLICACION",
+    final={**prior,"estado":"CONCILIACION_HISTORICA_VERIFICADA",
            "periodo":period,"fecha_verificacion_chile":dt.datetime.now(TZ).isoformat(),
            "spreadsheet_id":item["id"],"sha256_informe_oficial":digest,
            "respaldo":proof["backup"],"tablas":proof["datos"],
            "cierre_automatico":True,"rotacion_previa_confirmada":True}
     save(state,final)
-    print("CARGA_HISTORICA_VERIFICADA_PENDIENTE_PUBLICACION",period)
+    print("CONCILIACION_HISTORICA_VERIFICADA",period)
 
 if __name__=="__main__":
     main()
