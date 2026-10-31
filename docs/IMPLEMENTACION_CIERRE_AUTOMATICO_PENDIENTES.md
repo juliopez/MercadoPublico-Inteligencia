@@ -17,3 +17,19 @@
 
 ## Regla operativa
 El objetivo es **cierre desatendido**, pero ante fallo de integridad debe quedar bloqueado con alarma y reintento seguro, no manipular datos a ciegas. El cron 16:00 y API 400 permanecen protegidos. Cualquier actualización posterior debe registrar evidencia de pruebas y hora de instalación del timer. No afirmar automatización completa antes de verificarlas.
+
+## Avance posterior: cadena completa desarrollada en GitHub
+
+Se implementaron `scripts/exportar_mer_historico_conciliado_v2.py` (exportador exclusivo del mes anterior), `scripts/publicar_cierre_historico_v2.py` (exportación de cuatro entidades, regeneración de índices y perfiles, push, verificación de workflow Pages y comprobación HTTP del catálogo y analítica públicos) y el enlace desde `scripts/cierre_mensual_automatico.py`. Solo después de confirmar publicación se actualiza el estado del catálogo privado y se guarda `CONCILIACION_HISTORICA_VERIFICADA` localmente; las fallas conservan el estado recuperable. El servicio ya apunta a la cadena completa mediante `scripts/ubuntu_preparar_conciliacion_persistente.sh`. El timer original de las 10:00 y arranque sigue sin cambiar.
+
+**Instalación en Ubuntu pendiente de ejecución verificable**: el repositorio no instala ni sustituye unidades systemd locales por sí solo. Se incluyó `scripts/instalar_cierre_mensual_automatico_ubuntu.sh` como instalador único con comprobaciones. En Ubuntu ejecutar desde el repositorio actualizado:
+```bash
+git pull --ff-only origin main
+bash scripts/instalar_cierre_mensual_automatico_ubuntu.sh
+systemctl --user list-timers --all | grep mercadopublico-conciliacion
+```
+Verificar `journalctl --user -u mercadopublico-conciliacion.service -n 100 --no-pager` después del primer ciclo. No confundir unidad instalada con carga/conciliación mensual ejecutada. El día 10/11/2026 es el primer ciclo oficial elegible para octubre.
+
+**Verificación CI**: `.github/workflows/validar-cierre-historico-automatico.yml` valida sintaxis y conexión estructural sin Google Sheets. Un resultado `success` de CI **no equivale** a confirmar escritura productiva, recuperación tras fallas ni cierre real. El alcance automático solo procede con ZIP oficiales íntegros; ante problema se bloquea y reintenta, sin falsos cierres.
+
+**Líneas base protegidas**: ninguna modificación al cron 16:00 ni al runner manual API 400. La publicación histórica usa módulos nuevos, sin debilitar el exportador diario.
