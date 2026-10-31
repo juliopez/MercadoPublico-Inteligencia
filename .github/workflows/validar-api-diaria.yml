@@ -1,0 +1,36 @@
+name: Validar motor API diario y workflow nocturno
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/mer_api_actions_diaria.py'
+      - '.github/workflows/api-compra-agil-400-actions.yml'
+      - '.github/workflows/validar-api-diaria.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Comprobar sintaxis y salvaguardas, sin consultas ni escritura Sheets
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/mer_api_actions_diaria.py scripts/mer_api_incremental_10.py
+          python -m pip install pyyaml
+          python - <<'PY'
+          import yaml,pathlib
+          p=pathlib.Path('.github/workflows/api-compra-agil-400-actions.yml')
+          data=yaml.safe_load(p.read_text())
+          assert data['jobs']['jornada']['timeout-minutes']<=540
+          script=pathlib.Path('scripts/mer_api_actions_diaria.py').read_text()
+          for marker in ('MER_API_FECHA_OBJETIVO','jornadas_actions','publicado_desde','publicado_hasta','fecha_cursor','jornada_completa'):
+           assert marker in script,marker
+          assert 'period_ok(raw,code,period)' in script
+          assert 'window["completa"]=True' in script
+          print('MOTOR_DIARIO_SINTAXIS_Y_CONTRATOS_OK')
+          PY
