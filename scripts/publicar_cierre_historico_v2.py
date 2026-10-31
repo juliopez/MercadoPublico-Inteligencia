@@ -73,6 +73,21 @@ def publish(period):
             if published["conteos"]==expected and published.get("tipo")=="historico":
                 analytics=web_json(base+"analitica/"+period+"/procesos.json?ver="+urllib.parse.quote(sha))
                 if analytics["registros"]==expected["procesos"]:
+                    # Cerrar el catálogo privado solo DESPUÉS de Pages verificado.
+                    config_path=ROOT/"config/catalogo_sheets.json"
+                    config=load(config_path)
+                    record=config["periodos"][period]
+                    if record.get("tipo")!="historico":
+                        raise ValueError("Catálogo interno no está archivado")
+                    record["estado"]="cerrado_tras_carga_oficial_verificada"
+                    tmp=config_path.with_suffix(".json.tmp")
+                    tmp.write_text(json.dumps(config,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+                    os.replace(tmp,config_path)
+                    run("git","add","--","config/catalogo_sheets.json")
+                    run("git","diff","--cached","--check")
+                    if command("git","diff","--cached","--name-only"):
+                        run("git","-c","user.name=MER cierre automatico","-c","user.email=cierre-local@users.noreply.github.com","commit","-m",f"chore(cierre): verificar historico oficial {period}")
+                        run("git","push","origin","main")
                     print("PAGES_HISTORICO_VERIFICADO",period,sha)
                     return sha,expected
         except (OSError,KeyError,StopIteration,ValueError):
