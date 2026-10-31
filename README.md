@@ -4,6 +4,8 @@
 
 **🔒 LÍNEA BASE VALIDADA 2 — API COMPRA ÁGIL (400):** [Inventario y protección de la ejecución manual](docs/LINEA_BASE_VALIDADA_API_COMPRA_AGIL_400.md). Recuperación, persistencia y publicación comprobadas. No confundir con el controlador nocturno aún pendiente de desarrollar; respetar los componentes compartidos con las 16:00.
 
+**Cierre histórico mensual automático:** [implementación, validaciones y activación Ubuntu](docs/IMPLEMENTACION_CIERRE_AUTOMATICO_PENDIENTES.md). La cadena de consolidación, republicación y declaración de cierre está incorporada en GitHub; **la unidad local aún debe reinstalarse y verificarse en Ubuntu**. No confundir implementación con activación ni con el primer cierre mensual real.
+
 Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes de compra** de Mercado Público. Este README describe el **estado vigente**; los procedimientos y antecedentes están separados en la documentación especializada.
 
 **Estado documental verificado: 30 de octubre de 2026.** [Plan de operación nocturna API Compra Ágil (21:00–07:00)](docs/PLAN_OPERACION_NOCTURNA_API_COMPRA_AGIL_2026-10-30.md). [Bitácora actual de prueba API 400, iniciada 22:30](docs/BITACORA_PRUEBA_API_400_2026-10-30.md). La operación Ubuntu de las 16:00 fue comprobada el 30/10 mediante exportación, publicación V2 y supervisor de GitHub. La instalación de los nuevos servicios locales no se ha verificado.
