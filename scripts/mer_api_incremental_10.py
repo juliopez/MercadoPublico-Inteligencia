@@ -85,6 +85,8 @@ def main():
  window=state.setdefault("periodos",{}).setdefault(period,{"pagina":1,"consultas":{}})
  cache=window["consultas"]
  today=now.date().isoformat()
+ if window.get("pausa_hasta","")>now.isoformat():
+  print("PAUSA_API_HASTA",window["pausa_hasta"],"sin nuevas consultas");return
  # Primero reintentos vencidos y seguimientos vencidos; después nuevos por fecha ascendente.
  follow=sorted([c for c,e in cache.items() if e.get("estado") in ("ERROR","EN_SEGUIMIENTO","SIN_DATOS") and e.get("proxima_revision","9999")<=now.isoformat()],key=lambda c:(cache[c].get("proxima_revision",""),c))
  candidates=follow[:min(10,maximum)]
@@ -110,6 +112,7 @@ def main():
            "tamano_pagina":"10","numero_pagina":str(scanning_page),"ordenar_por":"FechaPublicacion"})
    try:listed=fetch("https://api2.mercadopublico.cl/v2/compra-agil?"+query,ticket)
    except LimiteAPI:
+    window["pausa_hasta"]=(now+dt.timedelta(hours=1)).isoformat()
     print("STOP HTTP 429 listado, publicar cualquier detalle recuperado")
     break
    except urllib.error.HTTPError:raise
@@ -194,6 +197,7 @@ def main():
    except LimiteAPI as exc:
     cache[code]={"estado":"ERROR","ultima_consulta":today,"proxima_revision":(now+dt.timedelta(hours=1)).isoformat(),"intentos":int(cache.get(code,{}).get("intentos",0))+1,"error":"HTTP 429 x3"}
     report["errores"]+=1
+    window["pausa_hasta"]=(now+dt.timedelta(hours=1)).isoformat()
     report["limite_429"]=True
     report["reintentar_desde"]=(now+dt.timedelta(hours=1)).isoformat()
     print("STOP_HTTP_429_TRES_RESPUESTAS; publicando avance parcial")
