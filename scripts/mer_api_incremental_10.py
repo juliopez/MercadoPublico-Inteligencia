@@ -53,7 +53,7 @@ def main():
  credential_path=os.getenv("GOOGLE_APPLICATION_CREDENTIALS","").strip()
  if not ticket or not (secret or (credential_path and pathlib.Path(credential_path).is_file())):raise SystemExit("BLOQUEO: falta ticket API o credencial Google Sheets")
  maximum=int(os.getenv("MER_API_MAX_DETAIL","200"))
- if maximum<1 or maximum>200:raise SystemExit("BLOQUEO: lote fuera de rango 1..200")
+ if maximum<1 or maximum>400:raise SystemExit("BLOQUEO: lote fuera de rango 1..400")
  delay=float(os.getenv("MER_API_DELAY_SECONDS","10"))
  if delay<10:raise SystemExit("BLOQUEO: pausa mínima 10 segundos")
  cat=json.loads((ROOT/"config/catalogo_sheets.json").read_text())
