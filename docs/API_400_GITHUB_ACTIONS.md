@@ -79,3 +79,7 @@ Los cron de GitHub pueden retrasarse u omitirse; puede haber conflictos de escri
 **Brechas constatadas del workflow actual**: seis disparos programados sin lógica de terminación por agotamiento del día; motor con cursor del mes en vez de filtro fijo día; comprobación de Pages no incluida; salvaguardas de conflicto de commits pendientes; sin verificación integral de primer turno real. No considerar estos puntos resueltos por la sola presencia del schedule.
 
 **Líneas base**: no modificar el ETL 16:00, el ejecutor Ubuntu validado, la rotación 19:00 ni la conciliación histórica 10:00 para este cambio; implementarlo en componentes Actions específicos con validación productiva.
+
+### Revisión de publicaciones tardías y criterio de cierre
+
+La primera exploración de la jornada después de las 22:00 queda marcada como **preliminar** si termina antes de medianoche. El workflow espera hasta las 00:03 de Chile, vuelve a revisar desde la página 1 y reutiliza el cache de códigos, de forma que no repite detalles confirmados. El motor solamente marca `completa=true` si agotó el listado **después de medianoche y sin errores pendientes**. Un enfriamiento por 429 o corte de tiempo conserva la cola para recuperación posterior; no significa cierre completo. **Pendiente**: mecanismo transversal de recuperación de fechas incompletas de noches anteriores, que aún no queda plenamente resuelto por el ciclo diario. Una jornada sólo se considera publicada si el workflow de Pages termina exitosamente y los conteos del catálogo remoto coinciden.
