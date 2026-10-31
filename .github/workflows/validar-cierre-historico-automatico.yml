@@ -1,0 +1,40 @@
+name: Validar cierre historico automatico (sin escrituras)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/cierre_mensual_automatico.py'
+      - 'scripts/publicar_cierre_historico_v2.py'
+      - 'scripts/exportar_mer_historico_conciliado_v2.py'
+      - 'scripts/ubuntu_preparar_conciliacion_persistente.sh'
+      - 'deploy/systemd/mercadopublico-conciliacion.service'
+      - '.github/workflows/validar-cierre-historico-automatico.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pruebas-estaticas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Revisar sintaxis y contrato de cierre automatico
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/cierre_mensual_automatico.py scripts/publicar_cierre_historico_v2.py scripts/exportar_mer_historico_conciliado_v2.py scripts/diagnosticar_cierre_integrado.py scripts/conciliar_cierre_mensual.py scripts/exportar_operativo_sqlite.py
+          bash -n scripts/ubuntu_preparar_conciliacion_persistente.sh
+          python - <<'PY'
+          from pathlib import Path
+          timer=Path('deploy/systemd/mercadopublico-conciliacion.timer').read_text()
+          shell=Path('scripts/ubuntu_preparar_conciliacion_persistente.sh').read_text()
+          orchestrator=Path('scripts/cierre_mensual_automatico.py').read_text()
+          pub=Path('scripts/publicar_cierre_historico_v2.py').read_text()
+          assert 'Persistent=true' in timer and 'OnBootSec=' in timer
+          assert 'cierre_mensual_automatico.py' in shell
+          assert 'publicar_cierre_historico_v2.py' in orchestrator
+          assert 'CONCILIACION_HISTORICA_VERIFICADA' in orchestrator
+          assert 'PAGES_HISTORICO_VERIFICADO' in pub
+          print('CIERRE_HISTORICO_AUTOMATICO_ESTRUCTURA_OK')
+          PY
