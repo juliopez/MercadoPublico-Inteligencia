@@ -21,13 +21,17 @@ git pull --ff-only origin main
 export MER_API_MAX_DETAIL="${MER_API_MAX_DETAIL:-100}"
 export MER_API_DELAY_SECONDS="${MER_API_DELAY_SECONDS:-10}"
 export MER_API_RUN_NOW=1
+export MER_API_RUN_ID="$(date +%s%N)-$"
 # Solo ejecución local manual o timer autorizado.
 "$REPO/.venv/bin/python" scripts/mer_api_incremental_10.py
 "$REPO/.venv/bin/python" - <<'PY'
-import json,subprocess,datetime
+import json,subprocess,datetime,os
 from zoneinfo import ZoneInfo
 r=json.load(open('control/ultimo_reporte_api_mer.json'))
 changed=sum(int(r.get(k,0)) for k in ('procesos','ofertas','resultados','procesos_enriquecidos','ofertas_enriquecidos','resultados_enriquecidos'))
+if r.get('id_ejecucion') != os.environ['MER_API_RUN_ID']:
+ print('SIN_PUBLICACION: API omitida o informe no pertenece a esta ejecución')
+ raise SystemExit(0)
 if r.get('fecha') != datetime.datetime.now(ZoneInfo('America/Santiago')).date().isoformat():
  raise SystemExit('BLOQUEO: reporte API anterior a esta ejecución')
 if changed:
