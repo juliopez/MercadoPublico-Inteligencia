@@ -1,5 +1,8 @@
 # PROCESO 4 — Consolidación histórica definitiva, día 10 hábil
 
+> **NO MODIFICAR ESTA CADENA NI SUS TEMPORIZADORES SIN AUTORIZACIÓN EXPRESA.** Se permite únicamente una corrección justificada y autorizada para completar su primera validación integral, con respaldo, pruebas de regresión y reversión. [Política maestra de protección](POLITICA_PROTECCION_CUATRO_PROCESOS.md).
+
+
 > **Estado: código de cadena automática desarrollado en GitHub; servicio/timer actualizado e instalado en Ubuntu según captura del usuario del 31/10/2026, 00:18.** Sigue pendiente la **primera ejecución productiva integral** con ZIP oficiales, escritura y verificación final; no declarar «validado de extremo a extremo» antes de su evidencia. **No se requiere aprobación humana mensual en el diseño.**
 
 ## Objetivo, calendario y control
