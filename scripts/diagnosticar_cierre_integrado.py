@@ -56,7 +56,7 @@ def main():
   report["carga_autorizada"]=False
   report["traslado_autorizado"]=False
   guardar_politica=home/"precedencia_oficial_mensual.json"
-  guardar_politica.write_text(json.dumps({"periodo":period,"fuente_prioritaria":"HISTORICO_OFICIAL_MENSUAL","estado":"PRECEDENCIA_OFICIAL_DOCUMENTADA","observaciones":"Diferencias registradas; prevalece valor no vacío del histórico oficial del mismo mes; filas solo operativas y campos sin cobertura se conservan.","conflictos_detectados":polic.get("conflictos_totales",0)},ensure_ascii=False,indent=2)+"\\n",encoding="utf8")
+  guardar_politica.write_text(json.dumps({"periodo":period,"fuente_prioritaria":"HISTORICO_OFICIAL_MENSUAL","estado":"PRECEDENCIA_OFICIAL_DOCUMENTADA","observaciones":"Diferencias registradas; prevalece valor no vacío del histórico oficial del mismo mes; filas solo operativas y campos sin cobertura se conservan.","conflictos_detectados":polic.get("conflictos_totales",0)},ensure_ascii=False,indent=2)+"\n",encoding="utf8")
  except subprocess.CalledProcessError as exc:
   report["estado"]="BLOQUEADO"
   report["etapas"].append({"etapa":Path(exc.cmd[1]).stem if len(exc.cmd)>1 else "desconocida","resultado":"ERROR","codigo":exc.returncode})
