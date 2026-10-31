@@ -101,3 +101,13 @@ systemctl --user list-timers
 El timer intenta ejecutar cada hora al minuto 10, pero **si aún no transcurren los 60 minutos desde el tercer 429, se omite la consulta y espera la siguiente hora**. La unidad define `MER_API_CIERRE_EXCEPCIONAL=auto`: el runner usa la hoja del mes actual archivado prematuramente y pendiente de conciliación; desde el 1 de noviembre **deja de aplicar la excepción de octubre** y vuelve automáticamente al libro operativo de noviembre. No modificar el cron ETL 16:00. La unidad comparte candados con ETL/rotación/conciliación. El instalador requiere que `api.env` y las credenciales Google permanezcan privados en Ubuntu.
 
 **Alcance de validación:** la implementación y pruebas sintácticas en GitHub no acreditan todavía escrituras reales de 100 ni publicación parcial en producción. Verificar `consultados`, `errores`, `limite_429`, `reintentar_desde`, commit remoto, workflow de derivados y estado Pages. Anotar el resultado real; no afirmar éxito antes de ejecutarlo.
+
+## Ensayo empírico autorizado: lote máximo 400 (30/10)
+Por instrucción expresa del usuario se permite **una ejecución manual productiva de hasta 400 detalles**, manteniendo intervalo mínimo de 10 s por solicitud HTTP, dos reintentos adicionales para 429 y enfriamiento 60 minutos ante tercer 429. Objetivo principal: medir la **duración real completa** mediante el comando shell `time` y observar en qué cantidad aparece el 429. Los registros recuperados deben guardarse y publicarse aunque el lote se interrumpa. **La programación automática sigue configurada para 200**, no se activa ni amplía automáticamente.
+
+Ejecutar desde el repositorio en Ubuntu:
+```bash
+git pull --ff-only origin main
+time env MER_API_CIERRE_EXCEPCIONAL=auto MER_API_MAX_DETAIL=400 MER_API_DELAY_SECONDS=10 bash scripts/cron_api_compra_agil_ubuntu.sh
+```
+La opción `auto` escribe en el mes calendario de Santiago si está archivado pendiente de conciliación o, en otro caso, en el mes operativo; nunca reabre un histórico fuera de mes. La prueba es **productiva**: escribe Google Sheets y publica fragmentos e índices. `real` en la salida de `time` es la duración total incluyendo exportación y push; la salida JSON indica procesos realmente descargados, 429 e incidencias. Si se registra `PAUSA_API_HASTA`, no forzar otra ejecución. Solo capturar el resultado después de terminar. Prueba todavía **no ejecutada** al publicar esta documentación.
