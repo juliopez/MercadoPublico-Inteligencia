@@ -1,5 +1,7 @@
 # Proceso 2 — Portabilidad de la ejecución API de 400 a GitHub Actions
 
+> **Auditoría de la primera prueba del 31/10/2026:** [400/400 consultas finalizadas; fallo posterior antes de publicar cola y Pages](RESULTADO_PRUEBA_API_400_ACTIONS_2026-10-31.md). El código del wrapper fue corregido sin repetir el lote. **No volver a ejecutar hasta recuperar/reconciliar su estado incremental.**
+
 **Estado a 31/10/2026:** workflow manual incorporado al repositorio; **no se ha ejecutado ningún lote productivo en GitHub Actions**. La línea base Ubuntu de 400 registros sigue protegida y sin cambios.
 
 ## Implementación
