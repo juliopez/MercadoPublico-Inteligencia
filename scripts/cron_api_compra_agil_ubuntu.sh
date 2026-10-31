@@ -18,6 +18,20 @@ flock -n 8 || { echo "MER ocupado por ETL Ubuntu o conciliación; API omitida si
 git pull --ff-only origin main
 [[ -x "$REPO/.venv/bin/python" ]] || { echo "Falta .venv local validado" >&2; exit 1; }
 "$REPO/.venv/bin/python" -c "import gspread, google.auth"
+# 'auto' solo habilita el mes actual ya archivado, aún pendiente de conciliación.
+# En el primer día del nuevo mes se desactiva automáticamente y usa el operativo.
+if [[ "${MER_API_CIERRE_EXCEPCIONAL:-}" == "auto" ]]; then
+  MER_API_CIERRE_EXCEPCIONAL="$("$REPO/.venv/bin/python" - <<'PY'
+import datetime,json,pathlib
+from zoneinfo import ZoneInfo
+p=datetime.datetime.now(ZoneInfo("America/Santiago")).strftime("%Y-%m")
+cat=json.loads(pathlib.Path("config/catalogo_sheets.json").read_text())["periodos"]
+entry=cat.get(p,{})
+print(p if entry.get("tipo")=="historico" and entry.get("estado")=="cierre_operativo_pendiente_conciliacion_oficial" else "")
+PY
+)"
+  export MER_API_CIERRE_EXCEPCIONAL
+fi
 export MER_API_MAX_DETAIL="${MER_API_MAX_DETAIL:-100}"
 export MER_API_DELAY_SECONDS="${MER_API_DELAY_SECONDS:-10}"
 export MER_API_RUN_NOW=1
