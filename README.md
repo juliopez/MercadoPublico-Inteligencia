@@ -1,4 +1,7 @@
 # Observatorio de Inteligencia de Mercado Público · Chile
+
+**🔒 POLÍTICA MAESTRA DE NO MODIFICACIÓN:** [Cuatro procesos inventariados, protegidos y niveles de validación](docs/POLITICA_PROTECCION_CUATRO_PROCESOS.md). Leer antes de cualquier cambio; se requiere autorización expresa, análisis de impacto y pruebas para modificar cualquiera de los cuatro.
+
 **Inventario completo de los cuatro procesos:** [1 · Cron 16:00](docs/LINEA_BASE_PROTEGIDA_CRON_1600.md) · [2 · API Compra Ágil 400](docs/LINEA_BASE_VALIDADA_API_COMPRA_AGIL_400.md) · [3 · Cambio de mes](docs/INVENTARIO_PROCESO_3_CAMBIO_MES.md) · [4 · Consolidación histórica del día 10 hábil](docs/INVENTARIO_PROCESO_4_CONSOLIDACION_HISTORICA.md). Los procesos 3 y 4 tienen temporizadores Ubuntu independientes; la primera rotación real está validada y la primera consolidación integral sigue pendiente de ejecución real.
 
 
