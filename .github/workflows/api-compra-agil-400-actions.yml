@@ -37,6 +37,7 @@ jobs:
       MER_API_DELAY_SECONDS: "10"
       MER_API_MAX_DETAIL: ${{ inputs.max_detail || '400' }}
       MER_API_RUN_NOW: "1"
+      PERIODO_SOLICITADO: ${{ inputs.periodo || '2026-10' }}
     steps:
       - name: Checkout de datos y estado incremental
         uses: actions/checkout@v4
@@ -50,8 +51,6 @@ jobs:
           python-version: "3.11"
       - name: Preflight estricto sin consultar API
         shell: bash
-        env:
-          PERIODO_SOLICITADO: ${{ inputs.periodo || '2026-10' }}
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -81,8 +80,6 @@ jobs:
         run: python -m pip install --disable-pip-version-check 'gspread>=6,<7' 'google-auth>=2,<3'
       - name: Ejecutar recuperacion incremental sin tocar el wrapper Ubuntu
         shell: bash
-        env:
-          PERIODO_SOLICITADO: ${{ inputs.periodo }}
         run: |
           set -euo pipefail
           export MER_API_RUN_ID="gha-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
@@ -102,8 +99,6 @@ jobs:
           PY
       - name: Regenerar indices y analitica del periodo antes de publicar
         shell: bash
-        env:
-          PERIODO_SOLICITADO: ${{ inputs.periodo }}
         run: |
           set -euo pipefail
           for entidad in procesos ordenescompra ofertas resultados; do
