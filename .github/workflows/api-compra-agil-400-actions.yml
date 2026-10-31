@@ -96,6 +96,32 @@ jobs:
               fi
               git push origin HEAD:main
             fi
+            # La revisión inicial de las 22h no cierra procesos que lleguen antes de las 23:59.
+            if python - <<'PY'
+          import json,os,datetime
+          from zoneinfo import ZoneInfo
+          s=json.load(open('control/cola_api_mer.json'))['jornadas_actions'][os.environ['MER_API_FECHA_OBJETIVO']]
+          assert s.get('preliminar') and datetime.datetime.now(ZoneInfo('America/Santiago')).date().isoformat()==os.environ['MER_API_FECHA_OBJETIVO']
+          PY
+            then
+              echo 'LISTADO_PRELIMINAR: esperar hasta pasada medianoche para revisar publicaciones tardias'
+              python - <<'PY'
+          import datetime,time
+          from zoneinfo import ZoneInfo
+          n=datetime.datetime.now(ZoneInfo('America/Santiago'))
+          end=datetime.datetime.combine(n.date()+datetime.timedelta(days=1),datetime.time(0,3),tzinfo=ZoneInfo('America/Santiago'))
+          time.sleep(max(0,(end-n).total_seconds()))
+          PY
+              python - <<'PY'
+          import json,os
+          p='control/cola_api_mer.json'
+          j=json.load(open(p))
+          v=j['jornadas_actions'][os.environ['MER_API_FECHA_OBJETIVO']]
+          v.pop('preliminar',None)
+          v['pagina']=1
+          with open(p,'w') as f:json.dump(j,f,ensure_ascii=False,indent=2)
+          PY
+            fi
             if python - <<'PY'
           import json,os
           s=json.load(open('control/cola_api_mer.json'))['jornadas_actions'][os.environ['MER_API_FECHA_OBJETIVO']]
