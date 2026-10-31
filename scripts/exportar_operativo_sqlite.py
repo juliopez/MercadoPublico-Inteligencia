@@ -54,7 +54,7 @@ def main():
  if hoy.day<10 or a.periodo!=anterior:p.error("Solo mes anterior desde día 10")
  cat=json.loads((ROOT/"config/catalogo_sheets.json").read_text(encoding="utf8"))
  entry=cat["periodos"].get(a.periodo)
- if not entry or entry.get("tipo")!="operativo" or not entry.get("id"):p.error("No hay hoja operativa autorizada")
+ if not entry or entry.get("tipo") not in ("operativo","historico") or not entry.get("id"):p.error("No hay hoja operativa autorizada")
  import gspread
  from google.oauth2.service_account import Credentials
  path=os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
