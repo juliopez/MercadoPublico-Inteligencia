@@ -1,0 +1,93 @@
+name: Recuperar publicacion API octubre 2026 sin consultar API
+on:
+  push:
+    branches: [main]
+    paths: ['control/solicitud_publicacion_api_2026-10.json']
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: mer-api-actions-unica
+  cancel-in-progress: false
+jobs:
+  recuperar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    env:
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      MER_API_CIERRE_EXCEPCIONAL: '2026-10'
+      PERIODO: '2026-10'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar fuente y preparar dependencias
+        run: |
+          set -euo pipefail
+          test -n "$GOOGLE_SERVICE_ACCOUNT_JSON"
+          python -m pip install --disable-pip-version-check 'gspread>=6,<7' 'google-auth>=2,<3'
+          python - <<'PY'
+          import json
+          cat=json.load(open('config/catalogo_sheets.json'))['periodos']['2026-10']
+          assert cat['tipo']=='historico'
+          assert cat['estado']=='cierre_operativo_pendiente_conciliacion_oficial'
+          print('OCTUBRE_PENDIENTE_CIERRE; SOLO EXPORTACION, SIN API')
+          PY
+      - name: Exportar desde Sheets e indexar sin consultar ChileCompra
+        run: |
+          set -euo pipefail
+          python scripts/exportar_mer_operativo_v2.py --periodo 2026-10 --aplicar --incluir-api
+          for entidad in procesos ordenescompra ofertas resultados; do
+            python scripts/indexar_busqueda_frontend_v2.py --periodo "$PERIODO" --entidad "$entidad"
+            python scripts/generar_perfiles_v2.py --periodo "$PERIODO" --entidad "$entidad"
+            python scripts/generar_analitica_v2.py --periodo "$PERIODO" --entidad "$entidad"
+          done
+          python scripts/indexar_relaciones_frontend_v2.py --periodo "$PERIODO"
+          python scripts/indexar_relaciones_procesos_v2.py --periodo "$PERIODO"
+          python - <<'PY'
+          import json
+          c=json.load(open('frontend-v2/data/catalogo-publico.json'))
+          p=next(x for x in c['periodos'] if x['periodo']=='2026-10')
+          assert p['conteos']['ofertas']>=4867,('Ofertas inferiores a Sheets verificado',p['conteos'])
+          assert p['conteos']['procesos']>=4508,('Procesos inferiores a Sheets verificado',p['conteos'])
+          print('OCTUBRE_REEXPORTADO',p['conteos'])
+          PY
+      - name: Commit y publicacion
+        run: |
+          set -euo pipefail
+          git add frontend-v2/data/
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git -c user.name='MER publicaciones' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'data(api): publicar resultados de recuperación octubre desde Sheets'
+            git fetch origin main
+            if [ "$(git rev-parse HEAD^)" != "$(git rev-parse origin/main)" ]; then
+              echo 'BLOQUEO: otro commit concurrente; no sobrescribir'; exit 1
+            fi
+            git push origin HEAD:main
+          fi
+          gh workflow run preview-frontend-v2.yml --ref main
+      - name: Esperar y comprobar Pages
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,time,urllib.request
+          c=json.load(open('frontend-v2/data/catalogo-publico.json'))
+          expected=next(x['conteos'] for x in c['periodos'] if x['periodo']=='2026-10')
+          url='https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/data/catalogo-publico.json'
+          for attempt in range(35):
+           try:
+            req=urllib.request.Request(url+'?v='+str(time.time_ns()),headers={'Cache-Control':'no-cache'})
+            live=json.load(urllib.request.urlopen(req,timeout=30))
+            actual=next(x['conteos'] for x in live['periodos'] if x['periodo']=='2026-10')
+            if actual==expected:
+             print('PAGES_OCTUBRE_VERIFICADO',actual,flush=True);break
+            print('PAGES_AUN_DESFASADO',actual,flush=True)
+           except Exception as e:print('PAGES_ESPERA',type(e).__name__,flush=True)
+           time.sleep(30)
+          else:raise SystemExit('PAGES_NO_VERIFICADO')
+          PY
