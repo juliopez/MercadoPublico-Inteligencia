@@ -9,7 +9,26 @@ from normalizar_procesos_api_mer import proceso as normalizar_proceso, completar
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 STATE=ROOT/"control"/"cola_api_mer.json"
 TZ=ZoneInfo("America/Santiago")
+class LimiteAPI(Exception):
+ pass
+
+_LAST_HTTP=[0.0]
 def fetch(url,ticket):
+ spacing=float(os.getenv("MER_API_DELAY_SECONDS","10"))
+ elapsed=time.monotonic()-_LAST_HTTP[0]
+ if elapsed<spacing:time.sleep(spacing-elapsed)
+ for attempt in range(3):
+  _LAST_HTTP[0]=time.monotonic()
+  try:
+   return _fetch_once(url,ticket)
+  except urllib.error.HTTPError as exc:
+   if exc.code!=429:raise
+   if attempt==2:raise LimiteAPI("HTTP 429 tres veces; reanudar en una hora") from exc
+   print("HTTP_429_REINTENTO",attempt+1,"de 2; espera 10 segundos",flush=True)
+   time.sleep(max(10,spacing))
+ raise AssertionError("reintentos agotados")
+
+def _fetch_once(url,ticket):
  req=urllib.request.Request(url,headers={"ticket":ticket,"Accept":"application/json","User-Agent":"Observatorio-MER-GHA/2"})
  with urllib.request.urlopen(req,timeout=35) as resp:
   raw=resp.read(2000001)
@@ -33,10 +52,10 @@ def main():
  secret=os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON","").strip()
  credential_path=os.getenv("GOOGLE_APPLICATION_CREDENTIALS","").strip()
  if not ticket or not (secret or (credential_path and pathlib.Path(credential_path).is_file())):raise SystemExit("BLOQUEO: falta ticket API o credencial Google Sheets")
- maximum=int(os.getenv("MER_API_MAX_DETAIL","10"))
- if maximum<1 or maximum>50:raise SystemExit("BLOQUEO: lote fuera de rango 1..50 (etapa de prueba)")
- delay=float(os.getenv("MER_API_DELAY_SECONDS","3"))
- if delay<3:raise SystemExit("BLOQUEO: pausa mínima 3 segundos")
+ maximum=int(os.getenv("MER_API_MAX_DETAIL","100"))
+ if maximum<1 or maximum>100:raise SystemExit("BLOQUEO: lote fuera de rango 1..100")
+ delay=float(os.getenv("MER_API_DELAY_SECONDS","10"))
+ if delay<10:raise SystemExit("BLOQUEO: pausa mínima 10 segundos")
  cat=json.loads((ROOT/"config/catalogo_sheets.json").read_text())
  calendar_period=now.strftime("%Y-%m")
  active=[(p,v) for p,v in cat["periodos"].items() if v.get("tipo")=="operativo"]
@@ -67,8 +86,8 @@ def main():
  cache=window["consultas"]
  today=now.date().isoformat()
  # Primero reintentos vencidos y seguimientos vencidos; después nuevos por fecha ascendente.
- follow=sorted([c for c,e in cache.items() if e.get("estado") in ("ERROR","EN_SEGUIMIENTO","SIN_DATOS") and e.get("proxima_revision","9999")<=today],key=lambda c:(cache[c].get("proxima_revision",""),c))
- candidates=follow[:2]
+ follow=sorted([c for c,e in cache.items() if e.get("estado") in ("ERROR","EN_SEGUIMIENTO","SIN_DATOS") and e.get("proxima_revision","9999")<=now.isoformat()],key=lambda c:(cache[c].get("proxima_revision",""),c))
+ candidates=follow[:min(10,maximum)]
  repair_all=os.getenv("MER_API_REPAIR_ALL")=="1"
  if repair_all:
   candidates=[c for c in cache if c in keys["Procesos"]][:20]
@@ -90,11 +109,10 @@ def main():
    query=urllib.parse.urlencode({"publicado_desde":date_cursor+"T00:00:00","publicado_hasta":date_cursor+"T23:59:59",
            "tamano_pagina":"10","numero_pagina":str(scanning_page),"ordenar_por":"FechaPublicacion"})
    try:listed=fetch("https://api2.mercadopublico.cl/v2/compra-agil?"+query,ticket)
-   except urllib.error.HTTPError as e:
-    if e.code==429:
-     print("STOP HTTP 429 listado, sin procesar nuevos detalles")
-     break
-    raise
+   except LimiteAPI:
+    print("STOP HTTP 429 listado, publicar cualquier detalle recuperado")
+    break
+   except urllib.error.HTTPError:raise
    payload=listed.get("payload") or {}
    if listed.get("success") not in (True,"OK") or not isinstance(payload.get("items"),list):raise ValueError("Listado API incompatible")
    total_pages=int((payload.get("paginacion") or {}).get("total_paginas") or scanning_page)
@@ -106,11 +124,9 @@ def main():
    page_batches.append((scanning_page,listing_codes))
    if len(needed)>available or scanning_page>=total_pages or len(candidates)>=maximum:break
    scanning_page+=1
-   time.sleep(delay)
  report={"periodo":period,"fecha":today,"consultados":0,"procesos":0,"ofertas":0,"resultados":0,"errores":0,"pagina":page}
  try:
   for code in candidates:
-   time.sleep(delay)
    try:
     raw=fetch("https://api2.mercadopublico.cl/v2/compra-agil/"+urllib.parse.quote(code,safe=""),ticket)
     p,pub=period_ok(raw,code,period)
@@ -175,11 +191,18 @@ def main():
     status="EN_SEGUIMIENTO"
     cache[code]={"estado":status,"ultima_consulta":today,"proxima_revision":(now.date()+dt.timedelta(days=3)).isoformat(), "intentos":0}
     report["consultados"]+=1
+   except LimiteAPI as exc:
+    cache[code]={"estado":"ERROR","ultima_consulta":today,"proxima_revision":(now+dt.timedelta(hours=1)).isoformat(),"intentos":int(cache.get(code,{}).get("intentos",0))+1,"error":"HTTP 429 x3"}
+    report["errores"]+=1
+    report["limite_429"]=True
+    report["reintentar_desde"]=(now+dt.timedelta(hours=1)).isoformat()
+    print("STOP_HTTP_429_TRES_RESPUESTAS; publicando avance parcial")
+    break
    except urllib.error.HTTPError as exc:
-    wait=2 if exc.code==429 else 1
+    wait=1
     cache[code]={"estado":"ERROR","ultima_consulta":today,"proxima_revision":(now.date()+dt.timedelta(days=wait)).isoformat(),"intentos":int(cache.get(code,{}).get("intentos",0))+1,"error":"HTTP "+str(exc.code)}
     report["errores"]+=1
-    if exc.code==429:break
+
    except Exception as exc:
     cache[code]={"estado":"ERROR","ultima_consulta":today,"proxima_revision":(now.date()+dt.timedelta(days=1 if type(exc).__name__=="APIError" else 2)).isoformat(),"intentos":int(cache.get(code,{}).get("intentos",0))+1,"error":type(exc).__name__}
     report["errores"]+=1
