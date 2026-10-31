@@ -240,8 +240,11 @@ def main():
      if number<total_pages:window["pagina"]=number+1
      else:
       window["pagina"]=1
-      if not report.get("errores") and not window.get("pausa_hasta"):
-       window["completa"]=True
+      if not report.get("errores") and not window.get("pausa_hasta") and not any(v.get("estado") in ("ERROR","SIN_DATOS") for v in cache.values()):
+       if dt.datetime.now(TZ).date()>target_date:
+        window["completa"]=True
+       else:
+        window["preliminar"]=True
        window["fecha_cursor"]=date_cursor
     else:break
   report["fecha_objetivo"]=target
