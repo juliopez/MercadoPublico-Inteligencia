@@ -1,4 +1,6 @@
 # Estado operativo y continuidad — 30 de octubre de 2026
+**INVENTARIO DE CUATRO PROCESOS:** [1 · Cron 16:00](LINEA_BASE_PROTEGIDA_CRON_1600.md), [2 · API Compra Ágil 400](LINEA_BASE_VALIDADA_API_COMPRA_AGIL_400.md), [3 · Rotación de mes](INVENTARIO_PROCESO_3_CAMBIO_MES.md), [4 · Consolidación histórica](INVENTARIO_PROCESO_4_CONSOLIDACION_HISTORICA.md). El servicio del proceso 4 fue instalado en Ubuntu el 31/10/2026, 00:18, confirmado por captura; la consolidación real sigue pendiente de su primer ciclo.
+
 
 **REGLA PRIORITARIA DE CAMBIOS:** [cron de las 16:00 — línea base protegida](LINEA_BASE_PROTEGIDA_CRON_1600.md). Su ejecución, scripts y cadena de publicación están validados y no se deben modificar por otros desarrollos sin autorización explícita.
 
