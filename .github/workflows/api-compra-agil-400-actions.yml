@@ -146,11 +146,31 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          export BEFORE="$(gh run list --workflow preview-frontend-v2.yml --event workflow_dispatch --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
           gh workflow run preview-frontend-v2.yml --ref main
-          echo 'PAGES_DESPACHADO: comprobación de ejecución se realiza por API'
-          # La publicación no se considera verificada por el solo dispatch.
+          run_id=""
+          for i in $(seq 1 40); do
+            run_id="$(gh run list --workflow preview-frontend-v2.yml --event workflow_dispatch --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
+            if [ "$run_id" != "$BEFORE" ] && [ "$run_id" != 0 ]; then break; fi
+            sleep 15
+          done
+          if [ "$run_id" = "$BEFORE" ] || [ "$run_id" = 0 ]; then echo 'ERROR: no se encontró deploy Pages'; exit 1; fi
+          gh run watch "$run_id" --exit-status
           python - <<'PY'
-          import json,os
-          r=json.load(open('control/ultimo_reporte_api_mer.json'))
-          print('JORNADA_COMPLETA',r.get('jornada_completa',False),'PAGES_PENDIENTE_VERIFICACION')
+          import json,os,time,urllib.request
+          p=os.environ['PERIODO_SOLICITADO']
+          wanted=json.load(open('frontend-v2/data/catalogo-publico.json'))
+          expected=next(x['conteos'] for x in wanted['periodos'] if x['periodo']==p)
+          url='https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/data/catalogo-publico.json'
+          for i in range(12):
+           try:
+            q=urllib.request.Request(url+'?verificacion='+str(time.time_ns()),headers={'Cache-Control':'no-cache'})
+            live=json.load(urllib.request.urlopen(q,timeout=25))
+            entry=next(x for x in live['periodos'] if x['periodo']==p)
+            if entry['conteos']==expected:
+             print('PAGES_VERIFICADO',p,expected,flush=True)
+             break
+           except Exception as exc: print('PAGES_REINTENTO',type(exc).__name__,flush=True)
+           time.sleep(20)
+          else:raise SystemExit('ERROR: Pages no corresponde al catálogo publicado')
           PY
