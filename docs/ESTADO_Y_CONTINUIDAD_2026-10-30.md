@@ -1,5 +1,7 @@
 # Estado operativo y continuidad — 30 de octubre de 2026
 
+**REGLA PRIORITARIA DE CAMBIOS:** [cron de las 16:00 — línea base protegida](LINEA_BASE_PROTEGIDA_CRON_1600.md). Su ejecución, scripts y cadena de publicación están validados y no se deben modificar por otros desarrollos sin autorización explícita.
+
 **Este es el punto de entrada vigente**. Las guías y planes fechados antes del 30/10 son antecedentes técnicos, no instrucciones prioritarias si contradicen esta página.
 
 ## Alcance y estados comprobados
