@@ -21,7 +21,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           s=Path('scripts/mer_api_incremental_10.py').read_text()
-          assert 'maximum<1 or maximum>200' in s
+          assert 'maximum<1 or maximum>400' in s
           assert 'page_batches.append' in s
           assert 'time.sleep(max(10,spacing))' in s
           assert 'code in cache for code in codes' in s
