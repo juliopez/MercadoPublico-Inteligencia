@@ -3,6 +3,10 @@ name: API Compra Agil - lote 400 controlado en GitHub Actions
 # Migracion de infraestructura de la ruta API local validada.
 # NO se programa de manera periodica ni se ejecuta sin habilitacion manual.
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'control/ejecutar_api_400_actions_2026-10-31.json'
   workflow_dispatch:
     inputs:
       max_detail:
@@ -31,7 +35,7 @@ jobs:
       GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
       GH_TOKEN: ${{ github.token }}
       MER_API_DELAY_SECONDS: "10"
-      MER_API_MAX_DETAIL: ${{ inputs.max_detail }}
+      MER_API_MAX_DETAIL: ${{ inputs.max_detail || '400' }}
       MER_API_RUN_NOW: "1"
     steps:
       - name: Checkout de datos y estado incremental
@@ -47,7 +51,7 @@ jobs:
       - name: Preflight estricto sin consultar API
         shell: bash
         env:
-          PERIODO_SOLICITADO: ${{ inputs.periodo }}
+          PERIODO_SOLICITADO: ${{ inputs.periodo || '2026-10' }}
         run: |
           set -euo pipefail
           python - <<'PY'
