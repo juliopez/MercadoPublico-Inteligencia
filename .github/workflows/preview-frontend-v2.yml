@@ -10,8 +10,6 @@ on:
       - 'frontend-v2/index.html'
       - 'frontend-v2/css/**'
       - 'frontend-v2/js/**'
-      - 'frontend-v2/data/catalogo-publico.json'
-      - 'frontend-v2/data/partes/**'
       - 'frontend-v2/data/indices/**'
       - 'frontend-v2/data/relaciones-procesos/**'
       - 'frontend-v2/data/busqueda/**'
@@ -65,6 +63,20 @@ jobs:
           a=json.loads((root/'data/analitica/2026-08/procesos.json').read_text())
           assert a['registros']==83937
           assert a.get('top_actores_monto') and a.get('modalidades'), 'Faltan agregados nuevos en Pages'
+          # No desplegar Pages con un catalogo mas reciente que sus agregados.
+          # El push de datos brutos activa primero la publicacion de derivados;
+          # este workflow despliega despues de finalizar aquella ejecucion.
+          for item in m.get('periodos',[]):
+              p=item['periodo']
+              data_file=root/'data'/'analitica'/p/'procesos.json'
+              if not data_file.is_file():
+                  raise AssertionError(f'Faltan agregados para {p}')
+              detail=json.loads(data_file.read_text())
+              expected=item['conteos']['procesos']
+              assert detail['registros']==expected,(p,'analitica_desfasada',detail['registros'],expected)
+              modes=detail.get('modalidades',[])
+              if modes:
+                  assert sum(int(row[1]) for row in modes)==expected,(p,'modalidades_desfasadas')
           print('PREVIEW_V2_INTEGRIDAD_OK')
           PY
       - uses: actions/configure-pages@v5
