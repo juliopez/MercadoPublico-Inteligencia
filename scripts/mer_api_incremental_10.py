@@ -119,7 +119,7 @@ def main():
            "tamano_pagina":"10","numero_pagina":str(scanning_page),"ordenar_por":"FechaPublicacion"})
    try:listed=fetch("https://api2.mercadopublico.cl/v2/compra-agil?"+query,ticket)
    except LimiteAPI:
-    window["pausa_hasta"]=(now+dt.timedelta(hours=1)).isoformat()
+    window["pausa_hasta"]=(dt.datetime.now(TZ)+dt.timedelta(hours=1)).isoformat()
     print("STOP HTTP 429 listado, publicar cualquier detalle recuperado")
     break
    except urllib.error.HTTPError:raise
@@ -202,11 +202,12 @@ def main():
     cache[code]={"estado":status,"ultima_consulta":today,"proxima_revision":(now.date()+dt.timedelta(days=3)).isoformat(), "intentos":0}
     report["consultados"]+=1
    except LimiteAPI as exc:
-    cache[code]={"estado":"ERROR","ultima_consulta":today,"proxima_revision":(now+dt.timedelta(hours=1)).isoformat(),"intentos":int(cache.get(code,{}).get("intentos",0))+1,"error":"HTTP 429 x3"}
+    reanudar=(dt.datetime.now(TZ)+dt.timedelta(hours=1)).isoformat()
+    cache[code]={"estado":"ERROR","ultima_consulta":today,"proxima_revision":reanudar,"intentos":int(cache.get(code,{}).get("intentos",0))+1,"error":"HTTP 429 x3"}
     report["errores"]+=1
-    window["pausa_hasta"]=(now+dt.timedelta(hours=1)).isoformat()
+    window["pausa_hasta"]=reanudar
     report["limite_429"]=True
-    report["reintentar_desde"]=(now+dt.timedelta(hours=1)).isoformat()
+    report["reintentar_desde"]=reanudar
     print("STOP_HTTP_429_TRES_RESPUESTAS; publicando avance parcial")
     break
    except urllib.error.HTTPError as exc:
