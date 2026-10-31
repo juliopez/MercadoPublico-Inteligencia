@@ -3,5 +3,7 @@
   "origen": "Google Sheets MER",
   "accion": "exportar y publicar sin llamadas API",
   "referencia": "gha-41165067142-1",
-  "fecha": "2026-10-31"
+  "fecha": "2026-10-31",
+  "intento_publicacion": 2,
+  "correccion": "conteo real 4418 en Procesos, verificado mediante exportacion desde Sheets"
 }
