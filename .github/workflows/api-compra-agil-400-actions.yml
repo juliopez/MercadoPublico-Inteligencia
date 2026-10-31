@@ -1,173 +1,129 @@
-name: API Compra Agil - lote 400 controlado en GitHub Actions
-
-# Migracion de infraestructura de la ruta API local validada.
-# Turnos desatendidos 22:00-07:00 Santiago, lunes a viernes (fecha de inicio de turno).
-# Programacion con guardia local para manejar UTC y cambios de horario.
+name: Compra Agil diaria 400 - cierre nocturno
 on:
   schedule:
-    # Cada 30 min UTC en una ventana amplia; la guardia Santiago deja pasar solo 6 turnos.
-    - cron: '0,30 0-11 * * *'
-  push:
-    branches: [main]
-    paths:
-      - 'control/ejecutar_api_400_actions_2026-10-31.json'
+    # El horario real se comprueba con zona America/Santiago (UTC verano/invierno).
+    - cron: '0,30 0-3 * * *'
   workflow_dispatch:
-    inputs:
-      max_detail:
-        description: "Cantidad maxima de detalles (1..400)"
-        required: true
-        default: "400"
-        type: string
-      periodo:
-        description: "Periodo objetivo AAAA-MM (solo mes calendario vigente; historicos pendientes)"
-        required: true
-        type: string
 permissions:
   contents: write
   actions: write
 concurrency:
   group: mer-api-actions-unica
   cancel-in-progress: false
-
 jobs:
-  lote-api:
+  jornada:
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 540
     env:
-      TZ: America/Santiago
       CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
       GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
       GH_TOKEN: ${{ github.token }}
       MER_API_DELAY_SECONDS: "10"
-      MER_API_MAX_DETAIL: ${{ inputs.max_detail || '400' }}
+      MER_API_MAX_DETAIL: "400"
       MER_API_RUN_NOW: "1"
-      PERIODO_SOLICITADO: ${{ inputs.periodo || '' }}
     steps:
-      - name: Guardia de jornada nocturna chilena
+      - name: Validar inicio nocturno Chile
         id: ventana
-        shell: bash
         env:
           EVENTO: ${{ github.event_name }}
         run: |
           python - <<'PY'
-          import os,datetime
+          import datetime,os
           from zoneinfo import ZoneInfo
-          now=datetime.datetime.now(ZoneInfo('America/Santiago'))
-          anchor=(now.date() if now.hour>=22 else now.date()-datetime.timedelta(days=1))
-          # El último bloque empieza 05:30 y normalmente termina antes de 07:00.
-          slots={(22,0),(23,30),(1,0),(2,30),(4,0),(5,30)}
-          # GitHub no garantiza el segundo exacto de inicio del cron.
-          allowed=(anchor.weekday()<5 and any((now.hour*60+now.minute)-(h*60+m) in range(0,20) for h,m in slots))
-          if os.environ['EVENTO']!='schedule':allowed=True
-          # No iniciar un lote del mes anterior una vez cruzado el mes calendario.
-          if os.environ['EVENTO']=='schedule' and anchor.strftime('%Y-%m')!=now.strftime('%Y-%m'):allowed=False
-          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
-              f.write(f"allowed={'true' if allowed else 'false'}\n")
+          n=datetime.datetime.now(ZoneInfo('America/Santiago'))
+          # Turno lunes-viernes, con tolerancia por demora de cron. Manual no rompe la franja.
+          allowed=n.weekday()<5 and n.hour==22 and n.minute<30
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write(f"ok={'true' if allowed else 'false'}\n")
           if allowed:
-              with open(os.environ['GITHUB_ENV'],'a') as f:
-                  f.write('PERIODO_SOLICITADO='+ (os.environ.get('PERIODO_SOLICITADO') or now.strftime('%Y-%m'))+'\n')
-          print('VENTANA',now.isoformat(),'ANCLA',anchor,'EJECUTAR',allowed)
+           with open(os.environ['GITHUB_ENV'],'a') as f:
+            f.write('MER_API_FECHA_OBJETIVO='+n.date().isoformat()+'\n')
+            f.write('PERIODO_SOLICITADO='+n.strftime('%Y-%m')+'\n')
+          print('JORNADA',n.isoformat(),'habilitada',allowed)
           PY
-      - name: Checkout de datos y estado incremental
-        if: steps.ventana.outputs.allowed == 'true'
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        if: steps.ventana.outputs.ok == 'true'
         with:
           ref: main
           fetch-depth: 0
-          persist-credentials: true
-      - name: Preparar Python
-        if: steps.ventana.outputs.allowed == 'true'
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
+        if: steps.ventana.outputs.ok == 'true'
         with:
-          python-version: "3.11"
-      - name: Preflight estricto sin consultar API
-        if: steps.ventana.outputs.allowed == 'true'
-        shell: bash
+          python-version: '3.11'
+      - name: Dependencias y preflight
+        if: steps.ventana.outputs.ok == 'true'
         run: |
           set -euo pipefail
+          test -n "$CHILECOMPRA_TICKET"
+          test -n "$GOOGLE_SERVICE_ACCOUNT_JSON"
+          python -m pip install --disable-pip-version-check 'gspread>=6,<7' 'google-auth>=2,<3'
+          python -m py_compile scripts/mer_api_actions_diaria.py
           python - <<'PY'
-          import datetime,json,os,re,pathlib
-          from zoneinfo import ZoneInfo
+          import json,os
+          c=json.load(open('config/catalogo_sheets.json'))
           p=os.environ['PERIODO_SOLICITADO']
-          now=datetime.datetime.now(ZoneInfo('America/Santiago')).strftime('%Y-%m')
-          if not re.fullmatch(r'20\d{2}-(0[1-9]|1[0-2])',p):raise SystemExit('ERROR: formato periodo')
-          if p!=now:
-              raise SystemExit('BLOQUEO_SEGURO: motor validado solo admite mes calendario vigente. El retroactivo '+p+' requiere un flujo de backfill separado.')
-          n=int(os.environ['MER_API_MAX_DETAIL'])
-          if not 1<=n<=400:raise SystemExit('BLOQUEO: lote fuera de rango')
-          cat=json.loads(pathlib.Path('config/catalogo_sheets.json').read_text())
-          entry=cat['periodos'].get(p,{})
-          if entry.get('tipo')=='operativo':
-              pass
-          elif entry.get('tipo')=='historico' and entry.get('estado')=='cierre_operativo_pendiente_conciliacion_oficial':
-              with open(os.environ['GITHUB_ENV'],'a') as env:
-                  env.write('MER_API_CIERRE_EXCEPCIONAL='+p+'\n')
-          else:
-              raise SystemExit('BLOQUEO: el periodo no esta operativo ni en cierre excepcional permitido')
-          if not os.environ.get('CHILECOMPRA_TICKET') or not os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON'):
-              raise SystemExit('BLOQUEO: configurar secrets CHILECOMPRA_TICKET y GOOGLE_SERVICE_ACCOUNT_JSON en este repositorio')
-          print('PREFLIGHT_VALIDADO',p,n)
+          assert c['periodos'][p]['tipo']=='operativo', 'Sólo mes operativo vigente'
           PY
-      - name: Instalar dependencias Python
-        if: steps.ventana.outputs.allowed == 'true'
-        run: python -m pip install --disable-pip-version-check 'gspread>=6,<7' 'google-auth>=2,<3'
-      - name: Ejecutar recuperacion incremental sin tocar el wrapper Ubuntu
-        if: steps.ventana.outputs.allowed == 'true'
+      - name: Ejecutar lotes y guardar checkpoints sin repetir detalles
+        if: steps.ventana.outputs.ok == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          export MER_API_RUN_ID="gha-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          echo "MER_API_RUN_ID=$MER_API_RUN_ID" >> "$GITHUB_ENV"
-          python scripts/mer_api_incremental_10.py
-      - name: Guardar checkpoint de cola y reporte ANTES de exportar
-        if: steps.ventana.outputs.allowed == 'true' && success()
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import json,os,subprocess
+          for indice in $(seq 1 12); do
+            # No iniciar un nuevo lote cuya ejecución promedio sobrepase las 07:00.
+            if ! python - <<'PY'
+          import datetime
+          from zoneinfo import ZoneInfo
+          n=datetime.datetime.now(ZoneInfo('America/Santiago'))
+          assert n.hour>=22 or n.hour<5, 'Fin de ventana de nuevos lotes'
+          PY
+            then break; fi
+            export MER_API_RUN_ID="gha-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${indice}"
+            python scripts/mer_api_actions_diaria.py
+            python - <<'PY'
+          import json,os
           r=json.load(open('control/ultimo_reporte_api_mer.json'))
-          if r.get('id_ejecucion')!=os.environ['MER_API_RUN_ID']:
-              raise SystemExit('BLOQUEO: informe ajeno a esta ejecucion')
-          if r.get('periodo')!=os.environ['PERIODO_SOLICITADO']:
-              raise SystemExit('BLOQUEO: periodo de informe incompatible')
-          changes=sum(int(r.get(k,0)) for k in ('procesos','ofertas','resultados','procesos_enriquecidos','ofertas_enriquecidos','resultados_enriquecidos'))
-          print('REPORTE_API',json.dumps(r,ensure_ascii=False),'CAMBIOS',changes)
+          assert r.get('id_ejecucion')==os.environ['MER_API_RUN_ID'], 'Reporte desfasado'
+          assert r.get('fecha_objetivo')==os.environ['MER_API_FECHA_OBJETIVO'], 'Jornada distinta'
+          print('CHECKPOINT',r,flush=True)
           PY
-          git add -- control/cola_api_mer.json control/ultimo_reporte_api_mer.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
-            git -c user.name='MER API GitHub Actions' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'data(api): checkpoint incremental confirmado desde Actions'
-            git fetch origin main
-            if [ "$(git rev-parse HEAD^)" != "$(git rev-parse origin/main)" ]; then
-              echo 'BLOQUEO: main cambio durante checkpoint; estado adjunto como artifacto'; exit 1
+            git add control/cola_api_mer.json control/ultimo_reporte_api_mer.json
+            git diff --cached --check
+            if ! git diff --cached --quiet; then
+              git -c user.name='MER API Actions' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "data(api): jornada $MER_API_FECHA_OBJETIVO lote $indice"
+              git fetch origin main
+              if [ "$(git rev-parse HEAD^)" != "$(git rev-parse origin/main)" ]; then
+                echo 'ERROR: conflicto de main, se conserva el estado en artifacts'; exit 1
+              fi
+              git push origin HEAD:main
             fi
-            git push origin HEAD:main
-          fi
-      - name: Respaldo del estado en artifacto ante errores posteriores
-        if: always() && steps.ventana.outputs.allowed == 'true'
+            if python - <<'PY'
+          import json,os
+          s=json.load(open('control/cola_api_mer.json'))['jornadas_actions'][os.environ['MER_API_FECHA_OBJETIVO']]
+          assert s.get('completa') is True
+          PY
+            then echo 'JORNADA_AGOTADA'; break; fi
+            if python - <<'PY'
+          import datetime,json,os
+          from zoneinfo import ZoneInfo
+          state=json.load(open('control/cola_api_mer.json'))['jornadas_actions'][os.environ['MER_API_FECHA_OBJETIVO']]
+          pause=state.get('pausa_hasta')
+          assert not pause or pause<=datetime.datetime.now(ZoneInfo('America/Santiago')).isoformat(), 'API en enfriamiento'
+          PY
+            then :; else echo 'CUOTA_API_ENFRIAMIENTO'; break; fi
+          done
+      - name: Resguardar estado aun ante falla
+        if: always() && steps.ventana.outputs.ok == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: estado-api-${{ github.run_id }}-${{ github.run_attempt }}
+          name: api-dia-${{ github.run_id }}
           path: |
             control/cola_api_mer.json
             control/ultimo_reporte_api_mer.json
-          if-no-files-found: warn
-      - name: Exportar MER con checkpoint confirmado
-        if: steps.ventana.outputs.allowed == 'true' && success()
-        shell: bash
-        run: |
-          python - <<'PY'
-          import json,subprocess
-          r=json.load(open('control/ultimo_reporte_api_mer.json'))
-          changes=sum(int(r.get(k,0)) for k in ('procesos','ofertas','resultados','procesos_enriquecidos','ofertas_enriquecidos','resultados_enriquecidos'))
-          if changes: subprocess.run(['python','scripts/exportar_mer_operativo_v2.py','--periodo',r['periodo'],'--aplicar','--incluir-api'],check=True)
-          PY
-      - name: Regenerar indices y analitica del periodo antes de publicar
-        if: steps.ventana.outputs.allowed == 'true' && success()
-        shell: bash
+      - name: Exportar e indexar el mes operativo
+        if: steps.ventana.outputs.ok == 'true' && success()
         run: |
           set -euo pipefail
+          python scripts/exportar_mer_operativo_v2.py --periodo "$PERIODO_SOLICITADO" --aplicar --incluir-api
           for entidad in procesos ordenescompra ofertas resultados; do
             python scripts/indexar_busqueda_frontend_v2.py --periodo "$PERIODO_SOLICITADO" --entidad "$entidad"
             python scripts/generar_perfiles_v2.py --periodo "$PERIODO_SOLICITADO" --entidad "$entidad"
@@ -175,23 +131,26 @@ jobs:
           done
           python scripts/indexar_relaciones_frontend_v2.py --periodo "$PERIODO_SOLICITADO"
           python scripts/indexar_relaciones_procesos_v2.py --periodo "$PERIODO_SOLICITADO"
-      - name: Publicar estado y datos de forma atomica en git
-        if: steps.ventana.outputs.allowed == 'true' && success()
+          git add frontend-v2/data/
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git -c user.name='MER API Actions' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "data(api): publicar jornada $MER_API_FECHA_OBJETIVO"
+            git fetch origin main
+            if [ "$(git rev-parse HEAD^)" != "$(git rev-parse origin/main)" ]; then
+              echo 'CONFLICTO: publicación cancelada para evitar sobrescribir'; exit 1
+            fi
+            git push origin HEAD:main
+          fi
+      - name: Desplegar y verificar Pages
+        if: steps.ventana.outputs.ok == 'true' && success()
         shell: bash
         run: |
           set -euo pipefail
-          git add -- frontend-v2/data/
-          git diff --cached --check
-          if git diff --cached --quiet; then echo "SIN_CAMBIOS_GIT"; exit 0; fi
-          git -c user.name='MER API GitHub Actions' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "data(api): lote incremental controlado desde Actions"
-          # Evita publicar sobre un nuevo estado de cola creado simultaneamente.
-          git fetch origin main
-          if [ "$(git rev-parse HEAD^)" != "$(git rev-parse origin/main)" ]; then
-            echo 'BLOQUEO: main cambió durante esta ejecución. Revisar y recuperar sin duplicar el lote.'
-            exit 1
-          fi
-          git push origin HEAD:main
-          # Push con GITHUB_TOKEN no dispara nuevos workflows por evento push.
-          # Solicitar despliegue explícito de Pages con los derivados ya generados.
           gh workflow run preview-frontend-v2.yml --ref main
-          echo 'PAGES_DISPATCH_SOLICITADO; verificar resultado del workflow'
+          echo 'PAGES_DESPACHADO: comprobación de ejecución se realiza por API'
+          # La publicación no se considera verificada por el solo dispatch.
+          python - <<'PY'
+          import json,os
+          r=json.load(open('control/ultimo_reporte_api_mer.json'))
+          print('JORNADA_COMPLETA',r.get('jornada_completa',False),'PAGES_PENDIENTE_VERIFICACION')
+          PY
