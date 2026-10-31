@@ -1,0 +1,107 @@
+name: API Compra Agil - lote 400 controlado en GitHub Actions
+
+# Migracion de infraestructura de la ruta API local validada.
+# NO se programa de manera periodica ni se ejecuta sin habilitacion manual.
+on:
+  workflow_dispatch:
+    inputs:
+      max_detail:
+        description: "Cantidad maxima de detalles (1..400)"
+        required: true
+        default: "400"
+        type: string
+      periodo:
+        description: "Periodo objetivo AAAA-MM (solo mes calendario vigente; historicos pendientes)"
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: mer-api-actions-unica
+  cancel-in-progress: false
+
+jobs:
+  lote-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    env:
+      TZ: America/Santiago
+      CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      GH_TOKEN: ${{ github.token }}
+      MER_API_DELAY_SECONDS: "10"
+      MER_API_MAX_DETAIL: ${{ inputs.max_detail }}
+      MER_API_RUN_NOW: "1"
+    steps:
+      - name: Checkout de datos y estado incremental
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Preflight estricto sin consultar API
+        shell: bash
+        env:
+          PERIODO_SOLICITADO: ${{ inputs.periodo }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime,json,os,re,pathlib
+          from zoneinfo import ZoneInfo
+          p=os.environ['PERIODO_SOLICITADO']
+          now=datetime.datetime.now(ZoneInfo('America/Santiago')).strftime('%Y-%m')
+          if not re.fullmatch(r'20\d{2}-(0[1-9]|1[0-2])',p):raise SystemExit('ERROR: formato periodo')
+          if p!=now:
+              raise SystemExit('BLOQUEO_SEGURO: motor validado solo admite mes calendario vigente. El retroactivo '+p+' requiere un flujo de backfill separado.')
+          n=int(os.environ['MER_API_MAX_DETAIL'])
+          if not 1<=n<=400:raise SystemExit('BLOQUEO: lote fuera de rango')
+          cat=json.loads(pathlib.Path('config/catalogo_sheets.json').read_text())
+          if cat['periodos'].get(p,{}).get('tipo')!='operativo':
+              raise SystemExit('BLOQUEO: no existe un MER operativo para '+p)
+          if not os.environ.get('CHILECOMPRA_TICKET') or not os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON'):
+              raise SystemExit('BLOQUEO: configurar secrets CHILECOMPRA_TICKET y GOOGLE_SERVICE_ACCOUNT_JSON en este repositorio')
+          print('PREFLIGHT_VALIDADO',p,n)
+          PY
+      - name: Instalar dependencias Python
+        run: python -m pip install --disable-pip-version-check 'gspread>=6,<7' 'google-auth>=2,<3'
+      - name: Ejecutar recuperacion incremental sin tocar el wrapper Ubuntu
+        shell: bash
+        env:
+          PERIODO_SOLICITADO: ${{ inputs.periodo }}
+        run: |
+          set -euo pipefail
+          export MER_API_RUN_ID="gha-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "MER_API_RUN_ID=$MER_API_RUN_ID" >> "$GITHUB_ENV"
+          python scripts/mer_api_incremental_10.py
+          python - <<'PY'
+          import json,os,subprocess
+          r=json.load(open('control/ultimo_reporte_api_mer.json'))
+          if r.get('id_ejecucion')!=os.environ['MER_API_RUN_ID']:
+              raise SystemExit('BLOQUEO: informe ajeno a esta ejecucion')
+          if r.get('periodo')!=os.environ['PERIODO_SOLICITADO']:
+              raise SystemExit('BLOQUEO: periodo de informe incompatible')
+          changes=sum(int(r.get(k,0)) for k in ('procesos','ofertas','resultados','procesos_enriquecidos','ofertas_enriquecidos','resultados_enriquecidos'))
+          print('REPORTE_API',json.dumps(r,ensure_ascii=False),'CAMBIOS',changes)
+          if changes:
+              subprocess.run(['python','scripts/exportar_mer_operativo_v2.py','--periodo',r['periodo'],'--aplicar','--incluir-api'],check=True)
+          PY
+      - name: Publicar estado y datos de forma atomica en git
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- control/cola_api_mer.json control/ultimo_reporte_api_mer.json frontend-v2/data/
+          git diff --cached --check
+          if git diff --cached --quiet; then echo "SIN_CAMBIOS_GIT"; exit 0; fi
+          git -c user.name='MER API GitHub Actions' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "data(api): lote incremental controlado desde Actions"
+          # Evita publicar sobre un nuevo estado de cola creado simultaneamente.
+          git fetch origin main
+          if [ "$(git rev-parse HEAD^)" != "$(git rev-parse origin/main)" ]; then
+            echo 'BLOQUEO: main cambió durante esta ejecución. Revisar y recuperar sin duplicar el lote.'
+            exit 1
+          fi
+          git push origin HEAD:main
+          echo 'PUBLICACION_DERIVADA_ACTIVADA_POR_PUSH'
