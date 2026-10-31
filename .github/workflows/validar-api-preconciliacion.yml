@@ -1,0 +1,31 @@
+name: Validar excepcional API preconciliacion
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/validar-api-preconciliacion.yml'
+      - 'scripts/mer_api_incremental_10.py'
+      - 'scripts/exportar_mer_operativo_v2.py'
+      - 'scripts/cron_api_compra_agil_ubuntu.sh'
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sintaxis y salvaguardas sin credenciales
+        run: |
+          python3 -m py_compile scripts/mer_api_incremental_10.py scripts/exportar_mer_operativo_v2.py
+          bash -n scripts/cron_api_compra_agil_ubuntu.sh
+          python3 - <<'PY'
+          import json,pathlib
+          c=json.loads(pathlib.Path('config/catalogo_sheets.json').read_text())['periodos']
+          assert c['2026-10']['tipo']=='historico'
+          assert c['2026-10']['estado']=='cierre_operativo_pendiente_conciliacion_oficial'
+          assert c['2026-11']['tipo']=='operativo'
+          s=pathlib.Path('scripts/mer_api_incremental_10.py').read_text()
+          assert 'MER_API_CIERRE_EXCEPCIONAL' in s
+          assert 'window["pausa_hasta"]' in s
+          print('EXCEPCION_PRECONCILIACION_VALIDADA')
+          PY
