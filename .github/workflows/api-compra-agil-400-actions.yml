@@ -16,6 +16,7 @@ on:
         type: string
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: mer-api-actions-unica
   cancel-in-progress: false
@@ -89,6 +90,19 @@ jobs:
           if changes:
               subprocess.run(['python','scripts/exportar_mer_operativo_v2.py','--periodo',r['periodo'],'--aplicar','--incluir-api'],check=True)
           PY
+      - name: Regenerar indices y analitica del periodo antes de publicar
+        shell: bash
+        env:
+          PERIODO_SOLICITADO: ${{ inputs.periodo }}
+        run: |
+          set -euo pipefail
+          for entidad in procesos ordenescompra ofertas resultados; do
+            python scripts/indexar_busqueda_frontend_v2.py --periodo "$PERIODO_SOLICITADO" --entidad "$entidad"
+            python scripts/generar_perfiles_v2.py --periodo "$PERIODO_SOLICITADO" --entidad "$entidad"
+            python scripts/generar_analitica_v2.py --periodo "$PERIODO_SOLICITADO" --entidad "$entidad"
+          done
+          python scripts/indexar_relaciones_frontend_v2.py --periodo "$PERIODO_SOLICITADO"
+          python scripts/indexar_relaciones_procesos_v2.py --periodo "$PERIODO_SOLICITADO"
       - name: Publicar estado y datos de forma atomica en git
         shell: bash
         run: |
@@ -104,4 +118,7 @@ jobs:
             exit 1
           fi
           git push origin HEAD:main
-          echo 'PUBLICACION_DERIVADA_ACTIVADA_POR_PUSH'
+          # Push con GITHUB_TOKEN no dispara nuevos workflows por evento push.
+          # Solicitar despliegue explícito de Pages con los derivados ya generados.
+          gh workflow run preview-frontend-v2.yml --ref main
+          echo 'PAGES_DISPATCH_SOLICITADO; verificar resultado del workflow'
