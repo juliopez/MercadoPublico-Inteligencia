@@ -127,7 +127,7 @@ def main():
    page_batches.append((scanning_page,listing_codes))
    if len(needed)>available or scanning_page>=total_pages or len(candidates)>=maximum:break
    scanning_page+=1
- report={"periodo":period,"fecha":today,"consultados":0,"procesos":0,"ofertas":0,"resultados":0,"errores":0,"pagina":page}
+ report={"id_ejecucion":os.getenv("MER_API_RUN_ID",""),"periodo":period,"fecha":today,"consultados":0,"procesos":0,"ofertas":0,"resultados":0,"errores":0,"pagina":page}
  try:
   for code in candidates:
    try:
