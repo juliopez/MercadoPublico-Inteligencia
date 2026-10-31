@@ -1,10 +1,12 @@
 # Observatorio de Inteligencia de Mercado Público · Chile
+**Inventario completo de los cuatro procesos:** [1 · Cron 16:00](docs/LINEA_BASE_PROTEGIDA_CRON_1600.md) · [2 · API Compra Ágil 400](docs/LINEA_BASE_VALIDADA_API_COMPRA_AGIL_400.md) · [3 · Cambio de mes](docs/INVENTARIO_PROCESO_3_CAMBIO_MES.md) · [4 · Consolidación histórica del día 10 hábil](docs/INVENTARIO_PROCESO_4_CONSOLIDACION_HISTORICA.md). Los procesos 3 y 4 tienen temporizadores Ubuntu independientes; la primera rotación real está validada y la primera consolidación integral sigue pendiente de ejecución real.
+
 
 **🔒 LÍNEA BASE OPERATIVA PROTEGIDA — CRON UBUNTU 16:00:** [Leer antes de cualquier modificación del proyecto](docs/LINEA_BASE_PROTEGIDA_CRON_1600.md). La cadena diaria de licitaciones, órdenes de compra, conciliación documental y publicación V2 está validada y **no debe modificarse** al desarrollar otras automatizaciones. Toda excepción requiere autorización expresa y control de cambios.
 
 **🔒 LÍNEA BASE VALIDADA 2 — API COMPRA ÁGIL (400):** [Inventario y protección de la ejecución manual](docs/LINEA_BASE_VALIDADA_API_COMPRA_AGIL_400.md). Recuperación, persistencia y publicación comprobadas. No confundir con el controlador nocturno aún pendiente de desarrollar; respetar los componentes compartidos con las 16:00.
 
-**Cierre histórico mensual automático:** [implementación, validaciones y activación Ubuntu](docs/IMPLEMENTACION_CIERRE_AUTOMATICO_PENDIENTES.md). La cadena de consolidación, republicación y declaración de cierre está incorporada en GitHub; **la unidad local aún debe reinstalarse y verificarse en Ubuntu**. No confundir implementación con activación ni con el primer cierre mensual real.
+**Cierre histórico mensual automático:** [implementación, validaciones y activación Ubuntu](docs/IMPLEMENTACION_CIERRE_AUTOMATICO_PENDIENTES.md). La cadena de consolidación, republicación y declaración de cierre está incorporada en GitHub; **la unidad local fue instalada y verificada como habilitada y activa el 31/10; falta validar el primer cierre histórico real**. No confundir implementación con activación ni con el primer cierre mensual real.
 
 Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes de compra** de Mercado Público. Este README describe el **estado vigente**; los procedimientos y antecedentes están separados en la documentación especializada.
 
