@@ -18,8 +18,8 @@ flock -n 8 || { echo "MER ocupado por ETL Ubuntu o conciliación; API omitida si
 git pull --ff-only origin main
 [[ -x "$REPO/.venv/bin/python" ]] || { echo "Falta .venv local validado" >&2; exit 1; }
 "$REPO/.venv/bin/python" -c "import gspread, google.auth"
-export MER_API_MAX_DETAIL="${MER_API_MAX_DETAIL:-10}"
-export MER_API_DELAY_SECONDS="${MER_API_DELAY_SECONDS:-3}"
+export MER_API_MAX_DETAIL="${MER_API_MAX_DETAIL:-100}"
+export MER_API_DELAY_SECONDS="${MER_API_DELAY_SECONDS:-10}"
 export MER_API_RUN_NOW=1
 # Solo ejecución local manual o timer autorizado.
 "$REPO/.venv/bin/python" scripts/mer_api_incremental_10.py
