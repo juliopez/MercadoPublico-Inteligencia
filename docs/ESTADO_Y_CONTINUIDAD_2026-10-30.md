@@ -2,6 +2,8 @@
 
 **REGLA PRIORITARIA DE CAMBIOS:** [cron de las 16:00 — línea base protegida](LINEA_BASE_PROTEGIDA_CRON_1600.md). Su ejecución, scripts y cadena de publicación están validados y no se deben modificar por otros desarrollos sin autorización explícita.
 
+**SEGUNDA LÍNEA BASE VALIDADA:** [API Compra Ágil manual de hasta 400](LINEA_BASE_VALIDADA_API_COMPRA_AGIL_400.md). Preservar sus ejecutores y controles; la automatización nocturna es futura y no está validada.
+
 **Este es el punto de entrada vigente**. Las guías y planes fechados antes del 30/10 son antecedentes técnicos, no instrucciones prioritarias si contradicen esta página.
 
 ## Alcance y estados comprobados
