@@ -81,7 +81,7 @@ def publish(period):
                         raise ValueError("Catálogo interno no está archivado")
                     record["estado"]="cerrado_tras_carga_oficial_verificada"
                     tmp=config_path.with_suffix(".json.tmp")
-                    tmp.write_text(json.dumps(config,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+                    tmp.write_text(json.dumps(config,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
                     os.replace(tmp,config_path)
                     run("git","add","--","config/catalogo_sheets.json")
                     run("git","diff","--cached","--check")
