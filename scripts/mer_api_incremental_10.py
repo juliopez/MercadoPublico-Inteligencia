@@ -87,8 +87,8 @@ def main():
  today=now.date().isoformat()
  if window.get("pausa_hasta","")>now.isoformat():
   print("PAUSA_API_HASTA",window["pausa_hasta"],"sin nuevas consultas");return
- # Primero reintentos vencidos y seguimientos vencidos; después nuevos por fecha ascendente.
- follow=sorted([c for c,e in cache.items() if e.get("estado") in ("ERROR","EN_SEGUIMIENTO","SIN_DATOS") and e.get("proxima_revision","9999")<=now.isoformat()],key=lambda c:(cache[c].get("proxima_revision",""),c))
+ # Reintentar solo fallidos; no repetir detalles ya descargados correctamente.
+ follow=sorted([c for c,e in cache.items() if e.get("estado") in ("ERROR","SIN_DATOS") and e.get("proxima_revision","9999")<=now.isoformat()],key=lambda c:(cache[c].get("proxima_revision",""),c))
  candidates=follow[:min(10,maximum)]
  repair_all=os.getenv("MER_API_REPAIR_ALL")=="1"
  if repair_all:
