@@ -1,13 +1,11 @@
 {
-  "id_ejecucion": "1793406634051726831-$",
+  "id_ejecucion": "1793410206580495247-$",
   "periodo": "2026-10",
   "fecha": "2026-10-30",
-  "consultados": 100,
-  "procesos": 99,
-  "ofertas": 764,
-  "resultados": 74,
+  "consultados": 400,
+  "procesos": 400,
+  "ofertas": 2178,
+  "resultados": 288,
   "errores": 0,
-  "pagina": 2,
-  "procesos_enriquecidos": 1,
-  "ofertas_enriquecidos": 15
+  "pagina": 11
 }
