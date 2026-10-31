@@ -7,5 +7,6 @@ Type=oneshot
 WorkingDirectory=%h/Julio Lopez/chilecompra/MercadoPublico-Inteligencia
 Environment=MER_API_MAX_DETAIL=100
 Environment=MER_API_DELAY_SECONDS=10
+Environment=MER_API_CIERRE_EXCEPCIONAL=auto
 ExecStart=/bin/bash scripts/cron_api_compra_agil_ubuntu.sh
 TimeoutStartSec=55min
