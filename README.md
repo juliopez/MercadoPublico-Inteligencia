@@ -2,7 +2,7 @@
 
 Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes de compra** de Mercado Público. Este README describe el **estado vigente**; los procedimientos y antecedentes están separados en la documentación especializada.
 
-**Estado documental verificado: 30 de octubre de 2026.** La operación Ubuntu de las 16:00 fue comprobada el 30/10 mediante exportación, publicación V2 y supervisor de GitHub. La instalación de los nuevos servicios locales no se ha verificado.
+**Estado documental verificado: 30 de octubre de 2026.** [Bitácora actual de prueba API 400, iniciada 22:30](docs/BITACORA_PRUEBA_API_400_2026-10-30.md). La operación Ubuntu de las 16:00 fue comprobada el 30/10 mediante exportación, publicación V2 y supervisor de GitHub. La instalación de los nuevos servicios locales no se ha verificado.
 
 **[Punto único de continuidad y estado real](docs/ESTADO_Y_CONTINUIDAD_2026-10-30.md).** [Instalación de rotación y conciliación](docs/INSTALACION_ROTACION_CONCILIACION_2026-10-30.md) · [API local — etapa siguiente](docs/CRON_LOCAL_API_COMPRA_AGIL_2026-10-30.md) · [Índice documental](docs/INDICE_DOCUMENTACION.md).
 
@@ -63,7 +63,7 @@ GitHub Pages V2 (sin acceso directo a Sheets)
 
 ## Operación y mantenimiento
 
-La operación diaria utiliza desde el 22/10/2026 el orquestador integrado Ubuntu de las 16:00, con ETL de licitaciones y OC, conciliación documental COT–OC y publicación condicionada en V2. La cadena Ubuntu → GitHub Actions → Pages quedó verificada el viernes 30/10; comprobar diariamente su continuidad mediante los logs y supervisión. La rotación operativa y la preparación recuperable de conciliación están implementadas en código y con temporizadores preparados, **todavía no instalados ni probados con Drive desde Ubuntu**. Octubre no se ha archivado definitivamente; la conciliación oficial sigue requiriendo tres ZIP, respaldos, auditoría y aprobación. No alterar el cron diario.
+La operación diaria utiliza desde el 22/10/2026 el orquestador integrado Ubuntu de las 16:00, con ETL de licitaciones y OC, conciliación documental COT–OC y publicación condicionada en V2. La cadena Ubuntu → GitHub Actions → Pages quedó verificada el viernes 30/10; comprobar diariamente su continuidad mediante los logs y supervisión. La rotación operativa y la preparación recuperable de conciliación están implementadas en código y con temporizadores preparados, **instalados y con rotación octubre→noviembre ejecutada y verificada el 30/10; cierre histórico oficial todavía pendiente**. Octubre no se ha archivado definitivamente; la conciliación oficial sigue requiriendo tres ZIP, respaldos, auditoría y aprobación. No alterar el cron diario.
 
 - [Runbook del cierre de octubre](docs/RUNBOOK_CIERRE_2026_10.md)
 - [Procedimiento general de cierre mensual](docs/PROCEDIMIENTO_CIERRE_MENSUAL.md)
@@ -82,4 +82,4 @@ La operación diaria utiliza desde el 22/10/2026 el orquestador integrado Ubuntu
 
 **Últimas mejoras V2:** [búsqueda transversal multimes](docs/BUSQUEDA_TRANSVERSAL_MULTIMES_V2_2026-10-21.md) con detalle navegable, [participantes históricos](docs/PARTICIPANTES_HISTORICOS_V2_2026-10-21.md) y [vista unificada de OC](docs/VISTA_UNIFICADA_OC_FRONTEND_V2_2026-10-21.md). Verificación visual de funciones puntuales en curso; no equivale a auditoría integral.
 
-**Antecedentes operativos fechados (no son estado vigente):** [cierre técnico y validación del 22/10](docs/CIERRE_OPERATIVO_Y_VALIDACION_2026-10-22.md), [publicación V2](docs/PUBLICACION_MER_V2_POST_ETL_2026-10-22.md) y [cron integrado](docs/CRON_INTEGRADO_UBUNTU_2026-10-22.md). El [plan anterior](docs/PLAN_MEJORAS_CRON_1600_2026-10-21.md) se conserva como antecedente histórico. El ejecutor API local está preparado con lotes configurables de hasta 50 y timer horario sin activar; siguiente paso: prueba real de 25 procesos, después de 50. Ver [guía API local](docs/CRON_LOCAL_API_COMPRA_AGIL_2026-10-30.md).
+**Antecedentes operativos fechados (no son estado vigente):** [cierre técnico y validación del 22/10](docs/CIERRE_OPERATIVO_Y_VALIDACION_2026-10-22.md), [publicación V2](docs/PUBLICACION_MER_V2_POST_ETL_2026-10-22.md) y [cron integrado](docs/CRON_INTEGRADO_UBUNTU_2026-10-22.md). El [plan anterior](docs/PLAN_MEJORAS_CRON_1600_2026-10-21.md) se conserva como antecedente histórico. La API local realizó una carga productiva de hasta 100 (99 procesos nuevos). La siguiente prueba manual de hasta 400 comenzó, según informó el usuario, el 30/10 a las 22:30; **resultado y duración pendientes**. Véase la bitácora de prueba de 400 antes de continuar. Ver [guía API local](docs/CRON_LOCAL_API_COMPRA_AGIL_2026-10-30.md).
