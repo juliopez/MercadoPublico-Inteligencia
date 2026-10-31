@@ -7,6 +7,8 @@
 
 **🔒 LÍNEA BASE OPERATIVA PROTEGIDA — CRON UBUNTU 16:00:** [Leer antes de cualquier modificación del proyecto](docs/LINEA_BASE_PROTEGIDA_CRON_1600.md). La cadena diaria de licitaciones, órdenes de compra, conciliación documental y publicación V2 está validada y **no debe modificarse** al desarrollar otras automatizaciones. Toda excepción requiere autorización expresa y control de cambios.
 
+**GitHub Actions API 400 (preparado, no ejecutado):** [workflow manual, secretos y límites de período](docs/API_400_GITHUB_ACTIONS.md). La ruta de Ubuntu permanece intacta.
+
 **🔒 LÍNEA BASE VALIDADA 2 — API COMPRA ÁGIL (400):** [Inventario y protección de la ejecución manual](docs/LINEA_BASE_VALIDADA_API_COMPRA_AGIL_400.md). Recuperación, persistencia y publicación comprobadas. No confundir con el controlador nocturno aún pendiente de desarrollar; respetar los componentes compartidos con las 16:00.
 
 **Cierre histórico mensual automático:** [implementación, validaciones y activación Ubuntu](docs/IMPLEMENTACION_CIERRE_AUTOMATICO_PENDIENTES.md). La cadena de consolidación, republicación y declaración de cierre está incorporada en GitHub; **la unidad local fue instalada y verificada como habilitada y activa el 31/10; falta validar el primer cierre histórico real**. No confundir implementación con activación ni con el primer cierre mensual real.
