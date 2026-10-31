@@ -77,3 +77,27 @@ La cola conserva el cursor de listado y estados por código. El script de produc
 El timer `mercadopublico-api.timer` está diseñado para ejecución a minuto 10 de cada hora; la unidad service declara `MER_API_MAX_DETAIL=100`, `MER_API_DELAY_SECONDS=10`. **Todavía no se ha instalado ni activado el timer API en Ubuntu**, ni se han realizado escrituras reales bajo esta nueva política. No confundir validación estática de GitHub con una prueba de integración MER–publicación. El cron ETL de las 16:00 sigue separado y posee candado compartido.
 
 **Puntos de validación productiva pendientes:** reanudación real después de HTTP 429, escritura incremental de 100, desempeño de Google Sheets, no duplicación, finalización de exportador y workflows derivados. Ante fallos de escritura o push, conservar logs y reconciliar estado; no reiniciar a ciegas. El mes de octubre está archivado; no iniciar escritura productiva hasta noviembre.
+
+## Ejecución excepcional inmediata y reintento horario (30/10)
+
+**Decisión aprobada:** hoy, con octubre ya archivado operativamente pero pendiente de conciliación oficial, ejecutar lote productivo de **hasta 100**, no una simulación, usando excepción temporal `MER_API_CIERRE_EXCEPCIONAL=2026-10`. La excepción exige que el período corresponda al mes calendario de Santiago y que la hoja esté `historico` con estado `cierre_operativo_pendiente_conciliacion_oficial`. **No se modifica el catálogo para reabrir octubre ni se mezclan sus registros con noviembre.** Se exportan datos públicos del período intervenido.
+
+```bash
+cd "$HOME/Julio Lopez/chilecompra/MercadoPublico-Inteligencia"
+git pull --ff-only origin main
+MER_API_CIERRE_EXCEPCIONAL=2026-10 MER_API_MAX_DETAIL=100 MER_API_DELAY_SECONDS=10 bash scripts/cron_api_compra_agil_ubuntu.sh
+```
+
+El script confirma cada registro de Sheets; actualiza `control/cola_api_mer.json` y `control/ultimo_reporte_api_mer.json` en `finally`. Si una solicitud recibe tres HTTP 429 consecutivos con 10 segundos entre reintentos, interrumpe el lote, guarda `pausa_hasta` y fecha de reintento del código fallido **60 minutos desde el tercer 429**, pero exporta y publica los registros ya exitosos, aunque sean menos de 100. El wrapper hace commit/push y dispara `publicacion-v2-post-etl.yml`; índices, analítica y Pages se verifican después.
+
+Para automatizar reintentos cada hora, tras actualizar el repositorio instalar la unidad y el timer horario:
+```bash
+mkdir -p "$HOME/.config/systemd/user"
+cp deploy/systemd/mercadopublico-api.{service,timer} "$HOME/.config/systemd/user/"
+systemctl --user daemon-reload
+systemctl --user enable --now mercadopublico-api.timer
+systemctl --user list-timers
+```
+El timer intenta ejecutar cada hora al minuto 10, pero **si aún no transcurren los 60 minutos desde el tercer 429, se omite la consulta y espera la siguiente hora**. La unidad define `MER_API_CIERRE_EXCEPCIONAL=auto`: el runner usa la hoja del mes actual archivado prematuramente y pendiente de conciliación; desde el 1 de noviembre **deja de aplicar la excepción de octubre** y vuelve automáticamente al libro operativo de noviembre. No modificar el cron ETL 16:00. La unidad comparte candados con ETL/rotación/conciliación. El instalador requiere que `api.env` y las credenciales Google permanezcan privados en Ubuntu.
+
+**Alcance de validación:** la implementación y pruebas sintácticas en GitHub no acreditan todavía escrituras reales de 100 ni publicación parcial en producción. Verificar `consultados`, `errores`, `limite_429`, `reintentar_desde`, commit remoto, workflow de derivados y estado Pages. Anotar el resultado real; no afirmar éxito antes de ejecutarlo.
