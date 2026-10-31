@@ -1,5 +1,5 @@
 [Unit]
-Description=Preparacion mensual historica MER sin escritura final
+Description=Cierre historico automatico MER con verificacion y Pages
 After=network-online.target
 
 [Service]
