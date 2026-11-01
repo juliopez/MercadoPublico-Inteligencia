@@ -137,14 +137,34 @@ async function render(){
   money.append(bars(amountRows,currency,focus.periodo,true));money.querySelectorAll('.viz-bar').forEach((r,i)=>{if(!amountRows[i].available)r.querySelector('.viz-number').textContent='Sin monto'});
   money.append(trend(amountRows.filter(x=>x.available).map(x=>({periodo:x.key,value:x.value})),focus.periodo));
   const monetary=Array.isArray(focus.top_actores_monto)&&focus.top_actores_monto.length>0;
-  const rank=(monetary?focus.top_actores_monto:focus.top_actores||[]).slice(0,7).map(([label,value])=>({label:String(label),full:String(label),value:+value||0}));
-  const actors=section(entity==='procesos'?'Organismos compradores':'Participantes principales',monetary?'Distribución de montos informados por nombre publicado.':'Ranking de registros; desglose monetario aún no disponible.');
-  const t3=total(rank.slice(0,3).map(x=>x.value));
-  const base=monetary?+focus.monto_total_clp||0:+focus.registros||0;
-  actors.append(kpis([['Nombres distintos',number.format(+focus.actores_distintos_por_nombre||0)],['Participación del top 3',base?pct(t3/base*100):'—']]));
-  actors.append(bars(rank,monetary?currency:v=>number.format(v),''));
-  if(monetary&&base>0)actors.append(donut(rank,base));
-  else actors.append(create('p','muted','La concentración monetaria estará disponible al regenerar los agregados públicos.'));
+  const rankingUnico=entity==='procesos'&&Array.isArray(focus.organismos_procesos_unicos);
+  const rank=rankingUnico?focus.organismos_procesos_unicos.slice(0,7).map(x=>({key:String(x.organismo),label:String(x.organismo),full:String(x.organismo),value:+x.monto||0,detail:x})):
+   (monetary?focus.top_actores_monto:focus.top_actores||[]).slice(0,7).map(([label,value])=>({label:String(label),full:String(label),value:+value||0}));
+  const actors=section(entity==='procesos'?'Organismos compradores':'Participantes principales',rankingUnico?'Presupuestos disponibles de procesos únicos del mes; cada barra corresponde a un organismo publicado. No son adjudicaciones.':entity==='procesos'?'Aún no está publicado el ranking certificado de procesos únicos para este mes. Los montos por filas no se muestran como presupuestos únicos.':monetary?'Distribución de montos informados por nombre publicado.':'Ranking de registros; desglose monetario aún no disponible.');
+  if(rankingUnico){
+   const totalUnico=focus.organismos_procesos_unicos.reduce((n,x)=>n+(+x.monto||0),0);
+   const top3=rank.slice(0,3).reduce((n,x)=>n+x.value,0);
+   actors.append(kpis([['Organismos identificados',number.format(focus.organismos_procesos_unicos.length),'Agrupados por nombre publicado, sin homologar variantes.'],['Presupuesto del top 3',totalUnico?pct(top3/totalUnico*100):'—','Porcentaje del monto disponible de procesos únicos del mes, no del dinero adjudicado.']]));
+   if(rank.length){
+    actors.append(bars(rank,currency,''));
+    const details=create('div','viz-org-details');
+    details.append(create('h4','','Concursos que componen cada barra'));
+    for(const item of rank){
+     const x=item.detail,line=create('p','viz-org-detail');
+     line.append(create('strong','',x.organismo+': '),document.createTextNode(number.format(x.procesos)+' procesos únicos · '+number.format(x.licitaciones)+' licitaciones · '+number.format(x.compras_agiles)+' Compras Ágiles · '+number.format(x.otras)+' otras modalidades · '+number.format(x.con_monto)+' con presupuesto disponible.'));
+     details.append(line);
+    }
+    actors.append(details);
+   }else actors.append(create('p','muted','No se identificaron concursos para este mes y búsqueda.'));
+  }else if(entity==='procesos'){
+   actors.append(create('p','muted','La clasificación por organismo y código único requiere regenerar el agregado mensual. No se muestran montos por registros como si fueran concursos únicos.'));
+  }else{
+   const t3=total(rank.slice(0,3).map(x=>x.value)),base=monetary?+focus.monto_total_clp||0:+focus.registros||0;
+   actors.append(kpis([['Nombres distintos',number.format(+focus.actores_distintos_por_nombre||0)],['Participación del top 3',base?pct(t3/base*100):'—']]));
+   actors.append(bars(rank,monetary?currency:v=>number.format(v),''));
+   if(monetary&&base>0)actors.append(donut(rank,base));
+   else actors.append(create('p','muted','La concentración monetaria estará disponible al regenerar los agregados públicos.'));
+  }
   const activity=section('Cobertura mensual de registros','Cantidad de procesos o registros disponibles en el Observatorio por período. El mes operativo es parcial y no representa una caída de actividad del mercado.');
   const acsum=total(activityRows.map(x=>x.value));
   const names={procesos:'registros de procesos',ofertas:'ofertas',resultados:'resultados',ordenescompra:'órdenes de compra'};
