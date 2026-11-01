@@ -16,12 +16,15 @@ def build(period,entity,root=ROOT):
  assert re.fullmatch(r"20\d{2}-(0[1-9]|1[0-2])",period) and entity in ACTORS
  catalog=json.loads((root/"data/catalogo-publico.json").read_text(encoding="utf8"))
  item=next(x for x in catalog["periodos"] if x["periodo"]==period)
- counts=collections.Counter();amounts_by_actor=collections.Counter();modality_counts=collections.Counter();total=0;with_money=0;sum_money=0
+ counts=collections.Counter();amounts_by_actor=collections.Counter();modality_counts=collections.Counter();codes={};total=0;with_money=0;sum_money=0
  for rel in item["partes"][entity]:
   assert re.fullmatch(rf"data/partes/{entity}/{period}/[a-z0-9_-]+\.json",rel)
   rows=json.loads((root/rel).read_text(encoding="utf8"))
   for row in rows:
    total+=1;name=str(row.get(ACTORS[entity]) or "").strip()
+   if entity=="procesos":
+    code=str(row.get("codigo") or "").strip().upper()
+    if code and code not in codes:codes[code]=str(row.get("modalidad") or "")
    if name:counts[name]+=1
    modality=str(row.get("modalidad") or row.get("tipo_oc") or "").strip()
    if modality:modality_counts[modality]+=1
@@ -30,7 +33,13 @@ def build(period,entity,root=ROOT):
     with_money+=1;sum_money+=amount
     if name:amounts_by_actor[name]+=amount
  assert total==item["conteos"][entity]
- data={"version":1,"periodo":period,"entidad":entity,"registros":total,"registros_con_monto":with_money,
+ unique_modes=collections.Counter()
+ if entity=="procesos":
+  for m in codes.values():
+   m=unicodedata.normalize("NFD",m.lower())
+   m="".join(c for c in m if unicodedata.category(c)!="Mn")
+   unique_modes["compra_agil" if "compra agil" in m else "licitacion" if "licitacion" in m else "otras"]+=1
+ data={"version":2,"procesos_unicos":len(codes) if entity=="procesos" else None,"modalidades_unicas":dict(unique_modes),"periodo":period,"entidad":entity,"registros":total,"registros_con_monto":with_money,
        "monto_total_clp":sum_money,"actores_distintos_por_nombre":len(counts),
        "top_actores":counts.most_common(10),
        "top_actores_monto":[[name,amount] for name,amount in amounts_by_actor.most_common(10)],
