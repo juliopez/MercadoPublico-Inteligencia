@@ -12,7 +12,9 @@ async function fetchData(path){if(cache.has(path))return cache.get(path);const p
 const total=a=>a.reduce((s,v)=>s+Number(v||0),0);
 function kpis(items){const root=create('div','viz-kpis');for(const [a,b] of items){const k=create('div','viz-kpi');k.append(create('small','',a),create('strong','',b));root.append(k)}return root}
 function section(name,sub){const c=create('section','viz-card');c.append(create('h3','',name),create('p','muted',sub));return c}
-function choose(m){V('periodo').value=m;V('periodo').dispatchEvent(new Event('change'))}
+let userSelectedMonth='';
+function choose(m){userSelectedMonth=m;V('periodo').value=m;V('periodo').dispatchEvent(new Event('change'));updateDetailButton()}
+function updateDetailButton(){const b=V('analitica-ver-registros');if(!b)return;b.disabled=!userSelectedMonth;b.textContent=userSelectedMonth?'Ver registros de '+userSelectedMonth:'Selecciona un mes en el gráfico'}
 function bars(data,formatter,active,interactive=false){
  const holder=create('div','viz-bars');const max=Math.max(1,...data.map(x=>x.value));
  for(const r of data){
@@ -120,7 +122,7 @@ async function render(){
   const data=(filter?.active && filter.entity===entity ? filter.data : reads.filter(x=>x.status==='fulfilled').map(x=>x.value)).slice().sort((a,b)=>a.periodo.localeCompare(b.periodo));
   if(!data.length){root.replaceChildren(create('p','muted','No hay agregados analíticos públicos para esta entidad.'));return}
   const focus=data.find(x=>x.periodo===selected)||data.at(-1),amountRows=data.map(x=>({key:x.periodo,label:x.periodo,value:+x.monto_total_clp||0,available:+x.registros_con_monto>0})),activityRows=data.map(x=>({key:x.periodo,value:+x.registros||0}));
-  V('analitica-seleccion').textContent='Mes de referencia: '+focus.periodo+(filter?.active?' · filtro: '+filter.term:'')+' · '+entity+(focus.periodo===currentMonth()?' · mes en curso (parcial)':'');
+  // El contexto se comunica en el propio gráfico y el botón, no en un rótulo redundante.
   const money=section('Montos registrados','Suma de montos informados por mes; no acredita pagos.');
   const valid=data.filter(x=>+x.registros_con_monto>0),sum=total(valid.map(x=>x.monto_total_clp));
   money.append(kpis([['Suma de montos informados',currency(sum)],['Promedio de meses con monto',valid.length?currency(sum/valid.length):'Sin datos']]));
@@ -143,7 +145,15 @@ async function render(){
 
  }catch(e){if(token===request)root.replaceChildren(create('p','muted','No se pudo cargar el panel visual: '+e.message))}
 }
-V('analitica-ver-registros').addEventListener('click',()=>{const p=V('periodo').value;if(p)V('ir-busqueda-global').click()});
+V('analitica-ver-registros').addEventListener('click',()=>{
+ const p=userSelectedMonth;if(!p)return;
+ const filter=window.merAnaliticaFiltro;
+ V('periodo').value=p;V('busqueda-global-alcance').value='mes';
+ V('busqueda-global-alcance').dispatchEvent(new Event('change'));
+ V('busqueda-global-texto').value=filter?.active&&filter.entity===V('entidad').value?filter.term:'';
+ if(filter?.active&&filter.entity===V('entidad').value){V('busqueda-global-boton').click();V('busqueda-global').scrollIntoView({behavior:'smooth'});}
+ else {V('ir-busqueda-global').click();V('consulta').scrollIntoView({behavior:'smooth'});}
+});
 ['entidad','periodo'].forEach(id=>V(id).addEventListener('change',render));
 document.addEventListener('mer-analytics-filter',render);
-render();
+updateDetailButton();render();
