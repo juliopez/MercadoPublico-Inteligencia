@@ -145,3 +145,7 @@ python3 scripts/generar_indice_ofertas_por_proceso.py --periodo 2026-09
 ```
 
 Luego revisar conteos, tamaño, integridad de los JSON y publicar el directorio generado en GitHub Pages. La búsqueda verifica `version`, mes y `fuente_conteos` contra el catálogo vigente. Si el índice no existe (404), continúa con el método anterior de fragmentos. Si el archivo existe pero está desactualizado o incompleto, falla sin publicar cifras potencialmente incorrectas. El navegador reutiliza archivos ya consultados durante la sesión. **Hasta ejecutar el generador y publicar sus resultados, la mejora estructural de tiempos todavía no está activa para esos meses.** Los índices deben regenerarse cuando se publiquen nuevos registros de ofertas del mes. No se ha conectado este generador a los workflows operativos protegidos.
+
+## Corrección de regresión visual: gráfico de sectores de organismos
+
+El ranking de organismos basado en procesos únicos restituye el gráfico de sectores cuando existen presupuestos informados. Comparte el mismo universo de códigos únicos, mes y filtro que las barras, y el denominador corresponde al presupuesto total de todos los organismos, no solamente al top visible. Si el agregado mensual todavía no está regenerado o no existen importes positivos, no se representa una distribución ficticia. No afecta procesos operativos protegidos.
