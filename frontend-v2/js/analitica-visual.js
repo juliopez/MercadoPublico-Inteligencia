@@ -123,9 +123,17 @@ async function render(){
   if(!data.length){root.replaceChildren(create('p','muted','No hay agregados analíticos públicos para esta entidad.'));return}
   const focus=data.find(x=>x.periodo===selected)||data.at(-1),amountRows=data.map(x=>({key:x.periodo,label:x.periodo,value:+x.monto_total_clp||0,available:+x.registros_con_monto>0})),activityRows=data.map(x=>({key:x.periodo,value:+x.registros||0}));
   // El contexto se comunica en el propio gráfico y el botón, no en un rótulo redundante.
-  const money=section('Montos registrados','Suma de montos informados por mes; no acredita pagos.');
+  const money=section('Montos registrados','Importes declarados según la entidad seleccionada; no son pagos comprobados.');
   const valid=data.filter(x=>+x.registros_con_monto>0),sum=total(valid.map(x=>x.monto_total_clp));
-  money.append(kpis([['Suma de montos informados',currency(sum)],['Promedio de meses con monto',valid.length?currency(sum/valid.length):'Sin datos']]));
+  const moneyKinds={procesos:['Presupuestos disponibles','Los montos disponibles informados en procesos publicados; no son adjudicaciones ni pagos.'],ofertas:['Montos ofertados','Importes declarados en las ofertas; no necesariamente adjudicados.'],resultados:['Montos adjudicados informados','Importes asociados a resultados publicados, sujetos a su estado de verificación.'],ordenescompra:['Montos de órdenes de compra','Importes consignados en órdenes de compra, no pagos realizados.']};
+  const [moneyTitle,moneyHint]=moneyKinds[entity];
+  money.append(kpis([['Suma de '+moneyTitle.toLowerCase(),currency(sum),moneyHint+' Se suman filas con monto de los meses visibles.'],['Promedio mensual con monto',valid.length?currency(sum/valid.length):'Sin datos','La suma de montos se divide por los '+valid.length+' meses con algún importe informado; NO es un promedio por concurso ni por oferta.']]));
+  if(entity==='procesos'&&filter?.active){
+   const budget=new Map();
+   // Se informa solamente la suma deduplicada por código, generada por el filtro de procesos.
+   const uniqueBudget=data.reduce((n,x)=>n+Number(x.monto_procesos_unicos_clp||0),0);
+   if(data.every(x=>Number.isFinite(x.monto_procesos_unicos_clp)))money.append(kpis([['Monto disponible de procesos únicos',currency(uniqueBudget),'Suma de presupuestos de códigos únicos coincidentes; cada código se cuenta una vez por mes. No corresponde a dinero adjudicado.']]));
+  }
   money.append(bars(amountRows,currency,focus.periodo,true));money.querySelectorAll('.viz-bar').forEach((r,i)=>{if(!amountRows[i].available)r.querySelector('.viz-number').textContent='Sin monto'});
   money.append(trend(amountRows.filter(x=>x.available).map(x=>({periodo:x.key,value:x.value})),focus.periodo));
   const monetary=Array.isArray(focus.top_actores_monto)&&focus.top_actores_monto.length>0;
@@ -154,6 +162,16 @@ async function render(){
     card.append(kpis([['Procesos únicos',number.format(focus.procesos_unicos),'Se cuenta cada código de proceso una sola vez dentro del mes; no se cuentan las ofertas ni adjudicaciones.'],['Licitaciones',number.format(licit),'Códigos de procesos únicos clasificados como licitación.'],['Compras Ágiles',number.format(agile),'Códigos únicos clasificados como Compra Ágil.'],['Otras modalidades',number.format(other),'Códigos únicos de otras modalidades o sin clasificación.']]));
     card.append(create('p','muted','Cobertura: '+label+'. El conteo se basa en la clasificación publicada, no en interpretación semántica.'));
    }else card.append(create('p','muted','El agregado general de este mes aún no contiene códigos únicos certificados. Se mantienen los conteos de registros existentes; aplica una palabra clave para obtener el conteo deduplicado de coincidencias.'));
+   if(filter?.active&&Number.isInteger(focus.ofertas_unicas)){
+    const offerCard=section('Ofertas vinculadas · '+focus.periodo,'Ofertas presentadas a los concursos coincidentes, relacionadas por código de proceso y dentro del mismo mes.');
+    offerCard.append(kpis([
+     ['Ofertas únicas',number.format(focus.ofertas_unicas),'Deduplicadas por id_cotizacion en el mes; una empresa puede presentar más de una oferta.'],
+     ['Suma de montos ofertados',currency(focus.monto_ofertado_unico_clp),'Suma de las ofertas únicas con importe disponible. No equivale al presupuesto del concurso ni a pagos.'],
+     ['Ofertas con monto',number.format(focus.ofertas_con_monto),'Ofertas distintas con importe numérico válido; es el denominador de cualquier promedio por oferta.']
+    ]));
+    if(focus.ofertas_sin_id)offerCard.append(create('p','muted',number.format(focus.ofertas_sin_id)+' filas vinculadas sin identificador de oferta excluidas del conteo único.'));
+    card.append(offerCard);
+   }
    activity.append(card);
   }
   activity.append(entity==='procesos'?compositionColumns(data.map(d=>({key:d.periodo,value:+d.registros||0,modalidades:d.modalidades})),focus.periodo):columns(activityRows,focus.periodo),variation(activityRows));
