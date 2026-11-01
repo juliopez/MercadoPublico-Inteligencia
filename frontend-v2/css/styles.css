@@ -350,3 +350,9 @@ header .reference{font-size:.84rem;margin-top:10px}
 .viz-stack-segment{width:100%;flex:none}
 .viz-composition-ratio{font-size:.64rem;color:#6a5360;line-height:1.2;min-height:24px}
 .viz-composition-note{font-size:.74rem;margin:10px 0 0}
+
+/* Progreso del filtro temático: porcentaje accesible y visible en móvil. */
+.analytic-progress{margin:.7rem 0 1rem;max-width:44rem}
+.analytic-progress label{display:flex;justify-content:space-between;gap:1rem;font-size:.92rem;margin-bottom:.35rem}
+.analytic-progress progress{display:block;width:100%;height:.85rem;accent-color:#2476ac;border-radius:1rem}
+.analytic-progress[hidden]{display:none}
