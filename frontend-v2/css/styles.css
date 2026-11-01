@@ -356,3 +356,9 @@ header .reference{font-size:.84rem;margin-top:10px}
 .analytic-progress label{display:flex;justify-content:space-between;gap:1rem;font-size:.92rem;margin-bottom:.35rem}
 .analytic-progress progress{display:block;width:100%;height:.85rem;accent-color:#2476ac;border-radius:1rem}
 .analytic-progress[hidden]{display:none}
+
+/* Ayudas contextuales de indicadores; activables con teclado y clic. */
+.viz-kpi-help{display:inline-flex;align-items:center;justify-content:center;min-width:1.3rem;min-height:1.3rem;padding:0 .2rem;margin-left:.25rem;border:1px solid currentColor;border-radius:50%;background:transparent;color:inherit;font-size:.8rem;cursor:pointer}
+.viz-kpi-help:focus-visible{outline:2px solid #176b92;outline-offset:2px}
+.viz-kpi-explanation{display:block;margin:.4rem 0 0;max-width:28rem;line-height:1.45;font-size:.84rem;font-weight:400;white-space:normal}
+.viz-kpi-explanation[hidden]{display:none}
