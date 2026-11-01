@@ -19,15 +19,17 @@ function money(raw){
 }
 const top=map=>[...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
 function aggregate(month,entity,matched){
- const count=new Map(),sums=new Map(),modes=new Map();let total=0,moneyCount=0,sum=0;
+ const count=new Map(),sums=new Map(),modes=new Map(),unique=new Map();let total=0,moneyCount=0,sum=0;
  for(const r of matched){
   total++;const name=String(r[actors[entity]]||'').trim(),amount=money(r[amounts[entity]]);
+  if(entity==='procesos'){const code=String(r.codigo||'').trim().toUpperCase();if(code&&!unique.has(code))unique.set(code,String(r.modalidad||''));}
   if(name)count.set(name,(count.get(name)||0)+1);
   const mode=String(r.modalidad||r.tipo_oc||'').trim();
   if(mode)modes.set(mode,(modes.get(mode)||0)+1);
   if(amount!==null){moneyCount++;sum+=amount;if(name)sums.set(name,(sums.get(name)||0)+amount)}
  }
- return {periodo:month,entidad:entity,registros:total,registros_con_monto:moneyCount,monto_total_clp:sum,actores_distintos_por_nombre:count.size,top_actores:top(count),top_actores_monto:top(sums),modalidades:top(modes)};
+ const split={licitacion:0,compra_agil:0,otras:0};for(const mode of unique.values()){const m=normalize(mode);if(m.includes('compra agil'))split.compra_agil++;else if(m.includes('licitacion'))split.licitacion++;else split.otras++}
+ return {procesos_unicos:entity==='procesos'?unique.size:null,modalidades_unicas:split,periodo:month,entidad:entity,registros:total,registros_con_monto:moneyCount,monto_total_clp:sum,actores_distintos_por_nombre:count.size,top_actores:top(count),top_actores_monto:top(sums),modalidades:top(modes)};
 }
 function progress(value,visible=true){
  const wrap=F('analitica-progreso-contenedor'),bar=F('analitica-progreso');
