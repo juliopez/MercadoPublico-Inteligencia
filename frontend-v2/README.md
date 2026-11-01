@@ -102,3 +102,9 @@ El alcance predeterminado es **todos los períodos publicados**, independiente d
 ### Interpretación de resultados y autocompletado (23-10-2026)
 
 La interfaz aclara que el valor **0** indica ausencia de registros coincidentes **en la cobertura publicada**, no ausencia absoluta de actividad del proveedor. Ofertas y órdenes de compra son entidades diferentes. El autocompletado informa expresamente el alcance efectivo (todos los períodos o un mes), con concordancia singular/plural. Cambio exclusivamente visual y de ayuda; sin alteraciones en ETL, datos, índices ni indicadores.
+
+## Filtro temático del bloque 02 (31-10-2026)
+
+El control «Comparar con» del panel de evolución mensual se sustituye por un formulario de palabras clave. En blanco mantiene los agregados generales; al aplicar, el módulo `js/analitica-filtro.js` consulta los índices públicos de búsqueda por cada mes y entidad, recupera solamente los fragmentos candidatos, verifica las palabras completas sobre los campos indexados y calcula los agregados de gráficos tras finalizar **todos** los períodos. Sin topes silenciosos ni resultados parciales presentados como totales. Al cambiar entidad o limpiar, se restauran los gráficos generales. La selección de una barra mensual se mantiene. «Comparar proveedores» es independiente y no se altera.
+
+La búsqueda de palabras exige al menos tres caracteres y su alcance semántico coincide con el índice global: campos de código, nombre, organismo o proveedor, según la entidad. No se interpreta como búsqueda libre en todos los campos. Si algún índice o fragmento falla, el filtro no se aplica; se conserva el estado gráfico anterior. La ejecución con términos muy frecuentes puede implicar numerosas lecturas y una espera mayor que los agregados precalculados. Se recomienda comprobar consultas reales antes de declarar validación visual o rendimiento certificado.
