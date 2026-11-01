@@ -24,7 +24,7 @@ def build(period,entity,root=ROOT):
    total+=1;name=str(row.get(ACTORS[entity]) or "").strip()
    if entity=="procesos":
     code=str(row.get("codigo") or "").strip().upper()
-    if code and code not in codes:codes[code]=str(row.get("modalidad") or "")
+    if code and code not in codes:codes[code]={"modalidad":str(row.get("modalidad") or ""),"organismo":str(row.get("organismo_comprador") or "").strip(),"monto":money(row.get("monto_disponible_clp"))}
    if name:counts[name]+=1
    modality=str(row.get("modalidad") or row.get("tipo_oc") or "").strip()
    if modality:modality_counts[modality]+=1
@@ -35,11 +35,24 @@ def build(period,entity,root=ROOT):
  assert total==item["conteos"][entity]
  unique_modes=collections.Counter()
  if entity=="procesos":
-  for m in codes.values():
-   m=unicodedata.normalize("NFD",m.lower())
+  for info in codes.values():
+   m=unicodedata.normalize("NFD",info["modalidad"].lower())
    m="".join(c for c in m if unicodedata.category(c)!="Mn")
    unique_modes["compra_agil" if "compra agil" in m else "licitacion" if "licitacion" in m else "otras"]+=1
- data={"version":2,"procesos_unicos":len(codes) if entity=="procesos" else None,"modalidades_unicas":dict(unique_modes),"periodo":period,"entidad":entity,"registros":total,"registros_con_monto":with_money,
+ organismos={}
+ if entity=="procesos":
+  for info in codes.values():
+   name=info["organismo"] or "Sin organismo informado"
+   o=organismos.setdefault(name,{"organismo":name,"procesos":0,"licitaciones":0,"compras_agiles":0,"otras":0,"con_monto":0,"monto":0})
+   o["procesos"]+=1
+   m=unicodedata.normalize("NFD",info["modalidad"].lower())
+   m="".join(c for c in m if unicodedata.category(c)!="Mn")
+   o["compras_agiles" if "compra agil" in m else "licitaciones" if "licitacion" in m else "otras"]+=1
+   if info["monto"] is not None:
+    o["con_monto"]+=1
+    o["monto"]+=info["monto"]
+ resumen_organismos=sorted(organismos.values(),key=lambda o:(-o["monto"],-o["procesos"],o["organismo"]))
+ data={"version":3,"organismos_procesos_unicos":resumen_organismos if entity=="procesos" else None,"procesos_unicos":len(codes) if entity=="procesos" else None,"modalidades_unicas":dict(unique_modes),"periodo":period,"entidad":entity,"registros":total,"registros_con_monto":with_money,
        "monto_total_clp":sum_money,"actores_distintos_por_nombre":len(counts),
        "top_actores":counts.most_common(10),
        "top_actores_monto":[[name,amount] for name,amount in amounts_by_actor.most_common(10)],
