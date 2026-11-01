@@ -9,7 +9,7 @@ const words=s=>normalize(s).match(/[a-z0-9]+/g)||[];
 let serial=0;
 function status(t){F('analitica-filtro-estado').textContent=t}
 async function get(path){
- if(!/^data\/(catalogo-publico\.json|indices\/20\d{2}-\d{2}\.json|busqueda\/20\d{2}-\d{2}\/[a-z]+\/(meta|[a-z0-9]{2})\.json|partes\/[a-z]+\/20\d{2}-\d{2}\/[a-z0-9_-]+\.json)$/.test(path))throw Error('Ruta no permitida');
+ if(!/^data\/(catalogo-publico\.json|analitica-ofertas\/20\d{2}-\d{2}\/(meta|[a-f0-9]{2})\.json|indices\/20\d{2}-\d{2}\.json|busqueda\/20\d{2}-\d{2}\/[a-z]+\/(meta|[a-z0-9]{2})\.json|partes\/[a-z]+\/20\d{2}-\d{2}\/[a-z0-9_-]+\.json)$/.test(path))throw Error('Ruta no permitida');
  const r=await fetch('./'+path,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status+': '+path);return r.json();
 }
 function money(raw){
@@ -17,6 +17,7 @@ function money(raw){
  const x=Number(String(raw).trim().replaceAll('.','').replace(',','.'));
  return Number.isFinite(x)&&x>=0&&x<=1e15?Math.round(x):null;
 }
+const offerCache=new Map();
 const top=map=>[...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
 function aggregate(month,entity,matched){
  const count=new Map(),sums=new Map(),modes=new Map(),unique=new Map();let total=0,moneyCount=0,sum=0;
@@ -46,6 +47,37 @@ function aggregate(month,entity,matched){
 async function linkedOffers(month,catalog,processRows,ticket){
  const codes=new Set(processRows.map(r=>String(r.codigo||'').trim().toUpperCase()).filter(Boolean));
  if(!codes.size)return {ofertas_unicas:0,ofertas_con_monto:0,monto_ofertado_unico_clp:0,ofertas_sin_id:0};
+ // Preferir resúmenes compactos por código. Fallback a fragmentos si aún no publicados.
+ let meta;
+ try{
+  meta=await get('data/analitica-ofertas/'+month+'/meta.json');
+ }catch(e){
+  if(!String(e.message).startsWith('HTTP 404'))throw e;
+ }
+ if(meta){
+  const expected=catalog.periodos.find(x=>x.periodo===month)?.conteos?.ofertas;
+  if(meta.version!==1||meta.periodo!==month||meta.fuente_conteos!==expected)throw Error('Índice analítico desactualizado: '+month);
+  const shardCodes=new Map();
+  await Promise.all([...codes].map(async code=>{
+   const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(code));
+   const shard=[...new Uint8Array(digest)].slice(0,1).map(n=>n.toString(16).padStart(2,'0')).join('');
+   if(!shardCodes.has(shard))shardCodes.set(shard,[]);
+   shardCodes.get(shard).push(code);
+  }));
+  let sum=0,n=0,c=0,missing=0;
+  for(const [shard,codeList] of shardCodes){
+   if(ticket!==serial)return null;
+   if(!meta.shards.includes(shard))continue;
+   const path='data/analitica-ofertas/'+month+'/'+shard+'.json';
+   let data=offerCache.get(path);
+   if(!data){data=await get(path);offerCache.set(path,data)}
+   for(const code of codeList){
+    const row=data[code];if(!row)continue;
+    n+=row.n;c+=row.c;sum+=row.m;missing+=row.s;
+   }
+  }
+  return {ofertas_unicas:n,ofertas_con_monto:c,monto_ofertado_unico_clp:sum,ofertas_sin_id:missing};
+ }
  const index=await get('data/indices/'+month+'.json');
  if(index.periodo!==month||!index.entidades?.ofertas)throw Error('Índice de relaciones incompatible: '+month);
  const paths=catalog.periodos.find(x=>x.periodo===month)?.partes?.ofertas||[];
@@ -60,7 +92,7 @@ async function linkedOffers(month,catalog,processRows,ticket){
  const seen=new Set();let amount=0,withAmount=0,missing=0;
  for(const path of needed){
   if(ticket!==serial)return null;
-  const rows=await get(path);if(!Array.isArray(rows))throw Error('Fragmento ofertas inválido');
+  let rows=offerCache.get(path);if(!rows){rows=await get(path);offerCache.set(path,rows)}if(!Array.isArray(rows))throw Error('Fragmento ofertas inválido');
   for(const r of rows){
    if(!codes.has(String(r.codigo||'').trim().toUpperCase()))continue;
    const id=String(r.id_cotizacion||'').trim();
