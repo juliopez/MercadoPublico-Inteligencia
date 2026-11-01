@@ -116,7 +116,7 @@ async function run(ev){
      if(tokens.every(w=>set.has(w)))matched.push(r);
     }
     finished++;
-    progress(30+70*finished/Math.max(1,totalFragments));
+    progress(30+60*finished/Math.max(1,totalFragments));
     status('Verificando fragmentos: '+finished+' de '+totalFragments+' · '+plan.month+'.');
    }
    const result=aggregate(plan.month,entity,matched);
@@ -127,6 +127,7 @@ async function run(ev){
    Object.assign(result,offers);
   }
   output.push(result);
+   progress(90+10*output.length/Math.max(1,plans.length));
   }
   if(ticket!==serial)return;
   progress(100);
