@@ -10,7 +10,7 @@ const reloadAnalytic=()=>{for(const key of cache.keys())if(key.startsWith('data/
 const currentMonth=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Santiago',year:'numeric',month:'2-digit'}).format(new Date());
 async function fetchData(path){if(cache.has(path))return cache.get(path);const p=fetch('./'+path+'?actualizacion='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()});cache.set(path,p);try{return await p}catch(e){cache.delete(path);throw e}}
 const total=a=>a.reduce((s,v)=>s+Number(v||0),0);
-function kpis(items){const root=create('div','viz-kpis');for(const [a,b] of items){const k=create('div','viz-kpi');k.append(create('small','',a),create('strong','',b));root.append(k)}return root}
+function kpis(items){const root=create('div','viz-kpis');for(const [a,b,hint] of items){const k=create('div','viz-kpi'),label=create('small','',a);if(hint){const help=create('button','viz-kpi-help','ⓘ');help.type='button';help.title=hint;help.setAttribute('aria-label','Información sobre '+a);help.setAttribute('aria-expanded','false');const details=create('span','viz-kpi-explanation',hint);details.hidden=true;help.addEventListener('click',()=>{details.hidden=!details.hidden;help.setAttribute('aria-expanded',String(!details.hidden))});label.append(document.createTextNode(' '),help,details)}k.append(label,create('strong','',b));root.append(k)}return root}
 function section(name,sub){const c=create('section','viz-card');c.append(create('h3','',name),create('p','muted',sub));return c}
 let userSelectedMonth='';
 function choose(m){userSelectedMonth=m;V('periodo').value=m;V('periodo').dispatchEvent(new Event('change'));updateDetailButton()}
@@ -138,7 +138,24 @@ async function render(){
   if(monetary&&base>0)actors.append(donut(rank,base));
   else actors.append(create('p','muted','La concentración monetaria estará disponible al regenerar los agregados públicos.'));
   const activity=section('Cobertura mensual de registros','Cantidad de procesos o registros disponibles en el Observatorio por período. El mes operativo es parcial y no representa una caída de actividad del mercado.');
-  const acsum=total(activityRows.map(x=>x.value));activity.append(kpis([['Total de registros publicados',number.format(acsum)],['Promedio mensual',number.format(Math.round(acsum/activityRows.length))]]));
+  const acsum=total(activityRows.map(x=>x.value));
+  const names={procesos:'registros de procesos',ofertas:'ofertas',resultados:'resultados',ordenescompra:'órdenes de compra'};
+  activity.append(kpis([
+   ['Total de '+names[entity],number.format(acsum),'Suma de filas publicadas de la entidad seleccionada en los '+data.length+' meses mostrados. Una oferta, resultado u orden de compra no equivale a un concurso distinto. No se mezclan entidades.'],
+   ['Promedio mensual de '+names[entity],number.format(Math.round(acsum/activityRows.length)),'Total de registros de esta entidad dividido entre los '+activityRows.length+' meses mostrados, incluidos meses sin coincidencias y períodos parciales. No es el promedio de concursos únicos.']
+  ]));
+  if(entity==='procesos'){
+   const complete=Number.isInteger(focus.procesos_unicos);
+   const splits=focus.modalidades_unicas||{};
+   const agile=Number(splits.compra_agil||0),licit=Number(splits.licitacion||0),other=Number(splits.otras||0);
+   const label=focus.periodo+' · '+(filter?.active?'procesos coincidentes con «'+filter.term+'»':'procesos publicados');
+   const card=section('Concursos por modalidad · '+focus.periodo,'Procesos con código único del mes seleccionado. '+(filter?.active?'Se aplica la palabra clave.':'Sin filtro temático.'));
+   if(complete){
+    card.append(kpis([['Procesos únicos',number.format(focus.procesos_unicos),'Se cuenta cada código de proceso una sola vez dentro del mes; no se cuentan las ofertas ni adjudicaciones.'],['Licitaciones',number.format(licit),'Códigos de procesos únicos clasificados como licitación.'],['Compras Ágiles',number.format(agile),'Códigos únicos clasificados como Compra Ágil.'],['Otras modalidades',number.format(other),'Códigos únicos de otras modalidades o sin clasificación.']]));
+    card.append(create('p','muted','Cobertura: '+label+'. El conteo se basa en la clasificación publicada, no en interpretación semántica.'));
+   }else card.append(create('p','muted','El agregado general de este mes aún no contiene códigos únicos certificados. Se mantienen los conteos de registros existentes; aplica una palabra clave para obtener el conteo deduplicado de coincidencias.'));
+   activity.append(card);
+  }
   activity.append(entity==='procesos'?compositionColumns(data.map(d=>({key:d.periodo,value:+d.registros||0,modalidades:d.modalidades})),focus.periodo):columns(activityRows,focus.periodo),variation(activityRows));
   if(entity==='procesos'&&Array.isArray(focus.modalidades)&&focus.modalidades.length){const modes=create('div','viz-breakdown');modes.append(create('h4','','Modalidades del mes '+focus.periodo+(focus.periodo===currentMonth()?' · Parcial':'')));const rows=focus.modalidades.slice(0,5).map(([label,value])=>({label:String(label),value:+value||0}));const modeTotal=total(rows.map(x=>x.value));modes.append(bars(rows,v=>number.format(v)+' · '+pct(modeTotal?100*v/modeTotal:0),''));activity.append(modes)}
   root.replaceChildren(money,actors,activity,create('p','muted viz-disclaimer','Cifras descriptivas de registros públicos. El mes operativo puede ser parcial; no interpretar variaciones como evolución contractual. Los nombres de organismos no están homologados.'));
