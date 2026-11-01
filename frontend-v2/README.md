@@ -128,3 +128,20 @@ Al filtrar la entidad Procesos se identifican códigos únicos de los procesos c
 ## Ranking de organismos con concursos únicos (31-10-2026)
 
 Para la entidad Procesos, el ranking central utiliza `organismos_procesos_unicos` en lugar de sumar filas de `top_actores_monto`. El presupuesto disponible se agrega una sola vez por código de proceso y mes, con el nombre del organismo informado en el primer registro del código. Cada barra incluye un desglose verificable de cantidad de procesos únicos, licitaciones, Compras Ágiles, otras modalidades y concursos con monto informado. Con filtro, los agregados proceden de procesos que cumplieron la búsqueda literal. Sin filtro, el script de agregados genera los campos en versión 3; los JSON aún no regenerados presentan una explicación en vez de una falsa barra de presupuesto único. Un organismo con distintas variantes de nombre puede aparecer separado; no se homogeniza automáticamente. Se preservan ETL, cron, API, consolidación y V1.
+
+
+## Índice compacto de ofertas por proceso (optimización, 31-10-2026)
+
+Se agregó `scripts/generar_indice_ofertas_por_proceso.py` para preagregar ofertas públicas **por mes y código exacto de proceso**. Recorre cada fragmento de la entidad Ofertas una sola vez en la etapa offline, deduplica `id_cotizacion` por proceso, conserva el número de ofertas únicas, el número con monto válido, el monto ofertado total y filas sin identificador. Comprueba el conteo de filas contra el catálogo público. Escribe `data/analitica-ofertas/AAAA-MM/meta.json` y archivos `00.json`–`ff.json` por primer byte del SHA-256 del código normalizado. No toca ETL, Sheets, API, cron ni los cuatro procesos protegidos.
+
+**Activación por período (operación manual, fuera de los procesos protegidos):**
+
+```bash
+python3 scripts/generar_indice_ofertas_por_proceso.py --periodo 2026-06
+python3 scripts/generar_indice_ofertas_por_proceso.py --periodo 2026-07
+python3 scripts/generar_indice_ofertas_por_proceso.py --periodo 2026-08
+python3 scripts/generar_indice_ofertas_por_proceso.py --periodo 2026-09
+# Repetir para cada período adicional publicado, incluido el mes operativo.
+```
+
+Luego revisar conteos, tamaño, integridad de los JSON y publicar el directorio generado en GitHub Pages. La búsqueda verifica `version`, mes y `fuente_conteos` contra el catálogo vigente. Si el índice no existe (404), continúa con el método anterior de fragmentos. Si el archivo existe pero está desactualizado o incompleto, falla sin publicar cifras potencialmente incorrectas. El navegador reutiliza archivos ya consultados durante la sesión. **Hasta ejecutar el generador y publicar sus resultados, la mejora estructural de tiempos todavía no está activa para esos meses.** Los índices deben regenerarse cuando se publiquen nuevos registros de ofertas del mes. No se ha conectado este generador a los workflows operativos protegidos.
