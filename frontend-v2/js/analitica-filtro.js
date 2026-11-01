@@ -22,14 +22,47 @@ function aggregate(month,entity,matched){
  const count=new Map(),sums=new Map(),modes=new Map(),unique=new Map();let total=0,moneyCount=0,sum=0;
  for(const r of matched){
   total++;const name=String(r[actors[entity]]||'').trim(),amount=money(r[amounts[entity]]);
-  if(entity==='procesos'){const code=String(r.codigo||'').trim().toUpperCase();if(code&&!unique.has(code))unique.set(code,String(r.modalidad||''));}
+  if(entity==='procesos'){const code=String(r.codigo||'').trim().toUpperCase();if(code&&!unique.has(code))unique.set(code,{modalidad:String(r.modalidad||''),monto:money(r.monto_disponible_clp)});}
   if(name)count.set(name,(count.get(name)||0)+1);
   const mode=String(r.modalidad||r.tipo_oc||'').trim();
   if(mode)modes.set(mode,(modes.get(mode)||0)+1);
   if(amount!==null){moneyCount++;sum+=amount;if(name)sums.set(name,(sums.get(name)||0)+amount)}
  }
- const split={licitacion:0,compra_agil:0,otras:0};for(const mode of unique.values()){const m=normalize(mode);if(m.includes('compra agil'))split.compra_agil++;else if(m.includes('licitacion'))split.licitacion++;else split.otras++}
- return {procesos_unicos:entity==='procesos'?unique.size:null,modalidades_unicas:split,periodo:month,entidad:entity,registros:total,registros_con_monto:moneyCount,monto_total_clp:sum,actores_distintos_por_nombre:count.size,top_actores:top(count),top_actores_monto:top(sums),modalidades:top(modes)};
+ const split={licitacion:0,compra_agil:0,otras:0};for(const item of unique.values()){const m=normalize(item.modalidad);if(m.includes('compra agil'))split.compra_agil++;else if(m.includes('licitacion'))split.licitacion++;else split.otras++}
+ const uniqueBudget=[...unique.values()].reduce((n,x)=>n+(x.monto||0),0);
+ return {monto_procesos_unicos_clp:entity==='procesos'?uniqueBudget:null,procesos_unicos:entity==='procesos'?unique.size:null,modalidades_unicas:split,periodo:month,entidad:entity,registros:total,registros_con_monto:moneyCount,monto_total_clp:sum,actores_distintos_por_nombre:count.size,top_actores:top(count),top_actores_monto:top(sums),modalidades:top(modes)};
+}
+// Relación exacta por código y mes; las ofertas no se buscan por texto independiente.
+async function linkedOffers(month,catalog,processRows,ticket){
+ const codes=new Set(processRows.map(r=>String(r.codigo||'').trim().toUpperCase()).filter(Boolean));
+ if(!codes.size)return {ofertas_unicas:0,ofertas_con_monto:0,monto_ofertado_unico_clp:0,ofertas_sin_id:0};
+ const index=await get('data/indices/'+month+'.json');
+ if(index.periodo!==month||!index.entidades?.ofertas)throw Error('Índice de relaciones incompatible: '+month);
+ const paths=catalog.periodos.find(x=>x.periodo===month)?.partes?.ofertas||[];
+ const needed=new Set();
+ for(const code of codes){
+  for(const ref of index.entidades.ofertas[code]||[]){
+   const path=typeof ref==='number'?index.archivos?.ofertas?.[ref]:ref;
+   if(typeof path!=='string'||!paths.includes(path))throw Error('Ruta de oferta fuera del catálogo: '+month);
+   needed.add(path);
+  }
+ }
+ const seen=new Set();let amount=0,withAmount=0,missing=0;
+ for(const path of needed){
+  if(ticket!==serial)return null;
+  const rows=await get(path);if(!Array.isArray(rows))throw Error('Fragmento ofertas inválido');
+  for(const r of rows){
+   if(!codes.has(String(r.codigo||'').trim().toUpperCase()))continue;
+   const id=String(r.id_cotizacion||'').trim();
+   if(!id){missing++;continue}
+   const key=month+'|'+id;
+   if(seen.has(key))continue;
+   seen.add(key);
+   const m=money(r.monto_ofertado_clp);
+   if(m!==null){amount+=m;withAmount++}
+  }
+ }
+ return {ofertas_unicas:seen.size,ofertas_con_monto:withAmount,monto_ofertado_unico_clp:amount,ofertas_sin_id:missing};
 }
 function progress(value,visible=true){
  const wrap=F('analitica-progreso-contenedor'),bar=F('analitica-progreso');
@@ -86,7 +119,14 @@ async function run(ev){
     progress(30+70*finished/Math.max(1,totalFragments));
     status('Verificando fragmentos: '+finished+' de '+totalFragments+' · '+plan.month+'.');
    }
-   output.push(aggregate(plan.month,entity,matched));
+   const result=aggregate(plan.month,entity,matched);
+  if(entity==='procesos'){
+   status('Vinculando ofertas a concursos únicos de '+plan.month+'…');
+   const offers=await linkedOffers(plan.month,catalog,matched,ticket);
+   if(ticket!==serial)return;
+   Object.assign(result,offers);
+  }
+  output.push(result);
   }
   if(ticket!==serial)return;
   progress(100);
