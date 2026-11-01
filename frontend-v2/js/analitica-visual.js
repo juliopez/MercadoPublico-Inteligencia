@@ -147,6 +147,7 @@ async function render(){
    actors.append(kpis([['Organismos identificados',number.format(focus.organismos_procesos_unicos.length),'Agrupados por nombre publicado, sin homologar variantes.'],['Presupuesto del top 3',totalUnico?pct(top3/totalUnico*100):'—','Porcentaje del monto disponible de procesos únicos del mes, no del dinero adjudicado.']]));
    if(rank.length){
     actors.append(bars(rank,currency,''));
+    if(totalUnico>0&&rank.some(x=>x.value>0))actors.append(donut(rank,totalUnico));
     const details=create('div','viz-org-details');
     details.append(create('h4','','Concursos que componen cada barra'));
     for(const item of rank){
