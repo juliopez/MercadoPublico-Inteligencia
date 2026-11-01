@@ -22,15 +22,25 @@ function aggregate(month,entity,matched){
  const count=new Map(),sums=new Map(),modes=new Map(),unique=new Map();let total=0,moneyCount=0,sum=0;
  for(const r of matched){
   total++;const name=String(r[actors[entity]]||'').trim(),amount=money(r[amounts[entity]]);
-  if(entity==='procesos'){const code=String(r.codigo||'').trim().toUpperCase();if(code&&!unique.has(code))unique.set(code,{modalidad:String(r.modalidad||''),monto:money(r.monto_disponible_clp)});}
+  if(entity==='procesos'){const code=String(r.codigo||'').trim().toUpperCase();if(code&&!unique.has(code))unique.set(code,{modalidad:String(r.modalidad||''),monto:money(r.monto_disponible_clp),organismo:String(r.organismo_comprador||'').trim()});}
   if(name)count.set(name,(count.get(name)||0)+1);
   const mode=String(r.modalidad||r.tipo_oc||'').trim();
   if(mode)modes.set(mode,(modes.get(mode)||0)+1);
   if(amount!==null){moneyCount++;sum+=amount;if(name)sums.set(name,(sums.get(name)||0)+amount)}
  }
  const split={licitacion:0,compra_agil:0,otras:0};for(const item of unique.values()){const m=normalize(item.modalidad);if(m.includes('compra agil'))split.compra_agil++;else if(m.includes('licitacion'))split.licitacion++;else split.otras++}
+ const organismos=new Map();
+ if(entity==='procesos')for(const item of unique.values()){
+  const name=item.organismo||'Sin organismo informado';
+  if(!organismos.has(name))organismos.set(name,{organismo:name,procesos:0,licitaciones:0,compras_agiles:0,otras:0,con_monto:0,monto:0});
+  const o=organismos.get(name),mode=normalize(item.modalidad);
+  o.procesos++;
+  if(mode.includes('compra agil'))o.compras_agiles++;else if(mode.includes('licitacion'))o.licitaciones++;else o.otras++;
+  if(item.monto!==null){o.monto+=item.monto;o.con_monto++}
+ }
+ const resumenOrganismos=[...organismos.values()].sort((a,b)=>b.monto-a.monto||b.procesos-a.procesos);
  const uniqueBudget=[...unique.values()].reduce((n,x)=>n+(x.monto||0),0);
- return {monto_procesos_unicos_clp:entity==='procesos'?uniqueBudget:null,procesos_unicos:entity==='procesos'?unique.size:null,modalidades_unicas:split,periodo:month,entidad:entity,registros:total,registros_con_monto:moneyCount,monto_total_clp:sum,actores_distintos_por_nombre:count.size,top_actores:top(count),top_actores_monto:top(sums),modalidades:top(modes)};
+ return {organismos_procesos_unicos:entity==='procesos'?resumenOrganismos:null,monto_procesos_unicos_clp:entity==='procesos'?uniqueBudget:null,procesos_unicos:entity==='procesos'?unique.size:null,modalidades_unicas:split,periodo:month,entidad:entity,registros:total,registros_con_monto:moneyCount,monto_total_clp:sum,actores_distintos_por_nombre:count.size,top_actores:top(count),top_actores_monto:top(sums),modalidades:top(modes)};
 }
 // Relación exacta por código y mes; las ofertas no se buscan por texto independiente.
 async function linkedOffers(month,catalog,processRows,ticket){
