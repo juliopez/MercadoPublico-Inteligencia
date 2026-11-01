@@ -9,7 +9,7 @@ const words=s=>normalize(s).match(/[a-z0-9]+/g)||[];
 let serial=0;
 function status(t){F('analitica-filtro-estado').textContent=t}
 async function get(path){
- if(!/^data\/(catalogo-publico\.json|busqueda\/20\d{2}-\d{2}\/[a-z]+\/(meta|[a-z0-9]{2})\.json|partes\/[a-z]+\/20\d{2}-\d{2}\/[a-z0-9_-]+\.json)$/.test(path))throw Error('Ruta no permitida');
+ if(!/^data\/(catalogo-publico\.json|indices\/20\d{2}-\d{2}\.json|busqueda\/20\d{2}-\d{2}\/[a-z]+\/(meta|[a-z0-9]{2})\.json|partes\/[a-z]+\/20\d{2}-\d{2}\/[a-z0-9_-]+\.json)$/.test(path))throw Error('Ruta no permitida');
  const r=await fetch('./'+path,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status+': '+path);return r.json();
 }
 function money(raw){
