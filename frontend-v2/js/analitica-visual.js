@@ -113,14 +113,14 @@ async function render(){
  try{
   if(!catalog)catalog=await fetchData('data/catalogo-publico.json');
   const periods=catalog.periodos.map(x=>x.periodo).sort();
-  const comparator=V('analitica-comparar');
-  if(comparator.options.length===1){for(const p of periods){const o=document.createElement('option');o.value=p;o.textContent=p;comparator.append(o)}}
-  const reads=await Promise.allSettled(periods.map(p=>fetchData('data/analitica/'+p+'/'+entity+'.json')));
+  const filterBefore=window.merAnaliticaFiltro;
+  const reads=filterBefore?.active&&filterBefore.entity===entity ? [] : await Promise.allSettled(periods.map(p=>fetchData('data/analitica/'+p+'/'+entity+'.json')));
   if(token!==request)return;
-  const data=reads.filter(x=>x.status==='fulfilled').map(x=>x.value).sort((a,b)=>a.periodo.localeCompare(b.periodo));
+  const filter=window.merAnaliticaFiltro;
+  const data=(filter?.active && filter.entity===entity ? filter.data : reads.filter(x=>x.status==='fulfilled').map(x=>x.value)).slice().sort((a,b)=>a.periodo.localeCompare(b.periodo));
   if(!data.length){root.replaceChildren(create('p','muted','No hay agregados analíticos públicos para esta entidad.'));return}
-  const focus=data.find(x=>x.periodo===selected)||data.at(-1),comparison=data.find(x=>x.periodo===comparator.value),amountRows=data.map(x=>({key:x.periodo,label:x.periodo,value:+x.monto_total_clp||0,available:+x.registros_con_monto>0})),activityRows=data.map(x=>({key:x.periodo,value:+x.registros||0}));
-  V('analitica-seleccion').textContent='Mes de referencia: '+focus.periodo+(comparison?' · comparado con '+comparison.periodo:'')+' · '+entity+(focus.periodo===currentMonth()?' · mes en curso (parcial)':'');
+  const focus=data.find(x=>x.periodo===selected)||data.at(-1),amountRows=data.map(x=>({key:x.periodo,label:x.periodo,value:+x.monto_total_clp||0,available:+x.registros_con_monto>0})),activityRows=data.map(x=>({key:x.periodo,value:+x.registros||0}));
+  V('analitica-seleccion').textContent='Mes de referencia: '+focus.periodo+(filter?.active?' · filtro: '+filter.term:'')+' · '+entity+(focus.periodo===currentMonth()?' · mes en curso (parcial)':'');
   const money=section('Montos registrados','Suma de montos informados por mes; no acredita pagos.');
   const valid=data.filter(x=>+x.registros_con_monto>0),sum=total(valid.map(x=>x.monto_total_clp));
   money.append(kpis([['Suma de montos informados',currency(sum)],['Promedio de meses con monto',valid.length?currency(sum/valid.length):'Sin datos']]));
@@ -139,17 +139,11 @@ async function render(){
   const acsum=total(activityRows.map(x=>x.value));activity.append(kpis([['Total de registros publicados',number.format(acsum)],['Promedio mensual',number.format(Math.round(acsum/activityRows.length))]]));
   activity.append(entity==='procesos'?compositionColumns(data.map(d=>({key:d.periodo,value:+d.registros||0,modalidades:d.modalidades})),focus.periodo):columns(activityRows,focus.periodo),variation(activityRows));
   if(entity==='procesos'&&Array.isArray(focus.modalidades)&&focus.modalidades.length){const modes=create('div','viz-breakdown');modes.append(create('h4','','Modalidades del mes '+focus.periodo+(focus.periodo===currentMonth()?' · Parcial':'')));const rows=focus.modalidades.slice(0,5).map(([label,value])=>({label:String(label),value:+value||0}));const modeTotal=total(rows.map(x=>x.value));modes.append(bars(rows,v=>number.format(v)+' · '+pct(modeTotal?100*v/modeTotal:0),''));activity.append(modes)}
-  root.replaceChildren(money,actors,activity,create('p','muted viz-disclaimer','Cifras descriptivas de registros públicos. Octubre es un mes parcial; no interpretar variaciones como evolución contractual. Los nombres de organismos no están homologados.'));
-  if(comparison){
-   const comparisonPanel=create('div','viz-comparison');comparisonPanel.append(create('strong','','Comparación '+focus.periodo+' / '+comparison.periodo));
-   for(const [title,key] of [['Registros','registros'],['Suma de montos informados','monto_total_clp']]){
-    const current=Number(focus[key]||0),previous=Number(comparison[key]||0),delta=previous?((current/previous)-1)*100:null;
-    comparisonPanel.append(create('span','',title+': '+(key==='registros'?number.format(current):currency(current))+' frente a '+(key==='registros'?number.format(previous):currency(previous))+(delta===null?'':(' · '+(delta>=0?'+':'')+pct(delta)))));
-   }
-   root.prepend(comparisonPanel);
-  }
+  root.replaceChildren(money,actors,activity,create('p','muted viz-disclaimer','Cifras descriptivas de registros públicos. El mes operativo puede ser parcial; no interpretar variaciones como evolución contractual. Los nombres de organismos no están homologados.'));
 
  }catch(e){if(token===request)root.replaceChildren(create('p','muted','No se pudo cargar el panel visual: '+e.message))}
 }
 V('analitica-ver-registros').addEventListener('click',()=>{const p=V('periodo').value;if(p)V('ir-busqueda-global').click()});
-['entidad','periodo','analitica-comparar'].forEach(id=>V(id).addEventListener('change',render));render();
+['entidad','periodo'].forEach(id=>V(id).addEventListener('change',render));
+document.addEventListener('mer-analytics-filter',render);
+render();
