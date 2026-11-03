@@ -28,12 +28,15 @@ def main():
   candidate=json.loads(reportfile.read_text(encoding="utf-8"))
   timestamp=dt.datetime.fromisoformat(candidate["fecha_utc"]).timestamp()
   if timestamp>=args.inicio_epoch-2 and candidate.get("periodo")==period:report=candidate
- ok=args.codigo==0 and report is not None and report.get("estado")=="CARGA_VERIFICADA" and report.get("modo")=="APLICAR"
+ ok=args.codigo==0 and report is not None and report.get("estado") in ("CARGA_VERIFICADA","CARGA_PARCIAL_VERIFICADA") and report.get("modo")=="APLICAR"
  statefile=folder/"estado_sincronizacion.json"
  previous=json.loads(statefile.read_text(encoding="utf-8")) if statefile.exists() else {}
  item={"periodo":period,"ejecucion_chile":now.isoformat(),"codigo_salida":args.codigo,
        "estado":"EXITOSA" if ok else "FALLIDA",
        "error":None if ok else "Revisar logs/etl_dos_fuentes; carga incompleta o informe ausente",
+       "cobertura":"PARCIAL_VERIFICADA" if ok and report["estado"]=="CARGA_PARCIAL_VERIFICADA" else ("COMPLETA_VERIFICADA" if ok else "NO_VERIFICADA"),
+       "detalle_fuentes":report.get("cobertura_fuentes",{}) if ok else {},
+       "tablas_no_modificadas":report.get("tablas_no_modificadas",[]) if ok else [],
        "fuentes":{}}
  if ok:
   for k in ("licitaciones","ordenes_compra"):
