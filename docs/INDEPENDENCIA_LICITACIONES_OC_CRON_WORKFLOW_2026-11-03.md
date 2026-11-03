@@ -90,3 +90,15 @@ La publicación se alimenta desde las hojas MER verificadas, no descarga nuevame
 - El gráfico de concursos muestra 0 para noviembre porque **el conjunto `Procesos` está vacío**, no porque el publicador ignore el mes. Las 8.180 OC aparecen en la entidad `ordenescompra`. No mezclar métricas de ambas fuentes.
 
 **Controles de producción:** preservar el único cron Ubuntu y sus bloqueos, API nocturna y consolidación histórica. Estas correcciones no sustituyen la prueba real de rotación diciembre/enero ni hacen tolerante a errores técnicos por fuente a toda la cadena. Verificar ejecuciones GitHub y Pages luego del commit de sincronización.
+
+## 8. Agregados de organismos compradores: reparación histórica y continuidad desatendida
+
+**Hallazgo del 03/11:** los agregados históricos `frontend-v2/data/analitica/YYYY-MM/procesos.json` fueron publicados originalmente sin `organismos_procesos_unicos`, `procesos_unicos` ni `modalidades_unicas`. La columna «Organismos compradores» del frontend V2 estaba programada para **no mostrar importes duplicados por filas**, de modo que aparecía vacía sin filtro, mientras que los resultados de búsquedas temáticas sí incluían concursos únicos.
+
+**Solución permanente:** `scripts/reparar_analitica_organismos_v2.py` recorre **todos los meses existentes en `catalogo-publico.json`**, contrasta conteo, presencia de campos, procesos únicos y suma de organismos; solo reconstruye las analíticas ausentes o incompatibles a partir de los **fragmentos públicos ya versionados**, sin acceso a Google Sheets ni descargas ZIP. El generador original `scripts/generar_analitica_v2.py` deduplica por código de proceso antes de agregar presupuesto y tipo de modalidad por organismo. **No suma varias veces un presupuesto por las ofertas**.
+
+**Automatización:** `.github/workflows/reparar-analitica-organismos-v2.yml` se ejecuta ante cambios de su código, al terminar satisfactoriamente la publicación diaria y de lunes a viernes a las 19:15 de Chile (disparadores alternativos UTC-3/UTC-4); también permite un disparo manual excepcional. El checkout usa `main` vigente, publica por commit únicamente los agregados reconstruidos, y el workflow existente de Pages se dispara por cambios en `frontend-v2/data/analitica/**`. Si ningún agregado falta, registra `AGREGADOS_VIGENTES_SIN_CAMBIOS` y no crea commits ni despliegues innecesarios.
+
+**Política:** no añadir meses fijos ni repetir las tareas históricas por rutina; cada nuevo mes queda automáticamente descubierto desde el manifiesto. Un mes sin registros de `Procesos` mantiene `organismos_procesos_unicos=[]` y contador cero: las OC no se convierten en concursos inventados.
+
+**Estado de validación:** el disparo inicial y la regeneración histórica deben auditarse mediante logs de Actions, conteos JSON y resultado del despliegue Pages antes de declarar la reparación publicada. La programación y el código de reparación ya están en GitHub; **no cambia el cron de las 16:00 ni la API nocturna**.
