@@ -105,3 +105,12 @@ La publicación se alimenta desde las hojas MER verificadas, no descarga nuevame
 
 
 **Validación productiva de reparación (03/11):** workflow [#41721120892](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/41721120892), resultado **success**. Los logs registran reconstrucción y validación de junio (80.898 procesos), julio (80.996), agosto (83.937), septiembre (79.376) y octubre (4.418); noviembre, con 0 procesos, ya tenía un agregado vigente y quedó sin cambios. El commit automático publicó cinco archivos de analítica. Los resultados concretos incluyen junio 1.983 organismos y octubre 868. La verificación de Pages posterior al commit debe constar por separado para acreditar su despliegue, no inferirse del push.
+
+
+## 9. Navegación desde ranking de organismos compradores — 03/11/2026
+
+El usuario aprobó enlazar los nombres de organismos compradores del ranking y del detalle `Concursos que componen cada barra` hacia la sección **Buscar**, manteniendo el período seleccionado y la entidad `Procesos`. Implementado en `frontend-v2/js/analitica-visual.js`, `frontend-v2/js/busqueda-global.js` y `frontend-v2/css/styles.css`.
+
+La búsqueda usa los índices de la totalidad de fragmentos de **ese mes**, pero valida adicionalmente que el campo `organismo_comprador` coincida exactamente tras normalización de mayúsculas y tildes; no basta que el nombre se mencione en el título, nombre o código del proceso. Se restablecen los filtros Estado y Modalidad, se limita el alcance al mes, y se utiliza la paginación del buscador global (no el primer bloque de 1.000 registros). El nombre es un control con apariencia de hiperenlace y manejo de teclado. `Sin organismo informado` no crea un enlace ficticio.
+
+No hay URLs por organismo ni períodos fijos; funciona en los nuevos meses publicados. No modifica ZIP, ETL, Sheets ni programación nocturna. La verificación definitiva exige comprobar la ejecución de Actions de frontend, la publicación Pages y una prueba de navegación visual con un organismo de varios procesos.
