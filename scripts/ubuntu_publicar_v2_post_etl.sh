@@ -32,9 +32,17 @@ test -z "$(git status --porcelain --untracked-files=no)" || {
 git pull --ff-only origin main
 "$ROOT/.venv/bin/python" scripts/exportar_mer_operativo_v2.py --periodo "$MES" --aplicar
 "$ROOT/.venv/bin/python" scripts/exportar_vinculos_documentales_v2.py --aplicar
-git add frontend-v2/data/vinculos-oc-verificados.json frontend-v2/data/catalogo-publico.json "frontend-v2/data/partes/procesos/$MES" "frontend-v2/data/partes/ordenescompra/$MES"
-# Eliminar fragmentos antiguos del índice, cuando corresponda
-git add -u "frontend-v2/data/partes/procesos/$MES" "frontend-v2/data/partes/ordenescompra/$MES"
+# Versionar las CUATRO entidades declaradas en el catálogo.
+# En el primer día de cada mes también deben incluirse fragmentos [] para
+# Ofertas y Resultados; un catálogo sin sus fragmentos bloquea Actions.
+git add frontend-v2/data/vinculos-oc-verificados.json frontend-v2/data/catalogo-publico.json \
+  "frontend-v2/data/partes/procesos/$MES" \
+  "frontend-v2/data/partes/ordenescompra/$MES" \
+  "frontend-v2/data/partes/ofertas/$MES" \
+  "frontend-v2/data/partes/resultados/$MES"
+# Registrar eliminaciones de fragmentos antiguos después de regenerarlos.
+git add -u "frontend-v2/data/partes/procesos/$MES" "frontend-v2/data/partes/ordenescompra/$MES" \
+  "frontend-v2/data/partes/ofertas/$MES" "frontend-v2/data/partes/resultados/$MES"
 if git diff --cached --quiet; then
  echo "SIN_CAMBIOS_PUBLICOS"; exit 0
 fi
