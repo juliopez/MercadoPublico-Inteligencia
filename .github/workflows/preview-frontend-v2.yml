@@ -2,7 +2,7 @@ name: Observatorio - vista previa frontend MER v2
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ['Publicacion V2 posterior al ETL Ubuntu', 'Publicar participación histórica V2']
+    workflows: ['Publicacion V2 posterior al ETL Ubuntu', 'Publicar participación histórica V2', 'Reparar analítica de organismos por período']
     types: [completed]
   push:
     branches: [main]
@@ -35,6 +35,10 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}frontend-v2/
     steps:
       - uses: actions/checkout@v4
+        with:
+          # workflow_run apunta al SHA que inició la reparación. Los nuevos
+          # agregados se publican después, así que desplegar main vigente.
+          ref: main
       - name: Comprobar sintaxis del JavaScript antes del despliegue
         run: |
           node --check frontend-v2/js/app.js
