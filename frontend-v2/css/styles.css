@@ -109,7 +109,18 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 .code-link:hover{background:transparent;color:#0a405c}
 /* Enlaces de navegación desde ranking de organismos, accesibles por teclado. */
 .viz-org-link{display:inline-block;max-width:100%;padding:0;border:0;background:transparent;color:#176b92;text-align:left;font:inherit;font-weight:650;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer;vertical-align:baseline}
-.viz-org-link:hover{color:#0a405c;background:transparent;text-decoration-thickness:2px}
+/* Mayor especificidad que button:not(:disabled):hover: el enlace no es un botón primario. */
+.analytics-visual button.viz-org-link:not(:disabled):hover{
+ color:#0a405c;
+ background:transparent;
+ text-decoration:underline;
+ text-decoration-thickness:2px;
+ box-shadow:none;
+}
+.analytics-visual button.viz-org-link:not(:disabled):active{
+ color:#0a405c;
+ background:transparent;
+}
 .viz-org-link:focus-visible{outline:2px solid #176b92;outline-offset:3px;border-radius:2px}
 .viz-label .viz-org-link{display:block;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .viz-org-detail .viz-org-link{white-space:normal;overflow-wrap:anywhere}
