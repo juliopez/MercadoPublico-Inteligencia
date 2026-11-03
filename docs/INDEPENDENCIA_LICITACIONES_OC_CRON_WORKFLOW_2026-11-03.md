@@ -68,3 +68,11 @@ La publicación se alimenta desde las hojas MER verificadas, no descarga nuevame
 - **REGLA PARA FUTUROS CAMBIOS:** no afirmar «si falla cualquiera de las dos, la otra siempre se ejecutará» hasta validar fallas reales y simuladas en las dos rutas, persistencia y despliegue. El cambio adicional exige intervención específicamente autorizada en la línea base protegida.
 
 **Documentos relacionados:** [línea base cron 16h](LINEA_BASE_PROTEGIDA_CRON_1600.md) · [política de protección](POLITICA_PROTECCION_CUATRO_PROCESOS.md) · [operación API](API_400_GITHUB_ACTIONS.md).
+
+## 6. Cierre comprobado de publicación — 03/11/2026
+
+**Causa exacta:** el primer job de derivados (#41710824306) usó un checkout donde faltaban los fragmentos vacíos de `ofertas` y `resultados` para noviembre que el catálogo ya referenciaba. Reintentar ese job con el SHA antiguo reprodujo el error. Se versionaron ambos `0001.json` como `[]` y se corrigió `.github/workflows/publicacion-v2-post-etl.yml` para ejecutar `checkout` sobre `main` vigente y dispararse también ante cambios en `frontend-v2/data/partes/**`, sin modificar los horarios ni los datos de Sheets.
+
+**Resultado verificable:** workflow de derivados [#41712532138](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/41712532138) **success** en generación, validación y commit; índice de búsqueda de OC noviembre `conteo=8180`, perfiles `registros=8180`, analítica `registros=8180`. Supervisión posterior [#41712975889](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/41712975889) **success**. GitHub Pages [#41712975813](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/41712975813) completó **success** el paso de despliegue del frontend. Las verificaciones corresponden a Actions y repositorio; no constituyen una comprobación independiente de la caché HTTP del navegador del usuario.
+
+**Pendientes distintos del despliegue:** la etiqueta de octubre continúa figurando `operativo` en el catálogo público mientras el catálogo privado ya la identifica como `historico`; la independencia frente a fallas técnicas (no solo CSV vacío) requiere implementación adicional. No repetir la carga de 8.180 OC para solucionar estos asuntos.
