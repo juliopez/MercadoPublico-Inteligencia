@@ -29,7 +29,7 @@ jobs:
           const source=fs.readFileSync('frontend-v2/js/busqueda-global.js','utf8');
           const html=fs.readFileSync('frontend-v2/index.html','utf8');
           const app=fs.readFileSync('frontend-v2/js/app.js','utf8');
-          const dom=new Proxy({}, {get(_,id){return {addEventListener(){},replaceChildren(){},value:'',disabled:false,textContent:''}}});
+          const dom=new Proxy({}, {get(_,id){return {addEventListener(){},setAttribute(){},replaceChildren(){},value:'procesos',disabled:false,textContent:''}}});
           const context=vm.createContext({document:{getElementById:id=>dom[id]},window:{},fetch(){}});
           vm.runInContext(source,context);
           const matches=vm.runInContext('matches',context);
