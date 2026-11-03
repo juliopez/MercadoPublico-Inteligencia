@@ -40,7 +40,15 @@ jobs:
           import datetime,json,os,pathlib,subprocess
           from zoneinfo import ZoneInfo
           now=datetime.datetime.now(ZoneInfo("America/Santiago"))
-          period=f"{now:%Y-%m}"
+          catalog=json.loads(pathlib.Path("frontend-v2/data/catalogo-publico.json").read_text())
+          private=json.loads(pathlib.Path("config/catalogo_sheets.json").read_text())
+          source=catalog.get("ultima_exportacion") or {}
+          period=source.get("periodo") or f"{now:%Y-%m}"
+          active=[p for p,d in private["periodos"].items() if d.get("tipo")=="operativo"]
+          if len(active)!=1:raise SystemExit("BLOQUEO: catálogo con mes operativo ambiguo")
+          if period not in private["periodos"]:raise SystemExit("BLOQUEO: mes de exportación no catalogado")
+          if period!=active[0] and private["periodos"][period].get("estado")!="cierre_operativo_pendiente_conciliacion_oficial":
+              raise SystemExit("BLOQUEO: período exportado ajeno al operativo o cierre excepcional")
           output=pathlib.Path(os.environ["GITHUB_OUTPUT"])
           def done(valid,msg):
               with output.open("a") as f:f.write(f"ready={'true' if valid else 'false'}\nperiodo={period}\n")
@@ -48,7 +56,6 @@ jobs:
           if os.environ["EVENTO"]=="schedule" and (now.weekday()>4 or now.hour!=17):
               done(False,"Fuera de las 17:00 Santiago");raise SystemExit(0)
           path="frontend-v2/data/catalogo-publico.json"
-          catalog=json.loads(pathlib.Path(path).read_text())
           if sum(x.get("periodo")==period for x in catalog["periodos"])!=1:
               done(False,"Mes vigente sin registro unico");raise SystemExit(0)
           last=subprocess.check_output(["git","log","-1","--format=%cI","--",path,"frontend-v2/data/vinculos-oc-verificados.json"],text=True).strip()
