@@ -1,8 +1,10 @@
 name: Compra Agil diaria 400 - cierre nocturno
 on:
   schedule:
-    # El horario real se comprueba con zona America/Santiago (UTC verano/invierno).
-    - cron: '0,30 0-3 * * *'
+    # 22:05 Santiago: UTC-3 (verano) => 01:05 UTC, UTC-4 (invierno) => 02:05 UTC.
+    # Solo UNO de estos disparos coincide con las 22 horas locales; el otro se omite.
+    - cron: '5 1 * * *'
+    - cron: '5 2 * * *'
   workflow_dispatch:
 permissions:
   contents: write
@@ -31,8 +33,10 @@ jobs:
           import datetime,os
           from zoneinfo import ZoneInfo
           n=datetime.datetime.now(ZoneInfo('America/Santiago'))
-          # Turno lunes-viernes, con tolerancia por demora de cron. Manual no rompe la franja.
-          allowed=n.weekday()<5 and n.hour==22 and n.minute<30
+          # Aceptar exclusivamente el disparo que cae durante las 22h de Santiago.
+          # El segundo cron UTC (otra estación) jamás debe iniciar una jornada adicional.
+          # Se tolera retraso del planificador hasta las 22:59.
+          allowed=n.weekday()<5 and n.hour==22
           with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write(f"ok={'true' if allowed else 'false'}\n")
           if allowed:
            with open(os.environ['GITHUB_ENV'],'a') as f:
