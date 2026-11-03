@@ -151,8 +151,8 @@ async function render(){
      const name=rank[i].full;
      if(!name||name==='Sin organismo informado')return;
      const label=row.querySelector('.viz-label'),link=create('button','viz-org-link',name);
-     link.type='button';link.title='Ver procesos de '+name+' en '+focus.periodo;
-     link.setAttribute('aria-label',link.title);
+     link.type='button';link.title='Ver procesos del organismo · '+focus.periodo;
+     link.setAttribute('aria-label','Ver procesos de '+name+' en '+focus.periodo);
      link.addEventListener('click',()=>window.buscarProcesosOrganismo?.(name,focus.periodo));
      label.replaceChildren(link);
     });
@@ -165,7 +165,8 @@ async function render(){
      const nameLabel=create('strong','');
      if(x.organismo&&x.organismo!=='Sin organismo informado'){
       const link=create('button','viz-org-link',x.organismo);
-      link.type='button';link.title='Ver procesos de '+x.organismo+' en '+focus.periodo;
+      link.type='button';link.title='Ver procesos del organismo · '+focus.periodo;
+      link.setAttribute('aria-label','Ver procesos de '+x.organismo+' en '+focus.periodo);
       link.addEventListener('click',()=>window.buscarProcesosOrganismo?.(x.organismo,focus.periodo));
       nameLabel.append(link);
      }else nameLabel.textContent=x.organismo;
