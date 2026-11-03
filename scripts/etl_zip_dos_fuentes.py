@@ -170,14 +170,18 @@ def main():
   n_procesos=db.execute('SELECT COUNT(*) FROM "Procesos"').fetchone()[0]
   n_oc=db.execute('SELECT COUNT(*) FROM "OrdenesCompra"').fetchone()[0]
   n_proveedores=db.execute('SELECT COUNT(*) FROM "Proveedores"').fetchone()[0]
+  if n_procesos==0 and counts["filas_licitaciones"]>0:
+   raise ValueError("Licitaciones tiene filas pero ningún código procesable")
+  if n_oc==0 and counts["filas_oc"]>0:
+   raise ValueError("Órdenes de compra tiene filas pero ningún código procesable")
   if n_procesos==0 and n_oc==0:
    raise ValueError("Ambas fuentes carecen de registros procesables; no hay carga autorizada")
-  if n_proveedores==0:
-   raise ValueError("Las fuentes contienen registros pero no proveedores válidos")
+  if n_oc>0 and n_proveedores==0:
+   raise ValueError("Existen OC pero ningún proveedor procesable")
   expected={}
   if n_procesos:expected["Procesos"]=mod.SCHEMA["Procesos"]
   if n_oc:expected["OrdenesCompra"]=mod.SCHEMA["OrdenesCompra"]
-  expected["Proveedores"]=mod.SCHEMA["Proveedores"]
+  if n_proveedores:expected["Proveedores"]=mod.SCHEMA["Proveedores"]
   cobertura={"licitaciones":"DISPONIBLE" if n_procesos else "CSV_SIN_REGISTROS",
              "ordenes_compra":"DISPONIBLE" if n_oc else "CSV_SIN_REGISTROS"}
   for k,estado in cobertura.items():
