@@ -33,15 +33,26 @@ jobs:
           now=datetime.datetime.now(ZoneInfo("America/Santiago"))
           if os.environ.get("GITHUB_EVENT_NAME")=="schedule" and (now.weekday()>=5 or now.hour!=18):
               print("FUERA_DE_VENTANA_DE_SUPERVISION",now.isoformat());raise SystemExit(0)
-          period=now.strftime("%Y-%m")
           root=pathlib.Path("frontend-v2/data")
           catalog=json.loads((root/"catalogo-publico.json").read_text())
+          private=json.loads(pathlib.Path("config/catalogo_sheets.json").read_text())
+          active=[p for p,d in private["periodos"].items() if d.get("tipo")=="operativo"]
+          if len(active)!=1:raise SystemExit("BLOQUEO: mes operativo ambiguo en catálogo privado")
+          period=(catalog.get("ultima_exportacion") or {}).get("periodo") or active[0]
+          if period not in private["periodos"]:raise SystemExit("BLOQUEO: última exportación sin período privado")
+          if period!=active[0] and private["periodos"][period].get("estado")!="cierre_operativo_pendiente_conciliacion_oficial":
+              raise SystemExit("BLOQUEO: último período ajeno a mes operativo o cierre")
+          # Para el cron diario, se exige que el mes operativo coincida con Santiago.
+          if now.hour>=18 and active[0]!=now.strftime("%Y-%m"):
+              raise SystemExit("BLOQUEO: rotación mensual no sincronizada con calendario")
           entries=[x for x in catalog["periodos"] if x["periodo"]==period]
           errors=[]
           if len(entries)!=1:
               errors.append("Catálogo sin período vigente único")
           else:
               entry=entries[0]
+              if entry.get("tipo")!=private["periodos"][period]["tipo"]:
+                  errors.append("Clasificación pública/histórica no sincronizada")
               for ent in ("procesos","ordenescompra"):
                   n=entry["conteos"].get(ent)
                   analytic=root/"analitica"/period/(ent+".json")
