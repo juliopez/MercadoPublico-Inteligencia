@@ -83,3 +83,15 @@ Los cron de GitHub pueden retrasarse u omitirse; puede haber conflictos de escri
 ### Revisión de publicaciones tardías y criterio de cierre
 
 La primera exploración de la jornada después de las 22:00 queda marcada como **preliminar** si termina antes de medianoche. El workflow espera hasta las 00:03 de Chile, vuelve a revisar desde la página 1 y reutiliza el cache de códigos, de forma que no repite detalles confirmados. El motor solamente marca `completa=true` si agotó el listado **después de medianoche y sin errores pendientes**. Un enfriamiento por 429 o corte de tiempo conserva la cola para recuperación posterior; no significa cierre completo. **Pendiente**: mecanismo transversal de recuperación de fechas incompletas de noches anteriores, que aún no queda plenamente resuelto por el ciclo diario. Una jornada sólo se considera publicada si el workflow de Pages termina exitosamente y los conteos del catálogo remoto coinciden.
+
+## Corrección de activación nocturna — 03/11/2026
+
+**Incidencia observada:** el primer turno lunes 02/11 no inició consultas. La ejecución [#41584297756](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/41584297756) obtuvo `success` administrativo pero la guardia registró `habilitada False` a las 02:30 del martes; los pasos de API, Sheets, exportación y Pages quedaron omitidos. Esto **no es una ejecución productiva exitosa**.
+
+**Corrección limitada al disparador y guardia del workflow** `.github/workflows/api-compra-agil-400-actions.yml`, commit `34ffa2ea4ba6ce7c6658f3a5ac71f2deab907c10`:
+
+- Dos disparadores alternativos: `5 1 * * *` UTC (22:05 Santiago UTC-3) y `5 2 * * *` UTC (22:05 Santiago UTC-4).
+- La puerta de calendario, calculada en `America/Santiago`, autoriza **únicamente lunes a viernes durante la hora local 22:00–22:59**. El segundo disparador, ajeno a la estación vigente, se omite sin consultar la API. El cron UTC no se fija en un desfase permanente.
+- Si GitHub retrasa el inicio hasta las 23:00 o más, el workflow se omite por seguridad. GitHub Actions no garantiza disparos puntuales. `success` con pasos omitidos requiere lectura de logs, y no acredita consulta.
+- No se alteraron los motores API/ETL, los cuatro procesos protegidos ni los horarios Ubuntu. **No se ejecutó un nuevo lote productivo durante la corrección**.
+- Validar en la próxima ventana nocturna: etapa de guardia `habilitada True`, inicio de consultas, checkpoints, Sheet operativo, derivación e integridad de Pages. No declarar validado hasta observar esos pasos.
