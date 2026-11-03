@@ -22,7 +22,7 @@ function controls(){
  const keys=facetFields[entity]||[null,null];
  el('global-estado').disabled=!keys[0];el('global-modalidad').disabled=!keys[1];
  if(!keys[1])el('global-modalidad').value='';
- const names={procesos:['Estado de licitación','Modalidad del proceso'],ofertas:['Selección informada','No corresponde'],resultados:['No corresponde: verificación interna','No corresponde'],ordenescompra:['Estado de orden','Tipo de OC']}[entity];
+ const names={procesos:['Estado de licitación','Modalidad del proceso'],ofertas:['Selección informada','No corresponde'],resultados:['No corresponde: verificación interna','No corresponde'],ordenescompra:['Estado de orden','Tipo de OC']}[entity]||['Estado','Modalidad'];
  if(entity==='resultados')el('global-estado').disabled=true;
  el('global-estado').setAttribute('aria-label',names[0]);
  el('global-modalidad').setAttribute('aria-label',names[1]);
