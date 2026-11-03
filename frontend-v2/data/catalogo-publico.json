@@ -2951,7 +2951,7 @@
     },
     {
       "periodo": "2026-10",
-      "tipo": "operativo",
+      "tipo": "historico",
       "conteos": {
         "procesos": 4418,
         "ofertas": 4867,
@@ -3161,5 +3161,10 @@
         ]
       }
     }
-  ]
+  ],
+  "ultima_exportacion": {
+    "periodo": "2026-11",
+    "fecha_utc": "2026-11-03T20:14:35.713071+00:00",
+    "fuente": "MER_OPERATIVO_V2"
+  }
 }
