@@ -66,7 +66,9 @@ async function collect(s,t,target){
   for(const ref of group){
    const pos=ref[ref.length-1];
    if(!Number.isInteger(pos)||pos<0||pos>=rows.length)throw Error('Referencia inválida');
-   if(matches(rows[pos],t.tokens,t.entity,t.filters))t.found.push({part,pos,month,record:rows[pos]});
+   if(matches(rows[pos],t.tokens,t.entity,t.filters)&&
+       (!t.organismoExacto||norm(String(rows[pos].organismo_comprador||'').trim())===norm(t.organismoExacto.trim())))
+      t.found.push({part,pos,month,record:rows[pos]});
   }
  }
 }
@@ -111,7 +113,8 @@ async function draw(s,t){
    message((completed?t.found.length.toLocaleString('es-CL')+' coincidencias exactas':t.found.length.toLocaleString('es-CL')+' coincidencias exactas verificadas hasta ahora')+' · '+(t.multi?'todos los períodos':t.period)+' · '+t.entity+'.');
  }catch(e){if(valid(s,t))message('No se pudo completar la búsqueda: '+e.message)}
 }
-async function search(){
+async function search(options={}){
+ const organismoExacto=typeof options?.organismoExacto==='string'?options.organismoExacto:null;
  const now=++seq,period=el('periodo').value,entity=el('entidad').value,multi=el('busqueda-global-alcance').value==='todos';
  el('busqueda-global-progreso').hidden=false;el('busqueda-global-progreso').value=0;
  session=null;
@@ -120,7 +123,7 @@ async function search(){
  const codeQuery=/^[a-z0-9]+(?:-[a-z0-9]+)+$/i.test(raw);
  const indexedTokens=query.filter(t=>t.length>=3);
  if((!multi&&!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period))||!fields[entity]){clear('Seleccione un período y una entidad.');return}
- if(!indexedTokens.length||(!codeQuery&&query.some(t=>t.length<3))){clear('Introduce palabras de al menos 3 caracteres o un código completo.');return}
+ if(!indexedTokens.length||(!organismoExacto&&!codeQuery&&query.some(t=>t.length<3))){clear('Introduce palabras de al menos 3 caracteres o un código completo.');return}
  message(multi?'Consultando índices de todos los períodos publicados…':'Consultando índice de '+period+'…');
  try{
   const response=await fetch('./data/catalogo-publico.json');
@@ -150,12 +153,34 @@ async function search(){
   }
   refs.sort((a,b)=>multi?(a[0].localeCompare(b[0])||a[1]-b[1]||a[2]-b[2]):(a[0]-b[0]||a[1]-b[1]));
   globalSort={key:null,direction:1};
-  const t={period,entity,multi,parts,tokens:query,filters:{status:norm(el('global-estado').value.trim()),type:norm(el('global-modalidad').value.trim())},refs,cursor:0,found:[],page:0};
+  const t={period,entity,multi,parts,tokens:query,organismoExacto,filters:{status:norm(el('global-estado').value.trim()),type:norm(el('global-modalidad').value.trim())},refs,cursor:0,found:[],page:0};
   session=t;
   await draw(now,t);
  }catch(e){if(now===seq)clear('No fue posible consultar el índice: '+e.message+'. La consulta por bloques sigue disponible.')}
 }
-el('busqueda-global-boton').addEventListener('click',search);
+// Desde Analizar: búsqueda por índice del mes con igualdad exacta del campo
+// organismo_comprador. No equiparar menciones libres con organismo responsable.
+window.buscarProcesosOrganismo=async function(nombre,periodo){
+ const exacto=String(nombre||'').trim(),mes=String(periodo||'').trim();
+ if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(mes)||!exacto||exacto==='Sin organismo informado')return;
+ const selector=el('periodo');
+ if(![...selector.options].some(option=>option.value===mes)){
+  message('El período indicado no está publicado.');return;
+ }
+ if(el('entidad').value!=='procesos'){
+  el('entidad').value='procesos';el('entidad').dispatchEvent(new Event('change'));
+ }
+ if(selector.value!==mes){
+  selector.value=mes;selector.dispatchEvent(new Event('change'));
+ }
+ el('busqueda-global-alcance').value='mes';
+ el('busqueda-global-texto').value=exacto;
+ el('global-estado').value='';
+ el('global-modalidad').value='';
+ el('busqueda-global').scrollIntoView({behavior:'smooth',block:'start'});
+ await search({organismoExacto:exacto});
+};
+el('busqueda-global-boton').addEventListener('click',()=>search());
 el('busqueda-global-texto').addEventListener('keydown',e=>{if(e.key==='Enter')search()});
 el('busqueda-global-anterior').addEventListener('click',()=>{if(session&&session.page>0){session.page--;draw(seq,session)}});
 el('busqueda-global-siguiente').addEventListener('click',()=>{if(session){session.page++;draw(seq,session)}});
