@@ -41,6 +41,17 @@ def exportar(periodo, aplicar, incluir_api=False):
   public["periodos"].append(entry)
   matches=[entry]
  current=matches[0]
+ # El catálogo privado es autoridad sobre la clasificación histórica/operativa.
+ # Una rotación mensual ya validada debe reflejarse en todas las entradas públicas
+ # sin tocar sus conteos, fragmentos, ni hojas históricas.
+ for item in public["periodos"]:
+  private=cat["periodos"].get(item["periodo"])
+  if private and private["tipo"] in ("operativo","historico"):
+   item["tipo"]=private["tipo"]
+ active=[p for p,v in cat["periodos"].items() if v.get("tipo")=="operativo"]
+ if len(active)!=1:raise ValueError("Catálogo privado requiere exactamente un mes operativo")
+ if cat["periodos"][periodo]["tipo"]=="operativo" and periodo!=active[0]:
+  raise ValueError("El período exportado no coincide con el mes operativo único")
  work=pathlib.Path(tempfile.mkdtemp(prefix="export_mer_v2_"))
  changes={}
  try:
@@ -95,6 +106,8 @@ def exportar(periodo, aplicar, incluir_api=False):
    current["conteos"][entity]=d["count"]
    current["partes"][entity]=d["paths"]
   public["fecha_publicacion"]=dt.datetime.now(dt.timezone.utc).isoformat()
+  public["ultima_exportacion"]={"periodo":periodo,"fecha_utc":public["fecha_publicacion"],
+                                "fuente":"MER_OPERATIVO_V2"}
   # Los fragmentos deben existir ANTES del commit del catálogo.
   for entity in changes:
    destination=DATA/"partes"/entity/periodo
