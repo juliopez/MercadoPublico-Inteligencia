@@ -1,0 +1,69 @@
+name: Reparar analítica de organismos por período
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/reparar_analitica_organismos_v2.py'
+      - 'scripts/generar_analitica_v2.py'
+      - '.github/workflows/reparar-analitica-organismos-v2.yml'
+  workflow_run:
+    workflows: ['Publicacion V2 posterior al ETL Ubuntu']
+    types: [completed]
+  schedule:
+    # Control diario 19:15 Santiago, compatible UTC-3/UTC-4.
+    - cron: '15 22,23 * * 1-5'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: mer-reparar-analitica-organismos
+  cancel-in-progress: false
+jobs:
+  reparar:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirmar ventana de reparación
+        id: ventana
+        env:
+          EVENTO: ${{ github.event_name }}
+        run: |
+          python - <<'PY'
+          import datetime,os
+          from zoneinfo import ZoneInfo
+          now=datetime.datetime.now(ZoneInfo('America/Santiago'))
+          ok=os.environ['EVENTO']!='schedule' or (now.weekday()<5 and now.hour==19)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('ok='+str(ok).lower()+'\n')
+          print('REPARACION_AUTORIZADA',ok,'FECHA_CHILE',now.isoformat())
+          PY
+      - name: Regenerar solo agregados incompletos de todos los meses
+        if: steps.ventana.outputs.ok == 'true'
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/reparar_analitica_organismos_v2.py scripts/generar_analitica_v2.py
+          python scripts/reparar_analitica_organismos_v2.py
+      - name: Publicar agregados verificados y permitir despliegue Pages
+        if: steps.ventana.outputs.ok == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add frontend-v2/data/analitica/
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'AGREGADOS_VIGENTES_SIN_CAMBIOS'
+            exit 0
+          fi
+          git commit -m 'data(analitica): reparar organismos únicos de períodos publicados'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo 'AGREGADOS_PUBLICADOS'
