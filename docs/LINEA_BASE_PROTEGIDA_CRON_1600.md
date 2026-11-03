@@ -42,3 +42,17 @@ Dependencias y contratos también protegidos: `config/catalogo_sheets.json`, cre
 **Antes de proponer cualquier modificación o automatización:** leer este archivo y tratar los componentes citados como inmutables salvo instrucción explícita. Desarrollar funciones nuevas mediante unidades, scripts o workflows separados; documentar sus dependencias y comprobar que no perturben la ejecución de las 16:00.
 
 **Fuente:** [inventario y estado de continuidad](ESTADO_Y_CONTINUIDAD_2026-10-30.md) · [cron integrado original](CRON_INTEGRADO_UBUNTU_2026-10-22.md).
+
+## Cambio específicamente autorizado — 03/11/2026: validación independiente por ZIP
+
+**Motivo verificado:** el archivo oficial `lic-da/2026-11.zip` del 03/11 contenía únicamente el encabezado; el ZIP de OC del mismo mes contenía órdenes de compra. El ETL conjunto rechazaba todas las fuentes por `Procesos` vacío, aunque las OC pudieran incorporarse.
+
+**Autorización:** el responsable aprobó conservar **un solo cron a las 16:00**, con procesamiento independiente de las dos fuentes y publicación coordinada. Esto constituye una excepción expresamente autorizada a la línea base. Los commits conservan historia para reversión.
+
+**Alcance acotado:** `scripts/etl_zip_dos_fuentes.py` selecciona tablas de escritura por presencia de filas procesables: `Procesos` solo si licitaciones trae registros; `OrdenesCompra` solo si OC trae registros; `Proveedores` si trae proveedores. Un CSV vacío no equivale a que debamos borrar la tabla de destino. Ambas fuentes vacías, filas sin PK procesable, ZIP inválido, errores de descarga, contratos incompatibles, respaldos fallidos o lectura posterior incorrecta siguen bloqueando la ejecución. Se mantienen upsert idempotente, respaldo completo de seis tablas, controles PK y verificación de contenido.
+
+**Señal de cobertura:** `CARGA_PARCIAL_VERIFICADA` en el informe local, frente a `CARGA_VERIFICADA` para ambas fuentes presentes. `scripts/registrar_sincronizacion.py` acepta ambas solo cuando el código de salida es 0 y el informe corresponde a la ejecución actual; persiste `cobertura=PARCIAL_VERIFICADA`, el detalle por fuente y las tablas preservadas. El indicador `estado=EXITOSA` representa escritura verificada, **no cobertura completa de ambas fuentes**.
+
+**Sin cambio:** `crontab`, `scripts/ubuntu_cron_integrado.sh`, horario, locks, credenciales, fuentes URLs, conciliación y API nocturna. No se creó un segundo cron. La publicación seguirá bajo el mismo cerrojo de sincronización exitosa. No hay carga productiva ni cambio en Ubuntu hasta que el operador sincronice el repositorio local.
+
+**Validación:** `tests/test_etl_fuentes_independientes.py` y workflow `.github/workflows/validar-etl-fuentes-independientes.yml` prueban con ZIP sintéticos sin Sheets: solo OC, solo licitaciones, ambos válidos, ambos vacíos y filas sin código. Antes de reactivar Ubuntu deben observarse pruebas exitosas, ejecutar `--verificar`, tomar respaldo y revisar el primer log/resultado real. No declarar desplegado únicamente por existir commits en GitHub.
