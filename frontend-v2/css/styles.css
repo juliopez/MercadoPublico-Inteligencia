@@ -107,6 +107,13 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 #detalle-secundario summary{font-weight:650;cursor:pointer;color:#176b92;margin-bottom:9px}
 .code-link{display:inline;background:transparent;border:0;padding:0;color:#166b9d;font:inherit;font-weight:650;text-decoration:underline;text-underline-offset:3px;text-align:left;overflow-wrap:anywhere}
 .code-link:hover{background:transparent;color:#0a405c}
+/* Enlaces de navegación desde ranking de organismos, accesibles por teclado. */
+.viz-org-link{display:inline-block;max-width:100%;padding:0;border:0;background:transparent;color:#176b92;text-align:left;font:inherit;font-weight:650;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer;vertical-align:baseline}
+.viz-org-link:hover{color:#0a405c;background:transparent;text-decoration-thickness:2px}
+.viz-org-link:focus-visible{outline:2px solid #176b92;outline-offset:3px;border-radius:2px}
+.viz-label .viz-org-link{display:block;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.viz-org-detail .viz-org-link{white-space:normal;overflow-wrap:anywhere}
+
 @media(max-width:600px){
  .global-filters{display:grid;grid-template-columns:1fr}
  .global-filters label{min-width:0}
