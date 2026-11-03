@@ -165,13 +165,27 @@ def main():
   mod.process_licitaciones(db,paths["licitaciones"],counts)
   mod.process_oc(db,paths["ordenes_compra"],counts)
   db.commit()
-  # No llenar COT/Ofertas/Resultados con ceros: fuente ausente no implica cero.
-  expected={"Procesos":mod.SCHEMA["Procesos"],"OrdenesCompra":mod.SCHEMA["OrdenesCompra"],"Proveedores":mod.SCHEMA["Proveedores"]}
-  for table,cols in expected.items():
-   n=db.execute('SELECT COUNT(*) FROM "'+table+'"').fetchone()[0]
-   if n<1:raise ValueError("Tabla de fuente inesperadamente vacía: "+table)
+  # Validar fuentes por separado: un CSV oficialmente vacío no invalida la otra fuente.
+  # No inferir ceros ni borrar las tablas que dependan de la fuente vacía.
+  n_procesos=db.execute('SELECT COUNT(*) FROM "Procesos"').fetchone()[0]
+  n_oc=db.execute('SELECT COUNT(*) FROM "OrdenesCompra"').fetchone()[0]
+  n_proveedores=db.execute('SELECT COUNT(*) FROM "Proveedores"').fetchone()[0]
+  if n_procesos==0 and n_oc==0:
+   raise ValueError("Ambas fuentes carecen de registros procesables; no hay carga autorizada")
+  if n_proveedores==0:
+   raise ValueError("Las fuentes contienen registros pero no proveedores válidos")
+  expected={}
+  if n_procesos:expected["Procesos"]=mod.SCHEMA["Procesos"]
+  if n_oc:expected["OrdenesCompra"]=mod.SCHEMA["OrdenesCompra"]
+  expected["Proveedores"]=mod.SCHEMA["Proveedores"]
+  cobertura={"licitaciones":"DISPONIBLE" if n_procesos else "CSV_SIN_REGISTROS",
+             "ordenes_compra":"DISPONIBLE" if n_oc else "CSV_SIN_REGISTROS"}
+  for k,estado in cobertura.items():
+   print("FUENTE",k,estado,flush=True)
   report={"periodo":periodo,"fecha_utc":dt.datetime.now(dt.timezone.utc).isoformat(),
           "modo":"APLICAR" if args.aplicar else "SIMULACION","fuentes":fuentes,
+          "cobertura_fuentes":cobertura,
+          "tablas_no_modificadas":[t for t in ("Procesos","OrdenesCompra") if t not in expected],
           "preparados":{t:db.execute('SELECT COUNT(*) FROM "'+t+'"').fetchone()[0] for t in expected}}
   if args.aplicar:
    try:
@@ -208,7 +222,7 @@ def main():
     for key,row in load_rows(db,table,cols):
      if key not in after or after[key][1]!=row:
       raise ValueError("Verificación de contenido falló en "+table+" PK "+key)
-   report["estado"]="CARGA_VERIFICADA"
+   report["estado"]="CARGA_VERIFICADA" if n_procesos and n_oc else "CARGA_PARCIAL_VERIFICADA"
   else:
    report["estado"]="PREPARADO_SIN_ESCRITURAS"
   location=out/f"etl_zip_operativo_{periodo}.json"
