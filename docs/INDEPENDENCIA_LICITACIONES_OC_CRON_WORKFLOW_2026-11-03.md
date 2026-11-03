@@ -102,3 +102,6 @@ La publicación se alimenta desde las hojas MER verificadas, no descarga nuevame
 **Política:** no añadir meses fijos ni repetir las tareas históricas por rutina; cada nuevo mes queda automáticamente descubierto desde el manifiesto. Un mes sin registros de `Procesos` mantiene `organismos_procesos_unicos=[]` y contador cero: las OC no se convierten en concursos inventados.
 
 **Estado de validación:** el disparo inicial y la regeneración histórica deben auditarse mediante logs de Actions, conteos JSON y resultado del despliegue Pages antes de declarar la reparación publicada. La programación y el código de reparación ya están en GitHub; **no cambia el cron de las 16:00 ni la API nocturna**.
+
+
+**Validación productiva de reparación (03/11):** workflow [#41721120892](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/41721120892), resultado **success**. Los logs registran reconstrucción y validación de junio (80.898 procesos), julio (80.996), agosto (83.937), septiembre (79.376) y octubre (4.418); noviembre, con 0 procesos, ya tenía un agregado vigente y quedó sin cambios. El commit automático publicó cinco archivos de analítica. Los resultados concretos incluyen junio 1.983 organismos y octubre 868. La verificación de Pages posterior al commit debe constar por separado para acreditar su despliegue, no inferirse del push.
