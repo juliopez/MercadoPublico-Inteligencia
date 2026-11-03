@@ -146,13 +146,30 @@ async function render(){
    const top3=rank.slice(0,3).reduce((n,x)=>n+x.value,0);
    actors.append(kpis([['Organismos identificados',number.format(focus.organismos_procesos_unicos.length),'Agrupados por nombre publicado, sin homologar variantes.'],['Presupuesto del top 3',totalUnico?pct(top3/totalUnico*100):'—','Porcentaje del monto disponible de procesos únicos del mes, no del dinero adjudicado.']]));
    if(rank.length){
-    actors.append(bars(rank,currency,''));
+    const rankingBarras=bars(rank,currency,'');
+    rankingBarras.querySelectorAll('.viz-bar').forEach((row,i)=>{
+     const name=rank[i].full;
+     if(!name||name==='Sin organismo informado')return;
+     const label=row.querySelector('.viz-label'),link=create('button','viz-org-link',name);
+     link.type='button';link.title='Ver procesos de '+name+' en '+focus.periodo;
+     link.setAttribute('aria-label',link.title);
+     link.addEventListener('click',()=>window.buscarProcesosOrganismo?.(name,focus.periodo));
+     label.replaceChildren(link);
+    });
+    actors.append(rankingBarras);
     if(totalUnico>0&&rank.some(x=>x.value>0))actors.append(donut(rank,totalUnico));
     const details=create('div','viz-org-details');
     details.append(create('h4','','Concursos que componen cada barra'));
     for(const item of rank){
      const x=item.detail,line=create('p','viz-org-detail');
-     line.append(create('strong','',x.organismo+': '),document.createTextNode(number.format(x.procesos)+' procesos únicos · '+number.format(x.licitaciones)+' licitaciones · '+number.format(x.compras_agiles)+' Compras Ágiles · '+number.format(x.otras)+' otras modalidades · '+number.format(x.con_monto)+' con presupuesto disponible.'));
+     const nameLabel=create('strong','');
+     if(x.organismo&&x.organismo!=='Sin organismo informado'){
+      const link=create('button','viz-org-link',x.organismo);
+      link.type='button';link.title='Ver procesos de '+x.organismo+' en '+focus.periodo;
+      link.addEventListener('click',()=>window.buscarProcesosOrganismo?.(x.organismo,focus.periodo));
+      nameLabel.append(link);
+     }else nameLabel.textContent=x.organismo;
+     line.append(nameLabel,document.createTextNode(': '+number.format(x.procesos)+' procesos únicos · '+number.format(x.licitaciones)+' licitaciones · '+number.format(x.compras_agiles)+' Compras Ágiles · '+number.format(x.otras)+' otras modalidades · '+number.format(x.con_monto)+' con presupuesto disponible.'));
      details.append(line);
     }
     actors.append(details);
