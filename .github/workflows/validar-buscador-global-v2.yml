@@ -23,7 +23,7 @@ jobs:
           const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
           const src=fs.readFileSync('frontend-v2/js/busqueda-global.js','utf8');
           const calls={};
-          const dom=new Proxy({}, {get(_,id){return calls[id]??=( {addEventListener(){},replaceChildren(){},value:'',disabled:false,textContent:''} )}});
+          const dom=new Proxy({}, {get(_,id){return calls[id]??=( {addEventListener(){},setAttribute(){},replaceChildren(){},value:'procesos',disabled:false,textContent:''} )}});
           const sandbox={document:{getElementById:id=>dom[id]},window:{},fetch(){}};
           vm.createContext(sandbox);vm.runInContext(src,sandbox);
           const check=vm.runInContext('matches',sandbox);
