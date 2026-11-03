@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'frontend-v2/data/catalogo-publico.json'
+      # Un fragmento que llega después del catálogo también debe activar la reparación.
+      - 'frontend-v2/data/partes/**'
       - '.github/workflows/publicacion-v2-post-etl.yml'
   schedule:
     # Disparos UTC para 17:00 Santiago en verano e invierno
@@ -22,6 +24,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # Leer main actualizado incluso al reintentar una ejecución iniciada
+          # antes de incorporar fragmentos faltantes al repositorio.
+          ref: main
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
