@@ -76,3 +76,17 @@ La publicación se alimenta desde las hojas MER verificadas, no descarga nuevame
 **Resultado verificable:** workflow de derivados [#41712532138](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/41712532138) **success** en generación, validación y commit; índice de búsqueda de OC noviembre `conteo=8180`, perfiles `registros=8180`, analítica `registros=8180`. Supervisión posterior [#41712975889](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/41712975889) **success**. GitHub Pages [#41712975813](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/41712975813) completó **success** el paso de despliegue del frontend. Las verificaciones corresponden a Actions y repositorio; no constituyen una comprobación independiente de la caché HTTP del navegador del usuario.
 
 **Pendientes distintos del despliegue:** la etiqueta de octubre continúa figurando `operativo` en el catálogo público mientras el catálogo privado ya la identifica como `historico`; la independencia frente a fallas técnicas (no solo CSV vacío) requiere implementación adicional. No repetir la carga de 8.180 OC para solucionar estos asuntos.
+
+## 7. Continuidad desatendida por período — 03/11/2026
+
+**Necesidad ratificada:** el sistema NO requiere seleccionar manualmente un mes en GitHub cada jornada. El reloj `America/Santiago` determina el mes para el cron diario; el catálogo privado `config/catalogo_sheets.json` identifica exactamente un `tipo=operativo`; y el exportador registra `ultima_exportacion.periodo` en el catálogo público. Los workflows de derivados y supervisión consumen ese período exportado y contrastan su autorización contra el catálogo privado, de modo que también puedan reconocer un cierre excepcional identificado expresamente. No se codifica `2026-11` en los workflows.
+
+**Correcciones de recurrencia:**
+- `scripts/exportar_mer_operativo_v2.py`: actualiza las etiquetas `historico/operativo` de cada período público de acuerdo con el catálogo privado, sin alterar conteos ni fragmentos históricos; escribe `ultima_exportacion` al completar una exportación.
+- `scripts/ubuntu_publicar_v2_post_etl.sh`: incluye en el commit los fragmentos de **las cuatro entidades** para el mes, incluidos `ofertas/0001.json` y `resultados/0001.json` cuando están vacíos. Previene el fallo inaugural observado en noviembre.
+- `.github/workflows/publicacion-v2-post-etl.yml`: lee el período de `ultima_exportacion` y conserva la comprobación de exportación fresca; no extrapola por sí solo el mes del reloj cuando hay una exportación identificada.
+- `.github/workflows/verificar-publicacion-diaria-v2.yml`: contrasta período y clasificación contra el catálogo privado. Un `success` de pasos omitidos no acredita datos.
+- `frontend-v2/data/catalogo-publico.json`: se corrigió la etiqueta de octubre de 2026 a `historico`, conservando noviembre como `operativo` y sus 8.180 OC.
+- El gráfico de concursos muestra 0 para noviembre porque **el conjunto `Procesos` está vacío**, no porque el publicador ignore el mes. Las 8.180 OC aparecen en la entidad `ordenescompra`. No mezclar métricas de ambas fuentes.
+
+**Controles de producción:** preservar el único cron Ubuntu y sus bloqueos, API nocturna y consolidación histórica. Estas correcciones no sustituyen la prueba real de rotación diciembre/enero ni hacen tolerante a errores técnicos por fuente a toda la cadena. Verificar ejecuciones GitHub y Pages luego del commit de sincronización.
