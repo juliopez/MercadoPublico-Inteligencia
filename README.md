@@ -19,6 +19,9 @@ Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes d
 
 **[Punto único de continuidad y estado real](docs/ESTADO_Y_CONTINUIDAD_2026-10-30.md).** [Instalación de rotación y conciliación](docs/INSTALACION_ROTACION_CONCILIACION_2026-10-30.md) · [API local — etapa siguiente](docs/CRON_LOCAL_API_COMPRA_AGIL_2026-10-30.md) · [Índice documental](docs/INDICE_DOCUMENTACION.md).
 
+
+**Independencia por fuente (03-11-2026):** [Reglas y límites del cron Ubuntu y del workflow de publicación](docs/INDEPENDENCIA_LICITACIONES_OC_CRON_WORKFLOW_2026-11-03.md). Un ZIP oficial vacío no bloquea la carga de la otra fuente; las fallas técnicas de descarga, parseo, escritura y derivados aún no están aisladas por completo y no deben presentarse como resueltas.
+
 ## Acceder
 
 - **[Observatorio V2 — interfaz de consulta y análisis](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)**
