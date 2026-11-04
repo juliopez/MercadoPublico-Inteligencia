@@ -19,9 +19,46 @@ if [[ "$MODE" == --verificar ]]; then
   echo "VERIFICACION_SIN_MODIFICAR_TIMERS"
   exit 0
 fi
-# Al generar unidades de usuario se usa el directorio ABSOLUTO del repositorio.
-# Rechazar espacios para evitar una línea ExecStart ambigua.
-[[ "$ROOT" != *' '* ]] || { echo "Ruta del repositorio con espacios no soportada: $ROOT" >&2;exit 2; }
+# Las rutas del repositorio pueden contener espacios (por ejemplo, "Julio Lopez").
+# systemd admite comillas en los argumentos ExecStart; no usar escape de shell.
+# Evitar únicamente comillas literales y saltos de línea en el directorio.
+[[ "$ROOT" != *'"'* && "$ROOT" != *
+mkdir -p "$UNIT_DIR"
+cat >"$UNIT_DIR/$NAME.service" <<UNIT
+[Unit]
+Description=Solicitar ejecución nocturna API Compra Agil desde Ubuntu a GitHub Actions
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/python3 "$ROOT/scripts/ubuntu_disparar_api_actions.py" --ejecutar
+TimeoutStartSec=180
+UNIT
+cat >"$UNIT_DIR/$NAME.timer" <<UNIT
+[Unit]
+Description=Disparar GitHub Actions Compra Agil a las 22:05 de Santiago (lun-vie)
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 22:05:00 America/Santiago
+Persistent=true
+Unit=$NAME.service
+
+[Install]
+WantedBy=timers.target
+UNIT
+systemctl --user daemon-reload
+systemctl --user enable --now "$NAME.timer"
+systemctl --user status "$NAME.timer" --no-pager || true
+systemctl --user list-timers --all --no-pager | grep -F "$NAME" || true
+echo "TIMER_USUARIO_INSTALADO: $NAME.timer"
+echo "IMPORTANTE: sin sesión de usuario, habilitar linger una vez: sudo loginctl enable-linger $(id -un)"
+echo "SIN_CAMBIOS_AL_CRON_1600"
+\\n'* ]] || {
+  echo "Ruta con comillas o saltos de línea no compatible: $ROOT" >&2
+  exit 2
+}
 mkdir -p "$UNIT_DIR"
 cat >"$UNIT_DIR/$NAME.service" <<UNIT
 [Unit]
