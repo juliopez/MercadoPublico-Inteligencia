@@ -16,7 +16,7 @@ class MigracionPortadaV2(unittest.TestCase):
         self.assertIn('<base href="./frontend-v2/">', result)
         self.assertIn('src="./js/app.js"', result)
         self.assertIn("history.replaceState", result)
-        self.assertIn("VERSIÓN ESTABLE", result)
+        self.assertIn("Plataforma de análisis de datos", result)
         self.assertNotIn("Versión 1 publicada", result)
 
     def test_una_sola_copia_datos_en_pages(self):
