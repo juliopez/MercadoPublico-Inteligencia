@@ -21,8 +21,11 @@ if [[ "$MODE" == --verificar ]]; then
 fi
 # Las rutas del repositorio pueden contener espacios (por ejemplo, "Julio Lopez").
 # systemd admite comillas en los argumentos ExecStart; no usar escape de shell.
-# Evitar únicamente comillas literales y saltos de línea en el directorio.
-[[ "$ROOT" != *'"'* && "$ROOT" != *
+# Evitar comillas literales en el directorio, que requieren escapado adicional.
+if [[ "$ROOT" == *'"'* ]]; then
+  echo "Ruta con comillas no compatible: $ROOT" >&2
+  exit 2
+fi
 mkdir -p "$UNIT_DIR"
 cat >"$UNIT_DIR/$NAME.service" <<UNIT
 [Unit]
