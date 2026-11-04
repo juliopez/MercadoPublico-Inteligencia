@@ -15,18 +15,25 @@
 
 Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes de compra** de Mercado Público. Este README describe el **estado vigente**; los procedimientos y antecedentes están separados en la documentación especializada.
 
-**Estado documental verificado: 30 de octubre de 2026.** [Plan de operación nocturna API Compra Ágil (21:00–07:00)](docs/PLAN_OPERACION_NOCTURNA_API_COMPRA_AGIL_2026-10-30.md). [Bitácora actual de prueba API 400, iniciada 22:30](docs/BITACORA_PRUEBA_API_400_2026-10-30.md). La operación Ubuntu de las 16:00 fue comprobada el 30/10 mediante exportación, publicación V2 y supervisor de GitHub. La instalación de los nuevos servicios locales no se ha verificado.
+**Registro histórico operativo: 30 de octubre de 2026.** [Plan de operación nocturna API Compra Ágil (21:00–07:00)](docs/PLAN_OPERACION_NOCTURNA_API_COMPRA_AGIL_2026-10-30.md). [Bitácora actual de prueba API 400, iniciada 22:30](docs/BITACORA_PRUEBA_API_400_2026-10-30.md). La operación Ubuntu de las 16:00 fue comprobada el 30/10 mediante exportación, publicación V2 y supervisor de GitHub. La instalación de los nuevos servicios locales no se ha verificado.
 
 **[Punto único de continuidad y estado real](docs/ESTADO_Y_CONTINUIDAD_2026-10-30.md).** [Instalación de rotación y conciliación](docs/INSTALACION_ROTACION_CONCILIACION_2026-10-30.md) · [API local — etapa siguiente](docs/CRON_LOCAL_API_COMPRA_AGIL_2026-10-30.md) · [Índice documental](docs/INDICE_DOCUMENTACION.md).
 
 
 **Independencia por fuente (03-11-2026):** [Reglas y límites del cron Ubuntu y del workflow de publicación](docs/INDEPENDENCIA_LICITACIONES_OC_CRON_WORKFLOW_2026-11-03.md). Un ZIP oficial vacío no bloquea la carga de la otra fuente; las fallas técnicas de descarga, parseo, escritura y derivados aún no están aisladas por completo y no deben presentarse como resueltas.
 
+## Estado vigente — 4 de noviembre de 2026
+
+La **versión 2 es la única plataforma oficial** y se publica en la raíz de GitHub Pages. V1 fue una prueba de concepto breve: el código y su manifiesto se conservaron en [archivo histórico](historico/v1/README.md), y sus 51 fragmentos de datos ya obsoletos (137,5 MB) se retiraron de la rama `main`. **Los datos históricos utilizados por V2 no fueron eliminados.**
+
+El despliegue oficial construye la portada raíz a partir de `frontend-v2/index.html` en **cada** publicación; mantiene una sola copia de los JSON bajo `frontend-v2/data/` y una redirección desde la URL anterior. La cadena Ubuntu, Sheets, API, cierre y conciliación no cambió.
+
 ## Acceder
 
-- **[Observatorio V2 — interfaz de consulta y análisis](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)**
-- [Frontend V1 — versión anterior independiente](https://juliopez.github.io/MercadoPublico-Inteligencia/)
-- [Manual de uso de V2](frontend-v2/README.md)
+- **[Observatorio de Mercado Público — plataforma oficial y estable (V2)](https://juliopez.github.io/MercadoPublico-Inteligencia/)**
+- [Antigua URL V2 — redirección a la plataforma oficial](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)
+- [Versión 1 — archivo histórico (no operativo)](historico/v1/README.md)
+- [Manual de la plataforma V2](frontend-v2/README.md)
 - [Índice completo de documentación](docs/INDICE_DOCUMENTACION.md)
 - [Decisiones técnicas y restricciones](docs/DECISIONES_TECNICAS.md)
 
@@ -34,8 +41,8 @@ Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes d
 
 | Componente | Estado y alcance |
 |---|---|
-| Frontend V2 | Implementado y publicado en `frontend-v2/`; **revisión visual de los últimos cambios en curso por el usuario** |
-| Períodos públicos | Junio–octubre de 2026; octubre **parcial** |
+| Observatorio V2 | **Única versión oficial**, publicada en la raíz de GitHub Pages; `frontend-v2/` se conserva como ubicación de recursos y URL de redirección |
+| Períodos públicos | Junio–noviembre de 2026; noviembre operativo y parcial; cobertura verificable en el catálogo |
 | Datos disponibles | Cuatro entidades públicas: Procesos, Ofertas, Resultados y Órdenes de compra |
 | Consulta | Primer bloque de hasta 1.000 filas; tablas paginadas de 10; búsqueda indexada por término/código entre todos los períodos publicados (o por un mes) |
 | Analítica | Selección de mes, comparación entre meses, vistas de actividad, importes informados y actores destacados |
@@ -75,7 +82,7 @@ frontend-v2/data/catalogo-publico.json
 GitHub Pages V2 (sin acceso directo a Sheets)
 ```
 
-**Reglas de protección:** no modificar V1 (`index.html`, `data/`) durante mejoras V2; no descargar el histórico completo al navegador; no eliminar JSON generados, workflows de datos, credenciales locales protegidas ni ramas de respaldo como parte de una limpieza editorial.
+**Reglas de protección:** V1 fue retirada de la portada y archivada en `historico/v1/` el 04/11/2026. La raíz sirve V2; sus recursos operativos siguen en `frontend-v2/`. No eliminar JSON históricos V2 ni alterar cron, API, rotación, conciliación o credenciales como parte de limpiezas.
 
 ## Operación y mantenimiento
 
