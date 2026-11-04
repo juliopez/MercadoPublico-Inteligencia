@@ -380,3 +380,21 @@ header .reference{font-size:.84rem;margin-top:10px}
 .viz-kpi-help:focus-visible{outline:2px solid #176b92;outline-offset:2px}
 .viz-kpi-explanation{display:block;margin:.4rem 0 0;max-width:28rem;line-height:1.45;font-size:.84rem;font-weight:400;white-space:normal}
 .viz-kpi-explanation[hidden]{display:none}
+
+/* Enlaces de códigos: conservar contraste frente a la regla global de hover de botones. */
+.table-scroll button.code-link:not(:disabled):hover,
+.table-scroll button.code-link:not(:disabled):focus-visible,
+button.code-link:not(:disabled):hover,
+button.code-link:not(:disabled):focus-visible{
+  background:transparent;
+  color:#0a405c;
+  text-decoration:underline;
+  text-decoration-thickness:2px;
+  text-underline-offset:3px;
+}
+.table-scroll button.code-link:not(:disabled):focus-visible,
+button.code-link:not(:disabled):focus-visible{
+  outline:3px solid #e9a82b;
+  outline-offset:3px;
+  border-radius:2px;
+}
