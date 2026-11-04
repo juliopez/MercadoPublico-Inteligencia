@@ -7,6 +7,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'index.html'
       - 'frontend-v2/index.html'
       - 'frontend-v2/css/**'
       - 'frontend-v2/js/**'
@@ -65,7 +66,8 @@ jobs:
           root_page=pathlib.Path('index.html')
           assert root_page.is_file()
           assert '<base href="./frontend-v2/">' in root_page.read_text(), 'La raíz debe apuntar a recursos V2'
-          assert 'VERSION ESTABLE' not in root_page.read_text(), 'Revisar etiqueta de estabilidad desde la V2 fuente'
+          assert 'Plataforma de análisis de datos' in root_page.read_text(), 'La portada raíz está desactualizada respecto a V2'
+          assert 'VERSIÓN ESTABLE' not in root_page.read_text(), 'La portada raíz conserva la etiqueta anterior'
           assert pathlib.Path('historico/v1/index.html').is_file(), 'Falta respaldo fuente de V1'
           a=json.loads((root/'data/analitica/2026-08/procesos.json').read_text())
           assert a['registros']==83937
