@@ -2,7 +2,10 @@ name: Compra Agil diaria 400 - cierre nocturno
 on:
   schedule:
     # 22:05 Santiago: UTC-3 (verano) => 01:05 UTC, UTC-4 (invierno) => 02:05 UTC.
-    # Solo UNO de estos disparos coincide con las 22 horas locales; el otro se omite.
+    # Dos horarios UTC por horario de verano/invierno; checkpoints y concurrency
+    # garantizan reanudación sin repetir detalles ya confirmados si ambos corren.
+    # Las ejecuciones retrasadas (incluso después de medianoche) son admitidas
+    # hasta las 04:59 de Chile para la jornada que empezó la víspera a las 22.
     - cron: '5 1 * * *'
     - cron: '5 2 * * *'
   workflow_dispatch:
@@ -24,26 +27,12 @@ jobs:
       MER_API_MAX_DETAIL: "400"
       MER_API_RUN_NOW: "1"
     steps:
-      - name: Validar inicio nocturno Chile
+      - name: Validar inicio nocturno Chile (incluye retrasos del schedule)
         id: ventana
-        env:
-          EVENTO: ${{ github.event_name }}
         run: |
-          python - <<'PY'
-          import datetime,os
-          from zoneinfo import ZoneInfo
-          n=datetime.datetime.now(ZoneInfo('America/Santiago'))
-          # Aceptar exclusivamente el disparo que cae durante las 22h de Santiago.
-          # El segundo cron UTC (otra estación) jamás debe iniciar una jornada adicional.
-          # Se tolera retraso del planificador hasta las 22:59.
-          allowed=n.weekday()<5 and n.hour==22
-          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write(f"ok={'true' if allowed else 'false'}\n")
-          if allowed:
-           with open(os.environ['GITHUB_ENV'],'a') as f:
-            f.write('MER_API_FECHA_OBJETIVO='+n.date().isoformat()+'\n')
-            f.write('PERIODO_SOLICITADO='+n.strftime('%Y-%m')+'\n')
-          print('JORNADA',n.isoformat(),'habilitada',allowed)
-          PY
+          # 22:00-04:59 Santiago, con objetivo del día hábil que comenzó a las 22h.
+          # Si GitHub lanza a las 02:30, corresponde al día ANTERIOR, no a hoy.
+          python scripts/ventana_api_nocturna.py
       - uses: actions/checkout@v4
         if: steps.ventana.outputs.ok == 'true'
         with:
