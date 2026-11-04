@@ -24,6 +24,9 @@ jobs:
           bash -n scripts/instalar_disparador_api_github_ubuntu.sh
           python -m py_compile scripts/ubuntu_disparar_api_actions.py
           python -m unittest discover -s tests -p 'test_ubuntu_disparador_api_actions.py' -v
+      - name: Validar calendario systemd horario Chile
+        run: |
+          systemd-analyze calendar 'Mon..Fri *-*-* 22:05:00 America/Santiago'
       - name: Verificar el timer separado y el comando dispatch
         run: |
           python - <<'PY'
