@@ -1,0 +1,39 @@
+name: Validar disparador API desde Ubuntu
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ubuntu_disparar_api_actions.py'
+      - 'scripts/instalar_disparador_api_github_ubuntu.sh'
+      - 'tests/test_ubuntu_disparador_api_actions.py'
+      - '.github/workflows/validar-disparador-api-ubuntu.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar sintaxis sin credenciales ni despacho
+        run: |
+          bash -n scripts/instalar_disparador_api_github_ubuntu.sh
+          python -m py_compile scripts/ubuntu_disparar_api_actions.py
+          python -m unittest discover -s tests -p 'test_ubuntu_disparador_api_actions.py' -v
+      - name: Verificar el timer separado y el comando dispatch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          installer=Path('scripts/instalar_disparador_api_github_ubuntu.sh').read_text()
+          launcher=Path('scripts/ubuntu_disparar_api_actions.py').read_text()
+          assert 'OnCalendar=Mon..Fri *-*-* 22:05:00 America/Santiago' in installer
+          assert 'mercadopublico-api-github-dispatch' in installer
+          assert 'ubuntu_cron_integrado.sh' not in installer
+          assert '"workflow", "run", WORKFLOW' in launcher
+          assert 'gh' in launcher
+          print('DISPARADOR_UBUNTU_VALIDADO_SIN_EJECUCION_PRODUCTIVA')
+          PY
