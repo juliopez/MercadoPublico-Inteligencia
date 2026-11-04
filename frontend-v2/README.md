@@ -1,8 +1,8 @@
-# Frontend V2 — Guía funcional y estado vigente
+# Observatorio de Mercado Público · V2 estable
 
-**Revisión:** 23-10-2026. **[Abrir V2](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)** · [README del proyecto](../README.md) · [Índice documental](../docs/INDICE_DOCUMENTACION.md).
+**Plataforma oficial desde el 04-11-2026:** [Abrir Observatorio](https://juliopez.github.io/MercadoPublico-Inteligencia/) · [README del proyecto](../README.md) · [Índice documental](../docs/INDICE_DOCUMENTACION.md).
 
-V2 es un **frontend paralelo** que publica extractos autorizados de Mercado Público. V1 continúa operando desde `../index.html`; no se modifica por el desarrollo V2.
+La V2 es la **única versión vigente**. Se publica en la raíz de GitHub Pages a partir de este mismo código. La dirección anterior `/frontend-v2/` redirige a la raíz, mientras que sus recursos y catálogos permanecen bajo `frontend-v2/` para preservar contratos de datos. La V1 quedó archivada en [`historico/v1`](../historico/v1/README.md).
 
 ## Cómo utilizarlo
 
