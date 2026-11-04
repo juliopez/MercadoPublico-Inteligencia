@@ -146,7 +146,7 @@ jobs:
                   old=read("frontend-v2/")
                   catalog=json.loads(read("frontend-v2/data/catalogo-publico.json"))
                   assert '<base href="./frontend-v2/">' in root
-                  assert "VERSIÓN ESTABLE" in root
+                  assert "Plataforma de análisis de datos" in root
                   assert "location.replace('../'+location.search+location.hash)" in old
                   assert catalog["ultima_exportacion"] == expected["ultima_exportacion"]
                   assert [(p["periodo"],p["conteos"]) for p in catalog["periodos"]] == [(p["periodo"],p["conteos"]) for p in expected["periodos"]]
