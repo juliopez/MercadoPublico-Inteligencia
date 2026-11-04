@@ -27,17 +27,16 @@ jobs:
       MER_API_MAX_DETAIL: "400"
       MER_API_RUN_NOW: "1"
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
       - name: Validar inicio nocturno Chile (incluye retrasos del schedule)
         id: ventana
         run: |
           # 22:00-04:59 Santiago, con objetivo del día hábil que comenzó a las 22h.
           # Si GitHub lanza a las 02:30, corresponde al día ANTERIOR, no a hoy.
           python scripts/ventana_api_nocturna.py
-      - uses: actions/checkout@v4
-        if: steps.ventana.outputs.ok == 'true'
-        with:
-          ref: main
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         if: steps.ventana.outputs.ok == 'true'
         with:
