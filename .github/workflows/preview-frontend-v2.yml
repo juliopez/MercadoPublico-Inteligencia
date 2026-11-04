@@ -2,7 +2,7 @@ name: Observatorio - vista previa frontend MER v2
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ['Publicacion V2 posterior al ETL Ubuntu', 'Publicar participación histórica V2', 'Reparar analítica de organismos por período']
+    workflows: ['Publicar participación histórica V2', 'Reparar analítica de organismos por período']
     types: [completed]
   push:
     branches: [main]
@@ -83,10 +83,23 @@ jobs:
                   assert sum(int(row[1]) for row in modes)==expected,(p,'modalidades_desfasadas')
           print('PREVIEW_V2_INTEGRIDAD_OK')
           PY
+      - name: Preparar únicamente el sitio público (V1 + V2)
+        run: |
+          set -euo pipefail
+          mkdir -p _pages/data
+          cp index.html _pages/index.html
+          cp data/observatorio.json _pages/data/observatorio.json
+          cp -a frontend-v2 _pages/frontend-v2
+          test -f _pages/index.html
+          test -f _pages/data/observatorio.json
+          test -f _pages/frontend-v2/data/catalogo-publico.json
+          test -f _pages/frontend-v2/index.html
+          echo "PAGES_ARCHIVOS_PUBLICOS=$(find _pages -type f | wc -l)"
+          du -sh _pages
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: .
+          path: _pages
       - name: Desplegar preview v2 manteniendo raíz v1
         id: deploy
         uses: actions/deploy-pages@v4
