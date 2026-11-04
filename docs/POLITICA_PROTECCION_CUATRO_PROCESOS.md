@@ -14,7 +14,7 @@
 ## Inventario de disparadores y fronteras
 
 - **Proceso 1:** cron local Ubuntu lunes–viernes a las **16:00 America/Santiago**; cadena de importación, conciliación documental y publicación. No tocar.
-- **Proceso 2:** lote API **manual**, capacidad comprobada hasta 400, sin temporizador nocturno aprobado. No confundir con la configuración horaria antigua de la unidad API.
+- **Proceso 2:** API nocturna en GitHub Actions (lotes de hasta 400); disparador complementario Ubuntu a las 22:05 aprobado el 04/11/2026 e implementado en el repositorio, **pendiente de instalación en el Ubuntu real**. El disparador GitHub `schedule` se conserva como respaldo. La ejecución manual de 400 permanece protegida. Consultar [instalación y reversión](INSTALACION_DISPARADOR_API_GITHUB_UBUNTU.md).
 - **Proceso 3:** `mercadopublico-rotacion.timer`, evaluación lunes–viernes **19:00** y ejecución efectiva únicamente cuando corresponde por calendario Chile.
 - **Proceso 4:** `mercadopublico-conciliacion.timer`, evaluación diaria **10:00** y al arrancar Ubuntu; operación real solo día 10 o siguiente hábil y en reintentos pendientes.
 
@@ -33,3 +33,7 @@ Antes de modificar cualquier proceso protegido:
 
 ## Regla de continuidad
 En todo trabajo futuro de este repositorio, empezar por este registro y consultar el inventario del proceso afectado. **Documentar no significa ejecutar cambios**; proteger no significa afirmar validaciones aún pendientes. El proceso 4 requiere una primera ejecución productiva verificada antes de declararse completamente validado.
+
+## Excepción expresamente aprobada — 04/11/2026 (Proceso 2)
+
+Se autorizó sustituir `schedule` como mecanismo primario de inicio nocturno por un timer Ubuntu de usuario que solicita `workflow_dispatch` a GitHub; no se autorizó cambiar capacidad de procesamiento. Implementados archivos independientes, con CI aprobada y documentación de reversión. **Estado verificable: código publicado y pruebas aprobadas, instalación Ubuntu pendiente.** El cron de las 16:00, rotación mensual y conciliación histórica no sufrieron cambios.
