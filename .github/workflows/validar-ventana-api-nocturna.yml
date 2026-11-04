@@ -1,0 +1,37 @@
+name: Validar ventana nocturna API
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ventana_api_nocturna.py'
+      - 'tests/test_ventana_api_nocturna.py'
+      - '.github/workflows/api-compra-agil-400-actions.yml'
+      - '.github/workflows/validar-ventana-api-nocturna.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fechas-y-checkout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar sintaxis y escenarios locales sin credenciales
+        run: |
+          python -m py_compile scripts/ventana_api_nocturna.py
+          python -m unittest discover -s tests -p 'test_ventana_api_nocturna.py' -v
+      - name: Validar que el checkout precede al control horario
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('.github/workflows/api-compra-agil-400-actions.yml').read_text()
+          start=s.index('    steps:')
+          checkout=s.index('uses: actions/checkout@v4',start)
+          guard=s.index('python scripts/ventana_api_nocturna.py',start)
+          assert checkout<guard,'El checkout debe ejecutarse antes del control horario'
+          assert "5 1 * * *" in s and "5 2 * * *" in s
+          print('VALIDACION_WORKFLOW_NOCTURNO_OK')
+          PY
