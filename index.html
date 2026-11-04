@@ -1,535 +1,77 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Observatorio Mercado Público · Explorador 2026</title>
-<style>
-:root{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#183149;background:#f5f7fa}*{box-sizing:border-box}body{margin:0}header{background:#102942;color:white;padding:22px max(18px,calc((100vw - 1250px)/2))}header h1{font-size:25px;margin:4px 0}header p{color:#b6c8d9;margin:0}.headstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}.headstat{border:1px solid #36516d;border-radius:10px;padding:12px 15px;background:#193754}.headstat span{display:block;color:#c1d4e6;font-size:12px}.headstat{position:relative}.headstat-heading{display:flex;align-items:center;gap:8px}.headstat-heading>span:first-child{display:inline}.headstat .info-wrap{display:inline-flex;position:relative;flex:none}.info-button{display:inline-grid;place-items:center;width:20px;height:20px;min-width:20px;padding:0;border:1px solid #9dc3e6;border-radius:50%;background:transparent;color:#d7ebff;font-size:12px;font-weight:700;line-height:1;cursor:help}.info-button:hover,.info-button:focus-visible{background:#d7ebff;color:#102942;outline:2px solid transparent}.info-tooltip{display:none!important;position:absolute;z-index:50;top:calc(100% + 9px);right:-12px;width:min(290px,calc(100vw - 48px));padding:11px 13px;border-radius:8px;background:#fff;color:#183149!important;font-size:12px!important;line-height:1.5;box-shadow:0 8px 25px #06182b66;text-align:left}.info-wrap:hover .info-tooltip,.info-wrap:focus-within .info-tooltip{display:block!important}.panel summary .info-wrap{display:inline-flex;position:relative;vertical-align:middle;margin-left:4px}.panel summary .info-button{color:#245a82;border-color:#a2c2da;background:#eaf3fb}.panel summary .info-tooltip{left:-8px;right:auto;top:calc(100% + 8px);width:min(330px,calc(100vw - 48px));white-space:normal;font-weight:400}@media(max-width:800px){.info-tooltip{right:-20px}}.headstat strong{display:block;color:#fff;font-size:21px;margin-top:4px}.headstat small{color:#c1d4e6}.global-search{position:relative;max-width:760px;margin-top:18px}.global-search label{display:block;color:#d6e4f1;font-size:13px;margin-bottom:6px}.global-search input{width:100%;margin:0;padding:14px 15px;font-size:15px}.global-results{position:absolute;z-index:100;background:white;color:#183149;border-radius:10px;box-shadow:0 10px 30px #071b3460;width:100%;max-height:380px;overflow:auto;margin-top:5px}.global-results[hidden]{display:none}.global-result{display:block;width:100%;text-align:left;background:white;color:#183149;border-bottom:1px solid #e6edf3;border-radius:0;font-weight:400}.global-result:hover,.global-result:focus{background:#eaf3fb}.global-result small{display:block;font-size:11px;margin-top:3px}.global-help{color:#b6c8d9;font-size:12px;margin-top:5px}.admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}.admin-item{border:1px solid #dce5ee;border-radius:10px;padding:16px}.admin-item p{font-size:13px}.admin-link{display:inline-block;background:#1269a4;color:#fff;text-decoration:none;padding:10px 13px;border-radius:8px;font-size:13px;font-weight:600}.admin-link:hover{background:#0c4d78}@media(max-width:800px){.admin-grid{grid-template-columns:1fr}}main{max-width:1250px;padding:24px 18px;margin:auto}.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#9cbeda}.panel{background:white;border:1px solid #dce5ee;border-radius:13px;padding:20px;margin-bottom:16px}h2{font-size:19px;margin:0 0 12px}p{line-height:1.5}.muted,small{color:#60738a}.imports,.filters{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.filters{grid-template-columns:repeat(3,minmax(0,1fr))}.filters .wide{grid-column:span 2}.filterActions{display:flex;align-items:end}.imports label,.filters label{font-size:13px;font-weight:600;display:block}input,select{width:100%;padding:11px;border:1px solid #c5d3e0;border-radius:8px;background:#fff;margin-top:7px}input[type=file]{font-size:12px}button{border:0;background:#1269a4;color:#fff;padding:10px 15px;border-radius:8px;cursor:pointer;font-weight:600}button.secondary{background:#e8f1f8;color:#15527d}.tools{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:13px 10px;text-align:left;border-bottom:1px solid #e8edf3;vertical-align:top}th{color:#52657a;background:#f6f9fc;white-space:nowrap}td{max-width:340px}tbody tr:hover{background:#f7fbfe}.tag{display:inline-block;border-radius:7px;padding:4px 7px;background:#e9f2f8;color:#13577e;font-size:12px;white-space:nowrap}.status{font-size:13px;margin:10px 0}.empty{text-align:center;padding:38px;color:#687c8e}.details{background:#f6f9fc;border-radius:10px;padding:16px}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.facts div{padding:10px;background:white;border-radius:8px;overflow-wrap:anywhere}.facts dt{font-size:12px;color:#60738a}.facts dd{margin:4px 0 0;font-weight:600}.scroll{overflow:auto}footer{text-align:center;padding:25px;color:#60738a}@media(max-width:800px){.imports,.filters,.two,.facts{grid-template-columns:1fr}header{padding:22px 18px}.headstats{grid-template-columns:1fr}}
-.coverage-strip{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#eaf2f8;border:1px solid #cbddea;border-radius:10px;padding:12px 15px;margin-bottom:16px;color:#244864;font-size:13px}.quicknav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.quicknav a{border:1px solid #cbdcea;background:#fff;color:#175781;text-decoration:none;border-radius:20px;padding:8px 12px;font-size:13px;font-weight:600}.quicknav a:hover,.quicknav a:focus-visible{background:#e8f3fb;outline:2px solid #4184b1;outline-offset:2px}.situation-pill{display:inline-block;border-radius:99px;padding:5px 9px;background:#edf2f7;color:#284c69;font-weight:600;white-space:nowrap}.situation-pill[data-situation="ejecucion"]{background:#e5f3ec;color:#176340}.situation-pill[data-situation="adjudicado"]{background:#deefff;color:#164e82}.situation-pill[data-situation="desierto"],.situation-pill[data-situation="cancelado"]{background:#fcebe8;color:#903b31}.process-name{font-weight:600;color:#244765;line-height:1.4;overflow-wrap:anywhere}.process-code{font-variant-numeric:tabular-nums;white-space:nowrap}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #2779b4;outline-offset:2px}button:disabled{opacity:.5;cursor:not-allowed}.tablewrap{border:1px solid #e4ebf2;border-radius:9px}thead th{position:sticky;top:0;z-index:1}html{scroll-behavior:smooth}@media(max-width:800px){.quicknav a{font-size:12px}.panel{padding:15px}th,td{padding:10px 8px}}.detail-coverage{background:#edf5fb;border-left:4px solid #2779b4;border-radius:8px;padding:12px 15px;margin:0 0 14px;font-size:13px;line-height:1.6}.detail-coverage strong{color:#1c5278}.detail-documents{margin-top:16px;border-top:1px solid #dce5ee;padding-top:13px}.detail-documents a{display:inline-block;margin:5px 10px 5px 0;padding:8px 12px;border:1px solid #bcd3e5;border-radius:7px;background:#fff;color:#155781;font-weight:600;text-decoration:none}.detail-documents a:hover,.detail-documents a:focus-visible{background:#e5f1fa;text-decoration:underline}.oc-controls{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;align-items:end;margin:14px 0}.oc-controls label{font-size:13px;font-weight:600}.oc-pager{justify-content:center;margin-top:12px}.oc-code{font-variant-numeric:tabular-nums;font-weight:600;color:#175781}@media(max-width:800px){.oc-controls{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}.coverage-help{width:100%;font-size:12px;color:#365774}.coverage-help summary{cursor:pointer;font-weight:700;color:#175781}.coverage-help p{margin:6px 0}.headstat small{line-height:1.45}</style></head><body><header><div class="eyebrow">Plataforma de consulta · Datos publicados desde Google Sheets</div><h1>Observatorio de Mercado Público</h1><p>Explorador de procesos, ofertas y resultados · Año 2026 · Todos los rubros</p><div class="global-search"><label for="globalQuery">Buscar en el Observatorio</label><input id="globalQuery" type="search" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="globalResults" aria-autocomplete="list" placeholder="Empresa, licitación, organismo o producto…"><div class="global-results" id="globalResults" role="listbox" hidden></div><div class="global-help">Selecciona una sugerencia para abrir su ficha o filtrar los procesos.</div></div><div class="headstats" aria-label="Información de cobertura"><div class="headstat"><div class="headstat-heading"><span>Registros disponibles</span><span class="info-wrap"><button class="info-button" type="button" aria-label="Ayuda: Registros disponibles" aria-describedby="info-1">i</button><span class="info-tooltip" id="info-1" role="tooltip">Suma de cuatro tipos de registros publicados: procesos, ofertas individuales, resultados y órdenes de compra. Son registros de distinta naturaleza; no equivalen a 2.667 licitaciones únicas. Una misma compra puede aparecer en más de una tabla.</span></span></div><strong id="headCount">—</strong><small id="headBreakdown">Procesos · ofertas · resultados · órdenes de compra</small></div><div class="headstat"><div class="headstat-heading"><span>Proceso más antiguo</span><span class="info-wrap"><button class="info-button" type="button" aria-label="Ayuda: Proceso más antiguo" aria-describedby="info-2">i</button><span class="info-tooltip" id="info-2" role="tooltip">Es la fecha de publicación más antigua entre los procesos actualmente disponibles. Si todavía no hay procesos, aparecerá «No informada».</span></span></div><strong id="headOldest">—</strong><small>Fecha de publicación registrada</small></div><div class="headstat"><div class="headstat-heading"><span>Última publicación de datos</span><span class="info-wrap"><button class="info-button" type="button" aria-label="Ayuda: Última publicación de datos" aria-describedby="info-3">i</button><span class="info-tooltip" id="info-3" role="tooltip">Es la fecha y hora en que se generó el último extracto público desde Google Sheets, en horario de Chile continental. No es la fecha de actualización de cada proceso.</span></span></div><strong id="headUpdated">—</strong><small>Hora de Chile continental · última publicación</small></div></div></header>
-<main><nav class="quicknav" aria-label="Accesos a secciones"><a href="#buscar-procesos">Buscar procesos</a><a href="#registro-procesos">Ver registros</a><a href="#compareSection">Comparar empresas</a><a href="#favoritesSection">Favoritos</a><a href="#ordenes-compra">Órdenes de compra</a></nav><div class="coverage-strip" role="status" aria-live="polite"><strong>Cobertura publicada:</strong> <span id="coverageSummary">Cargando información…</span><details class="coverage-help"><summary>¿Qué significan ofertas y resultados?</summary><p><strong>Ofertas:</strong> propuestas de proveedores recuperadas individualmente. Cero registros publicados no significa que no se hayan presentado ofertas.</p><p><strong>Resultados:</strong> registros de selección o adjudicación disponibles, sujetos a la verificación indicada en cada ficha. Un resultado no equivale necesariamente a una adjudicación contractual confirmada.</p><p><strong>Procesos:</strong> licitaciones y Compra Ágil. <strong>OC:</strong> órdenes de compra. El total suma registros de tablas diferentes, no compras únicas.</p></details></div><section id="ordenes-compra" aria-label="Órdenes de compra publicadas" class="panel"><details><summary><strong id="ocCount">Órdenes de compra: cargando…</strong> <span class="info-wrap"><span class="info-button" tabindex="0" role="button" aria-label="¿Qué son las órdenes de compra?" aria-describedby="info-oc">i</span><span class="info-tooltip" id="info-oc" role="tooltip"><strong>¿Qué son las órdenes de compra?</strong> Son documentos emitidos por organismos públicos para formalizar adquisiciones de bienes o servicios a proveedores a través de Mercado Público. Se muestra el código, el proceso asociado cuando se informa, el proveedor y el monto. Una orden de compra no equivale necesariamente a una licitación: puede originarse también en Compra Ágil u otros mecanismos. La cobertura depende de los registros oficiales recuperados.</span></span></summary><p class="muted">Consulta todas las órdenes disponibles en el extracto publicado. La cobertura puede ser parcial y no representa el universo completo de ChileCompra.</p><div class="oc-controls"><label>Buscar por código OC, proceso o proveedor<input id="ocSearch" type="search" placeholder="Código de OC, proceso o proveedor"></label><label>Estado<select id="ocEstado"><option value="">Todos los estados</option></select></label><label>Tipo de orden<select id="ocTipo"><option value="">Todos los tipos</option></select></label></div><p class="muted" id="ocResultsCount" aria-live="polite">Cargando órdenes…</p><div id="ocPreview" class="tablewrap"></div><div class="tools oc-pager" id="ocPager"><button type="button" class="secondary" id="ocPrev">Anterior</button><span class="muted" id="ocPageInfo" aria-live="polite">Página 1</span><button type="button" class="secondary" id="ocNext">Siguiente</button></div></details></section>
-<div id="status" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">Cargando registros…</div><span id="freshness" hidden></span><span id="qualityNote" hidden></span>
-<section class="panel" id="buscar-procesos"><h2>Buscar procesos</h2><div class="filters"><label class="wide">Buscar por código o nombre del proceso<input id="query" placeholder="Ej.: computadores, mantención, COT26"></label><label>Publicados desde<input id="dateFrom" type="date"></label><label>Publicados hasta<input id="dateTo" type="date"></label><label>Empresa proveedora<select id="empresa"><option value="">Todas las empresas</option></select></label><label>Organismo comprador<select id="organismo"><option value="">Todos los organismos</option></select></label><label>Modalidad<select id="modalidad"><option value="">Todas</option></select></label><label>Categoría<select id="categoria"><option value="">Todas</option></select></label><label>Región<select id="region"><option value="">Todas</option></select></label><label>Situación del proceso<select id="situacion"><option value="">Todas las situaciones</option><option value="ejecucion">En ejecución</option><option value="cerrado">Cerrado, pendiente de resultado</option><option value="adjudicado">Adjudicado</option><option value="desierto">Desierto</option><option value="cancelado">Cancelado o revocado</option><option value="desconocido">Sin información suficiente</option></select></label><label>Participación de la empresa<select id="participacion"><option value="">Cualquier participación</option><option value="oferto">Presentó oferta</option><option value="seleccionada">Oferta seleccionada</option><option value="adjudicataria">Adjudicataria verificada</option></select></label><div class="filterActions"><button id="showCompany" type="button">Ver perfil de empresa</button></div><div class="filterActions"><button id="showBuyer" type="button">Ver perfil de organismo</button></div><div class="filterActions"><button class="secondary" id="clearFilters" type="button">Limpiar filtros</button></div></div><p class="muted" style="font-size:12px;margin-bottom:0">Empresa proveedora: se muestran procesos con ofertas o resultados vinculados a esa empresa. Los filtros se pueden combinar.</p></section>
-<section class="panel" id="compareSection"><h2>Comparar empresas</h2><p class="muted">Selecciona dos o tres proveedores para comparar su actividad en los registros disponibles. No representa toda su trayectoria en Mercado Público.</p><div class="filters"><label>Período de comparación<select id="comparePeriod"><option value="">Todos los períodos publicados</option></select></label><label>Empresa 1<select id="compare1"><option value="">Seleccionar</option></select></label><label>Empresa 2<select id="compare2"><option value="">Seleccionar</option></select></label><label>Empresa 3 (opcional)<select id="compare3"><option value="">Sin tercera empresa</option></select></label></div><div class="tools" style="margin-top:14px"><button id="runCompare" style="max-width:220px">Comparar empresas</button><span class="muted" id="compareMessage" role="status"></span></div><div class="tablewrap" id="compareTable" style="margin-top:16px" hidden></div></section><section class="panel" id="registro-procesos"><div class="tools"><div><h2>Registro de procesos</h2><span class="muted" id="count">0 procesos</span></div><button id="export" class="secondary">Exportar vista CSV</button></div><div class="tablewrap"><table><thead><tr><th>Código</th><th>Nombre</th><th>Modalidad</th><th>Categoría</th><th>Organismo</th><th>Región</th><th>Situación</th><th>Estado original</th><th>Detalle</th></tr></thead><tbody id="rows"><tr><td colspan="9" class="empty">Cargando procesos publicados…</td></tr></tbody></table></div><div id="processPager" class="tools" style="margin-top:14px;justify-content:center;gap:12px;flex-wrap:wrap"><button id="pagePrev" class="secondary" type="button">Anterior</button><span id="pageInfo" class="muted" aria-live="polite">Página 1</span><button id="pageNext" class="secondary" type="button">Siguiente</button></div></section>
-<section class="panel" id="favoritesSection"><div class="tools"><div><h2>Mis favoritos</h2><p class="muted">Procesos, empresas y organismos guardados en este navegador. No se sincronizan entre dispositivos ni generan notificaciones.</p></div><span class="tag" id="favoriteCount">0 guardados</span></div><div id="favoriteItems" class="tablewrap"><p class="muted">Todavía no hay favoritos.</p></div></section><section id="buyerPanel" class="panel" hidden><div class="tools"><div><h2 id="buyerTitle">Perfil del organismo comprador</h2><p class="muted">Actividad observada según los procesos publicados en el Observatorio</p></div><button class="secondary" id="exportBuyer" type="button">Exportar organismo CSV</button><button id="favoriteBuyer" class="secondary" type="button">☆ Guardar organismo</button><button id="closeBuyer" class="secondary">Cerrar perfil</button></div><div class="details" id="buyerCoverage"></div><dl class="facts" id="buyerStats" style="margin-top:14px"></dl><h2 style="margin-top:20px">Procesos publicados</h2><div class="tablewrap"><table><thead><tr><th>Código</th><th>Proceso</th><th>Publicación</th><th>Situación</th><th>Presupuesto CLP</th><th>Adjudicatario verificado</th></tr></thead><tbody id="buyerRows"></tbody></table></div></section><section id="companyPanel" class="panel" hidden><div class="tools"><div><h2 id="companyTitle">Perfil de empresa</h2><p class="muted">Trayectoria observada en los datos disponibles, sin límite anual predefinido</p></div><button class="secondary" id="exportCompany" type="button">Exportar empresa CSV</button><button id="favoriteCompany" class="secondary" type="button">☆ Guardar empresa</button><button id="closeCompany" class="secondary">Cerrar perfil</button></div><div class="details" id="companyCoverage"></div><div class="facts" id="companyStats" style="margin-top:14px"></div><h2 style="margin-top:20px">Procesos asociados</h2><div class="tablewrap"><table><thead><tr><th>Proceso</th><th>Fecha</th><th>Organismo</th><th>Participación</th><th>Oferta CLP</th><th>Monto contractual CLP</th></tr></thead><tbody id="companyRows"></tbody></table></div></section><section id="detailPanel" class="panel" hidden><div class="tools"><h2 id="detailTitle">Detalle del proceso</h2><button class="secondary" id="exportProcess" type="button">Exportar proceso CSV</button><button class="secondary" id="favoriteProcess" type="button">☆ Guardar proceso</button><button class="secondary" id="close">Cerrar</button></div><div class="detail-coverage" id="detailCoverage" role="status"></div><div class="details"><dl class="facts" id="facts"></dl></div><div class="details" id="processMetrics" style="margin-top:12px"></div><div class="two" style="margin-top:16px"><div><h2>Ofertas relacionadas</h2><div class="scroll" id="offerDetails"></div></div><div><h2>Resultado y verificación</h2><div class="details" id="resultDetails"></div></div></div></section>
-</main><footer>Fuente: ChileCompra · Información disponible según cobertura de la API</footer>
-<script>
-(function(){
- const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
- const nf=n=>Number(n||0).toLocaleString('es-CL');
- window.addEventListener('error',e=>set('status','Error de JavaScript: '+(e.message||'desconocido')));
- window.addEventListener('unhandledrejection',e=>set('status','Error de datos: '+(e.reason?.message||String(e.reason))));
- fetch('./data/observatorio.json?v=20261017-fix',{cache:'no-store'}).then(async r=>{
-  if(!r.ok)throw Error('HTTP '+r.status+' al abrir el manifiesto');
-  const d=await r.json();
-  if(!d.conteos)throw Error('Manifiesto sin conteos: posible publicación anterior');
-  const c=d.conteos;
-  set('headCount',nf(Object.values(c).reduce((n,x)=>n+Number(x||0),0)));
-  set('headBreakdown',nf(c.procesos)+' procesos · '+nf(c.ofertas)+' ofertas · '+nf(c.resultados)+' resultados · '+nf(c.ordenescompra)+' OC');
-  set('coverageSummary',nf(c.procesos)+' procesos · '+nf(c.ofertas)+' ofertas · '+nf(c.resultados)+' resultados · '+nf(c.ordenescompra)+' órdenes de compra. Preparando búsqueda…');
-  const dt=new Date(d.fecha_actualizacion);
-  if(!Number.isNaN(dt.getTime()))set('headUpdated',new Intl.DateTimeFormat('es-CL',{dateStyle:'short',timeStyle:'short',timeZone:'America/Santiago'}).format(dt));
- }).catch(e=>{
-  set('headCount','No disponible');
-  set('coverageSummary','Error al consultar el manifiesto público: '+e.message);
-  set('status','Error de publicación: '+e.message);
- });
-})();
-</script>
-<script>
-const sets={procesos:[],ofertas:[],resultados:[],ordenescompra:[]}, $=id=>document.getElementById(id);
-const fields={procesos:['codigo','nombre'],ofertas:['codigo','id_cotizacion'],resultados:['codigo']};
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const val=(r,k)=>r?.[k]||'',fmt=v=>{if(v===null||v===undefined||String(v).trim()==='')return 'No informado';const n=Number(String(v).trim().replace(/\./g,'').replace(',','.'));return Number.isFinite(n)?new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(n):'No informado'};
-function parseCSV(s){
- s=s.replace(/^\uFEFF/,'');const first=s.split(/\r?\n/)[0];const delim=(first.match(/;/g)||[]).length>(first.match(/,/g)||[]).length?';':',';
- let out=[],row=[],field='',quoted=false;
- for(let i=0;i<s.length;i++){const c=s[i];if(c==='"'){if(quoted&&s[i+1]==='"'){field+='"';i++}else quoted=!quoted}
- else if(c===delim&&!quoted){row.push(field);field=''}
- else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&s[i+1]==='\n')i++;row.push(field);if(row.some(x=>x!==''))out.push(row);row=[];field=''}else field+=c}
- if(quoted)throw Error('CSV con comillas sin cerrar');row.push(field);if(row.some(x=>x!==''))out.push(row);
- let headers=(out.shift()||[]).map(h=>h.trim().replace(/^\uFEFF/,''));
- return out.map(r=>Object.fromEntries(headers.map((h,i)=>[h,(r[i]||'').trim()])));
-}
-async function load(id,key){const file=$(id).files[0];if(!file)return;try{const rows=parseCSV(await file.text());if(rows.length&&fields[key].some(k=>!(k in rows[0])))throw Error('Faltan columnas necesarias para '+key);sets[key]=rows;populate();render();}catch(e){$('status').textContent='Error en '+file.name+': '+e.message;}}
-const norm=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().trim();
-let globalMatches=[];
-const indexes={processByCode:new Map(),offersByCode:new Map(),resultsByCode:new Map(),offersByCompany:new Map(),resultsByCompany:new Map(),buyers:[],companies:[],processSearch:[]};
-function groupIndex(map,key,row){if(!key)return;const group=map.get(key);if(group)group.push(row);else map.set(key,[row]);}
-function rebuildIndexes(){
- for(const key of ['processByCode','offersByCode','resultsByCode','offersByCompany','resultsByCompany'])indexes[key].clear();
- for(const p of sets.procesos)if(p.codigo&&!indexes.processByCode.has(p.codigo))indexes.processByCode.set(p.codigo,p);
- for(const o of sets.ofertas){groupIndex(indexes.offersByCode,o.codigo,o);groupIndex(indexes.offersByCompany,o.proveedor,o);}
- for(const r of sets.resultados){groupIndex(indexes.resultsByCode,r.codigo,r);groupIndex(indexes.resultsByCompany,r.adjudicatario,r);}
- indexes.processSearch=sets.procesos.map(p=>({process:p,search:norm(p.codigo+' '+p.nombre)}));
- indexes.companies=[...new Set([...indexes.offersByCompany.keys(),...indexes.resultsByCompany.keys()])];
- indexes.buyers=[...new Set(sets.procesos.map(p=>p.organismo_comprador).filter(Boolean))];
-}
-function showGlobal(){
- const q=norm($('globalQuery').value),box=$('globalResults');
- globalMatches=[];
- if(q.length<2){box.hidden=true;$('globalQuery').setAttribute('aria-expanded','false');return;}
- const processItems=indexes.processSearch.filter(item=>item.search.includes(q)).slice(0,6).map(({process:p})=>({type:'proceso',key:p.codigo,title:p.nombre||p.codigo,subtitle:'Proceso · '+p.codigo}));
- const companies=indexes.companies;
- const companyItems=companies.filter(v=>norm(v).includes(q)).slice(0,5).map(v=>({type:'empresa',key:v,title:v,subtitle:'Empresa proveedora'}));
- const buyers=indexes.buyers;
- const buyerItems=buyers.filter(v=>norm(v).includes(q)).slice(0,5).map(v=>({type:'organismo',key:v,title:v,subtitle:'Organismo comprador'}));
- globalMatches=[...processItems,...companyItems,...buyerItems].slice(0,12);
- box.replaceChildren();
- if(!globalMatches.length){const div=document.createElement('div');div.className='empty';div.textContent='Sin coincidencias en los registros publicados.';box.append(div);}
- for(const [i,item] of globalMatches.entries()){
-  const btn=document.createElement('button');btn.type='button';btn.className='global-result';btn.setAttribute('role','option');btn.dataset.index=i;
-  const strong=document.createElement('strong');strong.textContent=item.title;
-  const small=document.createElement('small');small.textContent=item.subtitle;
-  btn.append(strong,small);box.append(btn);
- }
- box.hidden=false;$('globalQuery').setAttribute('aria-expanded','true');
-}
-function pickGlobal(item){
- if(!item)return;
- $('globalQuery').value=item.title;$('globalResults').hidden=true;$('globalQuery').setAttribute('aria-expanded','false');
- if(item.type==='proceso'){detail(item.key);}
- else if(item.type==='empresa'){$('empresa').value=item.key;render();companyProfile();}
- else if(item.type==='organismo'){$('organismo').value=item.key;render();buyerProfile();}
-}
-$('globalQuery').addEventListener('input',showGlobal);
-$('globalQuery').addEventListener('keydown',e=>{if(e.key==='Escape'){$('globalResults').hidden=true;$('globalQuery').setAttribute('aria-expanded','false');}if(e.key==='Enter'&&globalMatches.length){e.preventDefault();pickGlobal(globalMatches[0]);}});
-$('globalResults').addEventListener('click',e=>{const btn=e.target.closest('button[data-index]');if(btn)pickGlobal(globalMatches[Number(btn.dataset.index)]);});
-document.addEventListener('click',e=>{if(!e.target.closest('.global-search')){$('globalResults').hidden=true;$('globalQuery').setAttribute('aria-expanded','false');}});
-// Etiquetas normalizadas para filtros; los campos originales del JSON se preservan.
-function canonicalRegion(value){
- const raw=String(value||'').replace(/\s+/g,' ').trim();
- if(!raw)return 'No informada';
- const key=norm(raw).replace(/[.,]/g,'').replace(/^region (de |del |de la )?/,'').trim();
- if(['rm','metropolitana','metropolitana de santiago','santiago'].includes(key))return 'Región Metropolitana de Santiago';
- return raw;
-}
-function canonicalModalidad(p){
- const raw=String(p.modalidad||'').trim();
- const code=String(p.codigo||'').trim();
- if(/-COT\d{2}$/i.test(code)||norm(raw).includes('compra agil'))return 'Compra Ágil';
- if(/-([A-Z]{1,3})\d{2}$/i.test(code)&&!/-COT\d{2}$/i.test(code)||norm(raw).startsWith('licitacion'))return 'Licitación';
- return raw||'No informada';
-}
-function canonicalValues(rows,key){
- const groups=new Map();
- for(const p of rows){
-  const value=String(p[key]||'').replace(/\s+/g,' ').trim();
-  const normalized=norm(value);
-  if(!normalized)continue;
-  if(!groups.has(normalized))groups.set(normalized,value);
-  else {
-   const current=groups.get(normalized);
-   // Se privilegia la escritura con tildes cuando ambas son equivalentes.
-   if(/[áéíóúñÁÉÍÓÚÑ]/.test(value)&&!/[áéíóúñÁÉÍÓÚÑ]/.test(current))groups.set(normalized,value);
-  }
- }
- return groups;
-}
-function normalizeRecords(){
- const categoryNames=canonicalValues(sets.procesos,'categoria');
- const regionNames=canonicalValues(sets.procesos,'region');
- for(const p of sets.procesos){
-  p._modalidadFiltro=canonicalModalidad(p);
-  const category=String(p.categoria||'').replace(/\s+/g,' ').trim();
-  p._categoriaFiltro=categoryNames.get(norm(category))||'Sin clasificar';
-  const region=canonicalRegion(p.region);
-  p._regionFiltro=region==='Región Metropolitana de Santiago'?region:(regionNames.get(norm(region))||region);
- }
- const unknownCategory=sets.procesos.filter(p=>p._categoriaFiltro==='Sin clasificar').length;
- const unknownRegion=sets.procesos.filter(p=>p._regionFiltro==='No informada').length;
- $('qualityNote').textContent='Cobertura de campos: '+unknownCategory+' procesos sin categoría oficial identificada · '+unknownRegion+' sin región. La interfaz agrupa diferencias de mayúsculas, tildes y espacios, sin modificar los valores originales de ChileCompra.';
-}
-function populate(){
- const sources={
-  modalidad:sets.procesos.map(p=>p._modalidadFiltro),
-  categoria:sets.procesos.map(p=>p._categoriaFiltro),
-  region:sets.procesos.map(p=>p._regionFiltro),
-  organismo:sets.procesos.map(p=>p.organismo_comprador),
-  empresa:[...sets.ofertas.map(o=>o.proveedor),...sets.resultados.map(r=>r.adjudicatario)].filter(Boolean)
- };
- for(const [key,valuesRaw] of Object.entries(sources)){
-  const el=$(key),chosen=el.value,values=[...new Set(valuesRaw.map(v=>String(v||'').trim()).filter(Boolean))].sort((x,y)=>x.localeCompare(y,'es'));
-  const defaultLabel=key==='empresa'?'Todas las empresas':key==='organismo'?'Todos los organismos':'Todas';
-  el.replaceChildren(new Option(defaultLabel,''),...values.map(v=>new Option(v,v)));
-  el.value=values.includes(chosen)?chosen:'';
- }
-}
-function situation(p){
- const raw=String(p.estado||'').trim().toLowerCase();
- const rs=indexes.resultsByCode.get(p.codigo)||[];
- // Adjudicación contractual: exigir referencia contractual, no solo oferta seleccionada.
- const verified=rs.some(r=>String(r.adjudicatario||'').trim()&&String(r.validado||'').toLowerCase().startsWith('si'));
- if(verified)return 'adjudicado';
- if(/desiert/.test(raw))return 'desierto';
- if(/revoc|cancel|anulad|invalid/.test(raw))return 'cancelado';
- if(/adjudicad/.test(raw))return 'adjudicado';
- if(/cerrad|evaluac|pendiente|finalizad/.test(raw))return 'cerrado';
- if(/publicad|abiert|recepci|vigente|curso|activ/.test(raw))return 'ejecucion';
- return 'desconocido';
-}
-const statusLabels={ejecucion:'En ejecución',cerrado:'Cerrado, pendiente de resultado',adjudicado:'Adjudicado',desierto:'Desierto',cancelado:'Cancelado o revocado',desconocido:'Sin información suficiente'};
-function participation(code,company,kind){
- const offers=(indexes.offersByCode.get(code)||[]).filter(o=>!company||o.proveedor===company);
- const results=(indexes.resultsByCode.get(code)||[]).filter(r=>!company||r.adjudicatario===company);
- if(kind==='oferto')return offers.length>0;
- if(kind==='seleccionada')return offers.some(o=>['1','true','sí','si'].includes(String(o.seleccionado||'').toLowerCase()))||(indexes.resultsByCode.get(code)||[]).some(r=>offers.some(o=>o.id_cotizacion&&o.id_cotizacion===r.id_cotizacion_ganadora));
- if(kind==='adjudicataria')return results.some(r=>r.adjudicatario&&String(r.validado||'').toLowerCase().includes('si'));
- return offers.length>0||results.length>0;
-}
-function filtered(){
- const q=$('query').value.trim().toLocaleLowerCase('es'),company=$('empresa').value,kind=$('participacion').value;
- return sets.procesos.filter(p=>
-  (!q||[p.codigo,p.nombre].some(x=>String(x||'').toLocaleLowerCase('es').includes(q)))&&
-  (!company&&!kind||participation(p.codigo,company,kind))&&
-  (!$('dateFrom').value||String(p.fecha_publicacion||'').slice(0,10)>=$('dateFrom').value)&&
-  (!$('dateTo').value||String(p.fecha_publicacion||'').slice(0,10)<=$('dateTo').value)&&
-  (!$('situacion').value||situation(p)===$('situacion').value)&&
-  [['modalidad','_modalidadFiltro'],['categoria','_categoriaFiltro'],['region','_regionFiltro']].every(([filter,key])=>!$(filter).value||$(filter).value===p[key])&&
-  (!$('organismo').value||p.organismo_comprador===$('organismo').value));
-}
-const PAGE_SIZE=25;
-let currentPage=1;
-let priorFilterSignature='';
-function render(){
- const list=filtered();
- const signature=JSON.stringify([$('query').value,$('empresa').value,$('participacion').value,$('dateFrom').value,$('dateTo').value,$('situacion').value,$('modalidad').value,$('categoria').value,$('region').value,$('organismo').value]);
- if(signature!==priorFilterSignature){currentPage=1;priorFilterSignature=signature;}
- const pages=Math.max(1,Math.ceil(list.length/PAGE_SIZE));
- currentPage=Math.min(Math.max(1,currentPage),pages);
- const start=(currentPage-1)*PAGE_SIZE;
- const shown=list.slice(start,start+PAGE_SIZE);
- $('count').textContent=list.length+' procesos visibles · '+sets.procesos.length+' publicados';
- $('status').textContent='Datos locales: '+sets.procesos.length+' procesos · '+sets.ofertas.length+' ofertas · '+sets.resultados.length+' resultados · '+sets.ordenescompra.length+' órdenes de compra';
- $('rows').innerHTML=shown.length?shown.map(p=>'<tr><td><span class="process-code">'+esc(p.codigo)+'</span></td><td><span class="process-name">'+esc(p.nombre||'Sin nombre')+'</span></td><td><span class="tag">'+esc(p._modalidadFiltro||'No informada')+'</span></td><td>'+esc(p._categoriaFiltro||'Sin clasificar')+'</td><td>'+esc(p.organismo_comprador)+'</td><td>'+esc(p._regionFiltro||'No informada')+'</td><td>'+'<span class="situation-pill" data-situation="'+esc(situation(p))+'">'+esc(statusLabels[situation(p)])+'</span>'+'</td><td>'+esc(p.estado||'No informado')+'</td><td><button data-code="'+esc(p.codigo)+'">Ver</button></td></tr>').join(''):'<tr><td colspan="9" class="empty">No hay procesos para mostrar.</td></tr>';
- $('pageInfo').textContent='Página '+currentPage+' de '+pages+' · '+(shown.length?start+1:0)+'–'+(start+shown.length)+' de '+list.length;
- $('pagePrev').disabled=currentPage===1;
- $('pageNext').disabled=currentPage===pages;
- $('processPager').hidden=list.length<=PAGE_SIZE;
-}
+<html lang="es">
+<head><meta charset="utf-8"><base href="./frontend-v2/"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Observatorio de Mercado Público de Chile · plataforma estable de consulta y análisis de compras públicas">
+<title>Observatorio de Mercado Público · Plataforma oficial</title>
+<link rel="stylesheet" href="./css/styles.css" defer>
+<script type="module" src="./js/app.js"></script>
+<script type="module" src="./js/busqueda-global.js"></script>
+<script type="module" src="./js/comparar-proveedores.js"></script>
+<script type="module" src="./js/sugerencias-global.js"></script>
+<script type="module" src="./js/analitica-visual.js"></script>
+<script type="module" src="./js/analitica-filtro.js"></script>
+<script type="module" src="./js/ayudas-contextuales.js"></script>
+<script type="module" src="./js/participantes-historicos.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#busqueda-global">Saltar a la búsqueda</a>
+<header><div class="wrap"><div class="eyebrow">Observatorio de Mercado Público · MER v2 <span class="tag">VERSIÓN ESTABLE</span></div><h1>Inteligencia de compras públicas</h1><p>Exploración de licitaciones, ofertas, resultados y órdenes de compra con publicación periódica de datos procesados.</p><div class="header-status" aria-label="Información de actualización de datos"><div><span>Última actualización pública</span><strong id="header-actualizacion">Consultando catálogo…</strong></div><div><span>Datos publicados desde</span><strong id="header-cobertura">Consultando catálogo…</strong></div></div></div></header>
+<main class="wrap" id="inicio">
+<nav class="quicknav" aria-label="Navegación principal"><a href="#busqueda-global">Buscar</a><a href="#consulta">Explorar por período</a><a href="#evolucion-mensual">Analizar</a><a href="#participantes-historicos">Participantes</a><a href="#favoritos-v2">Seguimiento</a></nav>
+<div class="landing-group"><h2>01 · Encontrar información</h2><p>Comienza con una búsqueda transversal en todos los meses publicados. También puedes explorar por período cuando necesites revisar registros en bloques.</p></div><section class="panel" id="busqueda-global"><h2>Buscar en todos los períodos <span class="tag-ux">Principal</span></h2><button type="button" id="volver-contexto" class="secondary" hidden>← Volver a la consulta anterior</button><p class="muted">Búsqueda por palabras de al menos 3 caracteres en códigos, nombres de procesos, organismos y proveedores. Consulta los períodos con índice disponible. Puedes restringir el alcance al mes seleccionado.</p><div class="global-filters"><label for="entidad">Entidad<select id="entidad"><option value="procesos">Procesos</option><option value="ofertas">Ofertas</option><option value="resultados">Resultados</option><option value="ordenescompra">Órdenes de compra</option></select></label><label for="busqueda-global-alcance">Cobertura<select id="busqueda-global-alcance"><option value="todos" selected>Todos los períodos publicados</option><option value="mes">Solo período seleccionado</option></select></label><label for="busqueda-global-texto">Palabras clave<input id="busqueda-global-texto" type="search" list="global-sugerencias-texto" placeholder="Ej.: capacitación, hospital, 1000-11-LE26"></label><button type="button" id="busqueda-global-boton">Buscar</button><label>Estado<select id="global-estado"><option value="">Todos los estados</option></select></label><label>Modalidad / tipo<select id="global-modalidad"><option value="">Todas las modalidades</option></select></label></div><datalist id="global-sugerencias-texto"></datalist><p id="global-sugerencias-ayuda" class="muted">Sugerencias según período y entidad.</p><p class="muted">Los filtros se aplican a la cobertura elegida. Para iniciar, introduce al menos una palabra de 3 caracteres. Estado y Modalidad son campos distintos según la entidad; si no existen para ella, se desactivan.</p><button type="button" id="global-csv" class="secondary" disabled>Exportar coincidencias verificadas (CSV)</button><p id="global-analitica" class="muted">Indicadores de consulta: sin ejecutar.</p><progress id="busqueda-global-progreso" max="100" value="0" hidden aria-label="Progreso de búsqueda global"></progress><p id="busqueda-global-estado" role="status" aria-live="polite">Escribe una palabra clave y pulsa Buscar.</p><div class="table-scroll"><table><thead id="busqueda-global-columnas"></thead><tbody id="busqueda-global-filas"></tbody></table></div><nav class="pagination" aria-label="Paginación de búsqueda global"><button type="button" id="busqueda-global-anterior" disabled>Anterior</button><span id="busqueda-global-pagina">Sin resultados</span><button type="button" id="busqueda-global-siguiente" disabled>Siguiente</button></nav></section>
+<section class="panel" id="consulta"><h2>Consulta por período</h2><p class="muted">Selecciona un mes y una entidad y pulsa «Mostrar registros». Se cargarán los primeros 1.000 registros, en páginas de 10. Para localizar un registro específico entre todos los del mes utiliza la búsqueda global.</p><div class="filters"><label for="periodo">Mes de referencia<select id="periodo"><option value="">Seleccione un período</option></select></label><button type="button" id="ir-busqueda-global">Mostrar registros del período →</button></div><details id="consulta-avanzada"><summary>Exploración por bloques (opción avanzada)</summary><div class="filters"><label for="buscar">Búsqueda en el bloque<input id="buscar" type="search" placeholder="Código, organismo, proveedor…"></label><button id="consultar" disabled>Consultar</button></div><div class="local-filters" aria-label="Filtros del bloque cargado"><label for="filtro-estado">Estado o selección<select id="filtro-estado"><option value="">Todos</option></select></label><label for="filtro-modalidad">Modalidad o tipo<select id="filtro-modalidad"><option value="">Todas</option></select></label><button id="limpiar-filtros" type="button" class="secondary">Limpiar filtros</button><p class="muted">Estos filtros solo se aplican al bloque descargado, no al período completo.</p></div></details><p id="status" role="status" aria-live="polite">Comprobando disponibilidad del catálogo público de la v2…</p></section>
+<div class="landing-group"><h2>02 · Analizar la información</h2><p>Indicadores y resultados dependen de la entidad y los registros publicados.</p></div><section class="stats" id="indicadores" aria-label="Indicadores"><div class="stat"><span>Período seleccionado</span><strong id="stat-periodo">—</strong></div><div class="stat"><span>Registros disponibles <span class="stat-help" tabindex="0" title="Cantidad publicada para la entidad y el período seleccionados. No equivale necesariamente a compras únicas." aria-label="Cantidad publicada para la entidad y el período; no equivale necesariamente a compras únicas.">ⓘ</span></span><strong id="stat-registros">—</strong></div><div class="stat"><span>Fecha de publicación <span class="stat-help" tabindex="0" title="Fecha del extracto público. No es necesariamente la última modificación de cada proceso." aria-label="Fecha del extracto público, no la fecha de modificación de cada proceso.">ⓘ</span></span><strong id="stat-fecha">—</strong></div></section>
+<section class="panel" id="evolucion-mensual"><h2>Evolución mensual de registros</h2><p class="muted">Registros publicados de la entidad seleccionada por mes; no representan compras únicas ni montos adjudicados.</p><form id="analitica-filtro-form" class="analytics-controls" aria-label="Filtrar gráficos por palabra clave"><label for="analitica-palabra">Filtrar gráficos por palabra clave<input id="analitica-palabra" type="search" placeholder="Ej.: capacitación, software, salud" autocomplete="off"></label><button type="submit" id="analitica-aplicar">Aplicar filtro</button><button type="button" id="analitica-limpiar" class="secondary">Limpiar</button></form><div id="analitica-progreso-contenedor" class="analytic-progress" hidden><label for="analitica-progreso">Avance de verificación: <strong id="analitica-progreso-porcentaje">0 %</strong></label><progress id="analitica-progreso" max="100" value="0"></progress></div><p id="analitica-filtro-estado" class="muted" role="status" aria-live="polite">Sin filtro: se muestran los agregados generales de todos los períodos.</p><div id="analitica-seleccion" class="muted" role="status" hidden></div><div id="evolucion-resumen" class="evolution-summary" hidden></div><div id="evolucion-barras" class="evolution-bars" hidden></div><div id="analitica-visual" class="analytics-visual" aria-live="polite"></div><div id="analitica-detalle" class="analytics-detail" hidden></div><button type="button" id="analitica-ver-registros" class="secondary" disabled>Selecciona un mes en el gráfico</button></section>
+<section class="panel" id="resultados"><div class="section-head"><div><h2>Registros del período</h2><p>Explora registros en páginas de 10. La búsqueda funciona dentro del bloque cargado, no en todos los registros del mes. Selecciona «Ver detalle» para revisar una ficha.</p></div><span id="counter">0 registros cargados</span></div><div class="table-scroll"><table><thead id="columns"><tr><th>Seleccione un período para consultar</th></tr></thead><tbody id="rows"><tr><td>Sin datos cargados.</td></tr></tbody></table></div><button id="exportar-csv" type="button" class="secondary">Exportar CSV del bloque filtrado</button><nav class="pagination" aria-label="Paginación"><button id="prev" disabled>Anterior</button><span id="page">Página 0 de 0</span><button id="next" disabled>Siguiente</button></nav></section>
+<div class="landing-group"><h2>03 · Profundizar y comparar</h2><p>Selecciona primero un registro para abrir su perfil; la comparación de proveedores utiliza todos los períodos publicados por defecto, independientemente del mes seleccionado en la exploración.</p></div><section class="panel" id="participantes-historicos">
+<h2>Participación histórica de empresas y organismos</h2>
+<p class="muted">Busca en todos los meses publicados. Distingue ofertas registradas de procesos distintos y no presupone adjudicaciones.</p>
+<div class="filters"><label for="participante-tipo">Buscar por<select id="participante-tipo"><option value="proveedor">Empresa oferente</option><option value="organismo">Organismo comprador</option></select></label>
+<label for="participante-nombre">Nombre del participante<input id="participante-nombre" type="search" list="participante-sugerencias" placeholder="Escribe al menos dos letras"></label>
+<button type="button" id="participante-buscar">Consultar todos los períodos</button></div>
+<datalist id="participante-sugerencias"></datalist>
+<p id="participante-estado" role="status" aria-live="polite">Selecciona un participante.</p>
+<div id="participante-resumen" class="evolution-summary"></div>
+<div id="participante-evolucion" class="actor-chart"></div>
+<div id="participante-enlaces"></div>
+<p class="muted">Los nombres normalizados pueden corresponder a distintas variantes legales; no sustituyen el RUT. Los resultados abarcan únicamente los históricos publicados.</p>
+</section>
+<section class="panel" id="perfil-contextual" hidden aria-labelledby="perfil-titulo"><div class="section-head"><div><h2 id="perfil-titulo">Perfil de organismo o proveedor</h2><p class="muted">Vista exploratoria del bloque cargado (hasta 1.000 filas). No representa la actividad total de la entidad en el período.</p></div><button type="button" id="perfil-cerrar" class="secondary">Cerrar</button></div><div id="perfil-resumen" class="profile-summary"></div><div id="perfil-ver-global" class="profile-links"></div><div class="table-scroll"><table><thead id="perfil-columnas"></thead><tbody id="perfil-filas"></tbody></table></div></section>
+<section class="panel" id="comparar-proveedores"><h2>Comparar proveedores</h2><p class="muted">Compara hasta tres proveedores en todos los períodos publicados o restringe el análisis a un mes. La selección registrada no implica adjudicaciones contractuales ni pagos.</p><div class="compare-inputs"><label>Alcance<select id="comparar-alcance"><option value="todos">Todos los períodos publicados</option><option value="mes">Mes específico</option></select></label><label id="comparar-mes-contenedor" hidden>Mes de comparación<select id="comparar-mes"><option value="">Seleccionar mes</option></select></label><label>Proveedor 1<input id="comparar-nombre-1" type="text" list="comparar-sugerencias" autocomplete="off" placeholder="Razón social del proveedor"></label><label>Proveedor 2<input id="comparar-nombre-2" type="text" list="comparar-sugerencias" autocomplete="off" placeholder="Razón social del proveedor"></label><label>Proveedor 3 (opcional)<input id="comparar-nombre-3" type="text" list="comparar-sugerencias" autocomplete="off" placeholder="Razón social del proveedor"></label><button type="button" id="comparar-ejecutar">Comparar proveedores</button></div><datalist id="comparar-sugerencias"></datalist><p class="muted" id="comparar-ayuda">Escribe al menos dos letras para obtener proveedores de todos los períodos publicados.</p><p class="muted" id="comparar-estado" role="status" aria-live="polite">Ingrese al menos dos proveedores; la comparación incluye todos los períodos por defecto.</p><div class="table-scroll"><table><thead id="comparar-cabecera"></thead><tbody id="comparar-cuerpo"></tbody></table></div><p class="muted" id="comparar-nota-cobertura">Interpretación: un valor 0 significa que no hay registros coincidentes en la cobertura publicada para ese indicador y proveedor; no demuestra ausencia de actividad en Mercado Público. Las ofertas y las órdenes de compra corresponden a entidades distintas y no deben interpretarse como equivalentes.</p></section>
+<div class="landing-group"><h2>04 · Seguimiento</h2><p>Conserva registros de interés en este navegador.</p></div><section class="panel" id="favoritos-v2"><h2>Favoritos guardados</h2><p class="muted">Se guardan en este navegador. No se sincronizan ni se envían a un servidor.</p><p id="favoritos-estado" role="status">Sin favoritos.</p><div id="favoritos-lista"></div></section><section id="detalle" class="panel" hidden aria-labelledby="detalle-titulo"><div class="section-head"><h2 id="detalle-titulo">Detalle del registro</h2><button id="detalle-cerrar" type="button">Cerrar</button></div><div id="detalle-resumen" class="detail-summary"></div><div class="detail-official-actions"><a id="detalle-enlace" class="detail-official-button" href="#" target="_blank" rel="noopener noreferrer" hidden>Ver detalle oficial en Mercado Público ↗</a></div><details id="detalle-secundario"><summary>Mostrar todos los campos del registro</summary><dl id="detalle-campos" class="detail-grid"></dl></details>
+<div id="detalle-relaciones" class="related" hidden>
+<h3>Información relacionada con este proceso</h3><p class="muted">Cobertura histórica: todos los meses publicados, no solo el mes de la ficha.</p>
+<p id="detalle-relaciones-estado" role="status" aria-live="polite"></p>
+<div class="related-tabs" role="tablist" aria-label="Tipos de registros relacionados">
+<button type="button" role="tab" id="tab-procesos" aria-controls="panel-procesos" aria-selected="true">Procesos <span id="total-procesos">0</span></button>
+<button type="button" role="tab" id="tab-ofertas" aria-controls="panel-ofertas" aria-selected="false">Ofertas <span id="total-ofertas">0</span></button>
+<button type="button" role="tab" id="tab-resultados" aria-controls="panel-resultados" aria-selected="false">Resultados <span id="total-resultados">0</span></button>
+<button type="button" role="tab" id="tab-oc" aria-controls="panel-oc" aria-selected="false">OC relacionadas <span id="total-oc">0</span></button>
+</div>
+<div class="related-content">
+<section role="tabpanel" id="panel-procesos" aria-labelledby="tab-procesos"><h4>Procesos vinculados</h4><div id="detalle-procesos"></div></section>
+<section role="tabpanel" id="panel-ofertas" aria-labelledby="tab-ofertas" hidden><h4>Ofertas vinculadas</h4><div id="detalle-ofertas"></div></section>
+<section role="tabpanel" id="panel-resultados" aria-labelledby="tab-resultados" hidden><h4>Resultados vinculados</h4><div id="detalle-resultados"></div></section>
+<section role="tabpanel" id="panel-oc" aria-labelledby="tab-oc" hidden><div id="detalle-oc" aria-live="polite"></div></section>
+</div>
+<p class="muted">La coincidencia por código de proceso no confirma por sí sola adjudicación contractual. Consultar la fuente y el estado de verificación de cada resultado.</p>
+</div></section>
 
-$('pagePrev').addEventListener('click',()=>{if(currentPage>1){currentPage--;render();}});
-$('pageNext').addEventListener('click',()=>{currentPage++;render();});
-function facts(obj,keys){return keys.map(([k,label])=>{const value=/monto_|presupuesto/i.test(k)?fmt(val(obj,k)):(val(obj,k)||'No informado');return '<div><dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd></div>'}).join('')}
-function buyerProfile(){
- const name=$('organismo').value;
- if(!name){alert('Selecciona un organismo comprador para abrir su perfil.');return;}
- const processes=sets.procesos.filter(p=>p.organismo_comprador===name);
- const codes=new Set(processes.map(p=>p.codigo));
- const results=sets.resultados.filter(r=>codes.has(r.codigo));
- const verified=results.filter(r=>r.adjudicatario&&String(r.validado||'').trim().toLowerCase().startsWith('si'));
- const numeric=v=>{const n=Number(String(v||'').replace(/\\./g,'').replace(',','.'));return Number.isFinite(n)?n:0;};
- const money=n=>new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(n);
- const dates=processes.map(p=>String(p.fecha_publicacion||'').slice(0,10)).filter(v=>/^\\d{4}-\\d{2}-\\d{2}$/.test(v)).sort();
- const suppliers=[...new Set(verified.map(r=>r.adjudicatario))];
- currentBuyer=name;updateFavoriteButtons();$('buyerTitle').textContent=name;
- $('buyerCoverage').textContent='Cobertura: información disponible actualmente en el Observatorio. No representa todas las compras históricas del organismo. Los presupuestos no son adjudicaciones.';
- const stats=[['Procesos registrados',processes.length],['Primera publicación observada',dates[0]||'No informada'],['Última publicación observada',dates.at(-1)||'No informada'],['En ejecución',processes.filter(p=>situation(p)==='ejecucion').length],['Desiertos',processes.filter(p=>situation(p)==='desierto').length],['Adjudicaciones verificadas',verified.length],['Proveedores adjudicatarios identificados',suppliers.length],['Presupuesto acumulado (informado)',money(processes.reduce((t,p)=>t+numeric(p.monto_disponible_clp),0))],['Monto adjudicado verificado',money(verified.reduce((t,r)=>t+numeric(r.monto_adjudicado_clp),0))]];
- $('buyerStats').innerHTML=stats.map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd></div>').join('');
- $('buyerRows').innerHTML=processes.map(p=>{
-  const won=verified.find(r=>r.codigo===p.codigo);
-  return '<tr><td>'+esc(p.codigo)+'</td><td>'+esc(p.nombre)+'</td><td>'+esc(p.fecha_publicacion||'No informada')+'</td><td>'+esc(statusLabels[situation(p)])+'</td><td>'+esc(p.monto_disponible_clp?fmt(p.monto_disponible_clp):'No informado')+'</td><td>'+esc(won?.adjudicatario||'No verificado')+'</td></tr>';
- }).join('')||'<tr><td colspan="6">Sin procesos registrados.</td></tr>';
- $('buyerPanel').hidden=false;$('buyerPanel').scrollIntoView({behavior:'smooth',block:'start'});
-}
-function populateCompare(){
- const names=[...new Set([...indexes.offersByCompany.keys(),...indexes.resultsByCompany.keys()])].sort((a,b)=>a.localeCompare(b,'es'));
- for(const id of ['compare1','compare2','compare3']){
-  const el=$(id),old=el.value;
-  el.replaceChildren(new Option(id==='compare3'?'Sin tercera empresa':'Seleccionar',''),...names.map(n=>new Option(n,n)));
-  el.value=names.includes(old)?old:'';
- }
- const periods=[...new Set(sets.procesos.map(p=>String(p.fecha_publicacion||'').slice(0,7)).filter(v=>/^\\d{4}-\\d{2}$/.test(v)))].sort().reverse();
- const period=$('comparePeriod'),oldPeriod=period.value;
- period.replaceChildren(new Option('Todos los períodos publicados',''),...periods.map(v=>new Option(v,v)));
- period.value=periods.includes(oldPeriod)?oldPeriod:'';
-}
-function compareCompanies(){
- const names=['compare1','compare2','compare3'].map(id=>$(id).value).filter(Boolean);
- const msg=$('compareMessage'),table=$('compareTable'),period=$('comparePeriod').value;
- if(names.length<2||new Set(names).size!==names.length){msg.textContent='Selecciona al menos dos empresas diferentes.';table.hidden=true;return;}
- const processes=period?sets.procesos.filter(p=>String(p.fecha_publicacion||'').startsWith(period)):sets.procesos;
- const codeSet=new Set(processes.map(p=>p.codigo).filter(Boolean));
- const source=period?'Período '+period:'Todos los períodos publicados';
- msg.textContent=source+' · Comparación sobre los registros disponibles, no sobre todo ChileCompra.';
- const chosenOffers=period?sets.ofertas.filter(o=>codeSet.has(o.codigo)):sets.ofertas;
- const chosenResults=period?sets.resultados.filter(r=>codeSet.has(r.codigo)):sets.resultados;
- const isSelected=o=>['1','true','sí','si'].includes(String(o.seleccionado||'').toLowerCase().trim());
- const isVerified=r=>/^(s[ií]|true|1)\\b/i.test(String(r.validado||'').trim());
- const number=v=>{const s=String(v??'').trim();if(!s)return 0;const n=Number(s.replace(/\\./g,'').replace(',','.'));return Number.isFinite(n)?n:0;};
- const metrics=names.map(name=>{
-  const offers=chosenOffers.filter(o=>o.proveedor===name),results=chosenResults.filter(r=>r.adjudicatario===name);
-  const verified=results.filter(isVerified);
-  const ids=new Set([...offers.map(o=>o.codigo),...results.map(r=>r.codigo)].filter(Boolean));
-  const buyers=new Set(processes.filter(p=>ids.has(p.codigo)).map(p=>p.organismo_comprador).filter(Boolean));
-  const selected=new Set(offers.filter(isSelected).map(o=>o.codigo).filter(Boolean));
-  for(const r of results){
-   if(r.id_cotizacion_ganadora&&offers.some(o=>o.codigo===r.codigo&&o.id_cotizacion===r.id_cotizacion_ganadora))selected.add(r.codigo);
-  }
-  const uniqueOffers=new Set(offers.map(o=>[o.codigo,o.id_cotizacion||'',o.proveedor,o.monto_ofertado_clp||'',o.fecha_oferta||''].join('|')));
-  const uniqueVerified=new Map();
-  for(const r of verified){
-   const key=[r.codigo,r.id_cotizacion_ganadora||'',r.adjudicatario,r.monto_adjudicado_clp||''].join('|');
-   if(!uniqueVerified.has(key))uniqueVerified.set(key,r);
-  }
-  const monto=[...uniqueVerified.values()].reduce((sum,r)=>sum+number(r.monto_adjudicado_clp),0);
-  return {name,participaciones:ids.size,ofertas:uniqueOffers.size,seleccionadas:selected.size,tasa:ids.size?selected.size/ids.size*100:null,adjudicaciones:new Set(verified.map(r=>r.codigo).filter(Boolean)).size,monto,compradores:buyers.size};
- });
- const rows=[['Procesos únicos con participación','participaciones'],['Ofertas individuales registradas (sin duplicados)','ofertas'],['Procesos con oferta seleccionada','seleccionadas'],['Tasa de selección sobre procesos con participación','tasa'],['Procesos con adjudicación verificada','adjudicaciones'],['Organismos compradores observados','compradores'],['Monto contractual verificado (CLP)','monto']];
- const format=(v,k)=>v===null?'No calculable':k==='tasa'?new Intl.NumberFormat('es-CL',{maximumFractionDigits:1}).format(v)+' %':new Intl.NumberFormat('es-CL').format(v);
- table.innerHTML='<table><thead><tr><th>Indicador</th>'+metrics.map(m=>'<th>'+esc(m.name)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(([label,k])=>'<tr><td>'+esc(label)+'</td>'+metrics.map(m=>'<td>'+esc(format(m[k],k))+'</td>').join('')+'</tr>').join('')+'</tbody></table><p class="muted">La tasa utiliza procesos con participación identificada como denominador. Las ofertas seleccionadas no equivalen necesariamente a adjudicaciones contractuales verificadas. Los montos se calculan únicamente a partir de resultados validados y se deduplican por proceso, cotización, proveedor e importe.</p>';
- table.hidden=false;
-}
-const FAVORITE_KEY='observatorio-favoritos-v1';
-let favorites=[];
-try{const saved=JSON.parse(localStorage.getItem(FAVORITE_KEY)||'[]');if(Array.isArray(saved))favorites=saved.filter(x=>x&&['proceso','empresa','organismo'].includes(x.type)&&typeof x.key==='string').slice(0,200);}catch(e){favorites=[];}
-let currentProcess='',currentCompany='',currentBuyer='';
-function favoriteId(type,key){return type+'|'+key;}
-function isFavorite(type,key){return favorites.some(x=>favoriteId(x.type,x.key)===favoriteId(type,key));}
-function saveFavorites(){
- try{localStorage.setItem(FAVORITE_KEY,JSON.stringify(favorites));}
- catch(e){alert('El navegador no permitió guardar favoritos. Revisa la configuración de almacenamiento.');}
- renderFavorites();updateFavoriteButtons();
-}
-function toggleFavorite(type,key){
- if(!key)return;
- if(isFavorite(type,key))favorites=favorites.filter(x=>favoriteId(x.type,x.key)!==favoriteId(type,key));
- else favorites.push({type,key});
- saveFavorites();
-}
-function updateFavoriteButtons(){
- for(const [id,type,key] of [['favoriteProcess','proceso',currentProcess],['favoriteCompany','empresa',currentCompany],['favoriteBuyer','organismo',currentBuyer]]){
- const button=$(id);if(!button)continue;
- button.disabled=!key;button.textContent=(isFavorite(type,key)?'★ Quitar favorito':'☆ Guardar '+(type==='proceso'?'proceso':type==='empresa'?'empresa':'organismo'));
- }
-}
-function renderFavorites(){
- $('favoriteCount').textContent=favorites.length+' guardados';
- if(!favorites.length){$('favoriteItems').innerHTML='<p class="muted">Todavía no hay favoritos.</p>';return;}
- $('favoriteItems').innerHTML='<table><thead><tr><th>Tipo</th><th>Nombre</th><th>Acciones</th></tr></thead><tbody>'+favorites.map((f,i)=>{
- let present=f.type==='proceso'?sets.procesos.find(p=>p.codigo===f.key):f.type==='empresa'?[...sets.ofertas.map(o=>o.proveedor),...sets.resultados.map(r=>r.adjudicatario)].includes(f.key):sets.procesos.some(p=>p.organismo_comprador===f.key);
- let label=f.type==='proceso'?(present?.nombre||f.key):f.key;
- return '<tr><td>'+esc(f.type)+'</td><td>'+esc(label)+(present?'':' <small>(no disponible en los datos publicados)</small>')+'</td><td><button class="secondary" data-fav-open="'+i+'" '+(present?'':'disabled')+'>Abrir</button> <button class="secondary" data-fav-remove="'+i+'">Quitar</button></td></tr>';
- }).join('')+'</tbody></table>';
-}
-$('favoriteItems').addEventListener('click',e=>{
- const open=e.target.closest('[data-fav-open]'),remove=e.target.closest('[data-fav-remove]');
- if(remove){const i=Number(remove.dataset.favRemove);favorites.splice(i,1);saveFavorites();return;}
- if(open){const f=favorites[Number(open.dataset.favOpen)];if(!f)return;
-  if(f.type==='proceso')detail(f.key);
-  else if(f.type==='empresa'){$('empresa').value=f.key;companyProfile();}
-  else{$('organismo').value=f.key;buyerProfile();}
- }
+</main><footer><div class="wrap">MER v2 · Entorno aislado de desarrollo · Sin acceso público directo a Google Sheets</div></footer>
+<script>
+// La V2 estable se presenta en la URL raíz; los recursos siguen en frontend-v2/
+// para mantener intactos los enlaces existentes a catálogos y fragmentos.
+document.addEventListener('click',event=>{
+ const a=event.target.closest('a[href^="#"]');
+ if(!a)return;
+ const hash=a.getAttribute('href');
+ if(!hash||hash==='#')return;
+ const id=decodeURIComponent(hash.slice(1));
+ const target=document.getElementById(id);
+ if(!target)return;
+ event.preventDefault();
+ history.replaceState(null,'',location.pathname+location.search+hash);
+ target.scrollIntoView({behavior:'smooth',block:'start'});
 });
-
-let publishedAt='';
-function exportCSV(filename,rows,columns,scope){
- const when=publishedAt||'No disponible';
- const quote=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
- // Primeras líneas son metadatos, no registros de la tabla.
- const output=[['# Fuente','Observatorio Mercado Público / Google Sheets (extracto público)'],['# Última publicación',when],['# Cobertura','Sólo registros publicados; no representa el historial completo de Mercado Público'],['# Consulta',scope],[],columns,...rows.map(row=>columns.map(c=>row[c]??''))].map(line=>line.map(quote).join(';')).join('\r\n');
- const blob=new Blob(['\uFEFF'+output],{type:'text/csv;charset=utf-8'});
- const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
-}
-function exportedRecords(type,key){
- if(!key){alert('Primero selecciona una ficha para exportar.');return;}
- const outputs=[];
- if(type==='proceso'){
-  outputs.push({file:'proceso_'+key+'.csv',rows:sets.procesos.filter(p=>p.codigo===key),columns:['codigo','nombre','estado','modalidad','categoria','subcategoria','organismo_comprador','region','fecha_publicacion','fecha_cierre','monto_disponible_clp','total_ofertas_recibidas'],scope:'Proceso '+key});
-  outputs.push({file:'ofertas_'+key+'.csv',rows:sets.ofertas.filter(o=>o.codigo===key),columns:['codigo','id_cotizacion','proveedor','monto_ofertado_clp','seleccionado','fecha_oferta'],scope:'Ofertas del proceso '+key});
-  outputs.push({file:'resultado_'+key+'.csv',rows:sets.resultados.filter(r=>r.codigo===key),columns:['codigo','adjudicatario','monto_adjudicado_clp','id_cotizacion_ganadora','monto_oferta_seleccionada_clp','estado_verificacion_oc'],scope:'Resultado del proceso '+key});
- } else {
-  const processes=type==='organismo'?sets.procesos.filter(p=>p.organismo_comprador===key):sets.procesos.filter(p=>sets.ofertas.some(o=>o.codigo===p.codigo&&o.proveedor===key)||sets.resultados.some(r=>r.codigo===p.codigo&&r.adjudicatario===key));
-  const codes=new Set(processes.map(p=>p.codigo));
-  outputs.push({file:(type==='empresa'?'empresa_':'organismo_')+key.replace(/[^a-zA-Z0-9_-]+/g,'_').slice(0,65)+'.csv',rows:processes.map(p=>({...p,participacion:type==='empresa'?(sets.ofertas.some(o=>o.codigo===p.codigo&&o.proveedor===key)?'Oferente':'Resultado registrado'):'Organismo comprador'})),columns:['codigo','nombre','fecha_publicacion','estado','modalidad','categoria','organismo_comprador','monto_disponible_clp','participacion'],scope:type+' '+key});
-  if(type==='empresa'){
-   outputs.push({file:'ofertas_empresa_'+key.replace(/[^a-zA-Z0-9_-]+/g,'_').slice(0,50)+'.csv',rows:sets.ofertas.filter(o=>o.proveedor===key),columns:['codigo','id_cotizacion','proveedor','monto_ofertado_clp','seleccionado','fecha_oferta'],scope:'Ofertas de '+key});
-   outputs.push({file:'resultados_empresa_'+key.replace(/[^a-zA-Z0-9_-]+/g,'_').slice(0,50)+'.csv',rows:sets.resultados.filter(r=>r.adjudicatario===key),columns:['codigo','adjudicatario','monto_adjudicado_clp','monto_oferta_seleccionada_clp','estado_verificacion_oc'],scope:'Resultados de '+key});
-  }else outputs.push({file:'resultados_organismo_'+key.replace(/[^a-zA-Z0-9_-]+/g,'_').slice(0,50)+'.csv',rows:sets.resultados.filter(r=>codes.has(r.codigo)),columns:['codigo','adjudicatario','monto_adjudicado_clp','monto_oferta_seleccionada_clp','estado_verificacion_oc'],scope:'Resultados de '+key});
- }
- for(const o of outputs)exportCSV(o.file,o.rows,o.columns,o.scope);
-}
-function companyProfile(){
- const name=$('empresa').value;
- if(!name){alert('Selecciona una empresa proveedora para abrir su perfil.');return;}
- const offers=indexes.offersByCompany.get(name)||[];
- const results=indexes.resultsByCompany.get(name)||[];
- const codes=[...new Set([...offers.map(o=>o.codigo),...results.map(r=>r.codigo)])];
- const procs=codes.map(c=>indexes.processByCode.get(c)).filter(Boolean);
- const dates=procs.map(p=>String(p.fecha_publicacion||'').slice(0,10)).filter(s=>/^\\d{4}-\\d{2}-\\d{2}$/.test(s)).sort();
- const verified=results.filter(r=>r.adjudicatario&&String(r.validado||'').trim().toLowerCase().startsWith('si'));
- const amount=verified.reduce((acc,r)=>acc+(Number(r.monto_adjudicado_clp)||0),0);
- const money=n=>new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(n);
- currentCompany=name;updateFavoriteButtons();$('companyTitle').textContent=name;
- $('companyCoverage').textContent='Cobertura: solo registros actualmente publicados en el Observatorio. La primera participación observada no representa la fecha de inscripción en Mercado Público. Los resultados no equivalen a una trayectoria histórica completa mientras falten años o modalidades.';
- const values=[
- ['Primera actividad observada',dates[0]||'No informada'],
- ['Última actividad observada',dates.at(-1)||'No informada'],
- ['Procesos con participación',String(codes.length)],
- ['Ofertas registradas',String(offers.length)],
- ['Ofertas seleccionadas',String(offers.filter(o=>['1','true','sí','si'].includes(String(o.seleccionado||'').toLowerCase())).length)],
- ['Adjudicaciones verificadas',String(verified.length)],
- ['Monto adjudicado verificado',money(amount)]
- ];
- $('companyStats').innerHTML=values.map(([label,value])=>'<div><dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd></div>').join('');
- $('companyRows').innerHTML=codes.map(code=>{
- const p=sets.procesos.find(p=>p.codigo===code)||{};
- const os=offers.filter(o=>o.codigo===code),r=verified.find(r=>r.codigo===code);
- const role=[os.length?'Oferente':'',os.some(o=>['1','true','sí','si'].includes(String(o.seleccionado||'').toLowerCase()))?'Oferta seleccionada':'',r?'Adjudicataria verificada':''].filter(Boolean).join(' · ');
- return '<tr><td>'+esc(code)+'</td><td>'+esc(p.fecha_publicacion||'No informada')+'</td><td>'+esc(p.organismo_comprador||'No informado')+'</td><td>'+esc(role||'Resultado registrado')+'</td><td>'+esc(os.length?os.map(o=>fmt(o.monto_ofertado_clp)).join(' / '):'—')+'</td><td>'+esc(r?fmt(r.monto_adjudicado_clp):'Sin verificar')+'</td></tr>';
- }).join('')||'<tr><td colspan="6">Sin procesos asociados.</td></tr>';
- $('companyPanel').hidden=false;$('companyPanel').scrollIntoView({behavior:'smooth',block:'start'});
-}
-function trustedOfficialUrl(value){
- try{
-  const u=new URL(String(value||'').trim());
-  if(u.protocol!=='https:'||u.username||u.password)return '';
-  if(!/(^|\.)(mercadopublico\.cl|chilecompra\.cl)$/.test(u.hostname.toLowerCase()))return '';
-  return u.href;
- }catch{return '';}
-}
-function documentAnchor(value,label){
- const url=trustedOfficialUrl(value);
- return url?'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(label)+' ↗</a>':'';
-}
-function detail(code){
- const p=indexes.processByCode.get(code);if(!p)return;
- const offers=indexes.offersByCode.get(code)||[];
- const results=indexes.resultsByCode.get(code)||[];
- const r=results.find(x=>x.tipo_resultado==='oferta_seleccionada')||results.find(x=>x.id_cotizacion_ganadora)||results[0];
- const selected=offers.filter(o=>['1','true','sí','si'].includes(String(o.seleccionado||'').toLowerCase()));
- const official=Number(p.total_ofertas_recibidas),hasOfficial=String(p.total_ofertas_recibidas||'').trim()!==''&&Number.isFinite(official);
- const verifiedResults=results.filter(x=>x.adjudicatario&&String(x.validado||'').trim().toLowerCase().startsWith('si'));
- const verified=verifiedResults.length>0;
- const winnerOffer=r?.id_cotizacion_ganadora?offers.find(o=>o.id_cotizacion===r.id_cotizacion_ganadora):null;
- currentProcess=code;updateFavoriteButtons();$('detailTitle').textContent=p.nombre||code;
- const visibility=String(p.estado_cobertura_detalle||'').trim();
- $('detailCoverage').innerHTML='<strong>Información disponible en esta publicación</strong> · '+offers.length+' ofertas individuales · '+results.length+' resultados · '+(verified?'adjudicatario verificado':'sin adjudicatario contractual verificado')+(visibility?' · Cobertura declarada: '+esc(visibility):'')+'.<div>Los registros recuperados no necesariamente representan todas las ofertas o actuaciones del proceso. La selección de una oferta no equivale por sí sola a una adjudicación contractual.</div>';
- $('facts').innerHTML=facts(p,[['codigo','Código'],['estado','Estado informado por ChileCompra'],['modalidad','Modalidad'],['categoria','Categoría'],['subcategoria','Subcategoría'],['organismo_comprador','Organismo comprador'],['region','Región'],['fecha_publicacion','Publicación'],['fecha_cierre','Cierre'],['monto_disponible_clp','Presupuesto disponible CLP']]);
- $('processMetrics').innerHTML='<dl class="facts">'+[
- ['Situación conocida',statusLabels[situation(p)]],
- ['Ofertas recibidas (fuente)',hasOfficial?String(official):'No informado'],
- ['Ofertas individuales disponibles',String(offers.length)],
- ['Oferta seleccionada',winnerOffer?.proveedor||selected.map(o=>o.proveedor).filter(Boolean).join(', ')|| (r?.id_cotizacion_ganadora?'ID '+r.id_cotizacion_ganadora:'No identificada')],
- ['Monto de oferta seleccionada CLP',r?.monto_oferta_seleccionada_clp?fmt(r.monto_oferta_seleccionada_clp):(selected[0]?.monto_ofertado_clp?fmt(selected[0].monto_ofertado_clp):'No informado')],
- ['Adjudicatario contractual',verified?verifiedResults.map(x=>x.adjudicatario).filter(Boolean).join(' / '):'No verificado'],
- ['Monto adjudicado CLP',verified?verifiedResults.map(x=>x.monto_adjudicado_clp?fmt(x.monto_adjudicado_clp):'No informado').join(' / '):'No verificado'],
- ['Motivo de selección',r?.motivo_seleccion||p.motivo_seleccion||'No informado']
- ].map(([label,value])=>'<div><dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd></div>').join('')+'</dl><p class="muted" style="font-size:12px">El total oficial de ofertas puede ser mayor que las ofertas individuales actualmente recuperadas. Oferta seleccionada no implica adjudicación contractual.</p>';
- $('offerDetails').innerHTML=offers.length?'<table><thead><tr><th>Proveedor</th><th>Oferta CLP</th><th>Seleccionada</th></tr></thead><tbody>'+offers.map(o=>'<tr><td>'+esc(o.proveedor||'No informado')+'</td><td>'+esc(fmt(o.monto_ofertado_clp))+'</td><td>'+esc(['1','true','sí','si'].includes(String(o.seleccionado||'').toLowerCase())?'Sí':'No')+'</td></tr>').join('')+'</tbody></table>':'<p class="muted">Todavía no hay ofertas individuales recuperadas para este proceso.</p>';
- $('resultDetails').innerHTML=results.length?results.map((item,i)=>'<p class="muted">Resultado '+(i+1)+' de '+results.length+'</p><dl class="facts">'+facts(item,[['tipo_resultado','Tipo de resultado'],['id_linea_adjudicacion','Línea adjudicada'],['id_cotizacion_ganadora','Identificador de oferta seleccionada'],['monto_oferta_seleccionada_clp','Monto oferta seleccionada CLP'],['adjudicatario','Adjudicatario informado'],['monto_adjudicado_clp','Monto contractual CLP'],['estado_verificacion_oc','Estado de verificación'],['fecha_resultado','Fecha del resultado']])+'</dl>').join(''):'<p class="muted">No existe un resultado individual publicado para este proceso.</p>';
- // Mostrar solo enlaces explícitos y seguros; nunca construir rutas a PDF por inferencia.
- const links=[documentAnchor(p.url_detalle,'Ficha y documentos del proceso')];
- for(const item of offers){
-  const label='Documento de oferta'+(item.proveedor?' — '+item.proveedor:'');
-  const a=documentAnchor(item.url_documento_oferta,label);
-  if(a)links.push(a);
- }
- for(const item of results){
-  const a=documentAnchor(item.url_documento_publico,'Documento público del resultado');
-  if(a)links.push(a);
- }
- const validLinks=[...new Set(links.filter(Boolean))];
- const isAgil=/-COT\d{2}$/i.test(p.codigo||'')||p._modalidadFiltro==='Compra Ágil';
- // La ruta por código existe, pero no se considera verificada para cada registro.
- const officialCode=String(p.codigo||'').trim();
- const candidateUrl=!isAgil&&/^[0-9]+-[0-9]+-[A-Z]{2,3}[0-9]{2}$/i.test(officialCode)
-  ?'https://www.mercadopublico.cl/Procurement/Modules/RFB/DetailsAcquisition.aspx?idlicitacion='+encodeURIComponent(officialCode):'';
- const directOption=candidateUrl?'<p><a href="'+esc(candidateUrl)+'" target="_blank" rel="noopener noreferrer">Intentar abrir ficha oficial por código ↗</a></p><p class="muted">Esta ruta puede devolver error 404. Si ocurre, utiliza el buscador inferior.</p>':'';
- const searchUrl=isAgil?'https://buscador.mercadopublico.cl/compra-agil':'https://www.mercadopublico.cl/portal/Modules/Site/Busquedas/BuscadorAvanzado.aspx?qs=1';
- const searchLabel=isAgil?'Abrir buscador de Compra Ágil':'Abrir buscador de licitaciones';
- const instruction=isAgil?'Busca en el campo «Palabra clave o N° de Compra Ágil», no en el buscador de licitaciones.':'Busca el código en «Código, nombre o descripción» del buscador de licitaciones.';
- $('resultDetails').innerHTML+='<div class="detail-documents"><strong>Documentos y fuentes oficiales</strong><div>'+(validLinks.length?validLinks.join(''):'<span class="muted">Este registro no incluye enlaces documentales directos comprobados.</span>')+'</div>'+directOption+'<p class="muted">'+esc(instruction)+' El enlace siguiente abre un buscador general de la modalidad correcta, <strong>no una ficha directa ni una búsqueda automática</strong>.</p><p><button type="button" class="secondary" id="copyOfficialCode" data-code="'+esc(p.codigo)+'">Copiar código '+esc(p.codigo)+'</button> <a href="'+esc(searchUrl)+'" target="_blank" rel="noopener noreferrer">'+esc(searchLabel)+' ↗</a></p><span id="copyOfficialFeedback" role="status" class="muted"></span></div>';
- $('copyOfficialCode').addEventListener('click',async()=>{
-  try{await navigator.clipboard.writeText(p.codigo);$('copyOfficialFeedback').textContent='Código copiado. Pégalo en el buscador oficial.';}
-  catch{$('copyOfficialFeedback').textContent='Copia el código mostrado y pégalo en el buscador oficial.';}
- });
- $('detailPanel').hidden=false;$('detailPanel').scrollIntoView({behavior:'smooth',block:'start'});
-}
-const OC_PAGE_SIZE=25;
-let ocPage=1;
-function populateOcFilters(){
- for(const [id,key,label] of [['ocEstado','estado','Todos los estados'],['ocTipo','tipo_oc','Todos los tipos']]){
-  const select=$(id),chosen=select.value;
-  const items=[...new Set(sets.ordenescompra.map(x=>String(x[key]||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
-  select.replaceChildren(new Option(label,''),...items.map(v=>new Option(v,v)));
-  select.value=items.includes(chosen)?chosen:'';
- }
-}
-function renderOc(){
- const term=norm($('ocSearch').value),estado=$('ocEstado').value,tipo=$('ocTipo').value;
- const matches=sets.ordenescompra.filter(o=>(!term||norm([o.codigo_oc,o.codigo_proceso,o.proveedor].join(' ')).includes(term))&&(!estado||o.estado===estado)&&(!tipo||o.tipo_oc===tipo));
- const pages=Math.max(1,Math.ceil(matches.length/OC_PAGE_SIZE));
- ocPage=Math.min(Math.max(1,ocPage),pages);
- const start=(ocPage-1)*OC_PAGE_SIZE;
- const shown=matches.slice(start,start+OC_PAGE_SIZE);
- $('ocResultsCount').textContent=matches.length.toLocaleString('es-CL')+' órdenes encontradas de '+sets.ordenescompra.length.toLocaleString('es-CL')+' publicadas';
- $('ocPreview').innerHTML='<table><thead><tr><th>Código OC</th><th>Proceso asociado</th><th>Fecha creación</th><th>Proveedor</th><th>Estado</th><th>Tipo</th><th>Monto CLP</th></tr></thead><tbody>'+(shown.length?shown.map(o=>'<tr><td><span class="oc-code">'+esc(o.codigo_oc||'No informado')+'</span></td><td>'+esc(o.codigo_proceso||'No informado')+'</td><td>'+esc(o.fecha_creacion||'No informada')+'</td><td>'+esc(o.proveedor||'No informado')+'</td><td>'+esc(o.estado||'No informado')+'</td><td>'+esc(o.tipo_oc||'No informado')+'</td><td>'+esc(fmt(o.monto_total_oc_clp))+'</td></tr>').join(''):'<tr><td colspan="7" class="empty">No hay órdenes de compra que coincidan con los filtros.</td></tr>')+'</tbody></table>';
- $('ocPageInfo').textContent='Página '+ocPage+' de '+pages+' · '+(shown.length?start+1:0)+'–'+(start+shown.length)+' de '+matches.length;
- $('ocPrev').disabled=ocPage<=1;$('ocNext').disabled=ocPage>=pages;
- $('ocPager').hidden=matches.length<=OC_PAGE_SIZE;
-}
-for(const id of ['ocSearch','ocEstado','ocTipo'])$(id).addEventListener(id==='ocSearch'?'input':'change',()=>{ocPage=1;renderOc();});
-$('ocPrev').addEventListener('click',()=>{if(ocPage>1){ocPage--;renderOc();}});
-$('ocNext').addEventListener('click',()=>{ocPage++;renderOc();});
-async function loadPublished(){
- try{
-  const response=await fetch('./data/observatorio.json',{cache:'no-store'});
-  if(!response.ok)throw Error('No fue posible cargar la instantánea pública del Observatorio.');
-  const data=await response.json();
-  if(data.partes){
-   // Los recuentos del manifiesto se presentan de inmediato sin esperar cientos de miles de filas.
-   const total=data.conteos||{};
-   const nf=n=>Number(n||0).toLocaleString('es-CL');
-   $('headCount').textContent=nf(Object.values(total).reduce((s,n)=>s+Number(n||0),0));
-   $('headBreakdown').textContent=nf(total.procesos)+' procesos · '+nf(total.ofertas)+' ofertas · '+nf(total.resultados)+' resultados · '+nf(total.ordenescompra)+' OC';
-   $('coverageSummary').textContent='Registros publicados en el manifiesto; cargando detalles para la consulta…';
-   $('status').textContent='Descargando datos históricos. Los contadores ya corresponden a la última publicación.';
-   // Los fragmentos se descargan en tandas limitadas para acelerar sin saturar el navegador.
-   const next={};
-   for(const name of ['procesos','ofertas','resultados','ordenescompra']){
-    const parts=data.partes[name];
-    if(!Array.isArray(parts))throw Error('Faltan fragmentos: '+name);
-    next[name]=[];
-    for(let i=0;i<parts.length;i+=4){
-     const batch=parts.slice(i,i+4);
-     const chunks=await Promise.all(batch.map(async part=>{
-      if(!/^data\/partes\/observatorio-[a-z]+-[0-9]{4}\.json$/.test(part))throw Error('Ruta de fragmento no válida');
-      const res=await fetch('./'+part,{cache:'no-store'});
-      if(!res.ok)throw Error('No se pudo descargar '+part+' (HTTP '+res.status+')');
-      const records=await res.json();
-      if(!Array.isArray(records))throw Error('Fragmento inválido: '+part);
-      return records;
-     }));
-     for(const records of chunks)for(const record of records)next[name].push(record);
-     $('status').textContent='Cargando '+name+': '+nf(next[name].length)+' de '+nf(data.conteos?.[name])+' registros.';
-     await new Promise(resolve=>setTimeout(resolve,0));
-    }
-    if(data.conteos&&next[name].length!==data.conteos[name])throw Error('Recuento de fragmentos inconsistente: '+name);
-   }
-   data.tablas=next;
-  }
-  publishedAt=data.fecha_actualizacion||"";
-  for(const name of ['procesos','ofertas','resultados']){
-   if(!Array.isArray(data.tablas?.[name]))throw Error('Archivo incompleto: '+name);
-   sets[name]=data.tablas[name];
-  }
-  sets.ordenescompra=Array.isArray(data.tablas?.ordenescompra)?data.tablas.ordenescompra:[];
-  $('ocCount').textContent='Órdenes de compra: '+new Intl.NumberFormat('es-CL').format(sets.ordenescompra.length);
-  populateOcFilters();renderOc();
-  const counts=sets.procesos.length+sets.ofertas.length+sets.resultados.length+sets.ordenescompra.length;
-  $('headCount').textContent=new Intl.NumberFormat('es-CL').format(counts);
-  $('headBreakdown').textContent=sets.procesos.length.toLocaleString('es-CL')+' procesos · '+sets.ofertas.length.toLocaleString('es-CL')+' ofertas · '+sets.resultados.length.toLocaleString('es-CL')+' resultados · '+sets.ordenescompra.length.toLocaleString('es-CL')+' OC';
-  const dates=sets.procesos.map(p=>String(p.fecha_publicacion||'').trim()).filter(Boolean).map(v=>{
-    const m=v.match(/^(\\d{4})-(\\d{2})-(\\d{2})/);
-    if(m)return new Date(m[1]+'-'+m[2]+'-'+m[3]+'T12:00:00Z');
-    const d=new Date(v);return d;
-  }).filter(d=>!Number.isNaN(d.getTime()));
-  $('headOldest').textContent=dates.length?new Intl.DateTimeFormat('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'America/Santiago'}).format(new Date(Math.min(...dates.map(d=>d.getTime())))):'No informada';
-  const published=new Date(data.fecha_actualizacion);
-  const localTime=!Number.isNaN(published.getTime())?new Intl.DateTimeFormat('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Santiago'}).format(published):'No informada';
-  $('headUpdated').textContent=localTime;
-  $('coverageSummary').textContent=sets.procesos.length.toLocaleString('es-CL')+' procesos · '+sets.ofertas.length.toLocaleString('es-CL')+' ofertas individuales · '+sets.resultados.length.toLocaleString('es-CL')+' resultados · '+sets.ordenescompra.length.toLocaleString('es-CL')+' órdenes de compra. Cobertura parcial según disponibilidad; última publicación: '+localTime+'.';
-  $('freshness').textContent='Última publicación: '+localTime+' (Chile continental; no implica actualización diaria programada)';
-  rebuildIndexes();normalizeRecords();populate();populateCompare();render();renderFavorites();showGlobal();
- }catch(err){$('status').textContent='Error de carga: '+err.message+'. Los contadores del manifiesto no implican que todos los detalles estén disponibles.';}
-}
-renderFavorites();$('exportProcess').onclick=()=>exportedRecords('proceso',currentProcess);$('exportCompany').onclick=()=>exportedRecords('empresa',currentCompany);$('exportBuyer').onclick=()=>exportedRecords('organismo',currentBuyer);$('favoriteProcess').onclick=()=>toggleFavorite('proceso',currentProcess);$('favoriteCompany').onclick=()=>toggleFavorite('empresa',currentCompany);$('favoriteBuyer').onclick=()=>toggleFavorite('organismo',currentBuyer);loadPublished();['query','dateFrom','dateTo','empresa','organismo','modalidad','categoria','region','situacion','participacion'].forEach(id=>$(id).addEventListener(id==='query'?'input':'change',render));$('clearFilters').onclick=()=>{for(const id of ['query','dateFrom','dateTo','empresa','organismo','modalidad','categoria','region','situacion','participacion'])$(id).value='';render()};$('rows').onclick=e=>{const btn=e.target.closest('button[data-code]');if(btn)detail(btn.dataset.code)};$('runCompare').onclick=compareCompanies;$('showCompany').onclick=companyProfile;$('showBuyer').onclick=buyerProfile;$('closeBuyer').onclick=()=>{$('buyerPanel').hidden=true};$('closeCompany').onclick=()=>{$('companyPanel').hidden=true};$('close').onclick=()=>{$('detailPanel').hidden=true};$('export').onclick=()=>{const ls=filtered(),cols=['codigo','nombre','modalidad','categoria','subcategoria','organismo_comprador','region','estado'];const quoted=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const csv=[cols.join(';'),...ls.map(r=>cols.map(k=>quoted(r[k])).join(';'))].join('\r\n');const u=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download='procesos_2026_filtrados.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
-</script></body></html>
+</script>
+</body></html>
