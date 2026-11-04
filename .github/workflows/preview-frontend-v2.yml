@@ -65,6 +65,7 @@ jobs:
           root_page=pathlib.Path('index.html')
           assert root_page.is_file()
           assert '<base href="./frontend-v2/">' in root_page.read_text(), 'La raíz debe apuntar a recursos V2'
+          assert 'VERSION ESTABLE' not in root_page.read_text(), 'Revisar etiqueta de estabilidad desde la V2 fuente'
           assert pathlib.Path('historico/v1/index.html').is_file(), 'Falta respaldo fuente de V1'
           a=json.loads((root/'data/analitica/2026-08/procesos.json').read_text())
           assert a['registros']==83937
@@ -89,7 +90,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _pages/frontend-v2 _pages/historico/v1
-          cp index.html _pages/index.html
+          python3 scripts/generar_portada_v2.py --origen frontend-v2/index.html --salida _pages/index.html
           cp -a frontend-v2/. _pages/frontend-v2/
           # La antigua URL V2 conserva compatibilidad, pero redirige a la raíz.
           cat > _pages/frontend-v2/index.html <<'HTML'
