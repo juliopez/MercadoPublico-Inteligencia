@@ -127,6 +127,34 @@ jobs:
       - uses: actions/upload-pages-artifact@v4
         with:
           path: _pages
-      - name: Desplegar preview v2 manteniendo raíz v1
+      - name: Desplegar plataforma V2 en raíz del sitio
         id: deploy
         uses: actions/deploy-pages@v4
+      - name: Comprobar raíz pública, redirección antigua y catálogo sin caché
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, time, urllib.request
+          base="https://juliopez.github.io/MercadoPublico-Inteligencia/"
+          expected=json.loads(pathlib.Path("frontend-v2/data/catalogo-publico.json").read_text())
+          for attempt in range(15):
+              try:
+                  token="?verificacion="+str(time.time_ns())
+                  def read(path):
+                      req=urllib.request.Request(base+path+token,headers={"Cache-Control":"no-cache"})
+                      return urllib.request.urlopen(req,timeout=35).read().decode("utf-8")
+                  root=read("")
+                  old=read("frontend-v2/")
+                  catalog=json.loads(read("frontend-v2/data/catalogo-publico.json"))
+                  assert '<base href="./frontend-v2/">' in root
+                  assert "VERSIÓN ESTABLE" in root
+                  assert "location.replace('../'+location.search+location.hash)" in old
+                  assert catalog["ultima_exportacion"] == expected["ultima_exportacion"]
+                  assert [(p["periodo"],p["conteos"]) for p in catalog["periodos"]] == [(p["periodo"],p["conteos"]) for p in expected["periodos"]]
+                  print("PAGES_V2_RAIZ_Y_CATALOGO_VERIFICADOS",flush=True)
+                  break
+              except Exception as exc:
+                  print("PAGES_VERIFICACION_REINTENTO",attempt+1,type(exc).__name__,str(exc)[:150],flush=True)
+                  time.sleep(15)
+          else:
+              raise SystemExit("ERROR: la portada V2 o el catálogo público no coincide con el despliegue")
+          PY
