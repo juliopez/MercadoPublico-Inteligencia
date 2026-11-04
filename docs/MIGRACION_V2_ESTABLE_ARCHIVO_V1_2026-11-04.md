@@ -32,7 +32,7 @@ No se modificaron **cron Ubuntu de las 16:00, Google Sheets, API nocturna, rotac
 - Archivo V1 previo: commit `6d3a976820bf0613a931c2359fdbe5cf8c0dbe34`.
 - Eliminación segura de fragmentos V1: commit `ef80b07919c47ad9e711818105150fd51cf14a5f`.
 - Primer despliegue comprobado de portada V2 en la raíz y URL antigua redirigida: [GitHub Actions #41902199948](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/41902199948), **success** (sin prueba HTTP independiente).
-- Verificación HTTP pública posterior: incorporada al workflow de Pages, pendiente de confirmar por ejecución programada tras la incorporación.
+- **Verificación HTTP pública posterior confirmada:** [GitHub Actions #41902842469](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/41902842469), **success**, log `PAGES_V2_RAIZ_Y_CATALOGO_VERIFICADOS`: se comprobó mediante HTTP público que la raíz presenta V2 estable, la antigua URL redirige y el catálogo publicado coincide con el de GitHub.
 
 **Reversión técnica:** restaurar desde Git la implementación anterior de `.github/workflows/preview-frontend-v2.yml` para reconstruir la publicación antigua, o deshacer los commits de promoción; para restaurar datos V1 tomar los archivos de la revisión previa. Una reversión de presentación no debe restaurar automáticamente el workflow antiguo de V1 con despliegues redundantes. La reversión se puede hacer sin tocar Sheets, Ubuntu o la API.
 
