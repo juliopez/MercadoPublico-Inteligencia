@@ -62,8 +62,10 @@ jobs:
                       assert isinstance(rows,list)
                       total+=len(rows)
                   assert total==item['conteos'][entity],(item['periodo'],entity,total)
-          assert pathlib.Path('index.html').is_file()
-          assert pathlib.Path('data/observatorio.json').is_file()
+          root_page=pathlib.Path('index.html')
+          assert root_page.is_file()
+          assert '<base href="./frontend-v2/">' in root_page.read_text(), 'La raíz debe apuntar a recursos V2'
+          assert pathlib.Path('historico/v1/index.html').is_file(), 'Falta respaldo fuente de V1'
           a=json.loads((root/'data/analitica/2026-08/procesos.json').read_text())
           assert a['registros']==83937
           assert a.get('top_actores_monto') and a.get('modalidades'), 'Faltan agregados nuevos en Pages'
@@ -83,17 +85,41 @@ jobs:
                   assert sum(int(row[1]) for row in modes)==expected,(p,'modalidades_desfasadas')
           print('PREVIEW_V2_INTEGRIDAD_OK')
           PY
-      - name: Preparar únicamente el sitio público (V1 + V2)
+      - name: Construir sitio oficial V2 sin duplicar los datos históricos
         run: |
           set -euo pipefail
-          mkdir -p _pages/data
+          mkdir -p _pages/frontend-v2 _pages/historico/v1
           cp index.html _pages/index.html
-          cp data/observatorio.json _pages/data/observatorio.json
-          cp -a frontend-v2 _pages/frontend-v2
+          cp -a frontend-v2/. _pages/frontend-v2/
+          # La antigua URL V2 conserva compatibilidad, pero redirige a la raíz.
+          cat > _pages/frontend-v2/index.html <<'HTML'
+          <!doctype html>
+          <html lang="es"><head><meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1">
+          <meta name="robots" content="noindex,follow">
+          <meta http-equiv="refresh" content="0;url=../">
+          <title>Observatorio de Mercado Público · Nueva dirección</title>
+          <script>location.replace('../'+location.search+location.hash);</script>
+          </head><body><p>El Observatorio ahora está en <a href="../">la página principal</a>.</p></body></html>
+          HTML
+          # V1 se conserva en GitHub como archivo, no se vuelve a publicar
+          # su antigua copia pesada de datos ni se habilita su aplicación.
+          cat > _pages/historico/v1/index.html <<'HTML'
+          <!doctype html>
+          <html lang="es"><head><meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1">
+          <title>Archivo histórico · Observatorio V1</title></head>
+          <body style="font:16px system-ui,sans-serif;max-width:750px;margin:12vh auto;padding:24px;color:#183149">
+          <h1>Observatorio V1 · Archivo histórico</h1>
+          <p>La primera versión fue una prueba de concepto. No recibe actualizaciones y no es la plataforma vigente.</p>
+          <p>El código de esa versión se conserva en el <a href="https://github.com/juliopez/MercadoPublico-Inteligencia/tree/main/historico/v1">archivo histórico del repositorio</a>.</p>
+          <p><a href="../../">Ir al Observatorio actual</a></p>
+          </body></html>
+          HTML
           test -f _pages/index.html
-          test -f _pages/data/observatorio.json
           test -f _pages/frontend-v2/data/catalogo-publico.json
-          test -f _pages/frontend-v2/index.html
+          test -f _pages/historico/v1/index.html
+          test ! -f _pages/data/observatorio.json
           echo "PAGES_ARCHIVOS_PUBLICOS=$(find _pages -type f | wc -l)"
           du -sh _pages
       - uses: actions/configure-pages@v5
