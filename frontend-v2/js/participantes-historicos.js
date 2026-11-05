@@ -61,47 +61,37 @@ async function searchParticipant(){
   if(req!==seq)return;
   const total=rows.reduce((s,r)=>s+r.count,0),months=rows.filter(r=>r.count).length;
   const active=rows.filter(r=>r.count>0);
-  const coverageReady=active.every(r=>r.extra!==null);
-  const processMonthCount=active.reduce((sum,r)=>sum+(r.extra?.procesos_distintos||0),0);
-  const missingCodes=active.filter(r=>!Array.isArray(r.extra?.codigos_participados)).map(r=>r.period);
-  const selectionIndicesReady=type==='proveedor'&&rows.filter(r=>r.outcome>0).every(r=>Array.isArray(r.extra?.codigos_seleccionados));
-  const selectedCodes=new Set();
-  const selectedAmounts=new Map();
-  if(selectionIndicesReady)for(const r of rows){
-   for(const code of r.extra?.codigos_seleccionados||[])selectedCodes.add(code);
-   for(const [code,amount] of r.extra?.montos_seleccionados_por_codigo||[]){
-    if(!selectedAmounts.has(code))selectedAmounts.set(code,amount);
-    else if(selectedAmounts.get(code)!==amount)selectedAmounts.set(code,null);
+  const participatingCodes=new Set(),selectedCodes=new Set(),selectedAmounts=new Map();
+  let linkedOffers=0;
+  for(const row of rows){
+   for(const code of row.extra?.codigos_participados||[])if(code)participatingCodes.add(String(code));
+   for(const code of row.extra?.codigos_seleccionados||[])if(code)selectedCodes.add(String(code));
+   for(const [code,amount] of row.extra?.montos_seleccionados_por_codigo||[]){
+    if(!code)continue;
+    const key=String(code),number=Number(amount);
+    if(!selectedAmounts.has(key))selectedAmounts.set(key,Number.isFinite(number)?number:null);
+    else if(selectedAmounts.get(key)!==number)selectedAmounts.set(key,null);
    }
+   linkedOffers+=Number(row.extra?.ofertas_recibidas_vinculadas)||0;
   }
   const selectedValue=[...selectedAmounts.values()].reduce((sum,n)=>sum+(Number.isFinite(n)?n:0),0);
-  const knownSelected=Array.from(selectedAmounts.values()).filter(Number.isFinite).length;
+  const knownSelected=[...selectedAmounts.values()].filter(Number.isFinite).length;
+  const selectedWithinBase=[...selectedCodes].filter(code=>participatingCodes.has(code)).length;
+  const currency=n=>new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(n);
   const metrics=[['Registros de '+(type==='proveedor'?'ofertas':'procesos'),total.toLocaleString('es-CL')],['Meses con actividad',String(months)],[type==='proveedor'?'Monto total ofertado informado':'Presupuesto disponible informado',new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(rows.reduce((s,r)=>s+r.monto,0))]];
   if(type==='proveedor'){
-   metrics.push(['Procesos únicos participados',active.every(r=>Array.isArray(r.extra?.codigos_participados))?new Set(active.flatMap(r=>r.extra.codigos_participados)).size.toLocaleString('es-CL'):'Índice de códigos incompleto']);
+   metrics.push(['Procesos únicos participados',participatingCodes.size.toLocaleString('es-CL')]);
    metrics.push(['Ofertas con monto informado',rows.reduce((sum,r)=>sum+r.coverage,0).toLocaleString('es-CL')+' de '+total.toLocaleString('es-CL')]);
    metrics.push(['Resultados con empresa seleccionada',rows.reduce((sum,r)=>sum+r.outcome,0).toLocaleString('es-CL')]);
-   metrics.push(['Procesos distintos con selección registrada',selectionIndicesReady?selectedCodes.size.toLocaleString('es-CL'):'Pendiente de publicar índice']);
-   metrics.push(['Suma de ofertas seleccionadas informadas',selectionIndicesReady&&knownSelected?new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(selectedValue)+' ('+knownSelected+' procesos con monto)':'Sin cobertura suficiente']);
-   // Denominador único transversal, no la suma de procesos distintos de cada mes.
-   const participatingCodes=new Set();
-   const participationCoverage=active.every(r=>Array.isArray(r.extra?.codigos_participados));
-   if(participationCoverage)for(const r of active)for(const code of r.extra.codigos_participados)participatingCodes.add(code);
-   const base=participationCoverage?participatingCodes.size:processMonthCount;
-   const baseLabel='procesos únicos';
-   const selectedWithinBase=selectionIndicesReady?(participationCoverage?[...selectedCodes].filter(code=>participatingCodes.has(code)).length:selectedCodes.size):0;
-   if(selectionIndicesReady&&participationCoverage&&base>0){
-    const rate=100*selectedWithinBase/base;
-    metrics.push(['Tasa de selección registrada',rate.toLocaleString('es-CL',{maximumFractionDigits:1})+' % ('+selectedWithinBase.toLocaleString('es-CL')+' de '+base.toLocaleString('es-CL')+' '+baseLabel+')']);
-   }
+   metrics.push(['Procesos distintos con selección registrada',selectedCodes.size.toLocaleString('es-CL')]);
+   metrics.push(['Suma de ofertas seleccionadas informadas',currency(selectedValue)+' ('+knownSelected+' procesos con monto)']);
+   if(participatingCodes.size)metrics.push(['Tasa de selección registrada',(100*selectedWithinBase/participatingCodes.size).toLocaleString('es-CL',{maximumFractionDigits:1})+' % ('+selectedWithinBase+' de '+participatingCodes.size+' procesos con código publicado)']);
    const offered=rows.reduce((sum,r)=>sum+r.monto,0);
-   if(selectionIndicesReady&&knownSelected&&offered>0)
-    metrics.push(['Relación monto seleccionado / ofertado',(100*selectedValue/offered).toLocaleString('es-CL',{maximumFractionDigits:1})+' % · indicador descriptivo']);
-
+   if(offered>0)metrics.push(['Relación monto seleccionado / ofertado',(100*selectedValue/offered).toLocaleString('es-CL',{maximumFractionDigits:1})+' % · indicador descriptivo']);
    metrics.push(['Procesos ganados verificados','No calculado: sin vínculo contractual validado']);
    metrics.push(['Monto adjudicado verificado','No calculado: sin vínculo contractual validado']);
   }else{
-   metrics.push(['Ofertas recibidas vinculadas',coverageReady?active.reduce((sum,r)=>sum+(r.extra.ofertas_recibidas_vinculadas||0),0).toLocaleString('es-CL'):'En preparación']);
+   metrics.push(['Ofertas recibidas vinculadas',linkedOffers.toLocaleString('es-CL')]);
   }
   const groups=type==='proveedor'?[
    {title:'Participación',description:'Volumen de ofertas y procesos publicados.',labels:['Registros de ofertas','Meses con actividad','Procesos únicos participados','Ofertas con monto informado']},
@@ -185,7 +175,7 @@ async function searchParticipant(){
    });
    ph('participante-enlaces').append(action);
   }
-  ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. '+(type==='proveedor'?'Las selecciones registradas no acreditan adjudicaciones ni pagos. '+(missingCodes.length?'Índices de participación incompletos en: '+missingCodes.join(', ')+'. ':'')+'Las adjudicaciones contractuales aún no cuentan con un cálculo validado.':'Los organismos se agrupan por nombre publicado, sin homologación.'):'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
+  ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. '+(type==='proveedor'?'Indicadores calculados exclusivamente con los registros e índices publicados, aunque su cobertura sea parcial. Las selecciones no acreditan adjudicaciones ni pagos; estas últimas requieren vinculación contractual validada.':'Los organismos se agrupan por nombre publicado, sin homologación.'):'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
  }catch(e){if(req===seq)ph('participante-estado').textContent='No fue posible consultar los índices: '+e.message}
 }
 ph('participante-buscar').addEventListener('click',searchParticipant);
