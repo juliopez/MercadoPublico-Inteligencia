@@ -430,3 +430,10 @@ button.viz-org-link:not(:disabled):focus-visible{background:#e8f3fb;color:#104b6
 /* Encabezados de los cuatro bloques principales */
 .landing-group h2{display:flex;align-items:center;gap:10px;line-height:1.4}
 .landing-group .section-icon{width:24px;height:24px;flex:none;color:#176b92}
+
+/* Navegación contextual: sticky, sección activa y anclajes visibles */
+html{scroll-padding-top:90px}
+.landing-group[id]{scroll-margin-top:90px}
+.quicknav a.is-active,.quicknav a[aria-current="location"]{background:#175781;color:#fff;border-color:#175781;box-shadow:inset 0 -2px 0 #8ec9e7}
+.quicknav a.is-active:hover,.quicknav a.is-active:focus-visible{background:#104b68;color:#fff}
+@media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
