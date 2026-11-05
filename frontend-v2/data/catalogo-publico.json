@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "fecha_publicacion": "2026-11-05T09:06:56.218053+00:00",
+  "fecha_publicacion": "2026-11-05T19:02:29.124135+00:00",
   "fuente": "Extractos públicos MER v2 de Google Sheets privadas, exportados por período",
   "periodos": [
     {
@@ -3174,7 +3174,7 @@
   ],
   "ultima_exportacion": {
     "periodo": "2026-11",
-    "fecha_utc": "2026-11-05T09:06:56.218053+00:00",
+    "fecha_utc": "2026-11-05T19:02:29.124135+00:00",
     "fuente": "MER_OPERATIVO_V2"
   }
 }
