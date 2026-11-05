@@ -9,6 +9,8 @@ const HELP={
  "Consulta por período":"Explora fragmentos de hasta 1.000 registros. Los filtros de esta consulta no buscan en todo el mes; para eso utiliza la búsqueda transversal.",
  "Mes de referencia":"Mes de origen o publicación utilizado para agrupar los registros. El mes actual es parcial y puede cambiar.",
  "Período seleccionado":"Mes de referencia vigente para la consulta. Puede contener información histórica o del mes operativo.",
+ "Registros disponibles":"Cantidad de registros publicados para la entidad y el período seleccionados. No equivale necesariamente a procesos o compras únicas.",
+ "Fecha de publicación":"Fecha y hora de publicación del extracto disponible en el Observatorio. No corresponde necesariamente a la última modificación de cada proceso.",
  "Evolución mensual de registros":"Compara cantidad de registros publicados por mes. No representa compras únicas, gasto ejecutado ni montos adjudicados.",
  "Perspectiva":"Destaca uno de los tres paneles; los demás siguen disponibles para consultar.",
  "Comparar con":"Contrasta períodos publicados. Las variaciones del mes en curso se interpretan con cautela por su cobertura parcial.",
