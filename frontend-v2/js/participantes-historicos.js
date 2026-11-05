@@ -84,19 +84,19 @@ async function searchParticipant(){
    metrics.push(['Ofertas con monto informado',rows.reduce((sum,r)=>sum+r.coverage,0).toLocaleString('es-CL')+' de '+total.toLocaleString('es-CL')]);
    metrics.push(['Resultados con empresa seleccionada',rows.reduce((sum,r)=>sum+r.outcome,0).toLocaleString('es-CL')]);
    metrics.push(['Procesos distintos con selección registrada',selectedCodes.size.toLocaleString('es-CL')]);
-   metrics.push(['Suma de ofertas seleccionadas informadas',currency(selectedValue)+' ('+knownSelected+' procesos con monto)']);
+   metrics.push(['Monto de ofertas con selección registrada',currency(selectedValue)+' ('+knownSelected+' procesos con monto)']);
    if(participatingCodes.size)metrics.push(['Tasa de selección registrada',(100*selectedWithinBase/participatingCodes.size).toLocaleString('es-CL',{maximumFractionDigits:1})+' % ('+selectedWithinBase+' de '+participatingCodes.size+' procesos con código publicado)']);
    const offered=rows.reduce((sum,r)=>sum+r.monto,0);
    if(offered>0)metrics.push(['Relación monto seleccionado / ofertado',(100*selectedValue/offered).toLocaleString('es-CL',{maximumFractionDigits:1})+' % · indicador descriptivo']);
-   metrics.push(['Procesos ganados verificados','No calculado: sin vínculo contractual validado']);
-   metrics.push(['Monto adjudicado verificado','No calculado: sin vínculo contractual validado']);
+   metrics.push(['Procesos ganados verificados','No calculado']);
+   metrics.push(['Monto de adjudicaciones contractuales verificadas','No calculado']);
   }else{
    metrics.push(['Ofertas recibidas vinculadas',linkedOffers.toLocaleString('es-CL')]);
   }
   const groups=type==='proveedor'?[
    {title:'Participación',description:'Volumen de ofertas y procesos publicados.',labels:['Registros de ofertas','Meses con actividad','Procesos únicos participados','Ofertas con monto informado']},
    {title:'Efectividad',description:'Selecciones documentadas; no equivalen a contratos adjudicados.',labels:['Resultados con empresa seleccionada','Procesos distintos con selección registrada','Tasa de selección registrada','Procesos ganados verificados']},
-   {title:'Resultados económicos',description:'Distingue importes ofertados, seleccionados y adjudicados.',labels:['Monto total ofertado informado','Suma de ofertas seleccionadas informadas','Relación monto seleccionado / ofertado','Monto adjudicado verificado']}
+   {title:'Resultados económicos',description:'Montos de ofertas publicadas y seleccionadas; las adjudicaciones contractuales requieren evidencia independiente.',labels:['Monto total ofertado informado','Monto de ofertas con selección registrada','Relación monto seleccionado / ofertado','Monto de adjudicaciones contractuales verificadas']}
   ]:[{title:'Actividad del organismo',description:'Información disponible según el nombre publicado.',labels:metrics.map(m=>m[0])}];
   const target=ph('participante-resumen');
   target.classList.add('participant-groups');
