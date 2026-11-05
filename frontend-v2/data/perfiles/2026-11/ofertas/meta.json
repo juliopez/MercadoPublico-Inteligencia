@@ -4,9 +4,9 @@
   "entidad": "ofertas",
   "campo_actor": "proveedor",
   "campo_monto": "monto_ofertado_clp",
-  "registros": 1,
-  "registros_identificados": 1,
-  "actores": 1,
-  "archivos": 1,
+  "registros": 10,
+  "registros_identificados": 10,
+  "actores": 8,
+  "archivos": 8,
   "nota": "Cifras descriptivas por entidad/mes; registros y montos no equivalen a operaciones únicas ni adjudicaciones verificadas."
 }
