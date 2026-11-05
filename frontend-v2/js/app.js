@@ -374,7 +374,23 @@ function renderLinkedRecords(target,items,kind){
   const orderedItems=relatedSort.key?[...items].sort((a,b)=>relatedSort.direction*compareRows(a,b,relatedSort.key)):items;
   for(const item of orderedItems.slice(page*perPage,(page+1)*perPage)){
    const tr=document.createElement('tr');
-   for(const field of fields)tr.append(displayedCell(item,field));
+   for(const field of fields){
+    if(kind==='ofertas'&&field==='proveedor'&&String(item.proveedor??'').trim()){
+     const td=document.createElement('td');const link=document.createElement('button');
+     link.type='button';link.className='viz-org-link';link.textContent=String(item.proveedor).trim();
+     link.title='Consultar todas las ofertas históricas de esta empresa';
+     link.setAttribute('aria-label','Consultar participación histórica de '+link.textContent);
+     link.addEventListener('click',()=>{
+      const type=$('participante-tipo'),name=$('participante-nombre'),search=$('participante-buscar'),section=$('participantes-historicos');
+      if(!type||!name||!search||!section)return;
+      type.value='proveedor';type.dispatchEvent(new Event('change'));
+      name.value=link.textContent;
+      section.scrollIntoView({behavior:'smooth',block:'start'});
+      search.click();
+     });
+     td.append(link);tr.append(td);
+    }else tr.append(displayedCell(item,field));
+   }
    body.append(tr);
   }
   prev.disabled=page===0;next.disabled=page===pages-1;
