@@ -293,6 +293,15 @@ function showDetail(record){
    const link=document.createElement('a');link.href='https://buscador.mercadopublico.cl/ficha?code='+encodeURIComponent(code);
    link.target='_blank';link.rel='noopener noreferrer';link.textContent='Abrir detalle oficial en Mercado Público ↗';
    dd.append(link);
+  }else if(key==='url_detalle'&&value){
+   let officialUrl=null;
+   try{
+    const candidate=new URL(String(value).trim());
+    if(candidate.protocol==='https:'&&['www.mercadopublico.cl','mercadopublico.cl','buscador.mercadopublico.cl'].includes(candidate.hostname))officialUrl=candidate.href;
+   }catch{}
+   if(officialUrl){
+    const link=document.createElement('a');link.href=officialUrl;link.target='_blank';link.rel='noopener noreferrer';link.className='detail-official-link';link.textContent='Abrir ficha oficial en Mercado Público ↗';link.title=officialUrl;dd.append(link);
+   }else dd.textContent=formatTableValue(record,key);
   }else if(codeField(key)&&value)dd.append(displayedCell(record,key).firstChild);else dd.textContent=moneyField(key)?moneyCLP(value):formatTableValue(record,key);
   body.append(dt,dd);
  }
