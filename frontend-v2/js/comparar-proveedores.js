@@ -65,22 +65,22 @@ async function compare(){
    const selectedWithin=[...selected].filter(code=>participated.has(code)).length;
    const amount=[...selectedAmounts.values()].reduce((t,v)=>t+(Number.isFinite(v)?v:0),0);
    return {offerCount,months,offerAmount:sum('offer','monto_total_clp'),offerCoverage:sum('offer','registros_con_monto'),
-    participation:participationReady?participated.size:null,selection:selectedReady?selected.size:null,
-    results:sum('result','registros'),rate:participationReady&&selectedReady&&participated.size?100*selectedWithin/participated.size:null,
-    selectedAmount:selectedReady&&[...selectedAmounts.values()].some(Number.isFinite)?amount:null,
+    participation:participated.size,selection:selected.size,
+    results:sum('result','registros'),rate:participated.size?100*selectedWithin/participated.size:null,
+    selectedAmount:amount,
     ocCount:sum('oc','registros'),ocAmount:sum('oc','monto_total_clp')};
   }));
   if(seq!==comparisonSeq||byId('comparar-alcance').value!==scope||(scope==='mes'&&byId('comparar-mes').value!==selectedPeriod))return;
   const metrics=[
    ['Ofertas registradas',v=>v.offerCount.toLocaleString('es-CL')],
    ['Meses con ofertas',v=>String(v.months)],
-   ['Procesos únicos participados',v=>v.participation===null?'Índice de códigos incompleto':v.participation.toLocaleString('es-CL')],
+   ['Procesos únicos participados',v=>v.participation.toLocaleString('es-CL')],
    ['Ofertas con monto informado',v=>v.offerCoverage.toLocaleString('es-CL')],
    ['Monto total ofertado informado',v=>formatMoney(v.offerAmount)],
    ['Resultados con empresa seleccionada',v=>v.results.toLocaleString('es-CL')],
-   ['Procesos únicos con selección registrada',v=>v.selection===null?'Pendiente de índice':v.selection.toLocaleString('es-CL')],
+   ['Procesos únicos con selección registrada',v=>v.selection.toLocaleString('es-CL')],
    ['Tasa de selección registrada',v=>v.rate===null?'No calculable':v.rate.toLocaleString('es-CL',{maximumFractionDigits:1})+' %'],
-   ['Suma de ofertas seleccionadas informadas',v=>v.selectedAmount===null?'Sin cobertura suficiente':formatMoney(v.selectedAmount)],
+   ['Suma de ofertas seleccionadas informadas',v=>formatMoney(v.selectedAmount)],
    ['Órdenes de compra registradas',v=>v.ocCount.toLocaleString('es-CL')],
    ['Monto informado en órdenes de compra',v=>formatMoney(v.ocAmount)],
    ['Adjudicaciones contractuales verificadas',()=> 'No calculado: sin vínculo contractual validado']
@@ -111,7 +111,7 @@ async function compare(){
    });
    th.dataset.label=label;th.replaceChildren(button);
   });
-  byId('comparar-estado').textContent='Comparación de '+names.length+' proveedores · '+(scope==='mes'?selectedPeriod:'todos los períodos ('+periods.length+' meses)')+'. Tasa basada en códigos únicos; selección registrada no equivale a adjudicación contractual. Los nombres no sustituyen el RUT.';
+  byId('comparar-estado').textContent='Comparación de '+names.length+' proveedores · '+(scope==='mes'?selectedPeriod:'todos los períodos ('+periods.length+' meses)')+'. Tasa basada en códigos únicos; selección registrada no equivale a adjudicación contractual. Los indicadores se calculan con registros e índices publicados, aunque su cobertura sea parcial. Los nombres no sustituyen el RUT.';
  }catch(error){
   if(seq===comparisonSeq)byId('comparar-estado').textContent='No fue posible completar la comparación: '+error.message;
  }finally{if(seq===comparisonSeq)byId('comparar-ejecutar').disabled=false}
