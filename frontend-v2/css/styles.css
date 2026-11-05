@@ -420,3 +420,9 @@ button.code-link:not(:disabled):focus-visible{
  .viz-column strong{font-size:.75rem}
  .viz-composition-ratio{font-size:.74rem}
 }
+
+/* Enlaces de empresas en tablas de ofertas: mantener contraste en hover y foco. */
+.table-scroll button.viz-org-link:not(:disabled):hover,
+.table-scroll button.viz-org-link:not(:disabled):focus-visible,
+button.viz-org-link:not(:disabled):hover,
+button.viz-org-link:not(:disabled):focus-visible{background:#e8f3fb;color:#104b68;text-decoration:underline;border-radius:3px;outline-offset:2px}
