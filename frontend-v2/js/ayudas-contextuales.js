@@ -50,10 +50,10 @@ const HELP={
  "Resultados con empresa seleccionada":"Número de registros que identifican a la empresa como seleccionada. Puede incluir registros repetidos de un proceso.",
  "Procesos distintos con selección registrada":"Códigos únicos de procesos donde los resultados históricos nombran a la empresa como seleccionada; no confirma una adjudicación contractual.",
  "Tasa de selección registrada":"Procesos únicos en los que la empresa ofertó y figura seleccionada, divididos por procesos únicos con oferta registrada. No equivale a una tasa de adjudicación contractual.",
- "Procesos ganados verificados":"Adjudicaciones acreditadas con evidencia suficiente. Permanece pendiente cuando la fuente pública no permite confirmar la adjudicación.",
- "Suma de ofertas seleccionadas informadas":"Suma de valores de las ofertas seleccionadas con importe conocido, deduplicada por código de proceso. No es el monto adjudicado ni pagado.",
+ "Procesos ganados verificados":"Este indicador aún no se calcula porque no existe una vinculación contractual validada en el Observatorio. No debe confundirse con selecciones registradas.",
+ "Monto de ofertas con selección registrada":"Suma de valores de las ofertas seleccionadas con importe conocido, deduplicada por código de proceso. No es el monto adjudicado ni pagado.",
  "Relación monto seleccionado / ofertado":"Cociente entre la suma de valores seleccionados informados y la suma de ofertas publicadas. Es una relación económica descriptiva, no una tasa de contratos ganados.",
- "Monto adjudicado verificado":"Monto de contratos cuya adjudicación está verificada. No se sustituye por la oferta seleccionada cuando no hay acreditación.",
+ "Monto de adjudicaciones contractuales verificadas":"Monto de adjudicaciones acreditadas mediante evidencia contractual. Actualmente no calculado: las ofertas con selección registrada no acreditan por sí solas adjudicación ni pago.",
  "Resultados vinculados":"Datos de selección o adjudicación encontrados en la fuente. Su fiabilidad depende de los estados de verificación disponibles."
 };
 const normalize=s=>String(s||'').replace(/ⓘ/g,'').replace(/\s+/g,' ').replace(/\s*[↗→].*$/,'').replace(/\s+\d[\d.,]*$/,'').trim();
