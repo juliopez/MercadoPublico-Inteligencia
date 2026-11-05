@@ -352,6 +352,7 @@ function renderLinkedRecords(target,items,kind){
  const description=document.createElement('p');description.className='muted';
  description.textContent=items.length?items.length.toLocaleString('es-CL')+' registros relacionados por código de proceso.':kind==='ordenescompra'?'No se encontraron órdenes con coincidencia exacta del código de proceso en los históricos publicados. Una OC podría existir con referencia de proceso vacía o diferente.':'No se encontraron registros relacionados por código de proceso en los históricos publicados.';
  container.append(description);
+ if(kind==='resultados'&&items.length){const note=document.createElement('p');note.className='muted';note.textContent='El adjudicatario corresponde al nombre informado en el resultado publicado. El monto de la oferta seleccionada no equivale al monto adjudicado; si este último no está informado, no se presume su valor.';container.append(note)}
  if(!items.length)return;
  const table=document.createElement('table'),head=document.createElement('tr'),body=document.createElement('tbody');
  const fields=kind==='procesos'?['_periodo_fuente','codigo','nombre','estado']:
@@ -375,10 +376,10 @@ function renderLinkedRecords(target,items,kind){
   for(const item of orderedItems.slice(page*perPage,(page+1)*perPage)){
    const tr=document.createElement('tr');
    for(const field of fields){
-    if(kind==='ofertas'&&field==='proveedor'&&String(item.proveedor??'').trim()){
+    if(((kind==='ofertas'&&field==='proveedor')||(kind==='resultados'&&field==='adjudicatario'))&&String(item[field]??'').trim()){
      const td=document.createElement('td');const link=document.createElement('button');
-     link.type='button';link.className='viz-org-link';link.textContent=String(item.proveedor).trim();
-     link.title='Consultar todas las ofertas históricas de esta empresa';
+     link.type='button';link.className='viz-org-link';link.textContent=String(item[field]).trim();
+     link.title='Consultar la participación histórica de esta empresa';
      link.setAttribute('aria-label','Consultar participación histórica de '+link.textContent);
      link.addEventListener('click',()=>{
       const type=$('participante-tipo'),name=$('participante-nombre'),search=$('participante-buscar'),section=$('participantes-historicos');
