@@ -108,7 +108,7 @@ async function draw(s,t){
   const verified=t.found;
   const amountField={procesos:'monto_disponible_clp',ofertas:'monto_ofertado_clp',resultados:'monto_adjudicado_clp',ordenescompra:'monto_total_oc_clp'}[t.entity];
   const numbers=verified.map(x=>String(x.record[amountField]??'').replaceAll('.','').replace(',','.')).filter(Boolean).map(Number).filter(Number.isFinite);
-   el('global-analitica').textContent=(completed?'Total verificado de la consulta: ':'Acumulado parcial de la consulta (puede aumentar): ')+verified.length.toLocaleString('es-CL')+' registros coincidentes · '+numbers.length.toLocaleString('es-CL')+' con monto informado · suma de esos montos ;
+   el('global-analitica').textContent=(completed?'Total verificado de la consulta: ':'Acumulado parcial de la consulta (puede aumentar): ')+verified.length.toLocaleString('es-CL')+' registros coincidentes · '+numbers.length.toLocaleString('es-CL')+' con monto informado · suma de esos montos $'+Math.round(numbers.reduce((a,b)=>a+b,0)).toLocaleString('es-CL')+'. Los montos son descriptivos.';
    el('global-csv').disabled=verified.length===0;
    message((completed?t.found.length.toLocaleString('es-CL')+' coincidencias exactas (consulta completa)':t.found.length.toLocaleString('es-CL')+' coincidencias verificadas hasta ahora (consulta parcial; el orden mostrado es provisional)')+' · '+(t.multi?'todos los períodos':t.period)+' · '+t.entity+'.');
  }catch(e){if(valid(s,t))message('No se pudo completar la búsqueda: '+e.message)}
