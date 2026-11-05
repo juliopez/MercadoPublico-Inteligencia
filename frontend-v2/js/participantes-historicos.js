@@ -63,6 +63,7 @@ async function searchParticipant(){
   const active=rows.filter(r=>r.count>0);
   const coverageReady=active.every(r=>r.extra!==null);
   const processMonthCount=active.reduce((sum,r)=>sum+(r.extra?.procesos_distintos||0),0);
+  const missingCodes=active.filter(r=>!Array.isArray(r.extra?.codigos_participados)).map(r=>r.period);
   const selectionIndicesReady=type==='proveedor'&&rows.filter(r=>r.outcome>0).every(r=>Array.isArray(r.extra?.codigos_seleccionados));
   const selectedCodes=new Set();
   const selectedAmounts=new Map();
@@ -77,7 +78,7 @@ async function searchParticipant(){
   const knownSelected=Array.from(selectedAmounts.values()).filter(Number.isFinite).length;
   const metrics=[['Registros de '+(type==='proveedor'?'ofertas':'procesos'),total.toLocaleString('es-CL')],['Meses con actividad',String(months)],[type==='proveedor'?'Monto total ofertado informado':'Presupuesto disponible informado',new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(rows.reduce((s,r)=>s+r.monto,0))]];
   if(type==='proveedor'){
-   metrics.push(['Procesos únicos participados',active.every(r=>Array.isArray(r.extra?.codigos_participados))?new Set(active.flatMap(r=>r.extra.codigos_participados)).size.toLocaleString('es-CL'):'Cobertura incompleta']);
+   metrics.push(['Procesos únicos participados',active.every(r=>Array.isArray(r.extra?.codigos_participados))?new Set(active.flatMap(r=>r.extra.codigos_participados)).size.toLocaleString('es-CL'):'Índice de códigos incompleto']);
    metrics.push(['Ofertas con monto informado',rows.reduce((sum,r)=>sum+r.coverage,0).toLocaleString('es-CL')+' de '+total.toLocaleString('es-CL')]);
    metrics.push(['Resultados con empresa seleccionada',rows.reduce((sum,r)=>sum+r.outcome,0).toLocaleString('es-CL')]);
    metrics.push(['Procesos distintos con selección registrada',selectionIndicesReady?selectedCodes.size.toLocaleString('es-CL'):'Pendiente de publicar índice']);
@@ -97,8 +98,8 @@ async function searchParticipant(){
    if(selectionIndicesReady&&knownSelected&&offered>0)
     metrics.push(['Relación monto seleccionado / ofertado',(100*selectedValue/offered).toLocaleString('es-CL',{maximumFractionDigits:1})+' % · indicador descriptivo']);
 
-   metrics.push(['Procesos ganados verificados','Pendiente de verificar']);
-   metrics.push(['Monto adjudicado verificado','Sin datos suficientes']);
+   metrics.push(['Procesos ganados verificados','No calculado: sin vínculo contractual validado']);
+   metrics.push(['Monto adjudicado verificado','No calculado: sin vínculo contractual validado']);
   }else{
    metrics.push(['Ofertas recibidas vinculadas',coverageReady?active.reduce((sum,r)=>sum+(r.extra.ofertas_recibidas_vinculadas||0),0).toLocaleString('es-CL'):'En preparación']);
   }
@@ -184,7 +185,7 @@ async function searchParticipant(){
    });
    ph('participante-enlaces').append(action);
   }
-  ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. '+(type==='proveedor'?'Las selecciones registradas no acreditan adjudicaciones ni pagos. Consulta las ayudas de cada indicador.':'Los organismos se agrupan por nombre publicado, sin homologación.'):'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
+  ph('participante-estado').textContent=total?'Encontrados '+total.toLocaleString('es-CL')+' registros en '+months+' meses publicados. '+(type==='proveedor'?'Las selecciones registradas no acreditan adjudicaciones ni pagos. '+(missingCodes.length?'Índices de participación incompletos en: '+missingCodes.join(', ')+'. ':'')+'Las adjudicaciones contractuales aún no cuentan con un cálculo validado.':'Los organismos se agrupan por nombre publicado, sin homologación.'):'No se encontraron coincidencias exactas del nombre normalizado en los perfiles publicados.';
  }catch(e){if(req===seq)ph('participante-estado').textContent='No fue posible consultar los índices: '+e.message}
 }
 ph('participante-buscar').addEventListener('click',searchParticipant);
