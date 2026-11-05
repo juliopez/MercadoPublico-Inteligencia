@@ -74,7 +74,7 @@ async function compare(){
   const metrics=[
    ['Ofertas registradas',v=>v.offerCount.toLocaleString('es-CL')],
    ['Meses con ofertas',v=>String(v.months)],
-   ['Procesos únicos participados',v=>v.participation===null?'Cobertura incompleta':v.participation.toLocaleString('es-CL')],
+   ['Procesos únicos participados',v=>v.participation===null?'Índice de códigos incompleto':v.participation.toLocaleString('es-CL')],
    ['Ofertas con monto informado',v=>v.offerCoverage.toLocaleString('es-CL')],
    ['Monto total ofertado informado',v=>formatMoney(v.offerAmount)],
    ['Resultados con empresa seleccionada',v=>v.results.toLocaleString('es-CL')],
@@ -83,7 +83,7 @@ async function compare(){
    ['Suma de ofertas seleccionadas informadas',v=>v.selectedAmount===null?'Sin cobertura suficiente':formatMoney(v.selectedAmount)],
    ['Órdenes de compra registradas',v=>v.ocCount.toLocaleString('es-CL')],
    ['Monto informado en órdenes de compra',v=>formatMoney(v.ocAmount)],
-   ['Adjudicaciones contractuales verificadas',()=> 'Sin verificación suficiente']
+   ['Adjudicaciones contractuales verificadas',()=> 'No calculado: sin vínculo contractual validado']
   ];
   const head=document.createElement('tr');head.append(cell('Indicador'));
   for(const name of names){const th=document.createElement('th');th.textContent=name;head.append(th)}
