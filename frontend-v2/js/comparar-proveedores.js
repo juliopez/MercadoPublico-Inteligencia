@@ -80,10 +80,10 @@ async function compare(){
    ['Resultados con empresa seleccionada',v=>v.results.toLocaleString('es-CL')],
    ['Procesos únicos con selección registrada',v=>v.selection.toLocaleString('es-CL')],
    ['Tasa de selección registrada',v=>v.rate===null?'No calculable':v.rate.toLocaleString('es-CL',{maximumFractionDigits:1})+' %'],
-   ['Suma de ofertas seleccionadas informadas',v=>formatMoney(v.selectedAmount)],
+   ['Monto de ofertas con selección registrada',v=>formatMoney(v.selectedAmount)],
    ['Órdenes de compra registradas',v=>v.ocCount.toLocaleString('es-CL')],
    ['Monto informado en órdenes de compra',v=>formatMoney(v.ocAmount)],
-   ['Adjudicaciones contractuales verificadas',()=> 'No calculado: sin vínculo contractual validado']
+   ['Adjudicaciones contractuales verificadas',()=> 'No calculado']
   ];
   const head=document.createElement('tr');head.append(cell('Indicador'));
   for(const name of names){const th=document.createElement('th');th.textContent=name;head.append(th)}
