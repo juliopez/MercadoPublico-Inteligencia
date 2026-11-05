@@ -175,7 +175,7 @@ async function run(ev){
   progress(100);
   window.merAnaliticaFiltro={active:true,entity,term:raw,data:output};
   document.dispatchEvent(new Event('mer-analytics-filter'));
-  status('Filtro aplicado: «'+raw+'» · '+output.length+' períodos analizados. Gráficos actualizados.');
+  status('Filtro aplicado: «'+raw+'» · '+output.length+' períodos verificados. Los gráficos muestran solo coincidencias de la palabra clave; los montos no representan pagos.');
  }catch(e){
   if(ticket===serial){progress(0,false);status('No se aplicó el filtro: '+e.message+'. Se conservan los gráficos anteriores.')}
  }finally{if(ticket===serial)F('analitica-aplicar').disabled=false}
