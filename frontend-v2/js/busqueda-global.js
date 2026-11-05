@@ -108,9 +108,115 @@ async function draw(s,t){
   const verified=t.found;
   const amountField={procesos:'monto_disponible_clp',ofertas:'monto_ofertado_clp',resultados:'monto_adjudicado_clp',ordenescompra:'monto_total_oc_clp'}[t.entity];
   const numbers=verified.map(x=>String(x.record[amountField]??'').replaceAll('.','').replace(',','.')).filter(Boolean).map(Number).filter(Number.isFinite);
-   el('global-analitica').textContent=(completed?'Total verificado del período: ':'Avance de verificación: ')+verified.length.toLocaleString('es-CL')+' registros · '+numbers.length.toLocaleString('es-CL')+' con monto · suma informada $'+Math.round(numbers.reduce((a,b)=>a+b,0)).toLocaleString('es-CL')+'. Los montos son descriptivos.';
+   el('global-analitica').textContent=(completed?'Total verificado de la consulta: ':'Acumulado parcial de la consulta (puede aumentar): ')+verified.length.toLocaleString('es-CL')+' registros coincidentes · '+numbers.length.toLocaleString('es-CL')+' con monto informado · suma de esos montos +Math.round(numbers.reduce((a,b)=>a+b,0)).toLocaleString('es-CL')+'. Los montos son descriptivos.';
    el('global-csv').disabled=verified.length===0;
-   message((completed?t.found.length.toLocaleString('es-CL')+' coincidencias exactas':t.found.length.toLocaleString('es-CL')+' coincidencias exactas verificadas hasta ahora')+' · '+(t.multi?'todos los períodos':t.period)+' · '+t.entity+'.');
+   message((completed?t.found.length.toLocaleString('es-CL')+' coincidencias exactas (consulta completa)':t.found.length.toLocaleString('es-CL')+' coincidencias verificadas hasta ahora (consulta parcial; el orden mostrado es provisional)')+' · '+(t.multi?'todos los períodos':t.period)+' · '+t.entity+'.');
+ }catch(e){if(valid(s,t))message('No se pudo completar la búsqueda: '+e.message)}
+}
+async function search(options={}){
+ const organismoExacto=typeof options?.organismoExacto==='string'?options.organismoExacto:null;
+ const now=++seq,period=el('periodo').value,entity=el('entidad').value,multi=el('busqueda-global-alcance').value==='todos';
+ el('busqueda-global-progreso').hidden=false;el('busqueda-global-progreso').value=0;
+ session=null;
+ const raw=el('busqueda-global-texto').value.trim();
+ const query=[...new Set(terms(raw))];
+ const codeQuery=/^[a-z0-9]+(?:-[a-z0-9]+)+$/i.test(raw);
+ const indexedTokens=query.filter(t=>t.length>=3);
+ if((!multi&&!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period))||!fields[entity]){clear('Seleccione un período y una entidad.');return}
+ if(!indexedTokens.length||(!organismoExacto&&!codeQuery&&query.some(t=>t.length<3))){clear('Introduce palabras de al menos 3 caracteres o un código completo.');return}
+ message(multi?'Consultando índices de todos los períodos publicados…':'Consultando índice de '+period+'…');
+ try{
+  const response=await fetch('./data/catalogo-publico.json');
+  if(!response.ok)throw Error('No se pudo consultar el catálogo');
+  const catalogue=await response.json();
+  const months=multi?catalogue.periodos.map(p=>p.periodo):[period];
+  const refs=[],parts={};
+  for(const month of months){
+   if(now!==seq)return;
+   let meta;
+   try{meta=await read('data/busqueda/'+month+'/'+entity+'/meta.json')}
+   catch(e){if(multi&&String(e).includes('404'))continue;throw e}
+   if(meta.version!==3||meta.periodo!==month||meta.entidad!==entity)throw Error('Índice incompatible: '+month);
+   const paths=catalogue.periodos?.find(p=>p.periodo===month)?.partes?.[entity];
+   if(!Array.isArray(paths)||paths.length!==meta.fragmentos)throw Error('Índice desactualizado: '+month);
+   parts[month]=paths;
+   const grouped=new Map();
+   for(const key of [...new Set(indexedTokens.map(t=>t.slice(0,2)))]){
+    try{grouped.set(key,await read('data/busqueda/'+month+'/'+entity+'/'+key+'.json'))}
+    catch(e){if(String(e.message).includes('404'))grouped.set(key,{});else throw e}
+    if(now!==seq)return;
+   }
+   const lists=indexedTokens.map(token=>grouped.get(token.slice(0,2))?.[token.slice(0,3)]||[]);
+   lists.sort((a,b)=>a.length-b.length);
+   const others=lists.slice(1).map(list=>new Set(list.map(v=>v.join(':'))));
+   for(const ref of (lists[0]||[]))if(others.every(set=>set.has(ref.join(':'))))refs.push(multi?[month,...ref]:ref);
+  }
+  refs.sort((a,b)=>multi?(a[0].localeCompare(b[0])||a[1]-b[1]||a[2]-b[2]):(a[0]-b[0]||a[1]-b[1]));
+  globalSort={key:null,direction:1};
+  const t={period,entity,multi,parts,tokens:query,organismoExacto,filters:{status:norm(el('global-estado').value.trim()),type:norm(el('global-modalidad').value.trim())},refs,cursor:0,found:[],page:0};
+  session=t;
+  await draw(now,t);
+ }catch(e){if(now===seq)clear('No fue posible consultar el índice: '+e.message+'. La consulta por bloques sigue disponible.')}
+}
+// Desde Analizar: búsqueda por índice del mes con igualdad exacta del campo
+// organismo_comprador. No equiparar menciones libres con organismo responsable.
+window.buscarProcesosOrganismo=async function(nombre,periodo){
+ const exacto=String(nombre||'').trim(),mes=String(periodo||'').trim();
+ if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(mes)||!exacto||exacto==='Sin organismo informado')return;
+ const selector=el('periodo');
+ if(![...selector.options].some(option=>option.value===mes)){
+  message('El período indicado no está publicado.');return;
+ }
+ if(el('entidad').value!=='procesos'){
+  el('entidad').value='procesos';el('entidad').dispatchEvent(new Event('change'));
+ }
+ if(selector.value!==mes){
+  selector.value=mes;selector.dispatchEvent(new Event('change'));
+ }
+ el('busqueda-global-alcance').value='mes';
+ el('busqueda-global-texto').value=exacto;
+ el('global-estado').value='';
+ el('global-modalidad').value='';
+ el('busqueda-global').scrollIntoView({behavior:'smooth',block:'start'});
+ await search({organismoExacto:exacto});
+};
+el('busqueda-global-boton').addEventListener('click',()=>search());
+el('busqueda-global-texto').addEventListener('keydown',e=>{if(e.key==='Enter')search()});
+el('busqueda-global-anterior').addEventListener('click',()=>{if(session&&session.page>0){session.page--;draw(seq,session)}});
+el('busqueda-global-siguiente').addEventListener('click',()=>{if(session){session.page++;draw(seq,session)}});
+for(const id of ['periodo','entidad'])el(id).addEventListener('change',()=>{if(id==='entidad'||el('busqueda-global-alcance').value!=='todos')clear('Seleccione Buscar para iniciar una consulta.')});
+el('busqueda-global-alcance').addEventListener('change',()=>clear('Seleccione Buscar para iniciar una consulta.'));
+async function exportGlobal(){
+ const t=session,s=seq;
+ if(!t)return;
+ const button=el('global-csv');button.disabled=true;
+ try{
+  const limit=20001;
+  message('Completando verificación de coincidencias para la exportación CSV…');
+  await collect(s,t,limit);
+  if(!valid(s,t))return;
+  if(t.found.length>20000||t.cursor<t.refs.length){
+   message('La consulta excede 20.000 coincidencias o aún requiere demasiados registros. Refina las palabras clave antes de exportar para evitar un CSV incompleto.');
+   return;
+  }
+  const cols=[...(t.multi?['periodo']:[]),...fields[t.entity].map(([key])=>key)];
+  const safe=x=>'"'+String(x??'').replaceAll('"','""').replace(/^[=+@\-\t\r]/,m=>"'"+m)+'"';
+  const all=globalSort.key?[...t.found].sort((a,b)=>globalSort.direction*String(a.record[globalSort.key]??'').localeCompare(String(b.record[globalSort.key]??''),'es',{numeric:true})):t.found;
+  const csv='\uFEFF'+[cols.join(';'),...all.map(x=>cols.map(key=>safe(key==='periodo'?x.month:x.record[key])).join(';'))].join('\r\n');
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const a=document.createElement('a');a.href=url;a.download='busqueda-global-'+t.entity+'-'+t.period+'.csv';
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  message('CSV completo exportado: '+t.found.length.toLocaleString('es-CL')+' registros verificados de '+t.period+'.');
+ }catch(e){if(valid(s,t))message('No fue posible exportar: '+e.message)}
+ finally{if(valid(s,t))button.disabled=t.found.length===0}
+}
+el('global-csv').addEventListener('click',exportGlobal);
+for(const id of ['global-estado','global-modalidad'])el(id).addEventListener('change',()=>clear('Filtros modificados. Ejecute nuevamente la búsqueda global.'));
+el('entidad').addEventListener('change',controls);
+controls();
++Math.round(numbers.reduce((a,b)=>a+b,0)).toLocaleString('es-CL')+'. Los montos son descriptivos.';
+   el('global-csv').disabled=verified.length===0;
+   message((completed?t.found.length.toLocaleString('es-CL')+' coincidencias exactas (consulta completa)':t.found.length.toLocaleString('es-CL')+' coincidencias verificadas hasta ahora (consulta parcial; el orden mostrado es provisional)')+' · '+(t.multi?'todos los períodos':t.period)+' · '+t.entity+'.');
  }catch(e){if(valid(s,t))message('No se pudo completar la búsqueda: '+e.message)}
 }
 async function search(options={}){
