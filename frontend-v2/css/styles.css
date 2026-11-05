@@ -278,6 +278,17 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 .viz-column-track{width:min(100%,52px);height:147px;display:flex;align-items:flex-end;background:#edf3f8;border-radius:5px 5px 0 0;overflow:hidden}
 .viz-column-fill{width:100%;background:linear-gradient(180deg,#81b9e4,#176b92);border-radius:5px 5px 0 0}
 .viz-column:hover,.viz-column:focus-visible,.viz-column.selected{outline:2px solid #2479a4;border-radius:5px}
+/* Las columnas son botones: neutralizar el hover global oscuro y conservar contraste. */
+.analytics-visual button.viz-column:not(:disabled):hover,
+.analytics-visual button.viz-column:not(:disabled):focus-visible,
+.analytics-visual button.viz-column.selected{
+  background:#e6f3fc;
+  color:#173e5a;
+}
+.analytics-visual button.viz-column:is(:hover,:focus-visible,.selected) strong,
+.analytics-visual button.viz-column:is(:hover,:focus-visible,.selected) .viz-composition-ratio{
+  color:#173e5a;
+}
 .viz-change-list{display:flex;justify-content:space-around;gap:8px}
 .viz-change{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:.72rem}
 .viz-change strong.negative{color:#ba3651}.viz-change strong.positive{color:#147b51}
