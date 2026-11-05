@@ -426,3 +426,7 @@ button.code-link:not(:disabled):focus-visible{
 .table-scroll button.viz-org-link:not(:disabled):focus-visible,
 button.viz-org-link:not(:disabled):hover,
 button.viz-org-link:not(:disabled):focus-visible{background:#e8f3fb;color:#104b68;text-decoration:underline;border-radius:3px;outline-offset:2px}
+
+/* Encabezados de los cuatro bloques principales */
+.landing-group h2{display:flex;align-items:center;gap:10px;line-height:1.4}
+.landing-group .section-icon{width:24px;height:24px;flex:none;color:#176b92}
