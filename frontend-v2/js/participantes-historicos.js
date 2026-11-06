@@ -48,11 +48,12 @@ async function searchParticipant(){
  const req=++seq,name=ph('participante-nombre').value.trim(),type=ph('participante-tipo').value;
  const entity=type==='proveedor'?'ofertas':'procesos';
  ph('participante-resumen').replaceChildren();ph('participante-evolucion').replaceChildren();ph('participante-enlaces').replaceChildren();
- participantProgress(0,false);
- if(normalizeActor(name).length<2){ph('participante-estado').textContent='Introduce al menos dos caracteres.';return}
+ participantProgress(0);
+ if(normalizeActor(name).length<2){participantProgress(0,false);ph('participante-estado').textContent='Introduce al menos dos caracteres.';return}
  ph('participante-estado').textContent='Consultando índices históricos públicos…';
  try{
   const c=await catalog(),rows=[];
+  if(req!==seq)return;
   participantProgress(0);
   const count=c.periodos.length;
   for(const p of c.periodos){
