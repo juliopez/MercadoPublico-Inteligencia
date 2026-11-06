@@ -112,6 +112,10 @@ index.html         Entrada de la plataforma pública
 - **Pruebas:** antes de publicar, validar sintaxis, contratos, índices, conteos, búsquedas y navegación. La operación mensual requiere una prueba integral adicional.
 - **Cambios:** proponer modificaciones acotadas, documentar compatibilidad y no alterar ETL, API o temporizadores productivos sin pruebas y autorización.
 
+## Continuidad operativa para nuevas auditorías
+
+**[Abrir punto de recuperación operativa](docs/continuidad/README.md).** Incluye estado actual, inventario de cron y Actions, auditoría, incidencias y cambios; permite retomar rotación, conciliación, publicación e índices en otra conversación sin alterar procesos protegidos.
+
 ## Documentación de referencia
 
 **Para empezar:** [Instalación](docs/INSTALACION.md) · [Arquitectura y despliegue UML](docs/ARQUITECTURA.md) · [Modelo de datos](docs/MODELO_DATOS.md) · [Configuración](docs/CONFIGURACION.md) · [Adaptación tecnológica](docs/ADAPTACION.md) · [Automatización](docs/AUTOMATIZACION.md) · [Operación](docs/OPERACION.md).
