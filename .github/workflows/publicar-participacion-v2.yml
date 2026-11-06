@@ -37,10 +37,24 @@ jobs:
           for attempt in 1 2 3 4; do
             git fetch origin main
             git reset --hard origin/main
-            for p in 2026-06 2026-07 2026-08 2026-09 2026-10; do
+            for p in 2026-10 2026-11; do
               python scripts/generar_participacion_historica_v2.py --periodo "$p"
             done
-            git add frontend-v2/data/participacion/
+            python - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('frontend-v2/data')
+          catalog=json.loads((root/'catalogo-publico.json').read_text())
+          for period in ('2026-10','2026-11'):
+           entry=next(p for p in catalog['periodos'] if p['periodo']==period)
+           meta=json.loads((root/'participacion'/period/'meta.json').read_text())
+           assert meta['version']==1 and meta['periodo']==period
+           assert meta['procesos_publicados']<=entry['conteos']['procesos']
+           assert meta['ofertas']<=entry['conteos']['ofertas']
+           for kind in ('organismo','proveedor'):
+            assert (root/'participacion'/period/kind).is_dir(),(period,kind)
+           print('PARTICIPACION_REGENERADA',period,meta)
+          PY
+            git add frontend-v2/data/participacion/2026-10/ frontend-v2/data/participacion/2026-11/
             if git diff --cached --quiet; then
               echo "PARTICIPACION_SIN_CAMBIOS"
               exit 0
