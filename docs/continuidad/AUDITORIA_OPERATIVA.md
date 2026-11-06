@@ -72,3 +72,14 @@ Salida local de `journalctl -t CRON` para 15:55–16:30 Chile: sesión del usuar
 Salida de `systemctl --user list-timers --all`: `mercadopublico-rotacion.timer` última 05/11 19:00:48, próxima 06/11 19:00; `mercadopublico-api-github-dispatch.timer` última 05/11 22:05:11, próxima 06/11 22:05; `mercadopublico-conciliacion.timer` última 06/11 16:00:14, próxima 07/11 10:00. **Verificado: timers reconocidos y activaciones registradas; no verificado: resultados de servicios.** La activación de conciliación a las 16:00:14 coincide temporalmente con el cron y requiere inspección del journal del servicio para determinar si solo evaluó la puerta de calendario. No asumir ejecución de conciliación ni colisión de escrituras.
 
 Pendiente: `systemctl --user status` y `journalctl --user -u` de los tres servicios; log de ETL y estado final; identificación de run de Actions correspondiente al disparo 05/11 22:05. Evidencia de Ubuntu provista como captura de terminal por el responsable, no acceso remoto directo.
+
+### Journals de servicios Ubuntu aportados — 2026-11-06
+
+Captura de `journalctl --user` (desde 05/11 18:30 Chile), proporcionada por el responsable:
+
+- **Rotación P3:** 05/11 19:00:48, `NO_CORRESPONDE_ROTACION 2026-11-05 ultimo_habil 2026-11-30`; servicio `Finished`. **Verificado:** evaluación de calendario y salida sin rotación; no prueba la futura rotación del 30/11.
+- **API P2:** 05/11 22:05:11 `DISPARADOR_UBUNTU ... autorizado=True`; 22:05:12 `ESTADO_GITHUB DISPARO_PENDIENTE`; 22:05:15 `WORKFLOW_DISPATCH_SOLICITADO jornada=2026-11-05`; servicio `Finished`. **Verificado:** solicitud local de workflow_dispatch, no ejecución o conclusión en Actions. La política maestra aún contiene texto anterior de instalación pendiente; este journal acredita ejecución del disparador en Ubuntu.
+- **Conciliación P4:** 06/11 12:40:56 y 12:50:44 `NO_CORRESPONDE`, con `habil_desde=2026-11-10`, período `2026-10`; servicios `Finished`. **Verificado:** puerta de calendario evaluada y sin conciliación anticipada.
+- **Conciliación P4 a las 16:00:14:** `MER ocupado: conciliación pendiente para siguiente intento`; servicio `Finished`. **Verificado:** detección de recurso ocupado mientras cron de 16:00 estaba activo; no prueba que se haya producido una colisión de escritura ni que un reintento futuro se complete. Inspeccionar lógica de reintento y journal del 10/11 antes de cerrar VAL-03.
+
+**Conclusión:** timers y servicios efectivamente disparados; resultados locales de rotación y puerta de calendario congruentes. Solicitud de API confirmada solo hasta el disparador. No modificar procesos protegidos.
