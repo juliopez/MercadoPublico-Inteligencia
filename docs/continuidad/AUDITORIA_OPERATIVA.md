@@ -96,3 +96,16 @@ Captura de `journalctl --user` (desde 05/11 18:30 Chile), proporcionada por el r
 - Líneas del CSV: **1**; registros de datos observados: **0** (solo cabecera).
 
 **Conclusión acotada:** al momento de la consulta, el ZIP oficial mensual de licitaciones para noviembre estaba vacío de filas de datos. Esto explica que el ETL diario no obtenga nuevas licitaciones **desde ese ZIP**, aunque sí publique órdenes de compra. No acredita inexistencia de licitaciones reales en ChileCompra ni excluye que la fuente se actualice posteriormente. Tampoco certifica por sí solo el código de salida completo del ETL. **No se modifica el proceso productivo.**
+
+### Historial de GitHub Actions aportado por GitHub CLI — 2026-11-06, ~19:02 Chile
+
+Captura de `gh run list --limit 20 --json databaseId,name,event,status,conclusion,createdAt,startedAt` facilitada por el responsable. Timestamps de GitHub en UTC; **17:00Z = 14:00 Chile** y **19:04Z = 16:04 Chile**.
+
+- `42276360735` **Publicación V2 posterior al ETL Ubuntu**, evento `push`, `completed/success`, 19:04:14Z (16:04:14 Chile).
+- `42276360739` **Publicar participación histórica V2**, `push`, `completed/success`, 19:04:14Z.
+- `42276435424` **Reparar analítica de organismos por período**, `workflow_run`, `completed/success`, 19:04:44Z.
+- `42276435425` **Supervisar publicación diaria MER V2**, `workflow_run`, `completed/success`, 19:04:44Z.
+- `42276523390` **Observatorio - vista previa frontend MER v2**, `workflow_run`, `completed/success`, 19:05:18Z.
+- Entre 17:00Z y 17:02Z (14:00–14:02 Chile), varias validaciones V2 `push` terminaron `success`, con una vista previa `cancelled` (`42257769547`). No son ejecuciones a las 17:00 Chile.
+
+**Verificado:** las ejecuciones listadas terminaron con los estados indicados y los eventos `push`/`workflow_run` mostrados. **No verificado:** pasos internos, cobertura de datos, ni existencia/identidad de un proceso a las 17:00 Chile (20:00Z), porque la captura de 19:02 Chile es anterior a esa hora. No atribuir función detallada de cada workflow sin leer YAML y logs. No se observa en esta captura una ejecución nocturna de API del 05/11, pues el listado solo muestra los 20 runs más recientes.
