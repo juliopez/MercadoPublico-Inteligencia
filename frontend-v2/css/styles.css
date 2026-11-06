@@ -96,8 +96,8 @@ button.secondary:hover{background:#d4e6f3;color:#104b68}
 .skip-link:focus{top:8px}
 :where(button,a,input,select,summary):focus-visible{outline:3px solid #e9a82b;outline-offset:3px}
 .tag-ux{display:inline-block;color:#155475;background:#e0f2ff;border-radius:14px;padding:3px 10px;font-size:.7rem;vertical-align:middle}
-#busqueda-global-progreso{display:block;width:100%;height:9px;margin:12px 0}
-#busqueda-global-progreso[hidden],#volver-contexto[hidden]{display:none}
+#busqueda-global-progreso{display:block;width:100%}
+#volver-contexto[hidden]{display:none}
 #volver-contexto{margin:6px 0 14px}
 .detail-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:16px 0}
 .detail-highlight{padding:12px;border:1px solid #dbe9f3;border-radius:9px;background:#f3f8fc;min-width:0;overflow-wrap:anywhere}
@@ -383,7 +383,11 @@ header .reference{font-size:.84rem;margin-top:10px}
 /* Progreso del filtro temático: porcentaje accesible y visible en móvil. */
 .analytic-progress{margin:.7rem 0 1rem;max-width:44rem}
 .analytic-progress label{display:flex;justify-content:space-between;gap:1rem;font-size:.92rem;margin-bottom:.35rem}
-.analytic-progress progress{display:block;width:100%;height:.85rem;accent-color:#2476ac;border-radius:1rem}
+.analytic-progress progress{display:block;width:100%;height:.85rem;accent-color:#198754;border-radius:1rem;overflow:hidden}
+.analytic-progress progress::-webkit-progress-bar{background:#e3eee7;border-radius:1rem}
+.analytic-progress progress::-webkit-progress-value{background:#198754;border-radius:1rem}
+.analytic-progress progress::-moz-progress-bar{background:#198754;border-radius:1rem}
+.analytic-progress strong{color:#176a40;font-variant-numeric:tabular-nums}
 .analytic-progress[hidden]{display:none}
 
 /* Ayudas contextuales de indicadores; activables con teclado y clic. */
