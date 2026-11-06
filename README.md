@@ -116,6 +116,6 @@ index.html         Entrada de la plataforma pública
 
 **Para empezar:** [Instalación](docs/INSTALACION.md) · [Arquitectura y despliegue UML](docs/ARQUITECTURA.md) · [Modelo de datos](docs/MODELO_DATOS.md) · [Configuración](docs/CONFIGURACION.md) · [Adaptación tecnológica](docs/ADAPTACION.md) · [Automatización](docs/AUTOMATIZACION.md) · [Operación](docs/OPERACION.md).
 
-**Para profundizar:** [Manual funcional del frontend](frontend-v2/README.md) · [Índice documental completo](docs/INDICE_DOCUMENTACION.md) · [Decisiones y restricciones](docs/DECISIONES_TECNICAS.md) · [Política de protección](docs/POLITICA_PROTECCION_CUATRO_PROCESOS.md).
+**Para profundizar:** [Mapa de mantenimiento de GitHub Actions](docs/GITHUB_ACTIONS_MANTENIMIENTO.md) · [Manual funcional del frontend](frontend-v2/README.md) · [Índice documental completo](docs/INDICE_DOCUMENTACION.md) · [Decisiones y restricciones](docs/DECISIONES_TECNICAS.md) · [Política de protección](docs/POLITICA_PROTECCION_CUATRO_PROCESOS.md).
 
 Los documentos operativos fechados se conservan como **evidencia histórica** y pueden describir estados ya superados. Para conocer el comportamiento vigente, contrastar documentación, código y ejecuciones reales.
