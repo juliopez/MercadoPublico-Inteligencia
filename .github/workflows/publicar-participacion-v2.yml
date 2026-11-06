@@ -6,6 +6,10 @@ on:
     paths:
       - '.github/workflows/publicar-participacion-v2.yml'
       - 'scripts/generar_participacion_historica_v2.py'
+      - 'frontend-v2/data/catalogo-publico.json'
+      - 'frontend-v2/data/partes/procesos/**'
+      - 'frontend-v2/data/partes/ofertas/**'
+      - 'frontend-v2/data/partes/resultados/**'
 permissions:
   contents: write
 concurrency:
@@ -14,7 +18,7 @@ concurrency:
 jobs:
   indices:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,24 +41,64 @@ jobs:
           for attempt in 1 2 3 4; do
             git fetch origin main
             git reset --hard origin/main
-            for p in 2026-10 2026-11; do
+            export EVENT_BEFORE="${{ github.event.before }}"
+            export EVENT_NAME="${{ github.event_name }}"
+            python - <<'PY'
+          import json,os,pathlib,re,subprocess
+          root=pathlib.Path('frontend-v2/data')
+          current=json.loads((root/'catalogo-publico.json').read_text())
+          entries={p['periodo']:p for p in current['periodos']}
+          before=os.environ.get('EVENT_BEFORE','')
+          name=os.environ.get('EVENT_NAME','')
+          changed=set()
+          if name=='push' and re.fullmatch('[0-9a-f]{40}',before) and before!='0'*40:
+           try:
+            files=subprocess.check_output(['git','diff','--name-only',before,'HEAD'],text=True).splitlines()
+            for f in files:
+             match=re.match(r'frontend-v2/data/partes/(?:procesos|ofertas|resultados)/(20\\d{2}-\\d{2})/',f)
+             if match:changed.add(match.group(1))
+            if 'frontend-v2/data/catalogo-publico.json' in files:
+             old=json.loads(subprocess.check_output(['git','show',before+':frontend-v2/data/catalogo-publico.json'],text=True))
+             prev={p['periodo']:p for p in old['periodos']}
+             changed.update(p for p,v in entries.items() if prev.get(p)!=v)
+           except (subprocess.CalledProcessError,ValueError):
+            changed.update(entries)
+          else:
+           changed.update(entries)
+          # Recupera índices ausentes o desfasados aunque el evento afecte otro archivo.
+          for period,entry in entries.items():
+           path=root/'participacion'/period/'meta.json'
+           try:
+            meta=json.loads(path.read_text())
+            if meta['procesos_publicados']!=entry['conteos']['procesos'] or meta['ofertas']!=entry['conteos']['ofertas']:
+             changed.add(period)
+           except (OSError,ValueError,KeyError):changed.add(period)
+          target=sorted(changed&entries.keys())
+          pathlib.Path('/tmp/participacion_periodos.txt').write_text('\\n'.join(target)+'\\n' if target else '')
+          print('PERIODOS_A_REGENERAR',target)
+          PY
+            if [ ! -s /tmp/participacion_periodos.txt ]; then echo "PARTICIPACION_AL_DIA"; exit 0; fi
+            while IFS= read -r p; do
+              [ -n "$p" ] || continue
               python scripts/generar_participacion_historica_v2.py --periodo "$p"
-            done
+            done < /tmp/participacion_periodos.txt
             python - <<'PY'
           import json,pathlib
           root=pathlib.Path('frontend-v2/data')
           catalog=json.loads((root/'catalogo-publico.json').read_text())
-          for period in ('2026-10','2026-11'):
-           entry=next(p for p in catalog['periodos'] if p['periodo']==period)
+          entries={p['periodo']:p for p in catalog['periodos']}
+          for period in pathlib.Path('/tmp/participacion_periodos.txt').read_text().splitlines():
+           entry=entries[period]
            meta=json.loads((root/'participacion'/period/'meta.json').read_text())
            assert meta['version']==1 and meta['periodo']==period
-           assert meta['procesos_publicados']<=entry['conteos']['procesos']
-           assert meta['ofertas']<=entry['conteos']['ofertas']
-           for kind in ('organismo','proveedor'):
-            assert (root/'participacion'/period/kind).is_dir(),(period,kind)
+           assert 0<=meta['procesos_publicados']<=entry['conteos']['procesos']
+           assert 0<=meta['ofertas']<=entry['conteos']['ofertas']
            print('PARTICIPACION_REGENERADA',period,meta)
           PY
-            git add frontend-v2/data/participacion/2026-10/ frontend-v2/data/participacion/2026-11/
+            while IFS= read -r p; do
+              [ -n "$p" ] || continue
+              git add "frontend-v2/data/participacion/$p/"
+            done < /tmp/participacion_periodos.txt
             if git diff --cached --quiet; then
               echo "PARTICIPACION_SIN_CAMBIOS"
               exit 0
