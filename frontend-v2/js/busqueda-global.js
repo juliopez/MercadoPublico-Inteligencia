@@ -1,3 +1,9 @@
+function setGlobalProgress(value,visible=true){
+ const bar=document.getElementById('busqueda-global-progreso'),wrapper=document.getElementById('busqueda-global-progreso-contenedor'),label=document.getElementById('busqueda-global-progreso-porcentaje');
+ if(!bar||!wrapper||!label)return;
+ const percent=Math.max(0,Math.min(100,Math.round(value)));
+ wrapper.hidden=!visible;bar.value=percent;label.textContent=percent+' %';
+}
 // Búsqueda global V2: verifica las palabras completas sobre fragmentos selectivos.
 const el=id=>document.getElementById(id);
 const fields={
@@ -38,7 +44,7 @@ function clear(text){
  el('busqueda-global-anterior').disabled=true;el('busqueda-global-siguiente').disabled=true;
  el('global-csv').disabled=true;
  el('global-analitica').textContent='Indicadores de consulta: sin ejecutar.';
- el('busqueda-global-progreso').hidden=true;
+ setGlobalProgress(0,false);
  message(text);
 }
 async function read(path){
@@ -62,7 +68,7 @@ async function collect(s,t,target){
   const rows=await read(t.parts[month][part]);
   if(!valid(s,t))return;
   if(!Array.isArray(rows))throw Error('Fragmento inválido');
-  const progress=el('busqueda-global-progreso');progress.hidden=false;progress.value=t.refs.length?Math.round(t.cursor/t.refs.length*100):100;
+  setGlobalProgress(t.refs.length?Math.round(t.cursor/t.refs.length*100):100);
   for(const ref of group){
    const pos=ref[ref.length-1];
    if(!Number.isInteger(pos)||pos<0||pos>=rows.length)throw Error('Referencia inválida');
@@ -76,12 +82,12 @@ async function draw(s,t){
  if(!valid(s,t))return;
  const limit=(t.page+1)*10+1;
  message('Comprobando registros del período…');
- const progress=el('busqueda-global-progreso');progress.hidden=false;progress.value=t.refs.length?Math.round(t.cursor/t.refs.length*100):100;
+ setGlobalProgress(t.refs.length?Math.round(t.cursor/t.refs.length*100):100);
  el('busqueda-global-anterior').disabled=true;el('busqueda-global-siguiente').disabled=true;
  try{
   await collect(s,t,limit);
   if(!valid(s,t))return;
-  const progress=el('busqueda-global-progreso');progress.hidden=false;progress.value=t.refs.length?Math.round(t.cursor/t.refs.length*100):100;
+  setGlobalProgress(t.refs.length?Math.round(t.cursor/t.refs.length*100):100);
   const ordering=globalSort.key?[...t.found].sort((a,b)=>globalSort.direction*String(a.record[globalSort.key]??'').localeCompare(String(b.record[globalSort.key]??''),'es',{numeric:true})):t.found;
   const visible=ordering.slice(t.page*10,(t.page+1)*10);
   const head=document.createElement('tr');
@@ -116,7 +122,7 @@ async function draw(s,t){
 async function search(options={}){
  const organismoExacto=typeof options?.organismoExacto==='string'?options.organismoExacto:null;
  const now=++seq,period=el('periodo').value,entity=el('entidad').value,multi=el('busqueda-global-alcance').value==='todos';
- el('busqueda-global-progreso').hidden=false;el('busqueda-global-progreso').value=0;
+ setGlobalProgress(0);
  session=null;
  const raw=el('busqueda-global-texto').value.trim();
  const query=[...new Set(terms(raw))];
