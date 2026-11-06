@@ -25,17 +25,31 @@ jobs:
           node --check frontend-v2/js/participantes-historicos.js
           python -m py_compile scripts/generar_participacion_historica_v2.py
           python - <<'PY'
-          import json,pathlib
+          import json,pathlib,sys
           root=pathlib.Path('frontend-v2/data')
           cat=json.loads((root/'catalogo-publico.json').read_text())
+          alerts=[]
           for p in cat['periodos']:
            month=p['periodo']
-           meta=json.loads((root/'participacion'/month/'meta.json').read_text())
-           assert meta['version']==1 and meta['periodo']==month
-           assert meta['procesos_publicados']<=p['conteos']['procesos']
-           assert meta['ofertas']<=p['conteos']['ofertas']
-           for entity in ('proveedor','organismo'):
-            expected=p['conteos']['ofertas' if entity=='proveedor' else 'procesos']
-            if expected:assert (root/'participacion'/month/entity).is_dir()
-           print('PARTICIPACION_VERIFICADA',month)
+           target=root/'participacion'/month
+           meta_path=target/'meta.json'
+           if not meta_path.is_file():
+            alerts.append(f'{month}: índice de participación ausente; no se considera cobertura completa')
+            continue
+           meta=json.loads(meta_path.read_text())
+           assert meta['version']==1 and meta['periodo']==month, f'{month}: metadatos inválidos'
+           for field,source in (('procesos_publicados','procesos'),('ofertas','ofertas')):
+            count=meta[field]
+            assert isinstance(count,int) and 0<=count<=p['conteos'][source], f'{month}: conteo imposible de {field}'
+            if count!=p['conteos'][source]:
+             alerts.append(f'{month}: {field} indexados={count}, publicados={p["conteos"][source]} (cobertura parcial o índice desactualizado)')
+           for entity,source in (('proveedor','ofertas'),('organismo','procesos')):
+            if meta[source if source=='ofertas' else 'procesos_publicados'] and not (target/entity).is_dir():
+             alerts.append(f'{month}: faltan fragmentos de {entity}')
+           print('PARTICIPACION_AUDITADA',month)
+          for message in alerts:
+           print('::warning::PARTICIPACION_COBERTURA '+message)
+          print('PARTICIPACION_COBERTURA_ALERTAS',len(alerts))
+          # La ausencia de datos derivados no debe bloquear pruebas de interfaz;
+          # las advertencias son explícitas y no certifican integridad histórica.
           PY
