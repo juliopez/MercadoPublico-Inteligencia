@@ -33,7 +33,7 @@ jobs:
           const search=fs.readFileSync('frontend-v2/js/busqueda-global.js','utf8');
           const css=fs.readFileSync('frontend-v2/css/styles.css','utf8');
           assert(!html.includes('Funciones de la versión 1 que conservaremos'));
-          assert(html.includes('01 · Explorar datos')&&html.includes('04 · Seguimiento'));
+          assert(html.includes('01 · Panorama del mercado')&&html.includes('06 · Mis registros guardados'));
           assert(html.includes('evolucion-resumen'));
           assert(app.includes("America/Santiago")&&app.includes("Intl.DateTimeFormat"));
           assert(app.includes('function sortLocal(')&&app.includes("function ordered("));
