@@ -4,6 +4,8 @@
 >
 > **Nota:** las secciones de continuidad fechadas más abajo son antecedentes de la evolución del proyecto; no representan necesariamente el estado actual. El cambio de mes siguiente y la conciliación histórica integral continúan pendientes de validación.
 
+**Continuidad operativa vigente:** [Punto de recuperación](continuidad/README.md) · [Estado actual](continuidad/ESTADO_ACTUAL.md) · [Inventario de procesos](continuidad/INVENTARIO_PROCESOS.md) · [Auditoría](continuidad/AUDITORIA_OPERATIVA.md) · [Incidencias](continuidad/INCIDENCIAS_PENDIENTES.md) · [Historial](continuidad/HISTORIAL_CAMBIOS.md). Esta carpeta prevalece como guía de reanudación sobre las secciones fechadas de octubre que aparecen más abajo; contrastar siempre con evidencia reciente.
+
 **Última revisión de navegación:** 30-10-2026. Ruta recomendada: [README del proyecto](../README.md) → **este índice** → [decisiones técnicas](DECISIONES_TECNICAS.md) → documento especializado → código/evidencias.
 
 > Los documentos fechados conservan el contexto de una etapa y pueden contener pendientes ya resueltos. **No deben usarse como estado actual** sin contrastarlos con el README y el código. No borrar evidencia histórica ni credenciales operativas locales.
