@@ -38,14 +38,23 @@ async function suggestions(){
  }
  for(const name of [...names].slice(0,40)){const opt=document.createElement('option');opt.value=name;ph('participante-sugerencias').append(opt)}
 }
+function participantProgress(value,visible=true){
+ const wrapper=ph('participante-progreso-contenedor'),bar=ph('participante-progreso'),label=ph('participante-progreso-porcentaje');
+ if(!wrapper||!bar||!label)return;
+ const percent=Math.max(0,Math.min(100,Math.round(value)));
+ wrapper.hidden=!visible;bar.value=percent;label.textContent=percent+' %';
+}
 async function searchParticipant(){
  const req=++seq,name=ph('participante-nombre').value.trim(),type=ph('participante-tipo').value;
  const entity=type==='proveedor'?'ofertas':'procesos';
  ph('participante-resumen').replaceChildren();ph('participante-evolucion').replaceChildren();ph('participante-enlaces').replaceChildren();
+ participantProgress(0,false);
  if(normalizeActor(name).length<2){ph('participante-estado').textContent='Introduce al menos dos caracteres.';return}
  ph('participante-estado').textContent='Consultando índices históricos públicos…';
  try{
   const c=await catalog(),rows=[];
+  participantProgress(0);
+  const count=c.periodos.length;
   for(const p of c.periodos){
    if(req!==seq)return;
    const record=await profile(p.periodo,entity,name);
@@ -57,8 +66,10 @@ async function searchParticipant(){
    }catch(error){if(!String(error).includes('404'))throw error}
    const outcome=type==='proveedor'?await profile(p.periodo,'resultados',name):null;
    rows.push({period:p.periodo,count:record?.registros||0,monto:record?.monto_total_clp||0,coverage:record?.registros_con_monto||0,extra,outcome:outcome?.registros||0});
+   if(req===seq){participantProgress(count?rows.length/count*100:100);ph('participante-estado').textContent='Consultados '+rows.length+' de '+count+' períodos publicados.';}
   }
   if(req!==seq)return;
+  participantProgress(100);
   const total=rows.reduce((s,r)=>s+r.count,0),months=rows.filter(r=>r.count).length;
   const active=rows.filter(r=>r.count>0);
   const participatingCodes=new Set(),selectedCodes=new Set(),selectedAmounts=new Map();
@@ -180,4 +191,4 @@ async function searchParticipant(){
 }
 ph('participante-buscar').addEventListener('click',searchParticipant);
 ph('participante-nombre').addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(suggestions,250)});
-ph('participante-tipo').addEventListener('change',()=>{seq++;ph('participante-sugerencias').replaceChildren();ph('participante-nombre').value=''});
+ph('participante-tipo').addEventListener('change',()=>{participantProgress(0,false);seq++;ph('participante-sugerencias').replaceChildren();ph('participante-nombre').value=''});
