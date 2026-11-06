@@ -19,3 +19,5 @@ Añadir una fila con **fecha**, proceso afectado, motivo, autorización cuando c
 ## Gobierno de cambios
 
 La [política de cuatro procesos](../POLITICA_PROTECCION_CUATRO_PROCESOS.md) prevalece. No presentar una actualización documental como despliegue, instalación o prueba productiva.
+
+| 2026-11-06, 16:22 Chile | Auditoría documental de solo lectura: commits de exportación e índices contrastados; runs de Actions y Ubuntu no accesibles; discrepancias registradas sin cambios productivos | [Auditoría](AUDITORIA_OPERATIVA.md), commits `0477f68` y `bc65f4f`; actualización documental `025aa635`, `6bafb6f` |
