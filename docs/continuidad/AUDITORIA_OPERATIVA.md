@@ -83,3 +83,16 @@ Captura de `journalctl --user` (desde 05/11 18:30 Chile), proporcionada por el r
 - **Conciliación P4 a las 16:00:14:** `MER ocupado: conciliación pendiente para siguiente intento`; servicio `Finished`. **Verificado:** detección de recurso ocupado mientras cron de 16:00 estaba activo; no prueba que se haya producido una colisión de escritura ni que un reintento futuro se complete. Inspeccionar lógica de reintento y journal del 10/11 antes de cerrar VAL-03.
 
 **Conclusión:** timers y servicios efectivamente disparados; resultados locales de rotación y puerta de calendario congruentes. Solicitud de API confirmada solo hasta el disparador. No modificar procesos protegidos.
+
+
+### Verificación directa del ZIP oficial de licitaciones — 06/11/2026
+
+**Evidencia:** captura de terminal Ubuntu aportada por el responsable, con descarga HTTP y lectura del ZIP mediante Python `requests` y `zipfile`.
+
+- URL consultada: `https://transparenciachc.blob.core.windows.net/lic-da/2026-11.zip`.
+- Encabezado HTTP `Last-Modified`: `Fri, 06 Nov 2026 12:54:09 GMT` (09:54:09 Chile).
+- Tamaño de descarga: **872 bytes**.
+- Miembro del ZIP: `lic_2026-11.csv`.
+- Líneas del CSV: **1**; registros de datos observados: **0** (solo cabecera).
+
+**Conclusión acotada:** al momento de la consulta, el ZIP oficial mensual de licitaciones para noviembre estaba vacío de filas de datos. Esto explica que el ETL diario no obtenga nuevas licitaciones **desde ese ZIP**, aunque sí publique órdenes de compra. No acredita inexistencia de licitaciones reales en ChileCompra ni excluye que la fuente se actualice posteriormente. Tampoco certifica por sí solo el código de salida completo del ETL. **No se modifica el proceso productivo.**
