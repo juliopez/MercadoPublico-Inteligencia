@@ -18,3 +18,11 @@ Cuando se resuelva un pendiente, agregar fecha, fuente de prueba, resultado y co
 ## Cerrados con evidencia documentada
 
 - **UX-01 — Barras de progreso:** el responsable confirmó el 06/11/2026 que las consultas en el frontend funcionaron correctamente después de la estandarización. No reabrir sin una regresión verificable.
+
+## Hallazgos de contraste 2026-11-06 (sin modificación productiva)
+
+- **VAL-06 — Media, metadatos de catálogo:** `config/catalogo_sheets.json` mantiene `filas: 0` y estado `preparado_vacio_para_2026-11`, mientras el catálogo de exportación versionado registra 32.345 OC para noviembre en commit `0477f68`. Verificar si son campos estáticos de inicialización o deben actualizarse; no corregir sin revisar contrato y dependencias.
+- **VAL-07 — Media, discrepancia de instalación del disparador:** estado documentado en continuidad (reportado operativo) y política maestra (pendiente de instalación) no coincide. Resolver únicamente con evidencia local Ubuntu y run ID de Actions; actualizar ambas fuentes tras comprobación.
+- **VAL-04 y VAL-05 permanecen abiertos:** commits `0477f68` y `bc65f4f` evidencian actualización de exportación e índices el 06/11 16:04 Chile, pero faltan logs de ejecución, validación HTTP Pages e integridad de fragmentos.
+
+Referencia: [registro de auditoría 06/11](AUDITORIA_OPERATIVA.md). No se ha confirmado un fallo productivo.
