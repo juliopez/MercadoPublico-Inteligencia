@@ -38,3 +38,7 @@ La [política maestra](../POLITICA_PROTECCION_CUATRO_PROCESOS.md) protege cuatro
 ## Regla de actualización
 
 Actualizar **fecha de corte**, evidencia, resultados, pendientes y referencias a commits. No sobrescribir un estado no validado con una conclusión optimista. Mantener la última evidencia anterior accesible en el historial Git.
+
+## Contraste adicional — 2026-11-06, 16:22 Chile
+
+Se verificaron en Git los commits `0477f68` (exportación MER noviembre, 19:04:07 UTC) y `bc65f4f` (índices, 19:04:37 UTC). En el catálogo de exportación versionado, las OC de noviembre pasaron de 16.197 a 32.345. Esto acredita **actualización del repositorio**, no certificación del cron Ubuntu ni de Pages. Los runs de Actions, journals Ubuntu y comprobación HTTP permanecen pendientes. El catálogo de configuración mantiene metadatos de inicialización (`filas: 0`), cuya semántica debe verificarse antes de intervenir. Véase [auditoría](AUDITORIA_OPERATIVA.md) y [pendientes](INCIDENCIAS_PENDIENTES.md).
