@@ -64,3 +64,11 @@ No registrar como éxito un proceso solo porque el timer está `enabled` o Actio
 **Acciones realizadas:** actualización exclusivamente documental. No se ejecutaron ni modificaron ETL, scripts, workflows, timers, locks, catálogo ni frontend.
 
 **Referencias:** [commit MER](https://github.com/juliopez/MercadoPublico-Inteligencia/commit/0477f68f14d0b01c076d880043e536e296ea0f95) · [commit índices](https://github.com/juliopez/MercadoPublico-Inteligencia/commit/bc65f4fac6bffacbec3d71077511411f39d9052b).
+
+### Evidencia Ubuntu aportada por el responsable — 2026-11-06
+
+Salida local de `journalctl -t CRON` para 15:55–16:30 Chile: sesión del usuario `julio` abierta 16:00:01; comando `scripts/ubuntu_cron_integrado.sh --cron` iniciado 16:00:01; sesión cerrada 16:04:11. **Verificado: disparo y finalización de sesión cron (~4m10s); no consta código de salida del ETL ni éxito de cada etapa.** La proximidad con commits de datos e índices de 16:04 es evidencia temporal compatible, no trazabilidad causal completa.
+
+Salida de `systemctl --user list-timers --all`: `mercadopublico-rotacion.timer` última 05/11 19:00:48, próxima 06/11 19:00; `mercadopublico-api-github-dispatch.timer` última 05/11 22:05:11, próxima 06/11 22:05; `mercadopublico-conciliacion.timer` última 06/11 16:00:14, próxima 07/11 10:00. **Verificado: timers reconocidos y activaciones registradas; no verificado: resultados de servicios.** La activación de conciliación a las 16:00:14 coincide temporalmente con el cron y requiere inspección del journal del servicio para determinar si solo evaluó la puerta de calendario. No asumir ejecución de conciliación ni colisión de escrituras.
+
+Pendiente: `systemctl --user status` y `journalctl --user -u` de los tres servicios; log de ETL y estado final; identificación de run de Actions correspondiente al disparo 05/11 22:05. Evidencia de Ubuntu provista como captura de terminal por el responsable, no acceso remoto directo.
