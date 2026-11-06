@@ -1,5 +1,9 @@
 # Índice documental — Observatorio de Mercado Público
 
+> **Guías de entrada vigentes (06-11-2026):** [README principal](../README.md) · [Instalación](INSTALACION.md) · [Arquitectura y diagrama UML de despliegue](ARQUITECTURA.md) · [Modelo de datos ER](MODELO_DATOS.md) · [Configuración](CONFIGURACION.md) · [Adaptación](ADAPTACION.md) · [Automatización](AUTOMATIZACION.md) · [Operación](OPERACION.md).
+>
+> **Nota:** las secciones de continuidad fechadas más abajo son antecedentes de la evolución del proyecto; no representan necesariamente el estado actual. El cambio de mes siguiente y la conciliación histórica integral continúan pendientes de validación.
+
 **Última revisión de navegación:** 30-10-2026. Ruta recomendada: [README del proyecto](../README.md) → **este índice** → [decisiones técnicas](DECISIONES_TECNICAS.md) → documento especializado → código/evidencias.
 
 > Los documentos fechados conservan el contexto de una etapa y pueden contener pendientes ya resueltos. **No deben usarse como estado actual** sin contrastarlos con el README y el código. No borrar evidencia histórica ni credenciales operativas locales.
