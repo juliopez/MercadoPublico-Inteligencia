@@ -63,7 +63,7 @@ jobs:
              changed.update(p for p,v in entries.items() if prev.get(p)!=v)
            except (subprocess.CalledProcessError,ValueError):
             changed.update(entries)
-          else:
+          elif name=='workflow_dispatch':
            changed.update(entries)
           # Recupera índices ausentes o desfasados aunque el evento afecte otro archivo.
           for period,entry in entries.items():
