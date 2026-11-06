@@ -487,13 +487,20 @@ async function showUnifiedOC(code,related,periods,requestToken){
  table.append(body);target.append(table);
  const foot=document.createElement('p');foot.className='muted';foot.textContent='Las candidatas no constituyen vínculos confirmados. Los importes informados no acreditan pagos.';target.append(foot);
 }
+function relatedProgress(value,visible=true){
+ const wrap=$('detalle-relaciones-progreso-contenedor'),bar=$('detalle-relaciones-progreso'),label=$('detalle-relaciones-progreso-porcentaje');
+ if(!wrap||!bar||!label)return;
+ const pct=Math.max(0,Math.min(100,Math.round(value)));
+ wrap.hidden=!visible;bar.value=pct;label.textContent=pct+' %';
+}
 async function loadRelated(code,period){
  const seq=++detailRequest;
+ relatedProgress(0);
  activateRelation('procesos');
  for(const kind of relationKinds)$('total-'+kind).textContent='…';
  for(const target of ['detalle-procesos','detalle-ofertas','detalle-resultados','detalle-oc'])$(target).replaceChildren();
  $('detalle-relaciones-estado').textContent='Buscando relaciones en todos los períodos publicados…';
- if(!code){$('detalle-relaciones-estado').textContent='Sin código de proceso para relacionar.';return}
+ if(!code){relatedProgress(0,false);$('detalle-relaciones-estado').textContent='Sin código de proceso para relacionar.';return}
  try{
   const periods=(state.manifest?.periodos||[]).map(p=>p.periodo);
   const accum={procesos:[],ofertas:[],resultados:[],ordenescompra:[]};
@@ -506,7 +513,7 @@ async function loadRelated(code,period){
      index=await readJsonPublic('data/indices/'+month+'.json');
      if(index.periodo!==month||!index.entidades)throw Error('Índice incompatible');
      indexCache.set(month,index);
-    }catch(e){issues.push(month);continue}
+    }catch(e){issues.push(month);checked++;relatedProgress(periods.length?checked/periods.length*100:100);$('detalle-relaciones-estado').textContent='Revisados '+checked+' de '+periods.length+' períodos públicos (cobertura parcial)…';continue}
    }
    // El índice mensual tradicional no incorpora Procesos. Resolverlos por un
    // índice exacto y ligero, con referencia directa a fragmento y fila.
@@ -538,9 +545,10 @@ async function loadRelated(code,period){
     }
    }
    checked++;
-   if(seq===detailRequest)$('detalle-relaciones-estado').textContent='Revisados '+checked+' de '+periods.length+' períodos públicos…';
+   if(seq===detailRequest){relatedProgress(periods.length?checked/periods.length*100:100);$('detalle-relaciones-estado').textContent='Revisados '+checked+' de '+periods.length+' períodos públicos…';}
   }
   if(seq!==detailRequest)return;
+  relatedProgress(100);
   for(const [entity,target,kind] of [['procesos','detalle-procesos','procesos'],['ofertas','detalle-ofertas','ofertas'],['resultados','detalle-resultados','resultados'],['ordenescompra','detalle-oc','oc']]){
    if(entity!=='ordenescompra')renderLinkedRecords(target,accum[entity],entity);
    $('total-'+kind).textContent=accum[entity].length.toLocaleString('es-CL');
