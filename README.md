@@ -1,108 +1,121 @@
 # Observatorio de Inteligencia de Mercado Público · Chile
 
-**🔒 POLÍTICA MAESTRA DE NO MODIFICACIÓN:** [Cuatro procesos inventariados, protegidos y niveles de validación](docs/POLITICA_PROTECCION_CUATRO_PROCESOS.md). Leer antes de cualquier cambio; se requiere autorización expresa, análisis de impacto y pruebas para modificar cualquiera de los cuatro.
+**Una implementación abierta de referencia para explorar, relacionar y analizar información de contratación pública.**
 
-**Inventario completo de los cuatro procesos:** [1 · Cron 16:00](docs/LINEA_BASE_PROTEGIDA_CRON_1600.md) · [2 · API Compra Ágil 400](docs/LINEA_BASE_VALIDADA_API_COMPRA_AGIL_400.md) · [3 · Cambio de mes](docs/INVENTARIO_PROCESO_3_CAMBIO_MES.md) · [4 · Consolidación histórica del día 10 hábil](docs/INVENTARIO_PROCESO_4_CONSOLIDACION_HISTORICA.md). Los procesos 3 y 4 tienen temporizadores Ubuntu independientes; la primera rotación real está validada y la primera consolidación integral sigue pendiente de ejecución real.
+[**Abrir plataforma en funcionamiento**](https://juliopez.github.io/MercadoPublico-Inteligencia/) · [Guía de instalación](docs/INSTALACION.md) · [Arquitectura y UML de despliegue](docs/ARQUITECTURA.md) · [Modelo de datos](docs/MODELO_DATOS.md)
 
+> **Estado (6 de noviembre de 2026):** el frontend V2 es la única versión operativa. La ingestión diaria, la API incremental de Compra Ágil y la actualización de índices cuentan con ejecuciones satisfactorias. La rotación octubre→noviembre fue comprobada; **el siguiente cambio mensual y la conciliación histórica integral desatendida siguen pendientes de validación**. Los datos públicos tienen cobertura parcial y cambiante; consultar siempre el [catálogo vigente](frontend-v2/data/catalogo-publico.json).
 
-**🔒 LÍNEA BASE OPERATIVA PROTEGIDA — CRON UBUNTU 16:00:** [Leer antes de cualquier modificación del proyecto](docs/LINEA_BASE_PROTEGIDA_CRON_1600.md). La cadena diaria de licitaciones, órdenes de compra, conciliación documental y publicación V2 está validada y **no debe modificarse** al desarrollar otras automatizaciones. Toda excepción requiere autorización expresa y control de cambios.
+## ¿Qué problema resuelve?
 
-**GitHub Actions API 400 (preparado, no ejecutado):** [workflow manual, secretos y límites de período](docs/API_400_GITHUB_ACTIONS.md). La ruta de Ubuntu permanece intacta.
+La información de Mercado Público se distribuye entre distintas fuentes, períodos y modalidades. Este proyecto construye una **vista consultable** de procesos, ofertas, resultados y órdenes de compra, con vínculos por código, perfiles históricos y análisis de actividad. Permite estudiar registros publicados **sin interpretar una oferta o selección como adjudicación jurídica ni un monto informado como pago efectuado**.
 
-**🔒 LÍNEA BASE VALIDADA 2 — API COMPRA ÁGIL (400):** [Inventario y protección de la ejecución manual](docs/LINEA_BASE_VALIDADA_API_COMPRA_AGIL_400.md). Recuperación, persistencia y publicación comprobadas. No confundir con el controlador nocturno aún pendiente de desarrollar; respetar los componentes compartidos con las 16:00.
+El repositorio ofrece una **implementación de referencia**, no un servicio oficial de ChileCompra. El frontend público se alimenta de archivos JSON derivados; las hojas MER y credenciales de operación son privadas.
 
-**Cierre histórico mensual automático:** [implementación, validaciones y activación Ubuntu](docs/IMPLEMENTACION_CIERRE_AUTOMATICO_PENDIENTES.md). La cadena de consolidación, republicación y declaración de cierre está incorporada en GitHub; **la unidad local fue instalada y verificada como habilitada y activa el 31/10; falta validar el primer cierre histórico real**. No confundir implementación con activación ni con el primer cierre mensual real.
+## Explorar la plataforma: seis secciones
 
-Plataforma para explorar y analizar **Procesos, Ofertas, Resultados y Órdenes de compra** de Mercado Público. Este README describe el **estado vigente**; los procedimientos y antecedentes están separados en la documentación especializada.
-
-**Registro histórico operativo: 30 de octubre de 2026.** [Plan de operación nocturna API Compra Ágil (21:00–07:00)](docs/PLAN_OPERACION_NOCTURNA_API_COMPRA_AGIL_2026-10-30.md). [Bitácora actual de prueba API 400, iniciada 22:30](docs/BITACORA_PRUEBA_API_400_2026-10-30.md). La operación Ubuntu de las 16:00 fue comprobada el 30/10 mediante exportación, publicación V2 y supervisor de GitHub. La instalación de los nuevos servicios locales no se ha verificado.
-
-**[Punto único de continuidad y estado real](docs/ESTADO_Y_CONTINUIDAD_2026-10-30.md).** [Instalación de rotación y conciliación](docs/INSTALACION_ROTACION_CONCILIACION_2026-10-30.md) · [API local — etapa siguiente](docs/CRON_LOCAL_API_COMPRA_AGIL_2026-10-30.md) · [Índice documental](docs/INDICE_DOCUMENTACION.md).
-
-
-**Independencia por fuente (03-11-2026):** [Reglas y límites del cron Ubuntu y del workflow de publicación](docs/INDEPENDENCIA_LICITACIONES_OC_CRON_WORKFLOW_2026-11-03.md). Un ZIP oficial vacío no bloquea la carga de la otra fuente; las fallas técnicas de descarga, parseo, escritura y derivados aún no están aisladas por completo y no deben presentarse como resueltas.
-
-## Estado vigente — 4 de noviembre de 2026
-
-La **versión 2 es la única plataforma oficial** y se publica en la raíz de GitHub Pages. V1 fue una prueba de concepto breve: el código y su manifiesto se conservaron en [archivo histórico](historico/v1/README.md), y sus 51 fragmentos de datos ya obsoletos (137,5 MB) se retiraron de la rama `main`. **Los datos históricos utilizados por V2 no fueron eliminados.**
-
-El despliegue oficial construye la portada raíz a partir de `frontend-v2/index.html` en **cada** publicación; mantiene una sola copia de los JSON bajo `frontend-v2/data/` y una redirección desde la URL anterior. La cadena Ubuntu, Sheets, API, cierre y conciliación no cambió.
-
-## Acceder
-
-- **[Observatorio de Mercado Público — plataforma oficial y estable (V2)](https://juliopez.github.io/MercadoPublico-Inteligencia/)**
-- [Antigua URL V2 — redirección a la plataforma oficial](https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/)
-- [Versión 1 — archivo histórico (no operativo)](historico/v1/README.md)
-- [Manual de la plataforma V2](frontend-v2/README.md)
-- [Índice completo de documentación](docs/INDICE_DOCUMENTACION.md)
-- [Decisiones técnicas y restricciones](docs/DECISIONES_TECNICAS.md)
-
-## Estado del sistema
-
-| Componente | Estado y alcance |
+| Sección | Para qué sirve |
 |---|---|
-| Observatorio V2 | **Única versión oficial**, publicada en la raíz de GitHub Pages; `frontend-v2/` se conserva como ubicación de recursos y URL de redirección |
-| Períodos públicos | Junio–noviembre de 2026; noviembre operativo y parcial; cobertura verificable en el catálogo |
-| Datos disponibles | Cuatro entidades públicas: Procesos, Ofertas, Resultados y Órdenes de compra |
-| Consulta | Primer bloque de hasta 1.000 filas; tablas paginadas de 10; búsqueda indexada por término/código entre todos los períodos publicados (o por un mes) |
-| Analítica | Selección de mes, comparación entre meses, vistas de actividad, importes informados y actores destacados |
-| Relaciones históricas | Fichas relacionadas entre **todos los meses publicados** mediante índices por código; no acceso a meses todavía no publicados |
-| Herramientas | Fichas, perfiles, comparación de proveedores, favoritos del navegador y exportación CSV |
-| Google Sheets MER | Datos privados; seis tablas internas, distintas de las cuatro entidades públicas |
-| Auditoría integral V2 | **Pendiente** como actividad independiente de pruebas de CI y revisión visual |
-| Cierre del mes de octubre | Primer cierre manual supervisado **previsto para el 10-11-2026**, sujeto a verificaciones y fuentes completas |
+| **01 · Panorama del mercado** | Evolución mensual, modalidades, organismos compradores, montos informados y filtros temáticos |
+| **02 · Explorar procesos y registros** | Búsqueda transversal por código o texto, filtros, resultados progresivos y exportación |
+| **03 · Detalle del registro** | Ficha, campos oficiales disponibles y relaciones entre procesos, ofertas, resultados y OC |
+| **04 · Analizar participantes** | Participación histórica de empresas oferentes y organismos compradores |
+| **05 · Comparar proveedores** | Comparación de hasta tres empresas a partir de períodos publicados |
+| **06 · Mis registros guardados** | Registros favoritos conservados localmente en el navegador |
 
-Los números y períodos vigentes se consultan siempre en el [catálogo público de V2](frontend-v2/data/catalogo-publico.json); no confiar en conteos copiados a documentación fechada.
+Las consultas extensas presentan indicadores de avance. Los resultados y perfiles se limitan a los períodos **efectivamente publicados**; nombres normalizados no sustituyen la identificación por RUT.
 
-## Cómo funciona V2
+## Inicio rápido: clonar y visualizar
 
-1. Seleccionar **mes** y **entidad**. «Mostrar registros del período» carga el primer bloque de forma directa y muestra páginas de 10.
-2. Usar **Buscar en los históricos** para consultar todos los períodos publicados, con opción de limitar a un mes; la exploración por bloques permanece como opción avanzada.
-3. Consultar el panel **Evolución mensual** para seleccionar, comparar períodos y alternar entre actividad, montos y actores.
-4. Abrir una ficha y revisar su resumen, campos completos y **registros vinculados entre los meses publicados**.
-5. Utilizar perfiles, comparación, favoritos y CSV cuando se requiera.
+Necesitas **Git, Python 3 y un navegador moderno**. No hace falta acceder a Google Sheets ni configurar la API para explorar la copia pública del frontend.
 
-**Interpretación responsable:** la coincidencia por código no acredita adjudicación; una oferta, resultado o OC informada no equivale por sí sola a un contrato pagado. Las sumas CLP son descriptivas. Octubre 2026 sigue incompleto. El ordenamiento global afecta coincidencias verificadas, no resultados aún sin cargar.
-
-## Arquitectura
-
-```text
-Fuentes ChileCompra / ZIP oficiales
-   ↓
-ETL y consolidación MER (Google Sheets privadas)
-   ↓ exportación controlada
-frontend-v2/data/catalogo-publico.json
-   ├─ partes/                 registros públicos por fragmentos
-   ├─ busqueda/               búsqueda indexada
-   ├─ indices/                relaciones por código en Ofertas, Resultados y OC
-   ├─ relaciones-procesos/    relaciones exactas de Procesos
-   ├─ perfiles/ + autocompletar/
-   └─ analitica/ + sugerencias/
-   ↓
-GitHub Pages V2 (sin acceso directo a Sheets)
+```bash
+git clone https://github.com/juliopez/MercadoPublico-Inteligencia.git
+cd MercadoPublico-Inteligencia
+python3 -m http.server 8000
 ```
 
-**Reglas de protección:** V1 fue retirada de la portada y archivada en `historico/v1/` el 04/11/2026. La raíz sirve V2; sus recursos operativos siguen en `frontend-v2/`. No eliminar JSON históricos V2 ni alterar cron, API, rotación, conciliación o credenciales como parte de limpiezas.
+Abre **http://localhost:8000/** y prueba una búsqueda y el detalle de un proceso. El servidor HTTP es necesario para cargar los JSON mediante `fetch`. Este es un **modo de exploración**, no la instalación completa de los servicios de actualización. Consulta [instalación por niveles y verificaciones](docs/INSTALACION.md).
 
-## Operación y mantenimiento
+## Arquitectura: del origen a la consulta
 
-La operación diaria utiliza desde el 22/10/2026 el orquestador integrado Ubuntu de las 16:00, con ETL de licitaciones y OC, conciliación documental COT–OC y publicación condicionada en V2. La cadena Ubuntu → GitHub Actions → Pages quedó verificada el viernes 30/10; comprobar diariamente su continuidad mediante los logs y supervisión. La rotación operativa y la preparación recuperable de conciliación están implementadas en código y con temporizadores preparados, **instalados y con rotación octubre→noviembre ejecutada y verificada el 30/10; cierre histórico oficial todavía pendiente**. Octubre no se ha archivado definitivamente; la conciliación oficial sigue requiriendo tres ZIP, respaldos, auditoría y aprobación. No alterar el cron diario.
+```mermaid
+flowchart TD
+    A["ChileCompra · ZIP oficiales"] --> B["ETL diario · Ubuntu/Python"]
+    C["ChileCompra · API Compra Ágil"] --> D["GitHub Actions · API incremental"]
+    T["Ubuntu · disparador nocturno"] --> D
+    B --> E["MER privado · Google Sheets / Drive"]
+    D --> E
+    E --> F["Exportación y validación"]
+    F --> G["Catálogo + fragmentos JSON públicos"]
+    G --> H["Índices de búsqueda, relaciones, participación y analítica"]
+    H --> I["Frontend estático · GitHub Pages"]
+    G --> I
+    R["Rotación y conciliación mensual"] --> E
+```
 
-- [Runbook del cierre de octubre](docs/RUNBOOK_CIERRE_2026_10.md)
-- [Procedimiento general de cierre mensual](docs/PROCEDIMIENTO_CIERRE_MENSUAL.md)
-- [ETL operativo Ubuntu](docs/UBUNTU_ETL_DOS_FUENTES.md)
-- [Modelo de consolidación MER v2](docs/CONSOLIDADOR_MER_V2.md)
-- [Mantenimiento y limpieza segura de GitHub](docs/MANTENIMIENTO_REPOSITORIO_2026-10-21.md)
+La aplicación separa **ingestión, almacenamiento, publicación y presentación**. El navegador nunca necesita consultar las hojas privadas.
 
-## Desarrollo, pruebas y documentación
+**Diagramas técnicos:** [arquitectura de componentes y UML de despliegue](docs/ARQUITECTURA.md) · [modelo entidad–relación y diccionario](docs/MODELO_DATOS.md).
 
-- Código frontend: `frontend-v2/`. Scripts de datos: `scripts/`. Pruebas: `tests/`. Workflows: `.github/workflows/`.
-- [Manual técnico V2](frontend-v2/README.md) y [analítica con relaciones multimes](docs/ANALITICA_INTERACTIVA_RELACIONES_HISTORICAS_V2_2026-10-21.md).
-- **No confundir niveles de evidencia:** implementado, probado en GitHub Actions, revisado visualmente y ejecutado en datos operativos son estados diferentes.
-- [Documentación por temas](docs/INDICE_DOCUMENTACION.md) y [decisiones técnicas](docs/DECISIONES_TECNICAS.md).
+## Modelo de datos: seis tablas internas, cuatro entidades públicas
 
-**Continuidad:** antes de intervenir leer este README → índice → decisiones → documento específico → código real. Mantener la historia técnica en documentos especializados o [README legado](docs/historial/README_LEGADO_2026-10-21.md), no agregar bitácoras al README principal.
+El **MER privado** utiliza seis tablas por período:
 
-**Últimas mejoras V2:** [búsqueda transversal multimes](docs/BUSQUEDA_TRANSVERSAL_MULTIMES_V2_2026-10-21.md) con detalle navegable, [participantes históricos](docs/PARTICIPANTES_HISTORICOS_V2_2026-10-21.md) y [vista unificada de OC](docs/VISTA_UNIFICADA_OC_FRONTEND_V2_2026-10-21.md). Verificación visual de funciones puntuales en curso; no equivale a auditoría integral.
+- `Procesos`, `Ofertas`, `Resultados`, `OrdenesCompra`: registros de actividad.
+- `Proveedores` y `VinculosCOT_OC`: identidad y relaciones de apoyo.
 
-**Antecedentes operativos fechados (no son estado vigente):** [cierre técnico y validación del 22/10](docs/CIERRE_OPERATIVO_Y_VALIDACION_2026-10-22.md), [publicación V2](docs/PUBLICACION_MER_V2_POST_ETL_2026-10-22.md) y [cron integrado](docs/CRON_INTEGRADO_UBUNTU_2026-10-22.md). El [plan anterior](docs/PLAN_MEJORAS_CRON_1600_2026-10-21.md) se conserva como antecedente histórico. La API local realizó una carga productiva de hasta 100 (99 procesos nuevos). La prueba manual de 400 del 30/10 finalizó: **400 consultas, 400 procesos incorporados, 78m36s reales**. Derivados y Pages terminaron exitosamente; confirmación visual de octubre (509 Compra Ágil) pendiente. Se documentó propuesta de ejecución nocturna 21:00–07:00, **sin activar timers**. Véase la bitácora de prueba de 400 antes de continuar. Ver [guía API local](docs/CRON_LOCAL_API_COMPRA_AGIL_2026-10-30.md).
+La **capa pública** expone cuatro entidades de consulta y artefactos derivados (índices, perfiles, participación y analítica). La clave de proceso vincula registros cuando la fuente lo permite, pero **no constituye por sí sola evidencia de adjudicación**. El esquema completo se define en el código del importador y se explica en [MODELO_DATOS.md](docs/MODELO_DATOS.md), con un diagrama ER renderizable.
+
+## Cómo desplegar una instancia propia
+
+| Nivel | Objetivo | Guía |
+|---|---|---|
+| **1. Explorar** | Servir el frontend y sus JSON públicos localmente | [Instalación](docs/INSTALACION.md) |
+| **2. Adaptar** | Crear almacenamiento propio y exportar datos con los mismos contratos | [Configuración](docs/CONFIGURACION.md) · [Modelo de datos](docs/MODELO_DATOS.md) |
+| **3. Automatizar** | Configurar tareas, secretos, reintentos, publicación y supervisión | [Automatización](docs/AUTOMATIZACION.md) · [Operación](docs/OPERACION.md) |
+
+**Portabilidad:** Google Sheets puede reemplazarse por una base SQL; GitHub Actions, por otro orquestador; GitHub Pages, por otro servidor estático. **Estas alternativas son propuestas de adaptación, no conectores implementados o certificados.** Los scripts actuales contienen dependencias específicas de la infraestructura de referencia. Consulta [ADAPTACION.md](docs/ADAPTACION.md).
+
+**No reutilices identificadores de Google Drive/Sheets, tokens ni credenciales de la instalación original.** Crea tus propios recursos y prueba la publicación en un ambiente aislado.
+
+## Operación desatendida: qué está comprobado y qué falta
+
+| Proceso | Implementación de referencia | Estado de validación |
+|---|---|---|
+| ETL licitaciones y OC | Ubuntu, 16:00 hora de Chile | Ejecuciones operativas verificadas |
+| API Compra Ágil | Disparador Ubuntu 22:05 → GitHub Actions; lotes de 400 | Ejecuciones verificadas |
+| Rotación del mes operativo | Timer independiente | Octubre→noviembre comprobado; siguiente ciclo pendiente |
+| Conciliación histórica | Fuentes oficiales del mes vencido, timer independiente | **Primera ejecución integral desatendida pendiente** |
+| Índices y participación | GitHub Actions activado por publicación de datos | Implementado y con ejecuciones satisfactorias |
+
+**Importante:** que una tarea termine con `success` no demuestra que los datos estén completos. Verificar cobertura, conteos, metadatos, fragmentos y publicación. La [política de protección de los cuatro procesos](docs/POLITICA_PROTECCION_CUATRO_PROCESOS.md) impide cambios accidentales en las cadenas productivas.
+
+## Estructura del repositorio
+
+```text
+frontend-v2/       Aplicación web y datos públicos fragmentados
+scripts/           Importadores, ETL, exportación, índices y validaciones
+config/            Configuración de referencia (no copiar identificadores)
+.github/workflows/ Automatización y pruebas en GitHub Actions
+tests/             Pruebas automatizadas
+docs/              Guías, arquitectura, runbooks y evidencia histórica
+historico/v1/      Prueba de concepto archivada, no operativa
+index.html         Entrada de la plataforma pública
+```
+
+## Validación, límites y contribuciones
+
+- **Cobertura:** períodos, fuentes y cantidades deben leerse del [catálogo público](frontend-v2/data/catalogo-publico.json), no de cifras estáticas en el README.
+- **Interpretación:** distinguir presupuestos, montos ofertados, montos seleccionados, adjudicaciones informadas y OC. No inferir pagos.
+- **Identidad:** nombres de empresas normalizados pueden corresponder a variantes legales; comprobar RUT cuando esté disponible.
+- **Pruebas:** antes de publicar, validar sintaxis, contratos, índices, conteos, búsquedas y navegación. La operación mensual requiere una prueba integral adicional.
+- **Cambios:** proponer modificaciones acotadas, documentar compatibilidad y no alterar ETL, API o temporizadores productivos sin pruebas y autorización.
+
+## Documentación de referencia
+
+**Para empezar:** [Instalación](docs/INSTALACION.md) · [Arquitectura y despliegue UML](docs/ARQUITECTURA.md) · [Modelo de datos](docs/MODELO_DATOS.md) · [Configuración](docs/CONFIGURACION.md) · [Adaptación tecnológica](docs/ADAPTACION.md) · [Automatización](docs/AUTOMATIZACION.md) · [Operación](docs/OPERACION.md).
+
+**Para profundizar:** [Manual funcional del frontend](frontend-v2/README.md) · [Índice documental completo](docs/INDICE_DOCUMENTACION.md) · [Decisiones y restricciones](docs/DECISIONES_TECNICAS.md) · [Política de protección](docs/POLITICA_PROTECCION_CUATRO_PROCESOS.md).
+
+Los documentos operativos fechados se conservan como **evidencia histórica** y pueden describir estados ya superados. Para conocer el comportamiento vigente, contrastar documentación, código y ejecuciones reales.
