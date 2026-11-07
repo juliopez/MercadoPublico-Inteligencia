@@ -109,3 +109,12 @@ Captura de `gh run list --limit 20 --json databaseId,name,event,status,conclusio
 - Entre 17:00Z y 17:02Z (14:00–14:02 Chile), varias validaciones V2 `push` terminaron `success`, con una vista previa `cancelled` (`42257769547`). No son ejecuciones a las 17:00 Chile.
 
 **Verificado:** las ejecuciones listadas terminaron con los estados indicados y los eventos `push`/`workflow_run` mostrados. **No verificado:** pasos internos, cobertura de datos, ni existencia/identidad de un proceso a las 17:00 Chile (20:00Z), porque la captura de 19:02 Chile es anterior a esa hora. No atribuir función detallada de cada workflow sin leer YAML y logs. No se observa en esta captura una ejecución nocturna de API del 05/11, pues el listado solo muestra los 20 runs más recientes.
+
+### Incidencia confirmada — API nocturna 06/11 22:05 Chile
+
+- Ubuntu: `WORKFLOW_DISPATCH_SOLICITADO` a las 22:05:58 Chile (captura local).
+- GitHub Actions: [run 42322149976](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/42322149976), job `jornada` ID `128248976601`, `failure`, ~36 s.
+- Pasos exitosos: checkout, validación de ventana, setup Python, dependencias/preflight. Falló paso **Ejecutar lotes y guardar checkpoints sin repetir detalles**.
+- Error literal en log: `ValueError: Esquema incompatible Resultados`, `scripts/mer_api_actions_diaria.py` línea 92, comparación `existing[k][0] != SCHEMA[k]`. La hoja privada `Resultados` no coincide exactamente con el encabezado esperado por `SCHEMA`; falta comparar ambos encabezados para identificar columnas concretas y origen del desajuste.
+- Paso de resguardo de estado completado: artifact `api-dia-42322149976`, ID `13553242297`. Exportación e índices y despliegue Pages fueron omitidos. No consta procesamiento de lotes en este run.
+- **Estado:** falla productiva de API nocturna confirmada; alcance limitado al run, sin afirmar que otros procesos fallaron. **No se modificó código, esquema, workflows ni configuración.** Cualquier corrección requiere autorización expresa y evaluación de impacto con P1/P3/P4.
