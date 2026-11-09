@@ -81,11 +81,11 @@ def inicializar(db):
     db.execute("CREATE TABLE IF NOT EXISTS fallos (codigo TEXT PRIMARY KEY, error TEXT)")
     db.commit()
 
-def cargar_listados(db, cliente, desde, hasta, refrescar=False):
+def cargar_listados(db, cliente, desde, hasta, refrescar=False, refrescar_ultimo=False):
     fecha = desde
     while fecha <= hasta:
         dia = fecha.isoformat()
-        if not refrescar and db.execute("SELECT 1 FROM listados WHERE fecha=?", (dia,)).fetchone():
+        if not (refrescar or (refrescar_ultimo and fecha == hasta)) and db.execute("SELECT 1 FROM listados WHERE fecha=?", (dia,)).fetchone():
             print("LISTADO_EXISTENTE", dia, flush=True)
         else:
             datos = cliente.consultar(fecha=fecha.strftime("%d%m%Y"))
@@ -167,6 +167,7 @@ def main():
     p.add_argument("--pausa",type=float,default=10)
     p.add_argument("--timeout",type=int,default=45)
     p.add_argument("--refrescar-listados",action="store_true")
+    p.add_argument("--refrescar-ultimo",action="store_true")
     p.add_argument("--directorio",default=str(Path.home()/"mercadopublico-recuperacion-licitaciones"/"masivo"))
     a=p.parse_args()
     if a.limite<0 or a.pausa<2:
@@ -183,7 +184,7 @@ def main():
     inicializar(db)
     cliente=Cliente(ticket,a.pausa,a.timeout)
     try:
-        cargar_listados(db,cliente,desde,hasta,a.refrescar_listados)
+        cargar_listados(db,cliente,desde,hasta,a.refrescar_listados,a.refrescar_ultimo)
         recuperar(db,cliente,a.limite)
     finally:
         exportar(db,carpeta,a.mes)
