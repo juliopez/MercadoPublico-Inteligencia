@@ -23,7 +23,7 @@ def exportar(periodo, aplicar, incluir_api=False):
  if not secret and (not cred or not pathlib.Path(cred).is_file()):raise RuntimeError("Falta credencial autorizada")
  cat=json.loads((ROOT/"config/catalogo_sheets.json").read_text())
  dest=cat["periodos"][periodo]
- if dest["tipo"]!="operativo" and not (os.getenv("MER_API_CIERRE_EXCEPCIONAL")==periodo and dest.get("estado")=="cierre_operativo_pendiente_conciliacion_oficial"):raise RuntimeError("Período no autorizado para exportación")
+ if dest["tipo"]!="operativo" and not (os.getenv("MER_API_CIERRE_EXCEPCIONAL")==periodo and dest.get("estado")=="cierre_operativo_pendiente_conciliacion_oficial") and not (os.getenv("MER_CONCILIACION_PERIODOS")=="1" and dest["tipo"]=="historico"):raise RuntimeError("Período no autorizado para exportación")
  creds=Credentials.from_service_account_file(cred,scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"]) if cred and pathlib.Path(cred).is_file() else Credentials.from_service_account_info(json.loads(secret),scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"])
  book=gspread.authorize(creds).open_by_key(dest["id"])
  spec=spec_from_file_location("mer_schema",ROOT/"scripts/importador_historicos_v2.py")
@@ -138,6 +138,6 @@ if __name__=="__main__":
  ap.add_argument("--aplicar",action="store_true")
  ap.add_argument("--incluir-api",action="store_true",help="Exportar también Ofertas y Resultados; solo orquestación nocturna")
  args=ap.parse_args()
- if args.periodo!=dt.datetime.now(ZoneInfo("America/Santiago")).strftime("%Y-%m") and os.getenv("MER_API_CIERRE_EXCEPCIONAL")!=args.periodo:
+ if args.periodo!=dt.datetime.now(ZoneInfo("America/Santiago")).strftime("%Y-%m") and os.getenv("MER_API_CIERRE_EXCEPCIONAL")!=args.periodo and os.getenv("MER_CONCILIACION_PERIODOS")!="1":
   ap.error("Solo se permite exportar el mes operativo actual")
  exportar(args.periodo,args.aplicar,args.incluir_api)
