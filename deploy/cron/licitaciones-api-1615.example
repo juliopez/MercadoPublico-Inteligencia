@@ -1,0 +1,11 @@
+# Instalar con crontab -e SOLO despues de verificar la ruta del repositorio.
+# Cron de usuario; TZ se establece dentro del ejecutor.
+# CRON_TZ=America/Santiago (requiere cron compatible; Ubuntu cron suele usar TZ del sistema).
+# 15 16 * * 1-5 /bin/bash "/RUTA/REAL/MercadoPublico-Inteligencia/scripts/ubuntu_recuperar_licitaciones_1615.sh" >> "/RUTA/REAL/MercadoPublico-Inteligencia/logs/recuperacion_licitaciones_1615.log" 2>&1
+#
+# IMPORTANTE:
+# - La tarea SOLO recupera y guarda detalles en checkpoint local; NO carga MER ni publica.
+# - Limite inicial de 400 detalles por jornada; configurable MER_LIC_API_LIMITE.
+# - No sustituye aun la fuente de licitaciones ZIP del cron de las 16:00.
+# - No activar en paralelo con otra recuperacion manual usando el mismo SQLite.
+# - Verificar huso horario del cron y posible superposicion con Compra Agil.
