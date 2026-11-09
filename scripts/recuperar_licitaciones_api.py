@@ -193,7 +193,7 @@ def main():
         cargar_listados(db,cliente,desde,hasta,a.refrescar_listados,a.refrescar_ultimo)
         recuperar(db,cliente,a.limite,hasta.isoformat() if a.solo_dia else None)
     finally:
-        exportar(db,carpeta,a.mes,a.hasta.isoformat() if a.solo_dia else None)
+        exportar(db,carpeta,a.mes,hasta.isoformat() if a.solo_dia else None)
         db.close()
 
 if __name__=="__main__":
