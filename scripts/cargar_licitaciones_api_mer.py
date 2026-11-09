@@ -56,19 +56,24 @@ def main():
     book=gspread.authorize(auth).open_by_key(destino["id"])
     ws=book.worksheet("Procesos")
     current=mod.solicitud_con_reintentos(lambda:mod.worksheet_rows(ws,cols),"Procesos lectura")
-    nuevos=sum(k not in current for k in rows)
-    modificados=sum(k in current and current[k][1]!=v for k,v in rows.items())
+    # Preservar registros existentes y sus campos enriquecidos; solo insertar PK nuevas.
+    pendientes={k:v for k,v in rows.items() if k not in current}
+    nuevos=len(pendientes)
+    modificados=0
     # El contrato exige respaldo completo de las seis pestañas, no solo Procesos.
     projected=sum(x.row_count*x.col_count for x in book.worksheets())
     if projected+nuevos*len(cols)>10_000_000:
         raise ValueError("Limite de celdas excedido")
+    if not pendientes:
+        print("SIN_NUEVOS_PROCESOS; datos existentes preservados",flush=True)
+        return
     respaldo=mod.respaldo_local(book,mod.importar().SCHEMA,mes)
     print("RESPALDO_VERIFICADO",respaldo["archivo"],flush=True)
-    aplicados=mod.aplicar_tabla(ws,cols,sorted(rows.items()),current)
+    aplicados=mod.aplicar_tabla(ws,cols,sorted(pendientes.items()),current)
     after=mod.solicitud_con_reintentos(lambda:mod.worksheet_rows(ws,cols),"Procesos verificacion")
     if len(after)!=len(current)+nuevos:
         raise ValueError("Cantidad de PK posterior no coincide")
-    for codigo,row in rows.items():
+    for codigo,row in pendientes.items():
         if codigo not in after or after[codigo][1]!=row:
             raise ValueError("Lectura posterior incorrecta: "+codigo)
     out=ROOT/a.salida
