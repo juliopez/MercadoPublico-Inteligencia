@@ -17,7 +17,7 @@ set +a
 MES="$(date +%Y-%m)"
 HOY="$(date +%F)"
 DESDE="${MER_LIC_API_DESDE:-$MES-01}"
-LIMITE="${MER_LIC_API_LIMITE:-400}"
+LIMITE=0 # Sin cuota diaria: todos los detalles pendientes
 echo "INICIO_LICITACIONES_API $(date --iso-8601=seconds) mes=$MES limite=$LIMITE"
 python3 scripts/recuperar_licitaciones_api.py --desde "$DESDE" --hasta "$HOY" --mes "$MES" --limite "$LIMITE" --pausa 10 --refrescar-ultimo
 CSV="$HOME/mercadopublico-recuperacion-licitaciones/masivo/procesos_mes.csv"
