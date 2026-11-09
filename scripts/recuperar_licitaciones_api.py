@@ -77,6 +77,7 @@ class Cliente:
 def inicializar(db):
     db.execute("CREATE TABLE IF NOT EXISTS listados (fecha TEXT PRIMARY KEY, cantidad INTEGER, guardado TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS codigos (codigo TEXT PRIMARY KEY)")
+    db.execute("CREATE TABLE IF NOT EXISTS codigos_dia (fecha TEXT, codigo TEXT, PRIMARY KEY(fecha,codigo))")
     db.execute("CREATE TABLE IF NOT EXISTS detalles (codigo TEXT PRIMARY KEY, json TEXT NOT NULL)")
     db.execute("CREATE TABLE IF NOT EXISTS fallos (codigo TEXT PRIMARY KEY, error TEXT)")
     db.commit()
@@ -93,6 +94,7 @@ def cargar_listados(db, cliente, desde, hasta, refrescar=False, refrescar_ultimo
             codigos = {valor(x,"CodigoExterno") for x in items if isinstance(x,dict)}
             codigos.discard("")
             with db:
+                db.executemany("INSERT OR IGNORE INTO codigos_dia(fecha,codigo) VALUES(?,?)",[(dia,c) for c in codigos])
                 db.executemany("INSERT OR IGNORE INTO codigos(codigo) VALUES(?)",
                                [(c,) for c in codigos])
                 db.execute("INSERT OR REPLACE INTO listados VALUES(?,?,?)",
@@ -100,12 +102,12 @@ def cargar_listados(db, cliente, desde, hasta, refrescar=False, refrescar_ultimo
             print("LISTADO_OK", dia, "FILAS", len(items), "CODIGOS", len(codigos), flush=True)
         fecha += dt.timedelta(days=1)
 
-def recuperar(db, cliente, limite):
+def recuperar(db, cliente, limite, dia=None):
     pendientes = db.execute("""
         SELECT c.codigo FROM codigos c
         LEFT JOIN detalles d ON d.codigo=c.codigo
-        WHERE d.codigo IS NULL ORDER BY c.codigo
-    """).fetchall()
+        WHERE d.codigo IS NULL AND (? IS NULL OR EXISTS (SELECT 1 FROM codigos_dia x WHERE x.codigo=c.codigo AND x.fecha=?)) ORDER BY c.codigo
+    """,(dia,dia)).fetchall()
     if limite:
         pendientes = pendientes[:limite]
     print("DETALLES_POR_CONSULTAR",len(pendientes),flush=True)
@@ -127,10 +129,13 @@ def recuperar(db, cliente, limite):
                            (codigo,type(exc).__name__ + ": " + str(exc)[:120]))
             print("ERROR",i,codigo,type(exc).__name__,flush=True)
 
-def exportar(db, carpeta, mes):
+def exportar(db, carpeta, mes, dia=None):
     registros = [convertir(json.loads(x[0])) for x in
-                 db.execute("SELECT json FROM detalles ORDER BY codigo")]
+                 db.execute("""SELECT d.json FROM detalles d WHERE (? IS NULL OR EXISTS
+                     (SELECT 1 FROM codigos_dia x WHERE x.codigo=d.codigo AND x.fecha=?))
+                     ORDER BY d.codigo""",(dia,dia))]
     grupos = {
+        "todos_los_periodos.csv":registros,
         "procesos_mes.csv":[r for r in registros if r["fecha_publicacion"].startswith(mes)],
         "otros_periodos.csv":[r for r in registros if r["fecha_publicacion"] and not r["fecha_publicacion"].startswith(mes)],
         "sin_fecha.csv":[r for r in registros if not r["fecha_publicacion"]]
@@ -146,7 +151,7 @@ def exportar(db, carpeta, mes):
     with (carpeta/"errores.csv").open("w",newline="",encoding="utf-8") as f:
         w=csv.writer(f);w.writerow(["codigo","error"])
         w.writerows(db.execute("SELECT codigo,error FROM fallos ORDER BY codigo"))
-    total=db.execute("SELECT COUNT(*) FROM codigos").fetchone()[0]
+    total=db.execute("SELECT COUNT(*) FROM codigos_dia WHERE fecha=?",(dia,)).fetchone()[0] if dia else db.execute("SELECT COUNT(*) FROM codigos").fetchone()[0]
     informe={"mes":mes,"codigos_unicos_listados":total,
              "detalles_guardados":len(registros),"pendientes":max(0,total-len(registros)),
              "procesos_mes":len(grupos["procesos_mes.csv"]),
@@ -168,6 +173,7 @@ def main():
     p.add_argument("--timeout",type=int,default=45)
     p.add_argument("--refrescar-listados",action="store_true")
     p.add_argument("--refrescar-ultimo",action="store_true")
+    p.add_argument("--solo-dia",action="store_true",help="Procesar todos los codigos del listado de --hasta")
     p.add_argument("--directorio",default=str(Path.home()/"mercadopublico-recuperacion-licitaciones"/"masivo"))
     a=p.parse_args()
     if a.limite<0 or a.pausa<2:
@@ -185,9 +191,9 @@ def main():
     cliente=Cliente(ticket,a.pausa,a.timeout)
     try:
         cargar_listados(db,cliente,desde,hasta,a.refrescar_listados,a.refrescar_ultimo)
-        recuperar(db,cliente,a.limite)
+        recuperar(db,cliente,a.limite,a.hasta.isoformat() if a.solo_dia else None)
     finally:
-        exportar(db,carpeta,a.mes)
+        exportar(db,carpeta,a.mes,a.hasta.isoformat() if a.solo_dia else None)
         db.close()
 
 if __name__=="__main__":
