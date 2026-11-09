@@ -25,6 +25,24 @@
 
 **Primera auditoría (10/11):** contrastar listado y códigos únicos del día, detalles recuperados/fallidos, checkpoint, respaldo y lectura posterior MER, resultado de publicación, duración, locks y convivencia con otros procesos. Consultar `logs/licitaciones_api_1615.log` en Ubuntu. No confundir instalación exitosa con ejecución exitosa.
 
+## Línea base API de licitaciones — 1 al 9 de noviembre de 2026
+
+Consulta manual de solo lectura ejecutada en Ubuntu el **09/11/2026**, contra `/servicios/v1/publico/licitaciones.json?fecha=DDMMYYYY`. Las primeras consultas tuvieron errores HTTP 429 por falta de pausa; se repitieron únicamente los días 2, 6 y 7 con espera y reintentos. La tabla recoge **nueve respuestas exitosas** y el campo `Cantidad` de cada respuesta.
+
+| Fecha | Cantidad API | Acumulado |
+|---|---:|---:|
+| 2026-11-01 | 6 | 6 |
+| 2026-11-02 | 1.469 | 1.475 |
+| 2026-11-03 | 1.149 | 2.624 |
+| 2026-11-04 | 1.169 | 3.793 |
+| 2026-11-05 | 1.295 | 5.088 |
+| 2026-11-06 | 1.385 | 6.473 |
+| 2026-11-07 | 29 | 6.502 |
+| 2026-11-08 | 3 | 6.505 |
+| 2026-11-09 | 1.697 | **8.202** |
+
+**Interpretación:** 8.202 es la suma de cantidades diarias, **no un conteo de códigos únicos ni necesariamente de licitaciones publicadas en noviembre**. Una consulta anterior reportó 8.165 entradas y 8.124 códigos únicos; existe una diferencia de 37 entradas entre mediciones que requiere cotejo de listados/códigos, no suposición de equivalencia. Esta línea base sirve para contrastar la ejecución del cron del 10/11; no demuestra por sí sola carga al MER.
+
 ## Cómo reanudar una auditoría
 
 1. Leer estos documentos y la política maestra.
