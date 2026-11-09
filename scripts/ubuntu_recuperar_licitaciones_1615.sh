@@ -17,17 +17,30 @@ set +a
 MES="$(date +%Y-%m)"
 HOY="$(date +%F)"
 DESDE="${MER_LIC_API_DESDE:-$MES-01}"
-LIMITE=0 # Sin cuota diaria: todos los detalles pendientes
-echo "INICIO_LICITACIONES_API $(date --iso-8601=seconds) mes=$MES limite=$LIMITE"
-python3 scripts/recuperar_licitaciones_api.py --desde "$DESDE" --hasta "$HOY" --mes "$MES" --limite "$LIMITE" --pausa 10 --refrescar-ultimo
+# Lotes operativos para publicar progresivamente, sin cuota diaria total.
+LOTE=200
 CSV="$HOME/mercadopublico-recuperacion-licitaciones/masivo/procesos_mes.csv"
-[[ -s "$CSV" ]] || { echo "BLOQUEO: CSV no generado"; exit 3; }
-# El candado compartido protege las escrituras MER; no bloquear durante consultas API.
-exec 8>"$ROOT/logs/.mer_escritura_compartida.lock"
-flock -w 3600 8 || { echo "BLOQUEO: MER ocupado"; exit 5; }
-"$ROOT/.venv/bin/python" scripts/cargar_licitaciones_api_mer.py --csv "$CSV" --aplicar
-flock -u 8
-# La publicación protegida exige una carga diaria previa del ETL de las 16:00.
-# Si no existe esa evidencia, el comando falla sin publicar datos no certificados.
-bash scripts/ubuntu_publicar_v2_post_etl.sh --aplicar
+INFORME="$HOME/mercadopublico-recuperacion-licitaciones/masivo/informe.json"
+ANTERIOR=-1
+while true; do
+  echo "LOTE_LICITACIONES_API $(date --iso-8601=seconds) mes=$MES"
+  python3 scripts/recuperar_licitaciones_api.py --desde "$DESDE" --hasta "$HOY" --mes "$MES" --limite "$LOTE" --pausa 10 --refrescar-ultimo
+  [[ -s "$CSV" && -s "$INFORME" ]] || { echo "BLOQUEO: salida de recuperacion ausente"; exit 3; }
+  # El candado compartido protege las escrituras MER, sin bloquear las consultas.
+  (
+    exec 8>"$ROOT/logs/.mer_escritura_compartida.lock"
+    flock -w 3600 8 || { echo "BLOQUEO: MER ocupado"; exit 5; }
+    "$ROOT/.venv/bin/python" scripts/cargar_licitaciones_api_mer.py --csv "$CSV" --aplicar
+  )
+  # Publicar despues de cada lote, no solo al agotar una cola extensa.
+  bash scripts/ubuntu_publicar_v2_post_etl.sh --aplicar
+  PENDIENTES="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["pendientes"])' "$INFORME")"
+  echo "PENDIENTES_API=$PENDIENTES"
+  [[ "$PENDIENTES" -eq 0 ]] && break
+  if [[ "$ANTERIOR" -eq "$PENDIENTES" ]]; then
+    echo "BLOQUEO: sin avance en cola API, revisar errores; no repetir indefinidamente" >&2
+    exit 7
+  fi
+  ANTERIOR="$PENDIENTES"
+done
 echo "LICITACIONES_API_PUBLICADAS $(date --iso-8601=seconds)"
