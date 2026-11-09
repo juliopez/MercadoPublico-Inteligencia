@@ -13,6 +13,10 @@
 5. [HISTORIAL_CAMBIOS.md](HISTORIAL_CAMBIOS.md): decisiones, cambios relevantes y referencias.
 6. [Política maestra de protección](../POLITICA_PROTECCION_CUATRO_PROCESOS.md): **prevalece ante cualquier resumen**.
 
+## Nuevo proceso: conciliación cronológica matinal 09:00 (2026-11-09)
+
+**Documento operativo:** [CONCILIACION_CRONOLOGICA_0900.md](CONCILIACION_CRONOLOGICA_0900.md). El usuario confirmó con captura de `crontab -l` la entrada `0 9 * * 1-5` y etiqueta `MER_CONCILIACION_0900` en Ubuntu. El cron está **instalado**, pero su primera ejecución está prevista para **martes 10/11/2026, 09:00 Chile** y **no ha sido validada**. Clasifica por fecha propia las hojas Procesos, OrdenesCompra, Ofertas y Resultados; deja Proveedores y VinculosCOT_OC sin traslado automático. Respalda, escribe en MER histórico, verifica, retira del operativo y exporta los períodos afectados. **Es distinto del proceso P4 de conciliación oficial del mes vencido**.
+
 ## Hito operativo: cron de licitaciones API 16:15 (2026-11-09)
 
 **Evidencia:** salida de terminal Ubuntu aportada el 9 de noviembre de 2026: `git pull --ff-only origin main` completado hasta `e643fa688`; `bash scripts/instalar_cron_licitaciones_1615.sh` informó `CRON_INSTALADO`; `crontab -l | grep MER_LICITACIONES_API_1615` confirmó la entrada `15 16 * * 1-5`. Huso horario local validado por el instalador: `America/Santiago`.
