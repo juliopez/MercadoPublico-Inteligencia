@@ -60,8 +60,11 @@ jobs:
               done(False,"Mes vigente sin registro unico");raise SystemExit(0)
           last=subprocess.check_output(["git","log","-1","--format=%cI","--",path,"frontend-v2/data/vinculos-oc-verificados.json"],text=True).strip()
           timestamp=datetime.datetime.fromisoformat(last).astimezone(ZoneInfo("America/Santiago"))
-          if timestamp.date()!=now.date() or timestamp.hour<16:
-              done(False,"No hay exportacion fresca del dia posterior a las 16h");raise SystemExit(0)
+          # Los eventos push pueden provenir de recuperaciones API por lotes,
+          # conciliaciones matinales o cargas nocturnas. No bloquearlos por hora.
+          # La puerta de frescura 16:00 se conserva solo para schedule.
+          if os.environ["EVENTO"]=="schedule" and (timestamp.date()!=now.date() or timestamp.hour<16):
+              done(False,"Sin exportacion fresca del dia posterior a las 16h para schedule");raise SystemExit(0)
           done(True,f"Origen listo {last}")
           PY
       - name: Generar índices, perfiles y analítica del mes operativo
