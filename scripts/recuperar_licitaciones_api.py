@@ -81,11 +81,11 @@ def inicializar(db):
     db.execute("CREATE TABLE IF NOT EXISTS fallos (codigo TEXT PRIMARY KEY, error TEXT)")
     db.commit()
 
-def cargar_listados(db, cliente, desde, hasta):
+def cargar_listados(db, cliente, desde, hasta, refrescar=False):
     fecha = desde
     while fecha <= hasta:
         dia = fecha.isoformat()
-        if db.execute("SELECT 1 FROM listados WHERE fecha=?", (dia,)).fetchone():
+        if not refrescar and db.execute("SELECT 1 FROM listados WHERE fecha=?", (dia,)).fetchone():
             print("LISTADO_EXISTENTE", dia, flush=True)
         else:
             datos = cliente.consultar(fecha=fecha.strftime("%d%m%Y"))
@@ -95,7 +95,7 @@ def cargar_listados(db, cliente, desde, hasta):
             with db:
                 db.executemany("INSERT OR IGNORE INTO codigos(codigo) VALUES(?)",
                                [(c,) for c in codigos])
-                db.execute("INSERT INTO listados VALUES(?,?,?)",
+                db.execute("INSERT OR REPLACE INTO listados VALUES(?,?,?)",
                            (dia,len(items),dt.datetime.now(dt.timezone.utc).isoformat()))
             print("LISTADO_OK", dia, "FILAS", len(items), "CODIGOS", len(codigos), flush=True)
         fecha += dt.timedelta(days=1)
@@ -166,6 +166,7 @@ def main():
     p.add_argument("--limite",type=int,default=100,help="0 = todos los pendientes")
     p.add_argument("--pausa",type=float,default=10)
     p.add_argument("--timeout",type=int,default=45)
+    p.add_argument("--refrescar-listados",action="store_true")
     p.add_argument("--directorio",default=str(Path.home()/"mercadopublico-recuperacion-licitaciones"/"masivo"))
     a=p.parse_args()
     if a.limite<0 or a.pausa<2:
@@ -182,7 +183,7 @@ def main():
     inicializar(db)
     cliente=Cliente(ticket,a.pausa,a.timeout)
     try:
-        cargar_listados(db,cliente,desde,hasta)
+        cargar_listados(db,cliente,desde,hasta,a.refrescar_listados)
         recuperar(db,cliente,a.limite)
     finally:
         exportar(db,carpeta,a.mes)
