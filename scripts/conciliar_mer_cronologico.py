@@ -14,11 +14,11 @@ def period(value):
  s=str(value or "").strip()
  if not s:return None
  import re
- m=re.match(r"^(\\d{4})[-/](\\d{1,2})[-/](\\d{1,2})(?:[T\\s].*)?$",s)
+ m=re.match(r"^(\d{4})[-/](\d{1,2})[-/](\d{1,2})(?:[T\s].*)?$",s)
  if m:
   try:return dt.date(*map(int,m.groups())).strftime("%Y-%m")
   except ValueError:return None
- m=re.match(r"^(\\d{1,2})[-/](\\d{1,2})[-/](\\d{4})(?:[T\\s].*)?$",s)
+ m=re.match(r"^(\d{1,2})[-/](\d{1,2})[-/](\d{4})(?:[T\s].*)?$",s)
  if m:
   d,mo,y=map(int,m.groups())
   try:return dt.date(y,mo,d).strftime("%Y-%m")
