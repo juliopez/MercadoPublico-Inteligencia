@@ -16,7 +16,7 @@ set +a
 : "${CHILECOMPRA_TICKET:?BLOQUEO: ticket ausente}"
 MES="$(date +%Y-%m)"
 HOY="$(date +%F)"
-DESDE="${MER_LIC_API_DESDE:-$MES-01}"
+DESDE="$HOY" # Solo listado de la fecha de ejecucion; publicaciones de cualquier mes
 # Lotes operativos para publicar progresivamente, sin cuota diaria total.
 LOTE=200
 CSV="$HOME/mercadopublico-recuperacion-licitaciones/masivo/procesos_mes.csv"
