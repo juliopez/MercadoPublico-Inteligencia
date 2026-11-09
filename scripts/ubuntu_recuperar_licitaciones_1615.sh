@@ -19,12 +19,12 @@ HOY="$(date +%F)"
 DESDE="$HOY" # Solo listado de la fecha de ejecucion; publicaciones de cualquier mes
 # Lotes operativos para publicar progresivamente, sin cuota diaria total.
 LOTE=200
-CSV="$HOME/mercadopublico-recuperacion-licitaciones/masivo/procesos_mes.csv"
+CSV="$HOME/mercadopublico-recuperacion-licitaciones/masivo/todos_los_periodos.csv"
 INFORME="$HOME/mercadopublico-recuperacion-licitaciones/masivo/informe.json"
 ANTERIOR=-1
 while true; do
   echo "LOTE_LICITACIONES_API $(date --iso-8601=seconds) mes=$MES"
-  python3 scripts/recuperar_licitaciones_api.py --desde "$DESDE" --hasta "$HOY" --mes "$MES" --limite "$LOTE" --pausa 10 --refrescar-ultimo
+  python3 scripts/recuperar_licitaciones_api.py --desde "$DESDE" --hasta "$HOY" --mes "$MES" --limite "$LOTE" --pausa 10 --refrescar-ultimo --solo-dia
   [[ -s "$CSV" && -s "$INFORME" ]] || { echo "BLOQUEO: salida de recuperacion ausente"; exit 3; }
   # El candado compartido protege las escrituras MER, sin bloquear las consultas.
   (
