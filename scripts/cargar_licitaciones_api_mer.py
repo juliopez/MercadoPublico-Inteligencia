@@ -37,8 +37,8 @@ def main():
         rows={}
         for r in lector:
             codigo=r["codigo"].strip().upper()
-            if not codigo or not r["fecha_publicacion"].startswith(mes):
-                raise ValueError("Codigo o periodo invalido en CSV")
+            if not codigo:
+                raise ValueError("Codigo invalido en CSV")
             if codigo in rows:raise ValueError("PK duplicada en CSV: "+codigo)
             rows[codigo]=[r[c] for c in cols]
     if not rows:
