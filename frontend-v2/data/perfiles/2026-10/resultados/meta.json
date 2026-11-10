@@ -4,9 +4,9 @@
   "entidad": "resultados",
   "campo_actor": "adjudicatario",
   "campo_monto": "monto_adjudicado_clp",
-  "registros": 650,
-  "registros_identificados": 0,
-  "actores": 0,
-  "archivos": 0,
+  "registros": 56813,
+  "registros_identificados": 56813,
+  "actores": 12910,
+  "archivos": 256,
   "nota": "Cifras descriptivas por entidad/mes; registros y montos no equivalen a operaciones únicas ni adjudicaciones verificadas."
 }
