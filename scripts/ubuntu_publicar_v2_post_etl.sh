@@ -30,8 +30,35 @@ test -z "$(git status --porcelain --untracked-files=no)" || {
  echo "BLOQUEADO: cambios locales rastreados, conservar para revisión";exit 6;
 }
 git pull --ff-only origin main
-"$ROOT/.venv/bin/python" scripts/exportar_mer_operativo_v2.py --periodo "$MES" --aplicar
-"$ROOT/.venv/bin/python" scripts/exportar_vinculos_documentales_v2.py --aplicar
+# Reintentar solamente exportaciones de lectura; nunca repetir la carga ETL en MER.
+# La cuota por minuto de Sheets se recupera con espera creciente. No reintentar
+# errores de datos o credenciales, para que queden visibles al operador.
+exportar_con_reintentos() {
+  local intento=1 max=4 espera=70 registro rc
+  while (( intento <= max )); do
+    registro="$(mktemp)"
+    if "$ROOT/.venv/bin/python" "$@" >"$registro" 2>&1; then
+      cat "$registro"; rm -f "$registro"; return 0
+    else
+      rc=$?
+    fi
+    cat "$registro" >&2
+    if ! grep -Eq '429|Quota exceeded|RESOURCE_EXHAUSTED|Rate Limit Exceeded' "$registro"; then
+      rm -f "$registro"; return "$rc"
+    fi
+    rm -f "$registro"
+    if (( intento == max )); then
+      echo "PUBLICACION_V2_PENDIENTE: cuota Sheets agotada tras $max intentos" >&2
+      return "$rc"
+    fi
+    echo "PUBLICACION_V2_REINTENTO_429 intento=$intento espera_segundos=$espera" >&2
+    sleep "$espera"
+    espera=$(( espera * 2 ))
+    intento=$(( intento + 1 ))
+  done
+}
+exportar_con_reintentos scripts/exportar_mer_operativo_v2.py --periodo "$MES" --aplicar
+exportar_con_reintentos scripts/exportar_vinculos_documentales_v2.py --aplicar
 # Versionar las CUATRO entidades declaradas en el catálogo.
 # En el primer día de cada mes también deben incluirse fragmentos [] para
 # Ofertas y Resultados; un catálogo sin sus fragmentos bloquea Actions.
