@@ -139,6 +139,10 @@ def main():
     window["pausa_hasta"]=(dt.datetime.now(TZ)+dt.timedelta(hours=1)).isoformat()
     print("STOP HTTP 429 listado, publicar cualquier detalle recuperado")
     break
+   except IndisponibilidadAPI as exc:
+    window["pausa_hasta"]=(dt.datetime.now(TZ)+dt.timedelta(hours=1)).isoformat()
+    print("STOP_API_TRANSITORIA_LISTADO",str(exc),"guardando checkpoint",flush=True)
+    break
    except urllib.error.HTTPError:raise
    payload=listed.get("payload") or {}
    if listed.get("success") not in (True,"OK") or not isinstance(payload.get("items"),list):raise ValueError("Listado API incompatible")
