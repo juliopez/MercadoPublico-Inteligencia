@@ -1,0 +1,28 @@
+name: Piloto octubre lote 3 Compra Agil cifrado
+on:
+  push:
+    branches: [etapa2/escritor-prueba-20261028]
+    paths:
+      - '.github/workflows/piloto-lote3-oct-api-mer.yml'
+permissions:
+  contents: read
+jobs:
+  captura:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'cryptography>=42,<47'
+      - name: Capturar y cifrar respuestas sin imprimir datos personales
+        env:
+          CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+        run: python scripts/piloto_lote3_oct_api_mer.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mer-api-lote3-octubre-cifrado
+          path: ${{ runner.temp }}/capturas_octubre_cifradas.json
+          retention-days: 7
+          if-no-files-found: error

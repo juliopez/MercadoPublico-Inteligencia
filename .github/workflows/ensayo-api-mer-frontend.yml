@@ -1,0 +1,22 @@
+name: Ensayo aislado API MER a frontend
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/ensayo_publicacion_api_mer.py'
+      - '.github/workflows/ensayo-api-mer-frontend.yml'
+permissions:
+  contents: read
+jobs:
+  simulacion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar en modo aislado, sin credenciales ni API
+        run: |
+          PYTHONPATH=scripts python scripts/ensayo_publicacion_api_mer.py
+          PYTHONPATH=scripts python -m unittest discover -s tests -p 'test_integracion_api_mer_sin_api.py' -v
