@@ -21,3 +21,7 @@ Añadir una fila con **fecha**, proceso afectado, motivo, autorización cuando c
 La [política de cuatro procesos](../POLITICA_PROTECCION_CUATRO_PROCESOS.md) prevalece. No presentar una actualización documental como despliegue, instalación o prueba productiva.
 
 | 2026-11-06, 16:22 Chile | Auditoría documental de solo lectura: commits de exportación e índices contrastados; runs de Actions y Ubuntu no accesibles; discrepancias registradas sin cambios productivos | [Auditoría](AUDITORIA_OPERATIVA.md), commits `0477f68` y `bc65f4f`; actualización documental `025aa635`, `6bafb6f` |
+
+| 2026-11-10 | Cron 16:00 cargó MER, publicación falló por Sheets 429; recuperación por commit `cad2006aa`; Pages #371 timeout y #372 success | [Incidente V2](INCIDENTE_PUBLICACION_V2_2026-11-10.md) |
+| 2026-11-10 | PR #10 fusionado a `main` (commit `676e9cf`): reintentos acotados de lectura Sheets, sin instalación Ubuntu verificada | [Incidente V2](INCIDENTE_PUBLICACION_V2_2026-11-10.md) |
+| 2026-11-10 | PR #1 y #9 identificados como desarrollos experimentales, no productivos | [Iniciativas](INICIATIVAS_EN_DESARROLLO.md) |
