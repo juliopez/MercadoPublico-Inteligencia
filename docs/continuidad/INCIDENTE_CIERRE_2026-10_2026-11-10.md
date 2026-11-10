@@ -6,7 +6,7 @@
 
 El cierre mensual de octubre fue preparado y cargado con respaldo verificado, pero una ejecución automática de publicación terminó con error al intentar `git push origin main` mientras la rama remota avanzaba por otros procesos. Se completó una publicación manual supervisada y se comprobó GitHub Pages. Posteriormente se recuperó el estado de cierre local **sin repetir carga MER ni publicación**. La puerta de calendario devolvió `COMPLETADO` y `accion: NINGUNA`.
 
-**Importante:** la prueba del temporizador a las 10:15 todavía no consta en las capturas examinadas; sí consta programación para ese horario y una ejecución exitosa anterior a las 10:06.
+**Actualización posterior:** prueba del temporizador a las 10:15 confirmada por captura de `journalctl` aportada por el responsable. Inicio y finalización a las 10:15:54 Chile; puerta `COMPLETADO` / `NINGUNA`.
 
 ## Secuencia observada
 
@@ -15,7 +15,7 @@ El cierre mensual de octubre fue preparado y cargado con respaldo verificado, pe
 3. Se publicó el histórico mediante `.venv/bin/python scripts/publicar_cierre_historico_v2.py --periodo 2026-10` con `GOOGLE_APPLICATION_CREDENTIALS` apuntando al archivo local habitual. La salida mostró `EXPORTACION_V2_VERIFICADA`, generación de índices, push a `main` y `PAGES_HISTORICO_VERIFICADO`; commit de publicación **`77df3d30d`**. Conteos declarados: **91.925 procesos, 470.841 ofertas, 56.813 resultados y 167.042 órdenes de compra** para 2026-10. Son conteos de exportación del histórico, no cifras del mes operativo aislado.
 4. La constancia local `constancia_carga_real.json` declaró `CARGA_VERIFICADA`, período `2026-10`, seis tablas, respaldo ZIP y SHA256. Se comprobó existencia del ZIP, tamaño **5.735.999 bytes** y coincidencia efectiva del SHA256. El estado de cierre seguía en `LISTO_PARA_CONCILIAR` pese a la publicación verificada.
 5. Se ejecutó recuperación supervisada con comprobaciones previas de identidad MER, catálogo histórico, seis tablas, respaldo SHA256, informe oficial y catálogo servido por Pages. Se preservó copia de `estado_cierre.json` en `estado_cierre.antes_recuperacion.json` y se escribió `CONCILIACION_HISTORICA_VERIFICADA`, `recuperacion_supervisada: true`, `cierre_automatico: false`. La puerta `scripts/verificar_ventana_conciliacion.py --fecha 2026-11-10` respondió `COMPLETADO`, `accion: NINGUNA`.
-6. Se cambió localmente `~/.config/systemd/user/mercadopublico-conciliacion.timer` de `OnCalendar=*-*-* 10:00:00` a **`OnCalendar=*-*-* 10:15:00`**; se recargó systemd y se habilitó el timer. `list-timers` mostró siguiente disparo **2026-11-10 10:15:00 -03**. La ejecución observada a **10:06:06** terminó `status=0/SUCCESS` con `COMPLETADO`/`NINGUNA`. **Pendiente:** evidencia de disparo y logs específicamente de 10:15 o posterior.
+6. Se cambió localmente `~/.config/systemd/user/mercadopublico-conciliacion.timer` de `OnCalendar=*-*-* 10:00:00` a **`OnCalendar=*-*-* 10:15:00`**; se recargó systemd y se habilitó el timer. `list-timers` mostró siguiente disparo **2026-11-10 10:15:00 -03**. La ejecución observada a **10:06:06** terminó `status=0/SUCCESS` con `COMPLETADO`/`NINGUNA`. **Validado posteriormente:** ejecución automática a las 10:15:54, con resultado `COMPLETADO` / `NINGUNA`.
 7. La captura de `systemctl --user cat` mostró `Persistent=true`, `OnBootSec=10min`, `TimeoutStartSec=6h`; el temporizador se había detenido durante la recuperación y fue reactivado después.
 
 ## Diagnóstico y solución
@@ -25,14 +25,14 @@ El cierre mensual de octubre fue preparado y cargado con respaldo verificado, pe
 - **No confundir:** `COMPLETADO` demuestra que la puerta no debe reejecutar octubre; no demuestra por sí solo que un cierre mensual futuro se complete sin supervisión.
 - **Credenciales:** el primer intento manual falló por ausencia de `GOOGLE_APPLICATION_CREDENTIALS` en la sesión de terminal; la credencial existía en la ruta local habitual y el intento posterior la utilizó. No publicar contenido de credenciales.
 
-## Comprobación de las 10:15 (pendiente de evidencia)
+## Comprobación de las 10:15 (confirmada)
 
 ```bash
 journalctl --user -u mercadopublico-conciliacion.service --since "2026-11-10 10:14:00" --no-pager
 systemctl --user list-timers --all --no-pager | grep mercadopublico-conciliacion
 ```
 
-Criterio de aceptación: log de inicio posterior a 10:15, fin `status=0/SUCCESS`, puerta `COMPLETADO`/`NINGUNA`, próximo disparo 11/11 a las 10:15. Registrar evidencia antes de afirmar validación.
+**Evidencia aportada:** `nov 10 10:15:54` inicio del servicio; salida JSON `{ "estado": "COMPLETADO", "fecha": "2026-11-10", "habil_desde": "2026-11-10", "periodo": "2026-10", "accion": "NINGUNA" }`; `nov 10 10:15:54` finalización del servicio. Se acredita disparo automático y ausencia de nueva carga; el próximo disparo del 11/11 aún no se ha comprobado mediante `list-timers`.
 
 ## Riesgos y mejoras pendientes
 
@@ -51,4 +51,4 @@ Criterio de aceptación: log de inicio posterior a 10:15, fin `status=0/SUCCESS`
 - P7: conciliación cronológica de registros por fecha propia, cron lun-vie 09:00; distinta de P4.
 - Recuperación API licitaciones 16:15, cron separado, primera ejecución por auditar.
 
-**Estado del incidente:** recuperación y publicación de octubre **verificadas**; **prueba de disparo 10:15 pendiente**; prevención definitiva de concurrencia Git pendiente de diseño y autorización.
+**Estado del incidente:** recuperación y publicación de octubre **verificadas**; **prueba de disparo automático 10:15 superada**; prevención definitiva de concurrencia Git pendiente de diseño y autorización.
