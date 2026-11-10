@@ -1,6 +1,6 @@
 # Inventario operativo de procesos y dependencias
 
-**Corte documental:** 2026-11-06. **Autoridad principal:** [política de cuatro procesos](../POLITICA_PROTECCION_CUATRO_PROCESOS.md) y runbooks especializados.
+**Corte documental:** 2026-11-10. **Autoridad principal:** [política de cuatro procesos](../POLITICA_PROTECCION_CUATRO_PROCESOS.md) y runbooks especializados.
 
 | ID | Proceso | Activación documentada | Implementación / referencias | Salida y control |
 |---|---|---|---|---|
@@ -25,3 +25,15 @@
 Los archivos `deploy/systemd/` son **declaraciones versionadas**: para afirmar que un timer está activo en Ubuntu, comprobar `systemctl` y `journalctl` del equipo real. Para Actions, comprobar ejecuciones y artefactos, no solo el YAML. Para Pages, comprobar la respuesta HTTP y el contenido de catálogo/índices.
 
 **No modificar procesos protegidos sin autorización expresa**, evaluación de impacto, respaldo, pruebas y reversión.
+
+
+## Procesos auxiliares y cambios recientes
+
+| Identificador | Función | Estado comprobado |
+|---|---|---|
+| AUX-1615 | Recuperación API licitaciones 16:15 lun–vie | Primera ejecución 10/11: 201 detalles y 196 nuevos MER; revisar logs en Ubuntu |
+| PUB-V2 | Exportación Sheets → JSON → commit → Actions/Pages | Error 429 el 10/11; reintentos integrados en `main` por PR #10, sin instalación Ubuntu acreditada |
+| EXP-01 | Escritor protegido Ofertas/Resultados | PR #1 abierto, no productivo |
+| EXP-09 | Ruta B Tordo Compra Ágil | PR #9 abierto, no productivo |
+
+Los auxiliares no sustituyen P1–P4. Ver [iniciativas](INICIATIVAS_EN_DESARROLLO.md).
