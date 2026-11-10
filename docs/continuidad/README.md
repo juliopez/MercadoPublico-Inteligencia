@@ -1,12 +1,18 @@
 # Punto de recuperación operativa — Observatorio de Mercado Público
 
-**Última revisión documental:** 2026-11-09 (Chile). **Repositorio:** `juliopez/MercadoPublico-Inteligencia`, rama principal `main`.
+**Última revisión documental:** 2026-11-10 (Chile). **Repositorio:** `juliopez/MercadoPublico-Inteligencia`, rama principal `main`.
 
 > **Empezar aquí al abrir un nuevo chat.** Esta carpeta es el índice de continuidad; no reemplaza el código, los logs Ubuntu, los resultados de GitHub Actions ni la documentación protegida. Las afirmaciones de ejecución requieren evidencia reciente.
 
-## Incidente publicación V2 del 10/11/2026 — mitigación en revisión
+## Incidente publicación V2 del 10/11/2026 — mitigación incorporada a main
 
-Consultar [INCIDENTE_PUBLICACION_V2_2026-11-10.md](INCIDENTE_PUBLICACION_V2_2026-11-10.md). Carga MER 16:02 verificada; publicador bloqueado por cuota Sheets 429; recuperación GitHub commit `cad2006aa`, Pages #371 timeout y #372 success; frontend actualizado. La rama `fix/publicacion-v2-reintentos-20261110` prepara reintentos de lectura Sheets, **todavía no instalados en Ubuntu**. No declarar automatización desatendida hasta validar recuperación de fallas y publicación final.
+Consultar [INCIDENTE_PUBLICACION_V2_2026-11-10.md](INCIDENTE_PUBLICACION_V2_2026-11-10.md). Carga MER 16:02 verificada; publicador bloqueado por cuota Sheets 429; recuperación GitHub commit `cad2006aa`, Pages #371 timeout y #372 success; frontend actualizado. El PR #10 fue fusionado en `main` (commit `676e9cf4425cea95462b5d493be579801dadf3ab`): reintentos de lectura Sheets ante 429. **La instalación en Ubuntu depende de ejecutar `git pull --ff-only origin main`; no hay confirmación de esa actualización local.** No declarar automatización desatendida hasta validar recuperación de fallas y publicación final.
+
+## Desarrollos experimentales abiertos
+
+- [PR #1 — escritor protegido de Ofertas/Resultados](https://github.com/juliopez/MercadoPublico-Inteligencia/pull/1): pruebas aisladas con copia MER, sin API ni escritura operativa; falta CI/ensayo y rollback ante fallo parcial.
+- [PR #9 — Ruta B Compra Ágil con Tordo](https://github.com/juliopez/MercadoPublico-Inteligencia/pull/9): piloto de extracción y staging, sin cron ni MER productivo; falta validar frescura, cobertura y semántica.
+- [Registro de iniciativas](INICIATIVAS_EN_DESARROLLO.md): alcance, estado y condiciones para decidir integración.
 
 ## Incidente P4 del 10/11/2026 — cierre octubre recuperado
 
