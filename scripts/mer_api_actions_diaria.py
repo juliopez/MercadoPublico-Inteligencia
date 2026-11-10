@@ -13,6 +13,8 @@ TARGET_ENV="MER_API_FECHA_OBJETIVO"
 TZ=ZoneInfo("America/Santiago")
 class LimiteAPI(Exception):
  pass
+class IndisponibilidadAPI(Exception):
+ pass
 
 _LAST_HTTP=[0.0]
 def fetch(url,ticket):
@@ -24,9 +26,11 @@ def fetch(url,ticket):
   try:
    return _fetch_once(url,ticket)
   except urllib.error.HTTPError as exc:
-   if exc.code!=429:raise
-   if attempt==2:raise LimiteAPI("HTTP 429 tres veces; reanudar en una hora") from exc
-   print("HTTP_429_REINTENTO",attempt+1,"de 2; espera 10 segundos",flush=True)
+   if exc.code not in (429,502,503,504):raise
+   if attempt==2:
+    if exc.code==429:raise LimiteAPI("HTTP 429 tres veces; reanudar en una hora") from exc
+    raise IndisponibilidadAPI("HTTP "+str(exc.code)+" tres veces; reanudar en una hora") from exc
+   print("HTTP_"+str(exc.code)+"_REINTENTO",attempt+1,"de 2; espera 10 segundos",flush=True)
    time.sleep(max(10,spacing))
  raise AssertionError("reintentos agotados")
 
