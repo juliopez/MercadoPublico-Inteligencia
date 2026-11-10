@@ -118,3 +118,12 @@ Captura de `gh run list --limit 20 --json databaseId,name,event,status,conclusio
 - Error literal en log: `ValueError: Esquema incompatible Resultados`, `scripts/mer_api_actions_diaria.py` línea 92, comparación `existing[k][0] != SCHEMA[k]`. La hoja privada `Resultados` no coincide exactamente con el encabezado esperado por `SCHEMA`; falta comparar ambos encabezados para identificar columnas concretas y origen del desajuste.
 - Paso de resguardo de estado completado: artifact `api-dia-42322149976`, ID `13553242297`. Exportación e índices y despliegue Pages fueron omitidos. No consta procesamiento de lotes en este run.
 - **Estado:** falla productiva de API nocturna confirmada; alcance limitado al run, sin afirmar que otros procesos fallaron. **No se modificó código, esquema, workflows ni configuración.** Cualquier corrección requiere autorización expresa y evaluación de impacto con P1/P3/P4.
+
+
+## Auditoría 10/11/2026 — ETL correcto, publicación recuperada
+
+- Estado de sincronización MER `EXITOSA` 16:02:48 Chile, código 0; publicador falló por HTTP 429 de cuota de lecturas Google Sheets.
+- API licitaciones 16:15: 975 códigos únicos listados, 201 detalles guardados, 774 pendientes; 196 nuevos confirmados en MER, sin errores declarados.
+- Publicación manual controlada: 57 JSON sintácticamente válidos; commit `cad2006aa`. GitHub Pages #371 timeout; #372 success.
+- Frontend observado: 5.661 registros (1.263 licitaciones, 4.398 Compra Ágil), +78 respecto de captura anterior.
+- PR #10 fusionado, commit `676e9cf`: reintentos ante 429 solo para exportaciones de lectura; **no hay evidencia de instalación Ubuntu ni validación desatendida**. Ver [incidente](INCIDENTE_PUBLICACION_V2_2026-11-10.md).
