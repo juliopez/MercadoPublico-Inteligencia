@@ -1,6 +1,6 @@
 # Estado actual — punto de recuperación
 
-**Corte documental:** 2026-11-06, Chile. **Fuente:** documentación del repositorio y confirmaciones de operación aportadas durante la sesión. **No constituye una nueva auditoría de Ubuntu ni una certificación de completitud de datos.**
+**Corte documental:** 2026-11-10, Chile. **Fuente:** documentación del repositorio y confirmaciones de operación aportadas durante la sesión. **No constituye una nueva auditoría de Ubuntu ni una certificación de completitud de datos.**
 
 ## Estado por componente
 
@@ -42,3 +42,12 @@ Actualizar **fecha de corte**, evidencia, resultados, pendientes y referencias a
 ## Contraste adicional — 2026-11-06, 16:22 Chile
 
 Se verificaron en Git los commits `0477f68` (exportación MER noviembre, 19:04:07 UTC) y `bc65f4f` (índices, 19:04:37 UTC). En el catálogo de exportación versionado, las OC de noviembre pasaron de 16.197 a 32.345. Esto acredita **actualización del repositorio**, no certificación del cron Ubuntu ni de Pages. Los runs de Actions, journals Ubuntu y comprobación HTTP permanecen pendientes. El catálogo de configuración mantiene metadatos de inicialización (`filas: 0`), cuya semántica debe verificarse antes de intervenir. Véase [auditoría](AUDITORIA_OPERATIVA.md) y [pendientes](INCIDENCIAS_PENDIENTES.md).
+
+
+## Actualización del 10/11/2026
+
+- Cron 16:00: carga MER verificada `EXITOSA` 16:02:48 Chile; publicación inicial falló por cuota de lectura Sheets HTTP 429. No confundir con fallo del ETL.
+- Cron API licitaciones 16:15: 201 detalles guardados, 196 nuevos en MER; frontend observado con 5.661 registros, 1.263 licitaciones y 4.398 compras ágiles. El incremento visible fue de 78 licitaciones, sin asumir equivalencia con 196 nuevos en MER.
+- Publicación recuperada mediante commit `cad2006aa`; Pages #371 falló por timeout y #372 finalizó exitoso.
+- Mitigación de 429 fusionada a `main` por PR #10, commit `676e9cf`; instalación Ubuntu y ejecución desatendida aún **no acreditadas**.
+- PR #1 y #9: pilotos abiertos, fuera de producción. Ver [iniciativas](INICIATIVAS_EN_DESARROLLO.md) y [incidente](INCIDENTE_PUBLICACION_V2_2026-11-10.md).
