@@ -1,0 +1,34 @@
+name: Compra Agil Tordo - piloto aislado
+on:
+  workflow_dispatch:
+    inputs:
+      fecha:
+        description: Fecha objetivo YYYY-MM-DD (Chile)
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: compra-agil-tordo-piloto
+  cancel-in-progress: false
+jobs:
+  piloto:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Extraer a staging, nunca MER
+        env:
+          FECHA: ${{ inputs.fecha }}
+        run: python3 scripts/compra_agil_tordo_ruta_b.py --fecha "$FECHA"
+      - name: Preservar evidencia
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auditoria-tordo-${{ github.run_id }}
+          path: salidas/tordo/
+          if-no-files-found: warn
+          retention-days: 30
