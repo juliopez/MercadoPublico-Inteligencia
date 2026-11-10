@@ -4,6 +4,10 @@
 
 > **Empezar aquí al abrir un nuevo chat.** Esta carpeta es el índice de continuidad; no reemplaza el código, los logs Ubuntu, los resultados de GitHub Actions ni la documentación protegida. Las afirmaciones de ejecución requieren evidencia reciente.
 
+## Incidente P4 del 10/11/2026 — cierre octubre recuperado
+
+**Leer primero:** [INCIDENTE_CIERRE_2026-10_2026-11-10.md](INCIDENTE_CIERRE_2026-10_2026-11-10.md). La publicación histórica y la recuperación supervisada de octubre quedaron verificadas; la puerta devolvió `COMPLETADO` / `NINGUNA`. El timer Ubuntu fue reprogramado localmente a **10:15 America/Santiago**; la captura confirma la programación y una ejecución correcta a las 10:06, **pero falta confirmar la ejecución de las 10:15**. No confundir recuperación manual con validación integral de automatización futura. No repetir carga ni publicación de octubre.
+
 ## Lectura obligatoria y orden
 
 1. [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md): qué sabemos, qué está pendiente y qué no se debe afirmar.
