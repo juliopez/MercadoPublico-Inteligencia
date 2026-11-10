@@ -26,3 +26,16 @@ Cuando se resuelva un pendiente, agregar fecha, fuente de prueba, resultado y co
 - **VAL-04 y VAL-05 permanecen abiertos:** commits `0477f68` y `bc65f4f` evidencian actualización de exportación e índices el 06/11 16:04 Chile, pero faltan logs de ejecución, validación HTTP Pages e integridad de fragmentos.
 
 Referencia: [registro de auditoría 06/11](AUDITORIA_OPERATIVA.md). No se ha confirmado un fallo productivo.
+
+
+## Riesgos incorporados el 10/11/2026
+
+| ID | Prioridad | Riesgo | Criterio de cierre |
+|---|---|---|---|
+| PUB-429 | Alta | Cuota de lectura Sheets bloquea publicación tras ETL exitoso | `main` actualizado en Ubuntu; reintentos registrados y publicación completada sin intervención |
+| PUB-PAGES | Alta | Despliegue Pages #371 agotó tiempo; #372 tuvo éxito | Inspección y protección del workflow, comprobación final de artefactos publicados |
+| DOC-ESTADO | Media | Documentación puede anticipar instalación local no comprobada | Registrar evidencia Ubuntu y actualizar estado explícitamente |
+| EXP-01 | Baja | Escritor protegido aún no probado en copia MER | Validación y decisión sobre PR #1 |
+| EXP-09 | Media | Tordo aún sin cobertura/frescura acreditada | Comparación con fuente oficial y decisión sobre PR #9 |
+
+Ver [iniciativas](INICIATIVAS_EN_DESARROLLO.md) y [incidente](INCIDENTE_PUBLICACION_V2_2026-11-10.md).
