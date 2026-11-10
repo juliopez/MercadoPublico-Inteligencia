@@ -37,7 +37,7 @@
     "2026-10": {
       "tipo": "historico",
       "id": "1v12ztJfxvltzv1rJQBsxxmyMwmnuc2DUx87SeRCSnz4",
-      "estado": "cierre_operativo_pendiente_conciliacion_oficial",
+      "estado": "cerrado_tras_carga_oficial_verificada",
       "filas": 111147
     },
     "2026-11": {
