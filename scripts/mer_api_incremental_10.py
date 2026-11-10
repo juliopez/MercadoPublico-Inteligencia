@@ -91,6 +91,19 @@ def main():
  state=json.loads(STATE.read_text()) if STATE.exists() else {"periodos":{}}
  window=state.setdefault("periodos",{}).setdefault(period,{"pagina":1,"consultas":{}})
  cache=window["consultas"]
+ # Coordinar la cola local con las jornadas ya acreditadas por GitHub Actions.
+ # Importar solo consultas exitosas del mismo periodo y verificadas en MER;
+ # no importar errores, pausas ni cursores de otros motores.
+ if os.getenv("MER_API_COMPARTIR_CHECKPOINTS","0")=="1":
+  imported=0
+  for jornada,run in state.get("jornadas_actions",{}).items():
+   if not jornada.startswith(period+"-"):continue
+   for code,entry in (run.get("consultas") or {}).items():
+    if (code not in cache and code in keys["Procesos"]
+        and isinstance(entry,dict) and entry.get("estado")=="EN_SEGUIMIENTO"):
+     cache[code]=dict(entry)
+     imported+=1
+  print("CHECKPOINTS_ACTIONS_IMPORTADOS",imported,"PERIODO",period,flush=True)
  today=now.date().isoformat()
  if window.get("pausa_hasta","")>now.isoformat():
   print("PAUSA_API_HASTA",window["pausa_hasta"],"sin nuevas consultas");return
