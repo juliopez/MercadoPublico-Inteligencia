@@ -21,7 +21,7 @@ import json,os,subprocess
 from pathlib import Path
 p=Path("salida_operativa/conciliacion_cronologica.json")
 r=json.loads(p.read_text())
-if r.get("estado")!="CONCILIACION_VERIFICADA":
+if r.get("estado") not in ("CONCILIACION_VERIFICADA","CONCILIACION_PARCIAL_VERIFICADA"):
  print("SIN_PUBLICACION: no hubo traslados");raise SystemExit(0)
 for periodo in r["periodos_afectados"]:
  subprocess.run([".venv/bin/python","scripts/exportar_mer_operativo_v2.py","--periodo",periodo,"--aplicar","--incluir-api"],check=True)
