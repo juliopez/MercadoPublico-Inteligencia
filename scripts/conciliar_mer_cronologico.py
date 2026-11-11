@@ -38,6 +38,14 @@ def main():
  if not cred.is_file():raise RuntimeError("Credencial Google no disponible")
  gc=gspread.authorize(Credentials.from_service_account_file(str(cred),scopes=["https://www.googleapis.com/auth/spreadsheets"]))
  mod=load_mod(); schema=mod.importar().SCHEMA
+ # Limitar reintentos solo para esta conciliacion, sin alterar el ETL compartido.
+ original_retry=mod.solicitud_con_reintentos
+ def retry_acotado(fn,descripcion,max_intentos=3):
+  return original_retry(fn,descripcion,max_intentos=min(max_intentos,3))
+ mod.solicitud_con_reintentos=retry_acotado
+ limite=now.replace(hour=14,minute=0,second=0,microsecond=0)
+ def fuera_de_horario():
+  return dt.datetime.now(ZoneInfo("America/Santiago"))>=limite
  source=gc.open_by_key(cat[mes]["id"])
  movements={};skipped={};rows_cache={}
  for table,col in TABLE_DATE.items():
@@ -70,9 +78,14 @@ def main():
   b=mod.respaldo_local(book,schema,name)
   print("RESPALDO_VERIFICADO",name,b["archivo"],flush=True)
  affected=[]
+ parcial=False
  for dest,tables in sorted(movements.items()):
   book=books[dest]
   for table,records in tables.items():
+   if fuera_de_horario():
+    print("LIMITE_1400: no iniciar nueva tabla; traslado parcial verificable",flush=True)
+    parcial=True
+    break
    cols=schema[table];ws=book.worksheet(table)
    existing=mod.solicitud_con_reintentos(lambda:mod.worksheet_rows(ws,cols),table+" destino "+dest)
    # No reemplazar un registro historico existente: preservar enriquecimientos.
@@ -97,8 +110,9 @@ def main():
    if any(pk in check for pk,_,_ in records):raise RuntimeError("Retiro no verificado "+dest+"/"+table)
    print("TRASLADO_VERIFICADO",dest,table,len(records),flush=True)
   affected.append(dest)
- report["estado"]="CONCILIACION_VERIFICADA"
+  if parcial:break
+ report["estado"]="CONCILIACION_PARCIAL_VERIFICADA" if parcial else "CONCILIACION_VERIFICADA"
  report["periodos_afectados"]=[mes]+affected
  out.write_text(json.dumps(report,indent=2,ensure_ascii=False))
- print("CONCILIACION_COMPLETA",json.dumps(report,ensure_ascii=False),flush=True)
+ print("CONCILIACION_FINALIZADA",json.dumps(report,ensure_ascii=False),flush=True)
 if __name__=="__main__":main()
