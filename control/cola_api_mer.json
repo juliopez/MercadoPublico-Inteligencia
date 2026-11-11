@@ -29484,6 +29484,2412 @@
         }
       },
       "completa": false
+    },
+    "2026-11-10": {
+      "pagina": 41,
+      "consultas": {
+        "1208066-520-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2389-643-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2389-642-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1208066-519-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2389-641-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2389-640-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2389-639-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2389-638-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2389-637-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1107281-260-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2389-636-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1107281-259-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "557639-3788-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1107281-258-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1126922-1016-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1469-4139-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1126922-1017-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057501-3868-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "879-69-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "948-185-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4950-120-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1469-4138-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2756-224-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1045-23-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1107281-257-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "598030-78-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4066-501-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5338-329-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3515-540-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1469-4137-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2757-773-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4066-500-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "696217-98-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1469-4136-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1982-21-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2665-472-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4117-298-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2378-263-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4433-155-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4066-499-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3754-162-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1658-1784-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1357605-160-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1288512-58-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1521-91-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "511505-633-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5042-42-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "879-68-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "751-89-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3632-150-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2665-471-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4116-110-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2484-328-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3632-151-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1062448-363-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "810406-300-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1469-4134-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1620-218-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057503-2905-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2616-9-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1658-1783-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1455712-12-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2887-140-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1233623-1064-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4066-498-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1107281-256-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057503-2904-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "871064-18-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2403-976-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "739-32-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "355-361-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4433-154-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057472-442-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3602-134-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2665-470-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2186-469-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1658-1782-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1233623-1067-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5326-576-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1233613-492-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1233613-491-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4433-153-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1233613-490-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1398-633-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1233613-489-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2393-1564-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1469-4135-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2701-825-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1232828-50-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2923-917-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057496-979-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1426041-18-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3500-211-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2215-820-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5492-41-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3515-539-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1488-347-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "895072-158-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1456840-39-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "810406-299-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1485923-76-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1469-4133-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3602-130-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1457776-35-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057503-2903-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1233623-1068-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4044-683-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1298354-498-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "751-88-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "705829-66-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2923-916-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1039-167-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5153-2132-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "929-207-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5586-3103-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2343-621-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1214103-291-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3630-221-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "548874-51-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5613-476-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1062448-368-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "578459-932-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5441-532-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1469-4132-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2680-322-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2961-1028-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3485-1168-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1591-164-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2665-469-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1214103-290-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4433-152-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5613-475-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057503-2902-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "607603-110-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "554734-300-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1658-1781-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3515-538-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "929-206-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "549454-12-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5153-2131-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1480059-10-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2484-327-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "598002-21-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2416-350-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "847-91-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4751-74-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3539-43-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "607603-109-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2916-39-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057503-2901-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "554734-299-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2961-1027-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1058097-1016-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2688-195-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "810406-298-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1079866-337-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1469-4131-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4389-61-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3515-537-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1214103-289-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5178-5525-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "598002-20-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057893-37-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057547-2526-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3658-571-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5877-50-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057501-3867-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1359-8-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1062448-366-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5042-41-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2416-349-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057547-2525-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "918434-348-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4044-682-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4144-317-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1058097-1015-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2381-1054-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1428275-55-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057501-3866-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2381-1056-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "730566-76-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2381-1053-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2215-819-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1058097-1014-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3630-220-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4704-503-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2288-775-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1045-20-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4498-94-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "607-302-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "664-41-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1375761-366-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "607603-108-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "871064-17-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3213-124-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1422039-330-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1359-7-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3882-380-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1704-3857-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "696217-97-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2428-1654-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1195-569-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1618-84-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1431841-1421-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "810406-297-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1386073-154-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1574-93-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1067455-119-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2306-1084-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "852-139-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1058097-1013-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2081-134-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3151-752-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1499887-123-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4704-502-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057532-584-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4044-681-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3506-836-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4433-151-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2069-2892-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1391-733-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1658-1780-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2416-348-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "810406-296-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4841-76-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1962-359-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1151549-278-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1058097-1012-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "852-138-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1359575-158-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2923-915-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1577-216-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1480067-115-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1469-4130-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "895072-157-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2381-1051-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1965-417-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1062448-365-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2069-2891-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3517-239-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1398-631-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4704-501-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "449-372-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1393093-384-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4293-26-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3213-123-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "607603-107-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1058097-1011-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4022-809-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "599-78-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4323-216-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1298354-500-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3506-835-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "929-205-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4291-1701-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2069-2890-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1431841-1420-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "617807-2569-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "810406-295-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3517-238-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057501-3865-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "829-34-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3151-751-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "673804-18-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "557639-3787-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2273-983-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4454-815-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1062807-80-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2427-1365-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4111-335-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3507-775-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "734-214-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4205-289-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2215-818-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2688-194-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4704-499-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1058097-1010-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3594-1061-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1428275-54-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2288-767-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3751-138-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4433-150-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2328-1413-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1298354-499-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2680-321-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2291-1141-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "617807-2568-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "993-75-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "557639-3786-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3734-650-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2355-31-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5626-1019-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4965-136-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1305560-67-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3507-774-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1386073-153-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4205-288-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1059936-7-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4044-680-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1067476-87-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1425524-57-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1079866-336-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2288-774-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1233615-974-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1298357-285-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2701-826-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "929-204-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1696-68-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3916-519-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "950-84-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "557639-3785-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1641-6003-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1431841-1419-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3151-750-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5413-428-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1082957-230-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1078177-1015-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3962-425-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "449-371-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2291-1142-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2366-598-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "617807-2567-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3507-773-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1078177-1014-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1375757-179-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1469-4129-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "608-6961-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2306-1083-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3868-130-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4103-166-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2013-2020-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1079566-192-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1056854-62-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1561140-1-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3743-294-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1666-368-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1696-67-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3762-303-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "425-453-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1173933-81-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4022-808-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5626-1018-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5593-29-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1057496-978-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3151-749-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2483-545-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2961-1026-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2404-697-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1480067-114-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2759-777-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1237849-163-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5021-40-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2306-1082-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3868-129-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3764-595-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4493-765-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1696-66-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3827-368-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5626-1017-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5153-2130-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1182-23-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1386073-152-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3085-573-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3000-1324-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2923-914-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5251-1368-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4291-1700-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3762-302-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4548-681-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1202512-74-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1033-28-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4113-522-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "696217-96-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1658-1779-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1067455-118-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3213-122-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1062807-79-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4205-287-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "507428-521-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4704-500-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4433-149-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2859-1467-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1577-215-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "617807-2566-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3954-3-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1316747-161-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1059936-6-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "705290-180-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1056854-61-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3019-760-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "3877-580-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2713-1360-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "1208910-388-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4548-680-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4968-859-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "752-212-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "4062-917-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "449-370-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "2446-1106-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        },
+        "5441-531-COT26": {
+          "estado": "EN_SEGUIMIENTO",
+          "ultima_consulta": "2026-11-10",
+          "proxima_revision": "2026-11-13",
+          "intentos": 0
+        }
+      },
+      "completa": false
     }
   }
 }
