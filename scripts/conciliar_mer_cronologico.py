@@ -78,15 +78,14 @@ def main():
   b=mod.respaldo_local(book,schema,name)
   print("RESPALDO_VERIFICADO",name,b["archivo"],flush=True)
  affected=[]
+ parcial=False
  for dest,tables in sorted(movements.items()):
   book=books[dest]
   for table,records in tables.items():
    if fuera_de_horario():
     print("LIMITE_1400: no iniciar nueva tabla; traslado parcial verificable",flush=True)
-    report["estado"]="CONCILIACION_PARCIAL_VERIFICADA"
-    report["periodos_afectados"]=[mes]+sorted(set(affected+[dest]))
-    out.write_text(json.dumps(report,indent=2,ensure_ascii=False))
-    return
+    parcial=True
+    break
    cols=schema[table];ws=book.worksheet(table)
    existing=mod.solicitud_con_reintentos(lambda:mod.worksheet_rows(ws,cols),table+" destino "+dest)
    # No reemplazar un registro historico existente: preservar enriquecimientos.
@@ -111,8 +110,9 @@ def main():
    if any(pk in check for pk,_,_ in records):raise RuntimeError("Retiro no verificado "+dest+"/"+table)
    print("TRASLADO_VERIFICADO",dest,table,len(records),flush=True)
   affected.append(dest)
- report["estado"]="CONCILIACION_VERIFICADA"
+  if parcial:break
+ report["estado"]="CONCILIACION_PARCIAL_VERIFICADA" if parcial else "CONCILIACION_VERIFICADA"
  report["periodos_afectados"]=[mes]+affected
  out.write_text(json.dumps(report,indent=2,ensure_ascii=False))
- print("CONCILIACION_COMPLETA",json.dumps(report,ensure_ascii=False),flush=True)
+ print("CONCILIACION_FINALIZADA",json.dumps(report,ensure_ascii=False),flush=True)
 if __name__=="__main__":main()
