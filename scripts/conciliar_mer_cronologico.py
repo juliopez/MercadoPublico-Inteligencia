@@ -104,8 +104,25 @@ def main():
     if pk not in current or current[pk][1]!=row:
      raise RuntimeError("Origen modificado durante conciliacion: "+pk)
     numbers.append(current[pk][0])
-   for number in sorted(numbers,reverse=True):
-    mod.solicitud_con_reintentos(lambda n=number:originws.delete_rows(n),table+" retirar "+dest)
+   # Reducir solicitudes Sheets: agrupar filas contiguas y enviar hasta 50
+   # eliminaciones descendentes por batchUpdate. Cada bloque se reintenta
+   # como unidad solo cuando Google confirma que no lo aplico; ante un error
+   # ambiguo, detener para evitar borrar filas desplazadas.
+   ordenados=sorted(set(numbers),reverse=True)
+   rangos=[]
+   for number in ordenados:
+    if rangos and number==rangos[-1][0]-1:
+     rangos[-1]=(number,rangos[-1][1])
+    else:
+     rangos.append((number,number))
+   for offset in range(0,len(rangos),50):
+    bloque=rangos[offset:offset+50]
+    solicitudes=[{"deleteDimension":{"range":{"sheetId":originws.id,
+      "dimension":"ROWS","startIndex":inicio-1,"endIndex":fin}}}
+      for inicio,fin in bloque]
+    # Una llamada para hasta 50 rangos, en orden descendente.
+    source.batch_update({"requests":solicitudes})
+    print("RETIRO_LOTE",dest,table,offset//50+1,len(bloque),flush=True)
    check=mod.solicitud_con_reintentos(lambda:mod.worksheet_rows(originws,cols),table+" verificar retiro")
    if any(pk in check for pk,_,_ in records):raise RuntimeError("Retiro no verificado "+dest+"/"+table)
    print("TRASLADO_VERIFICADO",dest,table,len(records),flush=True)
