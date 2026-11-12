@@ -26,3 +26,12 @@
 
 ## Protección
 Registro exclusivamente documental: no cambiar ETL P1, AUX-1615, P7, API Compra Ágil, timers ni workflows por este incidente sin autorización. Distinguir hechos observados, comprobaciones indirectas y pendientes.
+
+## Auditoría y mitigaciones del jueves 12/11/2026
+
+- Ubuntu: P7 inició 09:00:03, generó plan `SIMULACION`, respaldó operativo y períodos históricos, verificó 5 Procesos de junio y falló al retirar OrdenesCompra junio por cuota Sheets HTTP 429 tras tres intentos. El informe local quedó en `SIMULACION`, no certifica ausencia de movimientos parciales. `MER_LIBRE` y `SIN_PROCESOS_ACTIVOS` comprobados. Cron P7 sigue programado 09:00 lunes-viernes.
+- P1 del 11/11: log `orquestador_integrado_20261111_200412.log` confirmó 259 OC nuevas, exportación V2 verificada, push y `ORQUESTADOR_OK` 20:08:04. AUX posterior completó recuperación a las 22:37.
+- Timer de usuario Compra Ágil: `active (waiting)` desde 12/11 08:29:21, próximo disparo **12/11 22:05 Chile**. No necesita reprogramación; su activación ocurrió al iniciar la sesión Ubuntu, no fue reactivado por el asistente.
+- GitHub Actions Compra Ágil manual #26: procesó 400 detalles, reportó 400 procesos y una oferta en primer lote; commit local `19312ca4`; falló por cambio concurrente de `main` antes del push del checkpoint. Exportación y Pages omitidas. Los dos runs programados posteriores figuraron `success` pero omitieron dependencias, lotes y publicación: **no son recuperaciones exitosas**. El checkpoint remoto más reciente no acredita cierre del 11/11.
+- **PR #12 fusionado**, commit `8e7e30ab1365e4e1695df986fe3780cb2223839d`: P7 agrupa eliminaciones descendentes en solicitudes Sheets de hasta 50 rangos; workflow Compra Ágil intenta rebase seguro y hasta tres pushes sin forzar ni pisar cambios concurrentes. No modifica disparadores ni cuotas API. **Pendiente validar en ejecución real**; la corrección de cuota no garantiza que desaparezcan todos los 429.
+- Pendientes: usuario debe actualizar checkout Ubuntu con `git pull --ff-only origin main`; verificar integridad MER tras traslado parcial P7 antes de repetir conciliación; observar P1/AUX del 12/11 y Compra Ágil de las 22:05, confirmar checkpoint, exportación y Pages. No dar por procesados/publicados los 400 registros del run fallido sin comprobación MER y exportación.
