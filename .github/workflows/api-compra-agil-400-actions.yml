@@ -82,11 +82,24 @@ jobs:
             git diff --cached --check
             if ! git diff --cached --quiet; then
               git -c user.name='MER API Actions' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "data(api): jornada $MER_API_FECHA_OBJETIVO lote $indice"
-              git fetch origin main
-              if [ "$(git rev-parse HEAD^)" != "$(git rev-parse origin/main)" ]; then
-                echo 'ERROR: conflicto de main, se conserva el estado en artifacts'; exit 1
+              # Rebasar sobre publicaciones concurrentes sin sobrescribir cambios.
+              # Ante conflicto de contenido, abortar y conservar el artifact.
+              publicado=0
+              for intento in 1 2 3; do
+                git fetch origin main
+                if ! git rebase origin/main; then
+                  git rebase --abort || true
+                  echo 'ERROR: conflicto de contenido al rebasar checkpoint; estado conservado en artifact'
+                  exit 1
+                fi
+                if git push origin HEAD:main; then publicado=1; break; fi
+                echo "PUSH_CONCURRENTE_REINTENTO $intento"
+                sleep 5
+              done
+              if [ "$publicado" -ne 1 ]; then
+                echo 'ERROR: main cambio durante tres intentos; estado conservado en artifact'
+                exit 1
               fi
-              git push origin HEAD:main
             fi
             # La revisión inicial de las 22h no cierra procesos que lleguen antes de las 23:59.
             if python - <<'PY'
@@ -153,11 +166,22 @@ jobs:
           git diff --cached --check
           if ! git diff --cached --quiet; then
             git -c user.name='MER API Actions' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "data(api): publicar jornada $MER_API_FECHA_OBJETIVO"
-            git fetch origin main
-            if [ "$(git rev-parse HEAD^)" != "$(git rev-parse origin/main)" ]; then
-              echo 'CONFLICTO: publicación cancelada para evitar sobrescribir'; exit 1
+            publicado=0
+            for intento in 1 2 3; do
+              git fetch origin main
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo 'CONFLICTO: cambios de contenido incompatibles; no sobrescribir'
+                exit 1
+              fi
+              if git push origin HEAD:main; then publicado=1; break; fi
+              echo "PUBLICACION_CONCURRENTE_REINTENTO $intento"
+              sleep 5
+            done
+            if [ "$publicado" -ne 1 ]; then
+              echo 'CONFLICTO: publicación cancelada tras tres intentos'
+              exit 1
             fi
-            git push origin HEAD:main
           fi
       - name: Desplegar y verificar Pages
         if: steps.ventana.outputs.ok == 'true' && success()
