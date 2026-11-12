@@ -1,0 +1,88 @@
+name: Licitaciones API 16:15 - piloto remoto
+on:
+  workflow_dispatch:
+    inputs:
+      fecha:
+        description: Fecha Chile YYYY-MM-DD (vacío = hoy)
+        required: false
+        type: string
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: mer-licitaciones-1615-remoto
+  cancel-in-progress: false
+jobs:
+  recuperar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 540
+    env:
+      TZ: America/Santiago
+      CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Dependencias y credenciales
+        run: |
+          set -euo pipefail
+          test -n "$CHILECOMPRA_TICKET"
+          test -n "$GOOGLE_SERVICE_ACCOUNT_JSON"
+          python -m pip install 'gspread>=6,<7' 'google-auth>=2,<3'
+          printf '%s' "$GOOGLE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/servicio-google.json"
+          chmod 600 "$RUNNER_TEMP/servicio-google.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/servicio-google.json" >> "$GITHUB_ENV"
+          python -m py_compile scripts/recuperar_licitaciones_api.py scripts/cargar_licitaciones_api_mer.py
+      - name: Recuperar y cargar lotes de 200
+        run: |
+          set -euo pipefail
+          FECHA="${{ inputs.fecha }}"
+          if [ -z "$FECHA" ]; then FECHA="$(TZ=America/Santiago date +%F)"; fi
+          MES="${FECHA:0:7}"
+          mkdir -p "$RUNNER_TEMP/licitaciones"
+          for indice in $(seq 1 24); do
+            python scripts/recuperar_licitaciones_api.py --desde "$FECHA" --hasta "$FECHA" --mes "$MES" --limite 200 --pausa 10 --refrescar-ultimo --solo-dia --directorio "$RUNNER_TEMP/licitaciones"
+            python scripts/cargar_licitaciones_api_mer.py --csv "$RUNNER_TEMP/licitaciones/todos_los_periodos.csv" --aplicar
+            PENDIENTES="$(python -c 'import json,sys;print(json.load(open(sys.argv[1]))["pendientes"])' "$RUNNER_TEMP/licitaciones/informe.json")"
+            echo "LOTE=$indice PENDIENTES_API=$PENDIENTES"
+            [ "$PENDIENTES" -eq 0 ] && break
+            [ "$indice" -lt 24 ] || { echo 'LIMITE_LOTES: reanudar desde checkpoint'; exit 1; }
+          done
+      - name: Resguardar checkpoint y reportes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: licitaciones-1615-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/licitaciones/checkpoint.sqlite3
+            ${{ runner.temp }}/licitaciones/informe.json
+            salida_operativa/licitaciones_api_carga.json
+          if-no-files-found: warn
+      - name: Exportar datos del MER
+        run: |
+          set -euo pipefail
+          MES="$(TZ=America/Santiago date +%Y-%m)"
+          python scripts/exportar_mer_operativo_v2.py --periodo "$MES" --aplicar
+          for entidad in procesos ordenescompra ofertas resultados; do
+            python scripts/indexar_busqueda_frontend_v2.py --periodo "$MES" --entidad "$entidad"
+            python scripts/generar_perfiles_v2.py --periodo "$MES" --entidad "$entidad"
+            python scripts/generar_analitica_v2.py --periodo "$MES" --entidad "$entidad"
+          done
+          python scripts/indexar_relaciones_frontend_v2.py --periodo "$MES"
+          python scripts/indexar_relaciones_procesos_v2.py --periodo "$MES"
+          git add frontend-v2/data
+          if ! git diff --cached --quiet; then
+            git -c user.name='MER API Actions' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "data(licitaciones): publicar $MES"
+            for intento in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main || { git rebase --abort || true; exit 1; }
+              git push origin HEAD:main && exit 0
+              sleep 5
+            done
+            exit 1
+          fi
