@@ -1,6 +1,8 @@
 # Punto de recuperación operativa — Observatorio de Mercado Público
 
-**Última revisión documental:** 2026-11-10 (Chile). **Repositorio:** `juliopez/MercadoPublico-Inteligencia`, rama principal `main`.
+**Última revisión documental:** 2026-11-11 (Chile). **Repositorio:** `juliopez/MercadoPublico-Inteligencia`, rama principal `main`.
+
+**Actualización 11/11/2026:** [Incidente P7 09:00, recuperación P1/AUX y excepción Compra Ágil nocturna](INCIDENTE_CONCILIACION_2026-11-11.md). AUX-1615 finalizó 22:37:38 con cero pendientes y publicación en GitHub; workflows posteriores exitosos. El workflow remoto Compra Ágil #26 quedó en ejecución (última captura 22:54). **Pendiente 12/11:** validar P7 09:00, comprobar resultado nocturno y **reactivar el temporizador de usuario** `mercadopublico-api-github-dispatch.timer` para las 22:05. No afirmar que esté reactivado. Esta actualización prevalece sobre las previsiones históricas de primera ejecución que figuran más abajo.
 
 > **Empezar aquí al abrir un nuevo chat.** Esta carpeta es el índice de continuidad; no reemplaza el código, los logs Ubuntu, los resultados de GitHub Actions ni la documentación protegida. Las afirmaciones de ejecución requieren evidencia reciente.
 
