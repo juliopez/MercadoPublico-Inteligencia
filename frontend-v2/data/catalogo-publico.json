@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "fecha_publicacion": "2026-11-12T01:36:09.395758+00:00",
+  "fecha_publicacion": "2026-11-12T19:06:46.253924+00:00",
   "fuente": "Extractos públicos MER v2 de Google Sheets privadas, exportados por período",
   "periodos": [
     {
@@ -3767,10 +3767,10 @@
       "periodo": "2026-11",
       "tipo": "operativo",
       "conteos": {
-        "procesos": 8215,
+        "procesos": 8614,
         "ofertas": 22,
         "resultados": 0,
-        "ordenescompra": 58265
+        "ordenescompra": 67023
       },
       "partes": {
         "procesos": [
@@ -3849,14 +3849,23 @@
           "data/partes/ordenescompra/2026-11/0056.json",
           "data/partes/ordenescompra/2026-11/0057.json",
           "data/partes/ordenescompra/2026-11/0058.json",
-          "data/partes/ordenescompra/2026-11/0059.json"
+          "data/partes/ordenescompra/2026-11/0059.json",
+          "data/partes/ordenescompra/2026-11/0060.json",
+          "data/partes/ordenescompra/2026-11/0061.json",
+          "data/partes/ordenescompra/2026-11/0062.json",
+          "data/partes/ordenescompra/2026-11/0063.json",
+          "data/partes/ordenescompra/2026-11/0064.json",
+          "data/partes/ordenescompra/2026-11/0065.json",
+          "data/partes/ordenescompra/2026-11/0066.json",
+          "data/partes/ordenescompra/2026-11/0067.json",
+          "data/partes/ordenescompra/2026-11/0068.json"
         ]
       }
     }
   ],
   "ultima_exportacion": {
     "periodo": "2026-11",
-    "fecha_utc": "2026-11-12T01:36:09.395758+00:00",
+    "fecha_utc": "2026-11-12T19:06:46.253924+00:00",
     "fuente": "MER_OPERATIVO_V2"
   }
 }
