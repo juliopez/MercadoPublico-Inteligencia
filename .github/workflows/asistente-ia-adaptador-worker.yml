@@ -1,0 +1,26 @@
+name: Asistente IA - adaptador Worker aislado
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asistente_ia/backend/adaptador-worker.mjs'
+      - 'scripts/asistente_ia/backend/adaptador-worker.test.mjs'
+      - '.github/workflows/asistente-ia-adaptador-worker.yml'
+permissions:
+  contents: read
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar sintaxis
+        run: |
+          node --check scripts/asistente_ia/backend/adaptador-worker.mjs
+          node --check scripts/asistente_ia/backend/adaptador-worker.test.mjs
+      - name: Ejecutar pruebas aisladas sin Gemini ni publicación
+        run: node --test scripts/asistente_ia/backend/adaptador-worker.test.mjs
