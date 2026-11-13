@@ -4,9 +4,9 @@
   "entidad": "procesos",
   "campo_actor": "organismo_comprador",
   "campo_monto": "monto_disponible_clp",
-  "registros": 9189,
-  "registros_identificados": 9189,
-  "actores": 1264,
+  "registros": 10349,
+  "registros_identificados": 10349,
+  "actores": 1296,
   "archivos": 255,
   "nota": "Cifras descriptivas por entidad/mes; registros y montos no equivalen a operaciones únicas ni adjudicaciones verificadas."
 }
