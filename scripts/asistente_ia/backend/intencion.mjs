@@ -78,6 +78,5 @@ export function crearPromptIntencion(pregunta, periodosDisponibles) {
     'Si faltan período, nombre exacto u otros datos imprescindibles, devuelve {"necesita_aclaracion":true}; no inventes valores.',
     'No generes SQL, JavaScript, URL, claves, cifras, nombres de organismos ni rutas de archivos.',
   ];
-  return { instrucciones: reglas.join('
-'), pregunta: pregunta.trim() };
+  return { instrucciones: reglas.join('\n'), pregunta: pregunta.trim() };
 }
