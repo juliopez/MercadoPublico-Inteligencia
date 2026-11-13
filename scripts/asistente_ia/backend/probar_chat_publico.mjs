@@ -32,6 +32,11 @@ const aclaracion = data?.estado === 'aclaracion' &&
 console.log('ESTADO_CONTRATO', typeof data?.estado === 'string' ? data.estado : '(sin estado)');
 console.log('COMPATIBLE_UI_NUEVA', compatible || aclaracion);
 console.log('CLAVES_PRIMER_NIVEL', Object.keys(data).sort().join(','));
+console.log('TIPOS_CAMPOS', Object.fromEntries(Object.entries(data).map(([k,v])=>[k,Array.isArray(v)?'array':v===null?'null':typeof v])));
+console.log('FUENTES_TIPO', Array.isArray(data.fuentes)?'array':typeof data.fuentes);
+console.log('DATOS_TIPO', Array.isArray(data.datos)?'array':typeof data.datos);
+console.log('METODO_PRESENTE', typeof data.metodo === 'string' && !!data.metodo.trim());
+console.log('PERIODO_PRESENTE', typeof data.periodo === 'string');
 if (!compatible && !aclaracion)
   throw new Error('Worker responde, pero no satisface el contrato estricto de la interfaz aislada');
 if (!['*', 'https://juliopez.github.io'].includes(response.headers.get('access-control-allow-origin')))
