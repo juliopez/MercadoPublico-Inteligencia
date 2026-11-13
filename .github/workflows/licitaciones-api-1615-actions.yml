@@ -1,8 +1,5 @@
 name: Licitaciones API 16:15 - remoto
 on:
-  schedule:
-    - cron: '15 19 * * 1-5'
-    - cron: '15 20 * * 1-5'
   workflow_dispatch:
 permissions:
   contents: write
