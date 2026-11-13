@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "fecha_publicacion": "2026-11-13T09:05:49.429604+00:00",
+  "fecha_publicacion": "2026-11-13T12:11:57.840734+00:00",
   "fuente": "Extractos públicos MER v2 de Google Sheets privadas, exportados por período",
   "periodos": [
     {
@@ -10,7 +10,7 @@
         "procesos": 80898,
         "ofertas": 407923,
         "resultados": 63214,
-        "ordenescompra": 150451
+        "ordenescompra": 150551
       },
       "partes": {
         "procesos": [
@@ -737,10 +737,10 @@
       "periodo": "2026-07",
       "tipo": "historico",
       "conteos": {
-        "procesos": 80996,
+        "procesos": 80999,
         "ofertas": 437855,
         "resultados": 54526,
-        "ordenescompra": 150980
+        "ordenescompra": 151050
       },
       "partes": {
         "procesos": [
@@ -1474,7 +1474,8 @@
           "data/partes/ordenescompra/2026-07/0148.json",
           "data/partes/ordenescompra/2026-07/0149.json",
           "data/partes/ordenescompra/2026-07/0150.json",
-          "data/partes/ordenescompra/2026-07/0151.json"
+          "data/partes/ordenescompra/2026-07/0151.json",
+          "data/partes/ordenescompra/2026-07/0152.json"
         ]
       },
       "huellas": {
@@ -1488,10 +1489,10 @@
       "periodo": "2026-08",
       "tipo": "historico",
       "conteos": {
-        "procesos": 83937,
+        "procesos": 83944,
         "ofertas": 432111,
         "resultados": 65945,
-        "ordenescompra": 153221
+        "ordenescompra": 153438
       },
       "partes": {
         "procesos": [
@@ -2251,10 +2252,10 @@
       "periodo": "2026-09",
       "tipo": "historico",
       "conteos": {
-        "procesos": 79376,
+        "procesos": 79433,
         "ofertas": 398018,
         "resultados": 48637,
-        "ordenescompra": 147966
+        "ordenescompra": 148772
       },
       "partes": {
         "procesos": [
@@ -2939,7 +2940,8 @@
           "data/partes/ordenescompra/2026-09/0145.json",
           "data/partes/ordenescompra/2026-09/0146.json",
           "data/partes/ordenescompra/2026-09/0147.json",
-          "data/partes/ordenescompra/2026-09/0148.json"
+          "data/partes/ordenescompra/2026-09/0148.json",
+          "data/partes/ordenescompra/2026-09/0149.json"
         ]
       },
       "huellas": {
@@ -2953,10 +2955,10 @@
       "periodo": "2026-10",
       "tipo": "historico",
       "conteos": {
-        "procesos": 91925,
+        "procesos": 92302,
         "ofertas": 470841,
         "resultados": 56813,
-        "ordenescompra": 167042
+        "ordenescompra": 177972
       },
       "partes": {
         "procesos": [
@@ -3051,7 +3053,8 @@
           "data/partes/procesos/2026-10/0089.json",
           "data/partes/procesos/2026-10/0090.json",
           "data/partes/procesos/2026-10/0091.json",
-          "data/partes/procesos/2026-10/0092.json"
+          "data/partes/procesos/2026-10/0092.json",
+          "data/partes/procesos/2026-10/0093.json"
         ],
         "ofertas": [
           "data/partes/ofertas/2026-10/0001.json",
@@ -3753,7 +3756,17 @@
           "data/partes/ordenescompra/2026-10/0165.json",
           "data/partes/ordenescompra/2026-10/0166.json",
           "data/partes/ordenescompra/2026-10/0167.json",
-          "data/partes/ordenescompra/2026-10/0168.json"
+          "data/partes/ordenescompra/2026-10/0168.json",
+          "data/partes/ordenescompra/2026-10/0169.json",
+          "data/partes/ordenescompra/2026-10/0170.json",
+          "data/partes/ordenescompra/2026-10/0171.json",
+          "data/partes/ordenescompra/2026-10/0172.json",
+          "data/partes/ordenescompra/2026-10/0173.json",
+          "data/partes/ordenescompra/2026-10/0174.json",
+          "data/partes/ordenescompra/2026-10/0175.json",
+          "data/partes/ordenescompra/2026-10/0176.json",
+          "data/partes/ordenescompra/2026-10/0177.json",
+          "data/partes/ordenescompra/2026-10/0178.json"
         ]
       },
       "huellas": {
@@ -3767,10 +3780,10 @@
       "periodo": "2026-11",
       "tipo": "operativo",
       "conteos": {
-        "procesos": 9886,
+        "procesos": 9078,
         "ofertas": 24,
         "resultados": 0,
-        "ordenescompra": 67023
+        "ordenescompra": 54984
       },
       "partes": {
         "procesos": [
@@ -3846,27 +3859,14 @@
           "data/partes/ordenescompra/2026-11/0052.json",
           "data/partes/ordenescompra/2026-11/0053.json",
           "data/partes/ordenescompra/2026-11/0054.json",
-          "data/partes/ordenescompra/2026-11/0055.json",
-          "data/partes/ordenescompra/2026-11/0056.json",
-          "data/partes/ordenescompra/2026-11/0057.json",
-          "data/partes/ordenescompra/2026-11/0058.json",
-          "data/partes/ordenescompra/2026-11/0059.json",
-          "data/partes/ordenescompra/2026-11/0060.json",
-          "data/partes/ordenescompra/2026-11/0061.json",
-          "data/partes/ordenescompra/2026-11/0062.json",
-          "data/partes/ordenescompra/2026-11/0063.json",
-          "data/partes/ordenescompra/2026-11/0064.json",
-          "data/partes/ordenescompra/2026-11/0065.json",
-          "data/partes/ordenescompra/2026-11/0066.json",
-          "data/partes/ordenescompra/2026-11/0067.json",
-          "data/partes/ordenescompra/2026-11/0068.json"
+          "data/partes/ordenescompra/2026-11/0055.json"
         ]
       }
     }
   ],
   "ultima_exportacion": {
-    "periodo": "2026-11",
-    "fecha_utc": "2026-11-13T09:05:49.429604+00:00",
+    "periodo": "2026-10",
+    "fecha_utc": "2026-11-13T12:11:57.840734+00:00",
     "fuente": "MER_OPERATIVO_V2"
   }
 }
