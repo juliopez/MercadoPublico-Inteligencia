@@ -1,0 +1,26 @@
+name: Asistente IA - pruebas orquestador Gemini motor
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asistente_ia/backend/orquestador.mjs'
+      - 'scripts/asistente_ia/backend/orquestador.test.mjs'
+      - '.github/workflows/asistente-ia-orquestador.yml'
+permissions:
+  contents: read
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validar sintaxis
+        run: |
+          node --check scripts/asistente_ia/backend/orquestador.mjs
+          node --check scripts/asistente_ia/backend/orquestador.test.mjs
+      - name: Ejecutar pruebas aisladas sin API Gemini
+        run: node --test scripts/asistente_ia/backend/orquestador.test.mjs
