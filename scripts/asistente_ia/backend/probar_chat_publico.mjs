@@ -34,6 +34,23 @@ console.log('COMPATIBLE_UI_NUEVA', compatible);
 console.log('CLAVES_PRIMER_NIVEL', Object.keys(data).sort().join(','));
 console.log('TIPOS_CAMPOS', Object.fromEntries(Object.entries(data).map(([k,v])=>[k,Array.isArray(v)?'array':v===null?'null':typeof v])));
 console.log('FUENTES_TIPO', Array.isArray(data.fuentes)?'array':typeof data.fuentes);
+// Diagnóstico de metadatos únicamente: no imprime preguntas, respuestas ni URLs.
+const fuentes = Array.isArray(data.fuentes) ? data.fuentes : [];
+const tiposFuente = fuentes.map(f => typeof f === 'string' ? 'string' : f && typeof f === 'object' ? 'object' : typeof f);
+const clasificacionFuentes = fuentes.map(f => {
+  const ruta = typeof f === 'string' ? f : f && typeof f === 'object' ? (f.url || f.ruta) : null;
+  if (typeof ruta !== 'string' || !ruta.trim()) return 'sin_ruta';
+  try {
+    const u = new URL(ruta, 'https://juliopez.github.io/MercadoPublico-Inteligencia/');
+    return u.protocol === 'https:' && u.hostname === 'juliopez.github.io' && u.pathname.startsWith('/MercadoPublico-Inteligencia/') ? 'valida' : 'fuera_dominio';
+  } catch { return 'url_invalida'; }
+});
+console.log('FUENTES_CANTIDAD', fuentes.length);
+console.log('FUENTES_TIPOS', JSON.stringify(tiposFuente));
+console.log('FUENTES_CLASIFICACION', JSON.stringify(clasificacionFuentes));
+console.log('RESPUESTA_TEXTO_PRESENTE', typeof data.respuesta === 'string' && !!data.respuesta.trim());
+console.log('COBERTURA_TIPO', Array.isArray(data.cobertura)?'array':data.cobertura===null?'null':typeof data.cobertura);
+
 console.log('DATOS_TIPO', Array.isArray(data.datos)?'array':typeof data.datos);
 console.log('METODO_PRESENTE', typeof data.metodo === 'string' && !!data.metodo.trim());
 console.log('PERIODO_PRESENTE', typeof data.periodo === 'string');
