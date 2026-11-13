@@ -1,0 +1,49 @@
+name: Asistente IA - verificar interfaz experimental en navegador
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  navegador:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validar adaptador sin API
+        run: node --test frontend-v2/js/asistente-ia-adaptador.test.mjs
+      - name: Comprobar que la demo publicada carga los módulos correctos
+        run: |
+          set -euo pipefail
+          BASE='https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2'
+          curl -fsSL --retry 4 --retry-delay 5 "$BASE/demo/asistente-ia-conectado.html" -o /tmp/demo.html
+          grep -q "asistente-ia-adaptador.js" /tmp/demo.html
+          grep -q "asistente-ia-ui.js" /tmp/demo.html
+          curl -fsSL --retry 4 --retry-delay 5 "$BASE/js/asistente-ia-adaptador.js" -o /tmp/adaptador.js
+          curl -fsSL --retry 4 --retry-delay 5 "$BASE/js/asistente-ia-ui.js" -o /tmp/ui.js
+          grep -q 'export function adaptarRespuestaWorker' /tmp/adaptador.js
+          grep -q 'export function crearAsistenteUI' /tmp/ui.js
+          if grep -q 'asistente-ia-conectado.html' frontend-v2/index.html; then
+            echo 'ERROR: demo incorporada a producción'; exit 1
+          fi
+      - name: Comprobar CORS preflight del navegador sin consultar Gemini
+        run: |
+          node --input-type=module <<'JS'
+          const url='https://observatorio-mercado-publico-ia.julio-c-lopez-n-1972.workers.dev/chat';
+          const origin='https://juliopez.github.io';
+          const r=await fetch(url,{method:'OPTIONS',headers:{
+            Origin:origin,'Access-Control-Request-Method':'POST',
+            'Access-Control-Request-Headers':'content-type'
+          },signal:AbortSignal.timeout(15000)});
+          const allowOrigin=r.headers.get('access-control-allow-origin');
+          const methods=(r.headers.get('access-control-allow-methods')||'').toUpperCase();
+          const headers=(r.headers.get('access-control-allow-headers')||'').toLowerCase();
+          console.log(JSON.stringify({status:r.status,allowOrigin,methods,headers}));
+          if(!r.ok || !['*',origin].includes(allowOrigin) ||
+             !methods.includes('POST') || !headers.includes('content-type'))
+            throw new Error('Preflight CORS incompatible con fetch del navegador');
+          JS
+      - name: Alcance
+        run: echo 'Validación de publicación, módulos y CORS. No envía POST ni consume Gemini. La interacción visual requiere prueba en navegador.'
