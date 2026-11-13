@@ -1,7 +1,8 @@
 // Motor de consulta aislado del asistente IA. No modifica ETL ni frontend.
 // Uso: node scripts/asistente_ia/contar_modalidades.mjs 2026-11
 const BASE = "https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/";
-const periodo = process.argv[2] || "2026-11";
+const periodo = process.argv[2];
+if (!periodo) throw Error("Indica el período YYYY-MM; no se asume uno por defecto");
 if (!/^20\d{2}-(0[1-9]|1[0-2])$/.test(periodo)) throw Error("Período inválido");
 
 async function json(path) {
@@ -20,6 +21,7 @@ const item = catalogo.periodos.find(p => p.periodo === periodo);
 if (!item) throw Error("Período no publicado");
 const partes = item.partes?.procesos;
 if (!Array.isArray(partes) || partes.length === 0) throw Error("Sin fragmentos");
+if (partes.length > 150) throw Error("Período demasiado grande para esta versión de consulta");
 const conteos = { "Licitación": 0, "Compra Ágil": 0, "Otras/sin modalidad": 0 };
 let total = 0;
 for (const ruta of partes) {
