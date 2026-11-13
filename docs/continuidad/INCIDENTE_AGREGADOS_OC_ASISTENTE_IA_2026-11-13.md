@@ -91,3 +91,13 @@ Se inspeccionó `scripts/exportar_frontend_v2.py`. Su función `main()` exporta 
 **Implicación demostrada:** una ejecución del exportador sin un paso externo posterior de regeneración de agregados puede dejar el catálogo y los fragmentos actualizados mientras el agregado queda con la versión anterior. Este mecanismo es compatible con las seis discrepancias observadas; **no prueba por sí solo** que esa sea la secuencia concreta de las últimas publicaciones, pues falta inspeccionar el orquestador y sus logs.
 
 **Próxima verificación:** identificar el script/workflow invocador y confirmar si, cuándo y con qué criterios ejecuta `generar_analitica_v2.py`. Diseñar corrección transaccional con verificación de integridad antes de publicar, pero no alterar el exportador ni el cron sin aprobación específica del cambio.
+
+## Causa operacional identificada en workflow analítico (13/11/2026)
+Se inspeccionaron directamente:
+- `scripts/ubuntu_publicar_v2_post_etl.sh`: publica catálogo/fragmentos y anuncia que GitHub Actions regenerará derivados a las 17:00 Chile.
+- `.github/workflows/generar-analitica-v2.yml`: **no tiene `schedule`**, `push` solo observa cambios en el propio YAML y `frontend-v2/js/analitica-visual.js`, y admite `workflow_dispatch`. Por tanto, **un push que solo modifica el catálogo y fragmentos no dispara este workflow**.
+- El workflow recorre una lista fija de períodos `2026-06` a `2026-10`, excluyendo noviembre.
+- El generador `scripts/generar_analitica_v2.py` emite `version: 3`, pero el paso de validación del workflow exige `a['version']==1`. Esta condición provocaría un error al regenerar con la versión actual.
+- El workflow `.github/workflows/publicar-frontend-v2.yml` verifica que fragmentos y catálogo coincidan, pero no valida que los agregados analíticos correspondan a esos mismos datos.
+
+**Conclusión técnica:** hay tres defectos verificables en el workflow analítico (disparador desconectado de datos, meses codificados y versión de validación incompatible). Son suficientes para explicar que la actualización de agregados no esté garantizada, aunque no permiten atribuir cada diferencia histórica a un único evento. La reparación debe evitar bucles de push y verificar la consistencia antes de publicar. **No se modificó ninguno de estos workflows productivos**; se requiere autorización explícita para el parche y su estrategia de recuperación de los seis meses.
