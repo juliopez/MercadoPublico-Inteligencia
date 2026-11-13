@@ -1,0 +1,112 @@
+name: Licitaciones API 16:15 - remoto
+on:
+  schedule:
+    - cron: '15 19 * * 1-5'
+    - cron: '15 20 * * 1-5'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: mer-licitaciones-1615-remoto
+  cancel-in-progress: false
+jobs:
+  recuperar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 540
+    env:
+      TZ: America/Santiago
+      CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Preparar dependencias y validar jornada
+        run: |
+          set -euo pipefail
+          test -n "$CHILECOMPRA_TICKET"
+          test -n "$GOOGLE_SERVICE_ACCOUNT_JSON"
+          python -m pip install 'gspread>=6,<7' 'google-auth>=2,<3'
+          printf '%s' "$GOOGLE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/servicio-google.json"
+          chmod 600 "$RUNNER_TEMP/servicio-google.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/servicio-google.json" >> "$GITHUB_ENV"
+          python -m py_compile scripts/recuperar_licitaciones_api.py scripts/cargar_licitaciones_api_mer.py scripts/exportar_mer_operativo_v2.py
+          python - <<'PY'
+          import datetime,json,pathlib,os
+          from zoneinfo import ZoneInfo
+          n=datetime.datetime.now(ZoneInfo("America/Santiago"))
+          assert n.weekday()<5 and ((n.hour==16 and n.minute>=15) or (16<n.hour<22 and os.environ.get('GITHUB_EVENT_NAME')=='workflow_dispatch')), 'Fuera de ventana Chile'
+          p=n.strftime('%Y-%m')
+          cat=json.loads(pathlib.Path('config/catalogo_sheets.json').read_text())
+          assert cat['periodos'][p]['tipo']=='operativo'
+          print('JORNADA',n.isoformat())
+          PY
+      - name: Recuperar y publicar lotes con checkpoint persistente
+        shell: bash
+        run: |
+          set -euo pipefail
+          FECHA="$(TZ=America/Santiago date +%F)"
+          MES="${FECHA:0:7}"
+          mkdir -p "$RUNNER_TEMP/licitaciones" control/licitaciones_1615
+          CHECKPOINT="control/licitaciones_1615/${FECHA}.sqlite3.b64"
+          if [ -s "$CHECKPOINT" ]; then
+            base64 -d "$CHECKPOINT" > "$RUNNER_TEMP/licitaciones/checkpoint.sqlite3"
+          fi
+          git config user.name "MER API Actions"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for indice in $(seq 1 24); do
+            python scripts/recuperar_licitaciones_api.py --desde "$FECHA" --hasta "$FECHA" --mes "$MES" --limite 200 --pausa 10 --refrescar-ultimo --solo-dia --directorio "$RUNNER_TEMP/licitaciones"
+            # Resguardar checkpoint antes de escribir MER, incluso si la cuota Sheets falla.
+            base64 -w 0 "$RUNNER_TEMP/licitaciones/checkpoint.sqlite3" > "$CHECKPOINT"
+            git add "$CHECKPOINT"
+            git diff --cached --check
+            if ! git diff --cached --quiet; then
+              git commit -m "checkpoint(licitaciones): $FECHA lote $indice"
+              for intento in 1 2 3; do
+                git fetch origin main
+                git rebase origin/main || { git rebase --abort || true; exit 1; }
+                if git push origin HEAD:main; then break; fi
+                [ "$intento" -lt 3 ] || exit 1
+                sleep 5
+              done
+            fi
+            python scripts/cargar_licitaciones_api_mer.py --csv "$RUNNER_TEMP/licitaciones/todos_los_periodos.csv" --aplicar
+            # Exportación únicamente de MER operativo: no llamar al exportador
+            # documental que quedó bloqueado el 12/11.
+            python scripts/exportar_mer_operativo_v2.py --periodo "$MES" --aplicar
+            git add frontend-v2/data/catalogo-publico.json "frontend-v2/data/partes/procesos/$MES" "frontend-v2/data/partes/ordenescompra/$MES" "frontend-v2/data/partes/ofertas/$MES" "frontend-v2/data/partes/resultados/$MES"
+            git diff --cached --check
+            if ! git diff --cached --quiet; then
+              git commit -m "data(licitaciones): lote $indice $FECHA"
+              for intento in 1 2 3; do
+                git fetch origin main
+                git rebase origin/main || { git rebase --abort || true; exit 1; }
+                if git push origin HEAD:main; then break; fi
+                [ "$intento" -lt 3 ] || exit 1
+                sleep 5
+              done
+            fi
+            PENDIENTES="$(python -c 'import json,sys;print(json.load(open(sys.argv[1]))["pendientes"])' "$RUNNER_TEMP/licitaciones/informe.json")"
+            echo "LOTE=$indice PENDIENTES_API=$PENDIENTES PUBLICACION_REPOSITORIO_OK"
+            if [ "$PENDIENTES" -eq 0 ]; then
+              echo LICITACIONES_API_PUBLICADAS
+              exit 0
+            fi
+          done
+          echo 'LIMITE_LOTES: checkpoint guardado; requiere nueva ejecución'
+          exit 1
+      - name: Resguardar checkpoint de ejecución
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: licitaciones-1615-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/licitaciones/checkpoint.sqlite3
+            ${{ runner.temp }}/licitaciones/informe.json
+            salida_operativa/licitaciones_api_carga.json
+          if-no-files-found: warn
