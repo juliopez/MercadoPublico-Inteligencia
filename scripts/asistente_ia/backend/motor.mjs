@@ -50,6 +50,10 @@ export async function crearMotor({ leerJSON }) {
     }
     const { d, p } = await agregado(periodo, entidad);
     if (operacion === 'resumen') {
+      if (!Number.isSafeInteger(d.registros_con_monto) || d.registros_con_monto < 0 || d.registros_con_monto > d.registros ||
+          !Number.isSafeInteger(d.monto_total_clp) || d.monto_total_clp < 0 ||
+          typeof d.campo_monto !== 'string' || !d.campo_monto)
+        throw new ConsultaError('Indicadores monetarios inválidos', 503);
       return respuesta(periodo, entidad, p, { registros: d.registros, registros_con_monto: d.registros_con_monto, monto_total_clp: d.monto_total_clp, campo_monto: d.campo_monto, advertencia: d.advertencia }, 'resumen_agregado');
     }
     if (entidad !== 'procesos') throw new ConsultaError('Operación disponible solo para procesos', 400);
