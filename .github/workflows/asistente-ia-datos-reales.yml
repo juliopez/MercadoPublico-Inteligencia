@@ -1,0 +1,21 @@
+name: Asistente IA - validar datos reales aislados
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar sintaxis de archivos
+        run: |
+          node --check scripts/asistente_ia/backend/probar_demo_real.mjs
+          node --check scripts/asistente_ia/backend/flujo_local.mjs
+          node --check scripts/asistente_ia/backend/lector_publico.mjs
+      - name: Probar motor contra datos públicos reales sin Gemini
+        run: node scripts/asistente_ia/backend/probar_demo_real.mjs
