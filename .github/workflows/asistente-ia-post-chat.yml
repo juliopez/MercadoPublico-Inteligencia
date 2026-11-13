@@ -1,0 +1,18 @@
+name: Asistente IA - prueba controlada POST chat
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  comprobar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Consulta única al Worker existente (puede consumir cuota gratuita Gemini)
+        env:
+          WORKER_CHAT_URL: https://observatorio-mercado-publico-ia.julio-c-lopez-n-1972.workers.dev/chat
+        run: node scripts/asistente_ia/backend/probar_chat_publico.mjs
