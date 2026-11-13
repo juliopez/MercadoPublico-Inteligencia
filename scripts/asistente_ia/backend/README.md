@@ -45,3 +45,8 @@ Esta auditoría de OC no implica que las modalidades de procesos estén incorrec
 
 ## Control de calidad CI (13/11/2026)
 El workflow `.github/workflows/asistente-ia-backend-tests.yml` ejecuta **todos** los archivos `*.test.mjs` del backend, incluidos motor y lector público. La ejecución no modifica fuentes ni despliega servicios. No se ha confirmado todavía una ejecución satisfactoria del workflow desde este entorno; consultar Actions antes de declarar la fase 1 cerrada. Las pruebas con fixtures son distintas de la auditoría de fuentes reales `auditar_fuentes.mjs`.
+
+## Estado verificado al 13/11/2026
+- **Incidente histórico de OC cerrado:** los valores discrepantes anteriores documentan el hallazgo original, no el estado actual. Tras regeneración y nuevo despliegue con el workflow existente, GitHub Actions `Asistente IA - comparar GitHub Pages vs main`, ejecución #2 (run `43447717761`), acreditó `verificados:24, coincidentes:24, fallas:0`. Este control compara conteos, no verifica exhaustivamente los montos.
+- **Motor determinista:** workflow `Asistente IA - pruebas del motor determinista`, ejecución #2 (run `43448527612`, job `131964243234`), completado correctamente: **19 pruebas, 19 aprobadas, 0 fallidas**. Son pruebas unitarias con fixtures, no una batería funcional de consultas reales.
+- **Pendiente:** validación funcional de consultas con datos públicos actuales, exactitud semántica de montos y cobertura de funcionalidades planificadas. No declarar fase 2 íntegramente cerrada por estos dos resultados.
