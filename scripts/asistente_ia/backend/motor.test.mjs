@@ -47,3 +47,12 @@ test('serie rechaza entidad inválida',async()=>{
  const m=await motorCon();
  await assert.rejects(m.consultar({operacion:'serie',entidad:'privado',periodos:['2026-08','2026-09']}),{status:400});
 });
+
+test('rechaza monto monetario no finito o inválido',async()=>{
+ const m=await motorCon({'data/analitica/2026-08/ofertas.json':{...ofertas,monto_total_clp:-1}});
+ await assert.rejects(m.consultar({operacion:'resumen',periodo:'2026-08',entidad:'ofertas'}),{status:503});
+});
+test('rechaza cobertura monetaria superior al total de registros',async()=>{
+ const m=await motorCon({'data/analitica/2026-08/ofertas.json':{...ofertas,registros_con_monto:432112}});
+ await assert.rejects(m.consultar({operacion:'resumen',periodo:'2026-08',entidad:'ofertas'}),{status:503});
+});
