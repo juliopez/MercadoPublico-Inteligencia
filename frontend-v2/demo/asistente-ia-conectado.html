@@ -9,11 +9,12 @@
 </head>
 <body><main>
 <h1>Asistente IA · conexión experimental</h1>
-<p class="aviso"><strong>Prueba aislada con datos reales.</strong> Esta página intenta consultar el Worker existente de Cloudflare. No integra todavía el nuevo motor determinista ni garantiza que el contrato del Worker sea compatible. Si la respuesta no es verificable, no se mostrarán cifras. No forma parte de la página principal.</p>
+<p class="aviso"><strong>Prueba aislada con datos reales.</strong> Esta página intenta consultar el Worker existente de Cloudflare. No integra todavía el nuevo motor determinista. Adapta el contrato existente y rechaza respuestas sin trazabilidad suficiente. Si la respuesta no es verificable, no se mostrarán cifras. No forma parte de la página principal.</p>
 <div id="asistente"></div>
 </main>
 <script type="module">
 import { crearAsistenteUI } from '../js/asistente-ia-ui.js';
+import { adaptarRespuestaWorker } from '../js/asistente-ia-adaptador.js';
 const ENDPOINT = 'https://observatorio-mercado-publico-ia.julio-c-lopez-n-1972.workers.dev/chat';
 async function consultar(pregunta) {
   const controlador = new AbortController();
@@ -31,18 +32,7 @@ async function consultar(pregunta) {
     const texto = await respuesta.text();
     if (texto.length > 50000) throw new Error('Respuesta demasiado extensa');
     const dato = JSON.parse(texto);
-    // Solo se acepta el contrato trazable de la nueva arquitectura.
-    // No se interpreta texto libre como dato numérico verificado.
-    if (dato?.estado === 'aclaracion' && typeof (dato.pregunta_aclaracion || dato.mensaje) === 'string') {
-      return dato;
-    }
-    if (dato?.estado === 'respondida' && dato.resultado &&
-        typeof dato.resultado.explicacion === 'string' &&
-        Array.isArray(dato.resultado.fuentes) && dato.resultado.fuentes.length > 0 &&
-        typeof dato.resultado.metodo === 'string' && dato.resultado.metodo) {
-      return dato;
-    }
-    throw new Error('Contrato sin trazabilidad suficiente');
+    return adaptarRespuestaWorker(dato);
   } finally { clearTimeout(limite); }
 }
 crearAsistenteUI({contenedor:document.getElementById('asistente'),consultar,habilitado:true});
