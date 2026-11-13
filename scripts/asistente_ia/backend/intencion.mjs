@@ -53,7 +53,7 @@ export function interpretarRespuestaGemini(texto, periodosDisponibles) {
   // No aceptar Markdown, bloques de código, prosa ni JSON incrustado.
   let valor;
   try { valor = JSON.parse(texto.trim()); } catch { error('Gemini no devolvió JSON válido'); }
-  return validarIntencion(valor, periodosDisponibles);
+  if (valor && typeof valor === 'object' && !Array.isArray(valor) &&\n      Object.keys(valor).length === 1 && valor.necesita_aclaracion === true)\n    return { necesita_aclaracion: true };\n  return validarIntencion(valor, periodosDisponibles);
 }
 
 export function crearPromptIntencion(pregunta, periodosDisponibles) {
