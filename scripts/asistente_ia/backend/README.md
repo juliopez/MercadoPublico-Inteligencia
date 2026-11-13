@@ -50,3 +50,10 @@ El workflow `.github/workflows/asistente-ia-backend-tests.yml` ejecuta **todos**
 - **Incidente histórico de OC cerrado:** los valores discrepantes anteriores documentan el hallazgo original, no el estado actual. Tras regeneración y nuevo despliegue con el workflow existente, GitHub Actions `Asistente IA - comparar GitHub Pages vs main`, ejecución #2 (run `43447717761`), acreditó `verificados:24, coincidentes:24, fallas:0`. Este control compara conteos, no verifica exhaustivamente los montos.
 - **Motor determinista:** workflow `Asistente IA - pruebas del motor determinista`, ejecución #2 (run `43448527612`, job `131964243234`), completado correctamente: **19 pruebas, 19 aprobadas, 0 fallidas**. Son pruebas unitarias con fixtures, no una batería funcional de consultas reales.
 - **Pendiente:** validación funcional de consultas con datos públicos actuales, exactitud semántica de montos y cobertura de funcionalidades planificadas. No declarar fase 2 íntegramente cerrada por estos dos resultados.
+
+## Validación funcional pública — 13/11/2026
+Workflow `Asistente IA - consultas reales en Pages`, ejecución con job `131969401684` (run `43450012041`): **86 comprobaciones, 86 correctas, 0 fallas**, sobre seis meses publicados. Incluye resúmenes, rankings de registros y montos, modalidades, consulta de un organismo inequívoco por mes, serie temporal y rechazo de período inexistente.
+
+El primer intento detectó nombres canónicos de organismos duplicados en el índice, lo que activó correctamente el bloqueo por ambigüedad. Se ajustó **solo el validador** (commit `fbaf4b9`) para elegir un organismo inequívoco; el motor no fue modificado.
+
+**Alcance del cierre:** validación de las operaciones deterministas actualmente implementadas; no supone haber implementado las 18 capacidades planificadas, auditado exhaustivamente todos los importes o desplegado la integración Gemini/frontend. Próxima fase: conversación Gemini con ejecución determinista y trazabilidad.
