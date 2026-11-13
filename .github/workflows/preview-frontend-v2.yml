@@ -2,7 +2,7 @@ name: Observatorio - vista previa frontend MER v2
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ['Publicar participación histórica V2', 'Reparar analítica de organismos por período']
+    workflows: ['Publicar participación histórica V2', 'Reparar analítica de organismos por período', 'Publicacion V2 posterior al ETL Ubuntu']
     types: [completed]
   push:
     branches: [main]
