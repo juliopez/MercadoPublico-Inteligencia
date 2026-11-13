@@ -1,0 +1,27 @@
+name: Asistente IA - validar interfaz aislada
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend-v2/js/asistente-ia-ui.js'
+      - 'frontend-v2/js/asistente-ia-ui.test.mjs'
+      - 'frontend-v2/css/asistente-ia.css'
+      - '.github/workflows/asistente-ia-ui-aislada.yml'
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Comprobar sintaxis de módulo y pruebas
+        run: |
+          node --check frontend-v2/js/asistente-ia-ui.js
+          node --check frontend-v2/js/asistente-ia-ui.test.mjs
+      - name: Ejecutar pruebas de aislamiento sin despliegue
+        run: node --test frontend-v2/js/asistente-ia-ui.test.mjs
