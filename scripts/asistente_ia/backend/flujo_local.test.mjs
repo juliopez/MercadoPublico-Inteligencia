@@ -38,3 +38,64 @@ test('comparación julio y agosto con año compartido, diferencia absoluta y por
 test('comparación bloquea agregado inconsistente',async()=>{
   await assert.rejects(comparar(true).consultar('Licitaciones julio y agosto de 2026 diferencia'),e=>e.status===503);
 });
+
+
+const catalogoAmpliado={fecha_publicacion:'2026-11-13',periodos:[
+  {periodo:'2026-07',tipo:'historico',conteos:{procesos:12,ofertas:3,resultados:2,ordenescompra:2}},
+  {periodo:'2026-08',tipo:'historico',conteos:{procesos:10,ofertas:5,resultados:2,ordenescompra:3}}
+]};
+const agregadosAmpliados={
+  '2026-07':{
+    procesos:{registros:12,modalidades:[['Licitación',5],['Compra Ágil',7]]},
+    ofertas:{registros:3,registros_con_monto:2,monto_total_clp:300,campo_monto:'monto_ofertado_clp'},
+    resultados:{registros:2,registros_con_monto:1,monto_total_clp:200,campo_monto:'monto_adjudicado_clp'},
+    ordenescompra:{registros:2,registros_con_monto:2,monto_total_clp:500,campo_monto:'monto_total_oc_clp'}
+  },
+  '2026-08':{
+    procesos:{registros:10,modalidades:[['Licitación',4],['Compra Ágil',6]]},
+    ofertas:{registros:5,registros_con_monto:4,monto_total_clp:600,campo_monto:'monto_ofertado_clp'},
+    resultados:{registros:2,registros_con_monto:2,monto_total_clp:400,campo_monto:'monto_adjudicado_clp'},
+    ordenescompra:{registros:3,registros_con_monto:2,monto_total_clp:900,campo_monto:'monto_total_oc_clp'}
+  }
+};
+function ampliar(inconsistente=false){
+  return crearFlujoLocal({leerJSON:async url=>{
+    if(url.endsWith('catalogo-publico.json'))return catalogoAmpliado;
+    const m=/analitica\\/(2026-0[78])\\/(procesos|ofertas|resultados|ordenescompra)\\.json$/.exec(url);
+    if(!m)throw Error('Ruta inesperada '+url);
+    const [ , periodo, entidad]=m;
+    const d=agregadosAmpliados[periodo][entidad];
+    return {...d,periodo,entidad,registros:inconsistente&&periodo==='2026-08'&&entidad==='ofertas'?99:d.registros};
+  }});
+}
+test('comparación de compras ágiles entre meses',async()=>{
+  const r=await ampliar().consultar('¿Cuántas compras ágiles hubo en julio y agosto de 2026, y cuál fue la diferencia?');
+  assert.equal(r.estado,'respondida');
+  assert.match(r.resultado.explicacion,/2026-07: 7/);
+  assert.match(r.resultado.explicacion,/2026-08: 6/);
+  assert.match(r.resultado.explicacion,/disminución, 14,29 %/);
+});
+test('comparación de ofertas entre meses',async()=>{
+  const r=await ampliar().consultar('¿Cuál fue la diferencia de ofertas entre julio y agosto de 2026?');
+  assert.equal(r.estado,'respondida');
+  assert.match(r.resultado.explicacion,/2026-07: 3/);
+  assert.match(r.resultado.explicacion,/2026-08: 5/);
+  assert.match(r.resultado.explicacion,/aumento, 66,67 %/);
+});
+test('montos informados de órdenes de compra, sin afirmar pagos',async()=>{
+  const r=await ampliar().consultar('¿Cuál fue el monto de órdenes de compra en agosto de 2026?');
+  assert.equal(r.estado,'respondida');
+  assert.match(r.resultado.explicacion,/900 CLP/);
+  assert.match(r.resultado.explicacion,/no son pagos comprobados/);
+});
+test('montos informados de ofertas y cobertura',async()=>{
+  const r=await ampliar().consultar('¿Cuál fue el monto de ofertas en agosto de 2026?');
+  assert.equal(r.estado,'respondida');
+  assert.match(r.resultado.explicacion,/5 registros de ofertas/);
+  assert.match(r.resultado.explicacion,/4 informan monto/);
+  assert.match(r.resultado.explicacion,/600 CLP/);
+});
+test('inconsistencia de ofertas bloquea comparación y montos',async()=>{
+  await assert.rejects(ampliar(true).consultar('¿Cuál fue la diferencia de ofertas entre julio y agosto de 2026?'),e=>e.status===503);
+  await assert.rejects(ampliar(true).consultar('¿Cuál fue el monto de ofertas en agosto de 2026?'),e=>e.status===503);
+});
