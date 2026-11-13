@@ -151,3 +151,10 @@ Captura de GitHub Actions del job `131948101774`, run `43443858770`, workflow «
 **No se ha determinado todavía la configuración exacta del origen de Pages** (rama/carpeta, despliegue de Actions o artefacto) ni la causa por la que los archivos OC no se actualizan en el sitio público. No atribuirlo exclusivamente a caché ni modificar MER o regenerar agregados sin evidencia.
 
 **Siguiente verificación:** inspeccionar configuración y último despliegue de GitHub Pages y el mecanismo de publicación de archivos `frontend-v2/data/analitica`; preparar corrección específica, separada de ETL.
+
+## Cierre del incidente de sincronización — 13/11/2026
+Evidencia final aportada por el usuario: ejecución exitosa de «Asistente IA - comparar GitHub Pages vs main», run `43447717761`, job `131961452818`. El registro muestra `RESUMEN {"verificados":24,"coincidentes":24,"fallas":0}`. Para los seis períodos y las cuatro entidades, los conteos de los agregados servidos por GitHub Pages coinciden con los del repositorio `main`.
+
+La recuperación se obtuvo mediante una nueva ejecución manual #407 del **workflow existente** `preview-frontend-v2.yml` (sin usar «Re-run» sobre un commit antiguo). Se mantuvieron intactos ETL, cron Ubuntu, MER y configuración de Pages.
+
+**Estado: CERRADO** para el incidente específico de desincronización de conteos catálogo/agregados y Pages/main. No implica auditoría exhaustiva de montos, integridad semántica de cada fila ni cierre global de la fase 2 del asistente IA. La siguiente actividad es completar pruebas del motor y demás consultas.
