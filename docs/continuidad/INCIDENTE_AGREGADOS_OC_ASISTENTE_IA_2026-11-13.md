@@ -101,3 +101,14 @@ Se inspeccionaron directamente:
 - El workflow `.github/workflows/publicar-frontend-v2.yml` verifica que fragmentos y catálogo coincidan, pero no valida que los agregados analíticos correspondan a esos mismos datos.
 
 **Conclusión técnica:** hay tres defectos verificables en el workflow analítico (disparador desconectado de datos, meses codificados y versión de validación incompatible). Son suficientes para explicar que la actualización de agregados no esté garantizada, aunque no permiten atribuir cada diferencia histórica a un único evento. La reparación debe evitar bucles de push y verificar la consistencia antes de publicar. **No se modificó ninguno de estos workflows productivos**; se requiere autorización explícita para el parche y su estrategia de recuperación de los seis meses.
+
+## Corrección aprobada y aplicada al código (13/11/2026)
+Con autorización del usuario se incorporó `scripts/asistente_ia/backend/sincronizar_analitica_v2.py` (commit `6b91ad8`) y se actualizó `.github/workflows/generar-analitica-v2.yml` (commit `54b1d5c`).
+
+- El workflow se activa en `main` al cambiar catálogo, fragmentos, generador, sincronizador o su propio YAML; mantiene ejecución manual.
+- Detecta períodos del catálogo, sin lista fija de meses.
+- Regenera únicamente archivos analíticos ausentes o cuyo período/entidad/conteo difiera del catálogo, y valida conteos y cobertura monetaria de todas las entidades.
+- Antes de publicar, comprueba que el catálogo remoto no haya cambiado respecto al usado para calcular agregados; de ser así, bloquea el push. Los commits que solo modifican `data/analitica/**` no activan el workflow y evitan bucles.
+- Se eliminó la comprobación incompatible `version == 1`; el generador actual escribe `version: 3`.
+
+**Pendiente crítico:** verificar la ejecución real del workflow, la publicación efectiva y repetir la auditoría independiente de 24 combinaciones. No declarar incidente resuelto solo por la modificación del YAML. No se alteraron cron Ubuntu, MER ni ETL.
