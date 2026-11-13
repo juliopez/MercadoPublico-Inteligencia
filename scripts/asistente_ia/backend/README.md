@@ -9,7 +9,7 @@ Módulo determinista **aislado**. No se encuentra integrado al Worker de Cloudfl
 
 ## Pruebas
 ```bash
-node --test scripts/asistente_ia/backend/motor.test.mjs
+node --test scripts/asistente_ia/backend/*.test.mjs
 ```
 
 ## Integración futura
@@ -42,3 +42,6 @@ Los archivos de junio–septiembre tienen versión analítica 1; octubre–novie
 **Medida de seguridad:** `motor.mjs` rechaza la consulta con error 503 al no coincidir `registros` con `conteos`. No ajustar totales manualmente ni reescribir agregados publicados hasta revisar el pipeline de generación/publicación y su trazabilidad. La auditoría `auditar_fuentes.mjs` permite repetir el contraste de solo lectura.
 
 Esta auditoría de OC no implica que las modalidades de procesos estén incorrectas: su contraste específico de junio–noviembre fue satisfactorio. La revisión de ofertas y resultados en los seis meses sigue pendiente.
+
+## Control de calidad CI (13/11/2026)
+El workflow `.github/workflows/asistente-ia-backend-tests.yml` ejecuta **todos** los archivos `*.test.mjs` del backend, incluidos motor y lector público. La ejecución no modifica fuentes ni despliega servicios. No se ha confirmado todavía una ejecución satisfactoria del workflow desde este entorno; consultar Actions antes de declarar la fase 1 cerrada. Las pruebas con fixtures son distintas de la auditoría de fuentes reales `auditar_fuentes.mjs`.
