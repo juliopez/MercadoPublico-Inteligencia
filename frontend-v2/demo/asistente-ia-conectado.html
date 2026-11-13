@@ -16,9 +16,11 @@
 import { crearAsistenteUI } from '../js/asistente-ia-ui.js';
 import { adaptarRespuestaWorker } from '../js/asistente-ia-adaptador.js';
 const ENDPOINT = 'https://observatorio-mercado-publico-ia.julio-c-lopez-n-1972.workers.dev/chat';
+// Diagnóstico acotado: solo categoría del fallo, nunca cuerpo ni datos privados.
 async function consultar(pregunta) {
   const controlador = new AbortController();
   const limite = setTimeout(() => controlador.abort(), 15000);
+  let etapa = 'conexion';
   try {
     const respuesta = await fetch(ENDPOINT, {
       method: 'POST',
@@ -26,13 +28,29 @@ async function consultar(pregunta) {
       body: JSON.stringify({ pregunta }),
       signal: controlador.signal
     });
-    if (!respuesta.ok) throw new Error('Servicio no disponible');
+    etapa = 'http';
+    if (!respuesta.ok) throw new Error('HTTP_' + respuesta.status);
+    etapa = 'formato';
     const tipo = respuesta.headers.get('content-type') || '';
-    if (!tipo.includes('application/json')) throw new Error('Formato no verificable');
+    if (!tipo.toLowerCase().includes('application/json')) throw new Error('FORMATO_NO_JSON');
     const texto = await respuesta.text();
-    if (texto.length > 50000) throw new Error('Respuesta demasiado extensa');
+    if (texto.length > 50000) throw new Error('RESPUESTA_EXTENSA');
+    etapa = 'json';
     const dato = JSON.parse(texto);
+    etapa = 'contrato';
     return adaptarRespuestaWorker(dato);
+  } catch (error) {
+    const codigo = controlador.signal.aborted ? 'TIEMPO_AGOTADO' :
+      etapa === 'conexion' ? 'RED_CORS' :
+      etapa === 'http' ? (/^HTTP_\\d{3}$/.test(error?.message || '') ? error.message : 'HTTP_ERROR') :
+      etapa === 'formato' ? 'FORMATO_INVALIDO' :
+      etapa === 'json' ? 'JSON_INVALIDO' :
+      etapa === 'contrato' ? 'CONTRATO_NO_VERIFICABLE' : 'ERROR_DESCONOCIDO';
+    return {
+      estado: 'aclaracion',
+      pregunta_aclaracion: 'No fue posible completar la consulta. Diagnóstico: ' + codigo +
+        '. No se muestran cifras sin verificar.'
+    };
   } finally { clearTimeout(limite); }
 }
 crearAsistenteUI({contenedor:document.getElementById('asistente'),consultar,habilitado:true});
