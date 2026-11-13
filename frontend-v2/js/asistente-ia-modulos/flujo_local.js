@@ -9,8 +9,8 @@ function presentar(intencion, r) {
   if (intencion.operacion === 'modalidades') {
     // Nunca afirmar que total_procesos equivale a procesos únicos.
     const pregunta=intencion.pregunta_original||'';
-    const pideLicitaciones=/\blicitaciones?\b/.test(pregunta);
-    const pideComprasAgiles=/\bcompras? agiles?\b/.test(pregunta);
+    const pideLicitaciones=/\blicitacion(?:es)?\b|\blicitaciones?\b/.test(pregunta);
+    const pideComprasAgiles=/\bcompras?\s+agiles?\b/.test(pregunta);
     const busca=pideLicitaciones && !pideComprasAgiles ? 'licitaciones' :
       pideComprasAgiles && !pideLicitaciones ? 'compras_agiles' : null;
     explicacion=busca ? `En ${r.periodo} se registran ${entero(d[busca])} ${busca==='licitaciones'?'licitaciones':'compras ágiles'} según la clasificación de registros publicados.` :
