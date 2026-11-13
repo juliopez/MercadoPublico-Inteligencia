@@ -1,0 +1,26 @@
+name: Asistente IA - pruebas del motor determinista
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asistente_ia/backend/motor.mjs'
+      - 'scripts/asistente_ia/backend/motor.test.mjs'
+      - '.github/workflows/asistente-ia-pruebas-motor.yml'
+permissions:
+  contents: read
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validar sintaxis del motor y pruebas
+        run: |
+          node --check scripts/asistente_ia/backend/motor.mjs
+          node --check scripts/asistente_ia/backend/motor.test.mjs
+      - name: Ejecutar pruebas unitarias deterministas sin servicios externos
+        run: node --test scripts/asistente_ia/backend/motor.test.mjs
