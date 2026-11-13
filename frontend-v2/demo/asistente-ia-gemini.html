@@ -1,10 +1,19 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Asistente IA · Gemini experimental</title><link rel="stylesheet" href="../css/asistente-ia.css"><style>body{font:16px/1.55 system-ui,sans-serif;background:#f5f7fb;color:#14283b;margin:0}main{max-width:760px;margin:5vh auto;padding:24px}.aviso{background:#fff8e9;border-left:4px solid #b5791b;padding:14px;margin-bottom:20px}</style></head>
-<body><main><h1>Asistente IA · Gemini experimental</h1><p class="aviso"><strong>Prueba aislada, no integrada al Observatorio productivo.</strong> Esta página consulta el Worker existente de Cloudflare/Gemini. Las cifras deben contrastarse con las fuentes públicas. No se declara validada la integración completa con el nuevo motor determinista.</p><div id="asistente"></div></main>
+<body><main><h1>Asistente IA · Gemini experimental</h1><p class="aviso"><strong>Prueba aislada, no integrada al Observatorio productivo.</strong> Las comparaciones entre meses se calculan con el motor determinista y fuentes públicas; las demás consultas se envían al Worker existente de Cloudflare/Gemini. La integración completa sigue pendiente.</p><div id="asistente"></div></main>
 <script type="module">
 import { crearAsistenteUI } from '../js/asistente-ia-ui.js';
+import { crearFlujoLocal } from '../js/asistente-ia-modulos/flujo_local.js?v=mod-20261113c';
+import { crearLectorPublico } from '../js/asistente-ia-modulos/lector_publico.js';
+const flujoDeterminista=crearFlujoLocal({leerJSON:crearLectorPublico()});
 const ENDPOINT='https://observatorio-mercado-publico-ia.julio-c-lopez-n-1972.workers.dev/chat';
 async function consultar(pregunta) {
+ const normalizada=pregunta.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+ const comparativa=/\b(comparar|comparacion|vario|variacion|diferencia|evolucion|aumento|disminucion|entre)\b/.test(normalizada);
+ if(comparativa){
+  try { return await flujoDeterminista.consultar(pregunta); }
+  catch(error){return {estado:'aclaracion',pregunta_aclaracion:error?.status===503?'Los datos publicados no superaron la validación de consistencia; no se muestran cifras.':'No se pudo verificar la comparación. Indica dos meses publicados y la modalidad.'};}
+ }
  const controlador=new AbortController();
  const limite=setTimeout(()=>controlador.abort(),25000);
  try {
