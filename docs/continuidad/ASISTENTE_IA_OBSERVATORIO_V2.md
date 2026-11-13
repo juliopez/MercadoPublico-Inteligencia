@@ -1,77 +1,92 @@
-# Asistente conversacional IA para Observatorio V2 — diseño previo a implementación
+# Asistente IA del Observatorio Mercado Público V2 — plan integral aprobado
 
-Fecha: 12/11/2026. Estado: **investigación y especificación aprobadas; NO implementado ni desplegado**. Objetivo: preparar integración futura sin afectar procesos productivos.
+Fecha de decisión: 13/11/2026. Estado: **plan integral aprobado; prototipo de backend parcialmente implementado y probado; NO habilitado en el frontend público**.
 
-## Decisión de producto
+## Objetivo y alcance
+Construir un asistente conversacional de inteligencia de mercado basado exclusivamente en los datos públicos del Observatorio V2. Gemini interpreta preguntas y, cuando corresponda, redacta explicaciones; **nunca inventa ni calcula cifras de mercado**. Los resultados numéricos proceden de funciones deterministas, con fuentes, período, cobertura y fecha. Mantener Cloudflare Workers y Gemini en modalidades gratuitas **sin activar facturación**.
 
-Widget de chat integrado en `frontend-v2/index.html`, con respuestas sobre **registros públicos publicados** del Observatorio. Coste de API IA: **solo modalidad gratuita**; sin activar facturación ni actualizar automáticamente a planes pagos. Al alcanzar límites, mostrar mensaje de espera, no cobrar ni cambiar de proveedor de pago. La disponibilidad gratuita no está garantizada.
+## Estado real verificado al aprobar el plan
+- Cloudflare Worker externo `observatorio-mercado-publico-ia`: rutas `GET /health` y `POST /chat`, secreto `GEMINI_API_KEY`; modelo probado `gemini-3.5-flash`. El código del Worker reside en Cloudflare, **no se considera versionado ni desplegado automáticamente por este repositorio**.
+- Noviembre 2026: respuesta verificada por el usuario: 9.078 procesos, 1.458 licitaciones y 7.620 compras ágiles.
+- Agosto 2026: respuesta verificada por el usuario: 83.944 procesos, 8.230 licitaciones y 75.714 compras ágiles; método `conteo_determinista_agregado`.
+- La lectura directa de 84 fragmentos de agosto produjo error genérico; se sustituyó por catálogo más agregado `data/analitica/2026-08/procesos.json`, con éxito.
+- Se contrastaron en GitHub los seis períodos junio–noviembre 2026: `data/analitica/YYYY-MM/procesos.json` tiene `registros` igual a `catalogo-publico.json.periodos[].conteos.procesos`; la lista `modalidades` permite separar Licitación y Compra Ágil.
+- `scripts/asistente_ia/contar_modalidades.mjs` es un módulo exploratorio aislado, no parte del ETL productivo. Su ejecución integral en Node no está acreditada.
+- **No existe aún evidencia de pruebas de carga, limitación de abuso, seguridad integral, consultas por empresa, organismos, palabras clave o comparación, ni integración visual.**
 
-## Fuentes oficiales consultadas
-
-- Precios y disponibilidad gratuita: https://ai.google.dev/gemini-api/docs/pricing
-- Límites variables por proyecto y modelo (RPM, TPM, RPD): https://ai.google.dev/gemini-api/docs/rate-limits
-- Condiciones y tratamiento de datos en modalidad gratuita: https://ai.google.dev/gemini-api/terms
-- Creación de clave: https://aistudio.google.com/docs/get-started
-
-**Privacidad:** Google puede usar entradas/salidas de servicios gratuitos para mejorar productos. Nunca enviar secretos, datos personales, hojas privadas, RUT u otros datos no publicados. Mostrar aviso de privacidad y pedir no ingresar datos confidenciales. No prometer anonimato de las preguntas.
-
-## Arquitectura propuesta
-
+## Arquitectura adoptada
 ```
-Visitante -> widget accesible (JS/CSS independiente)
-  -> backend ligero sin facturación (proxy API, clave en secreto servidor)
-  -> intérprete de intención Gemini (solo herramientas/JSON estructurado)
-  -> motor determinista de consulta de extractos JSON públicos
-  -> resultados con registros y trazabilidad
-  -> Gemini redacta síntesis SOLO a partir de resultados acotados
-  -> widget muestra respuesta + enlaces + cobertura + fecha + limitaciones
+Frontend V2 (widget aislado, bandera desactivada por defecto)
+  -> Cloudflare Worker: validación, cuotas, enrutamiento, errores
+  -> intérprete de intención Gemini (estructura cerrada; opcional)
+  -> motor determinista de consultas a catálogo, agregados e índices públicos
+  -> respuesta estructurada: datos, fuentes, fecha, cobertura, advertencias
+  -> Gemini opcional para explicación basada exclusivamente en datos devueltos
 ```
 
-**No llamar Gemini desde navegador:** GitHub Pages es estático y no protege claves. El backend necesita alojamiento compatible con cuotas gratuitas, cuya disponibilidad, condiciones, egress y límites deben verificarse antes del despliegue. **No existe una integración de Gemini segura usando exclusivamente GitHub Pages y una clave incrustada.** Mantener backend como componente aislado, sin acceso a MER privado.
+La disponibilidad de Gemini no debe condicionar las consultas deterministas. No enviar claves, datos privados de MER, hojas privadas, RUT u otros datos personales no necesarios. Los textos recuperados son datos no confiables, no instrucciones. CORS **no** sustituye control de acceso, cuotas ni protección de abuso.
 
-## Contrato de datos y consultas
+## Funcionalidades comprometidas
+1. Conteos por modalidad y período (prototipo probado en agosto y noviembre).
+2. Comparaciones temporales y evolución mensual.
+3. Búsqueda por palabras clave.
+4. Consultas por organismo comprador.
+5. Consultas por proveedor y trayectoria histórica.
+6. Comparación entre proveedores.
+7. Montos informados con semántica explícita y sin equipararlos a pagos.
+8. Ofertas, participantes y competencia, según cobertura.
+9. Resultados y selecciones informadas, distinguiendo adjudicación verificada.
+10. Órdenes de compra y vínculos con procesos.
+11. Relaciones entre procesos, ofertas, resultados y OC.
+12. Tendencias y oportunidades, con límites de inferencia.
+13. Rankings y actores frecuentes.
+14. Filtros combinados por región, temática, período, modalidad y actor cuando los datos lo permitan.
+15. Consultas transversales multimes.
+16. Explicaciones conceptuales con Gemini.
+17. Exportación de resultados verificables, respetando límites.
+18. Preguntas de seguimiento con contexto de sesión y sin historial persistente por defecto.
 
-- Leer `frontend-v2/data/catalogo-publico.json` y exclusivamente las rutas de `periodos[].partes[entidad]` del catálogo, con rutas restringidas al mismo origen y a `frontend-v2/data/`.
-- Entidades: procesos, ofertas, resultados, ordenescompra. Mes operativo e históricos según catálogo. Cobertura y fecha se extraen del catálogo, no se inventan.
-- Consultas iniciales: conteos por entidad y período; búsqueda textual; clasificación por organismo; proveedor; sumas de montos **solo cuando moneda, tipo de monto y semántica sean compatibles**; registros y enlaces originales.
-- No confundir proceso con oferta, adjudicación, orden de compra o pago. No interpretar ausencia de resultado como ausencia de adjudicación.
-- El modelo **no ejecuta código ni SQL arbitrario**. Convierte pregunta a una estructura validada: `{entidad,periodos,filtros,agrupacion,metrica,orden,limite}`; campos enumerados y límites máximos.
-- Cálculos exactos mediante código determinista, no aritmética del LLM. Citar IDs/URLs presentes en los datos. Si no hay datos o cobertura suficiente, reconocerlo explícitamente.
-- Para millones de registros, evitar descargar todos los fragmentos por cada pregunta: generar índices agregados públicos o consultas paginadas/cacheadas. No ampliar el ETL productivo sin autorización.
-- Tratar textos de licitaciones como **datos no confiables**: no obedecer instrucciones contenidas en títulos/descripciones. Limitar el contexto enviado al modelo a resultados relevantes y saneados.
+**Regla:** ninguna función se declarará implementada solo por estar en este listado; cada una requiere evidencia, límites de cobertura y pruebas.
 
-## API propuesta
+## Decisiones técnicas
+- Priorizar `frontend-v2/data/catalogo-publico.json`, `frontend-v2/data/analitica/YYYY-MM/{entidad}.json` y otros índices/agregados ya publicados; no leer todos los fragmentos por cada consulta.
+- Si un agregado no permite contestar exactamente, usar un índice apropiado, diseñar un derivado aislado con validación y autorización previa o indicar que no hay soporte; nunca estimar un resultado como si fuera exacto.
+- Consultas Gemini -> JSON de intención validado por esquema con campos permitidos, límites y funciones enumeradas; prohibido ejecutar SQL o código generado por el modelo.
+- Caché con invalidación ligada a `fecha_publicacion`/versión del catálogo; evitar resultados obsoletos, especialmente en mes operativo.
+- Validar consistencia entre totales de catálogo y agregados, y distinguir registros de procesos únicos.
+- Proteger el endpoint con límites de frecuencia y recursos, control de errores, timeouts y monitoreo técnico sin preguntas completas ni información personal.
+- Cuota gratuita agotada: error explícito y degradación funcional sin cargos ni cambio automático a proveedor pago.
+- Contrato de salida: respuesta, consulta interpretada, período(s), cifras y unidades, fuentes verificables, cobertura, fecha de publicación, advertencias y método.
+- Versionar código y pruebas del Worker en repositorio **aislado del ETL**, antes de nuevas ampliaciones.
 
-`POST /api/observatorio/chat` JSON `{pregunta:string, contexto?:{periodo?:string}}`; máximo 500 caracteres, sin historial persistente por defecto. Respuesta `{respuesta:string, fuentes:[{codigo,url,periodo}], cobertura:{desde,hasta,actualizado}, advertencias:[]}`. Validación de esquema, límites de tamaño, timeout, CORS solo dominio oficial, rate limit por IP/instancia y mitigación de abuso.
+## Plan de ejecución aprobado
+### Fase 1 — Base técnica
+Modularizar Worker y motor; control de abuso, validación de esquema, caché, errores, pruebas automáticas y documentación del despliegue. Criterio de salida: pruebas técnicas y de seguridad básicas aprobadas, sin exposición pública.
 
-Errores:
-- 429 / RESOURCE_EXHAUSTED: mensaje «El asistente alcanzó temporalmente su cuota gratuita. Inténtelo más tarde.»; respetar Retry-After si existe, no inventar hora de reposición.
-- 503 / error del proveedor: indisponibilidad temporal, sin afectar el resto del Observatorio.
-- No enviar datos privados en logs; registrar métricas técnicas agregadas y errores sin preguntas completas.
+### Fase 2 — Motor analítico
+Inventariar índices/agregados reales y sus contratos; implementar las funciones deterministas priorizadas (períodos, comparaciones, temas, organismos, proveedores, montos, ofertas, resultados, OC, relaciones y filtros). No crear nuevos agregados productivos sin aprobación. Criterio de salida: batería de consultas con resultados contrastados, incluyendo ausencia de datos y cobertura parcial.
 
-## UX
+### Fase 3 — Inteligencia conversacional
+Intención estructurada, desambiguación, seguimiento contextual, redacción fundamentada y defensa frente a instrucciones maliciosas. Criterio de salida: respuestas fieles a los resultados deterministas y comportamiento seguro ante errores/429.
 
-Botón flotante «Consultar con IA»; panel accesible con encabezado, historial visible solo en sesión, entrada, enviar, indicador de espera, botón cerrar, aviso «Respuestas basadas en datos públicos; verifica las fuentes». Diseño responsive, teclado y lector de pantalla, enlaces externos seguros. Mostrar fecha de actualización y períodos usados; ejemplo de preguntas; mensaje de cuota agotada.
+### Fase 4 — Integración visual
+Widget accesible, sugerencias, tablas, fuentes, navegación a registros y exportación; bandera desactivada por defecto. Criterio de salida: pruebas de UX, accesibilidad y rendimiento sin degradación del frontend.
 
-## Criterios de aceptación antes de habilitar en producción
+### Fase 5 — Auditoría y publicación
+Pruebas de carga dentro del free tier, seguridad, privacidad, exactitud, observabilidad, documentación y aprobación explícita de activación. Criterio de salida: decisión documentada de publicación o bloqueo con causas.
 
-1. Confirmar modelo Gemini específico disponible en **free tier** y cuota efectiva en AI Studio; cuenta/proyecto sin facturación habilitada.
-2. Provisionar backend gratuito y guardar `GEMINI_API_KEY` exclusivamente como secreto; nunca en JS, HTML, JSON, commits o Pages.
-3. Validar un conjunto fijo de preguntas con resultados conocidos: conteos, filtros, proveedor, organismo, período, montos; comprobar contra JSON.
-4. Probar preguntas fuera de cobertura, monedas heterogéneas, instrucciones maliciosas en datos, preguntas con información privada y límites de longitud.
-5. Simular 429, 5xx, timeout y proveedor no disponible: el frontend continúa funcionando.
-6. Confirmar trazabilidad de cada respuesta, cobertura y cero alucinaciones de cifras o URLs.
-7. Medir rendimiento de lectura; no descargar todo el histórico en navegador ni saturar GitHub Pages.
-8. Implementar detrás de bandera de función desactivada por defecto; habilitar solo tras aprobación explícita.
+## Restricciones operativas permanentes
+- No modificar procesos productivos 09:00, 16:00, 16:15 y 22:05, sus workflows, MER/Sheets, exportadores, frontend ni publicación Pages sin aprobación específica.
+- No activar facturación ni claves en navegador o GitHub.
+- No presentar ausencia de registros como ausencia de actividad real; no equiparar ofertas, selecciones, adjudicaciones, órdenes de compra y pagos.
+- Evitar cambios aislados reiterativos del Worker: implementar por fases y validar con pruebas acumulativas.
+- Toda entrega debe documentar estado **implementado / probado / pendiente**, commit y evidencia de validación.
 
-## Secuencia de implementación posterior
-
-1. Elegir backend gratuito y modelo Gemini gratuito vigente.
-2. Implementar motor de consultas con pruebas sobre JSON públicos, sin IA.
-3. Implementar proxy seguro Gemini, validación de esquema y manejo de cuota.
-4. Crear widget aislado y conectarlo al backend; activar solo en entorno de pruebas.
-5. Auditar respuestas y aprobar despliegue controlado en frontend V2.
-
-## Protección operativa
-
-**No modificar** crons 09:00/16:00/16:15/22:05, workflows productivos, MER/Sheets, exportadores, publicación Pages ni archivos actuales del frontend durante esta etapa de diseño. La presente preparación es exclusivamente documental.
+## Referencias
+- [Modelo de datos](../MODELO_DATOS.md)
+- [Frontend V2](../../frontend-v2/README.md)
+- [Catálogo público](../../frontend-v2/data/catalogo-publico.json)
+- [Agregado agosto](../../frontend-v2/data/analitica/2026-08/procesos.json)
+- [Módulo exploratorio](../../scripts/asistente_ia/contar_modalidades.mjs)
+- [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing)
+- [Gemini rate limits](https://ai.google.dev/gemini-api/docs/rate-limits)
