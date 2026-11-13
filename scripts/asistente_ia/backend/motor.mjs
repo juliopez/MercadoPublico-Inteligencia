@@ -60,8 +60,8 @@ export async function crearMotor({ leerJSON }) {
       for (const par of d.modalidades) {
         if (!Array.isArray(par) || par.length !== 2 || typeof par[0] !== 'string' || !Number.isSafeInteger(par[1]) || par[1] < 0) throw new ConsultaError('Modalidades inválidas', 503);
         const clave = par[0].normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-        if (clave === 'licitacion') totales.licitaciones += par[1];
-        else if (clave === 'compra agil') totales.compras_agiles += par[1];
+        if (clave.includes('licitacion')) totales.licitaciones += par[1];
+        else if (clave.includes('compra agil')) totales.compras_agiles += par[1];
         else totales.otras_modalidades += par[1];
         suma += par[1];
       }
