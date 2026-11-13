@@ -21,4 +21,4 @@ jobs:
         with:
           node-version: '22'
       - name: Pruebas deterministas sin red
-        run: node --test scripts/asistente_ia/backend/motor.test.mjs
+        run: node --test scripts/asistente_ia/backend/*.test.mjs
