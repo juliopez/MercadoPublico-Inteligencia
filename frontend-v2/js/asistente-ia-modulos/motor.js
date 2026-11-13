@@ -50,7 +50,7 @@ export async function crearMotor({ leerJSON }) {
           let suma=0, valor=0;
           for (const par of d.modalidades) {
             if (!Array.isArray(par) || par.length!==2 || typeof par[0]!=='string' || !Number.isSafeInteger(par[1]) || par[1]<0) throw new ConsultaError('Modalidades inválidas',503);
-            const clave=par[0].normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();
+            const clave=par[0].normalize('NFD').replace(/\p{M}/gu,'').toLowerCase();
             suma+=par[1];
             if (modalidad==='licitaciones' ? clave.includes('licitacion') : clave.includes('compra agil')) valor+=par[1];
           }
