@@ -1,0 +1,13 @@
+name: Asistente IA - trazabilidad fragmentos OC
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  auditar-fragmentos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Comparar fragmentos OC contra catálogo y agregados sin escribir
+        run: python3 scripts/asistente_ia/backend/auditar_fragmentos_oc.py
