@@ -1,0 +1,18 @@
+name: Asistente IA - escenarios analiticos aislados
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar sintaxis
+        run: node --check scripts/asistente_ia/backend/validar_escenarios_analiticos.mjs
+      - name: Probar consultas de solo lectura
+        run: node scripts/asistente_ia/backend/validar_escenarios_analiticos.mjs
