@@ -13,15 +13,12 @@ cd "$ROOT"
   echo "BLOQUEO: huso horario local distinto a Santiago. No se instala cron"; exit 3;
 }
 python3 -m py_compile scripts/recuperar_licitaciones_api.py scripts/cargar_licitaciones_api_mer.py
-bash -n scripts/ubuntu_recuperar_licitaciones_1615.sh
+bash -n scripts/ubuntu_dispatch_licitaciones_1615.sh
 mkdir -p logs
 TAG="# MER_LICITACIONES_API_1615"
-ENTRY="15 16 * * 1-5 /bin/bash \"$ROOT/scripts/ubuntu_recuperar_licitaciones_1615.sh\" >> \"$ROOT/logs/licitaciones_api_1615.log\" 2>&1 $TAG"
+ENTRY="15 16 * * 1-5 /bin/bash \"$ROOT/scripts/ubuntu_dispatch_licitaciones_1615.sh\" >> \"$ROOT/logs/licitaciones_api_1615_dispatch.log\" 2>&1 $TAG"
 CURRENT="$(crontab -l 2>/dev/null || true)"
-if printf '%s\n' "$CURRENT" | grep -Fq "$TAG"; then
-  echo "CRON_EXISTENTE: revisar crontab -l; no se duplica"
-  exit 0
-fi
+CURRENT="$(printf '%s\n' "$CURRENT" | grep -v -F "$TAG" || true)"
 printf '%s\n%s\n' "$CURRENT" "$ENTRY" | crontab -
 echo "CRON_INSTALADO: lunes a viernes 16:15 hora local (America/Santiago)"
 crontab -l | grep -F "$TAG"
