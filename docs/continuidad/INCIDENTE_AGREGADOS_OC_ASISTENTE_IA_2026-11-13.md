@@ -142,3 +142,12 @@ Resultado HTTP público en la ejecución: **18 OK / 6 fallas**, todas de órdene
 **Diagnóstico diferencial:** la versión pública de Pages que recibió el runner no era coherente con los agregados actuales de `main`. Puede tratarse de un despliegue pendiente, una configuración de origen Pages o caché CDN/HTTP; el log no permite distinguir todavía esas posibilidades. No modificar agregados ni repetir exportación MER para resolver un problema de entrega web.
 
 **Siguiente comprobación:** revisar fuente de publicación de Pages (rama/carpeta o workflow), último despliegue y URL HTTP de un agregado OC; comparar con GitHub `main` y cabeceras de caché. Repetir auditoría tras confirmar sincronización web. No declarar cierre operativo antes de 24/24 desde la URL pública.
+
+## Diagnóstico HTTP Pages vs main — ejecución real 13/11/2026
+Captura de GitHub Actions del job `131948101774`, run `43443858770`, workflow «Asistente IA - comprobar GitHub Pages vs main». El script de solo lectura `comparar_pages_main.mjs` contrastó 24 agregados de `main` con las respuestas HTTP de `https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/`, añadiendo parámetro de consulta y cabeceras `Cache-Control: no-cache`.
+
+**Resultado: 18 coincidentes y 6 diferentes**, todos `ordenescompra` de junio–noviembre. Por ejemplo: agosto `main=153438`, Pages `153221`, versiones 3 y 1; octubre `main=177972`, Pages `167042`; noviembre `main=54984`, Pages `67023`. Respuestas HTTP reportan `cache-control: max-age=600`, `age: 0` y ETags. La comparación HTTP confirma que Pages servía datos antiguos incluso con consulta para evitar caché ordinaria.
+
+**No se ha determinado todavía la configuración exacta del origen de Pages** (rama/carpeta, despliegue de Actions o artefacto) ni la causa por la que los archivos OC no se actualizan en el sitio público. No atribuirlo exclusivamente a caché ni modificar MER o regenerar agregados sin evidencia.
+
+**Siguiente verificación:** inspeccionar configuración y último despliegue de GitHub Pages y el mecanismo de publicación de archivos `frontend-v2/data/analitica`; preparar corrección específica, separada de ETL.
