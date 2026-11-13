@@ -126,3 +126,10 @@ El usuario aportó captura de GitHub Actions del workflow «Generar analítica m
 | 2026-11 | 54984 | 54984 | 3 |
 
 **Resultado comprobado:** 6/6 agregados OC coinciden con los conteos del catálogo en `main`; el desfase de conteos OC está corregido. **Pendiente para cierre integral:** ejecutar de nuevo `Asistente IA - auditoría pública de fuentes` y obtener 24/24 verificaciones, además de confirmar que Pages sirve los mismos archivos actualizados. No equiparar igualdad de conteos con auditoría de exactitud de todos los montos.
+
+## Comprobación integral de conteos en GitHub — 13/11/2026
+Se recuperaron directamente los 24 archivos de agregados de `main` (6 meses × procesos, ofertas, resultados y órdenes de compra) y se compararon sus campos `registros` con los 24 conteos del catálogo vigente. **Resultado: 24/24 coincidentes; 0 diferencias.**
+
+Versiones observadas: procesos 3 en los seis meses; ofertas/resultados 1 en junio–septiembre y 3 en octubre–noviembre; órdenes de compra 3 en los seis meses. Por tanto, el resultado certifica coincidencia de conteos, **no** homogeneidad de esquema, validez de montos, ni igualdad de bytes entre GitHub y GitHub Pages.
+
+**Pendientes antes del cierre operativo completo:** nueva ejecución exitosa del workflow `asistente-ia-auditoria-fuentes.yml` y comprobación HTTP de los archivos efectivamente servidos por Pages. El acceso web a Pages no pudo verificarse en esta sesión, por lo que no se declara esa comprobación realizada.
