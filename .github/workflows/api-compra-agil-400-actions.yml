@@ -60,6 +60,38 @@ jobs:
         run: |
           git config user.name 'MER API Actions'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+      - name: Restaurar checkpoint resguardado del 12-11 si main sigue vacío
+        if: steps.ventana.outputs.ok == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/rescate-api"
+          gh run download 43342241435 --repo "$GITHUB_REPOSITORY" --name api-dia-43342241435 --dir "$RUNNER_TEMP/rescate-api"
+          python - <<'PY'
+          import json,pathlib,shutil
+          src=pathlib.Path(__import__('os').environ['RUNNER_TEMP'])/'rescate-api'
+          dest=pathlib.Path('control')
+          old=dest/'cola_api_mer.json'
+          report=dest/'ultimo_reporte_api_mer.json'
+          rescued=json.loads((src/'cola_api_mer.json').read_text())
+          meta=json.loads((src/'ultimo_reporte_api_mer.json').read_text())
+          assert meta['fecha_objetivo']=='2026-11-12' and meta['consultados']==400 and meta['errores']==0
+          current=json.loads(old.read_text()) if old.stat().st_size else {}
+          # No sobrescribir estado que otra ejecución ya haya incorporado.
+          if current.get('jornadas_actions',{}).get('2026-11-12'):
+              print('CHECKPOINT_YA_PRESENTE; no se sobrescribe')
+          else:
+              shutil.copy2(src/'cola_api_mer.json',old)
+              shutil.copy2(src/'ultimo_reporte_api_mer.json',report)
+              print('CHECKPOINT_2026_11_12_RESTAURADO')
+          PY
+          git add control/cola_api_mer.json control/ultimo_reporte_api_mer.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'recovery(api): restaurar checkpoint jornada 2026-11-12'
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          fi
       - name: Ejecutar lotes y guardar checkpoints sin repetir detalles
         if: steps.ventana.outputs.ok == 'true'
         shell: bash
