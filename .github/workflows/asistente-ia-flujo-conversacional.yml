@@ -1,0 +1,23 @@
+name: Asistente IA - flujo conversacional integral aislado
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asistente_ia/backend/flujo-conversacional.test.mjs'
+      - '.github/workflows/asistente-ia-flujo-conversacional.yml'
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar sintaxis
+        run: node --check scripts/asistente_ia/backend/flujo-conversacional.test.mjs
+      - name: Ejecutar prueba integral sin red ni credenciales
+        run: node --test scripts/asistente_ia/backend/flujo-conversacional.test.mjs
