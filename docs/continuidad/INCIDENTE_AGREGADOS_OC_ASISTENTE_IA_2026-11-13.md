@@ -43,3 +43,14 @@ El signo de noviembre es inverso a los otros cinco meses: no es seguro aplicar u
 - [Auditoría de fuentes](../../scripts/asistente_ia/backend/auditar_fuentes.mjs)
 - [Motor con bloqueo por inconsistencia](../../scripts/asistente_ia/backend/motor.mjs)
 - [Inventario técnico](INVENTARIO_DATOS_ASISTENTE_IA_V2.md)
+
+## Ampliación de trazabilidad: historial de commits (13/11/2026)
+Se consultó el historial de GitHub:
+- Commit `c4332251`: actualizó específicamente agregados de **procesos** de julio a noviembre, no los cuatro agregados de todas las entidades. Es evidencia de actualizaciones parciales por entidad.
+- Commits `b112ef88` y `bb810745`: mensajes «actualizar índices y agregados 2026-11»; incluyen agregado de procesos e índices de búsqueda.
+- Commit `c4b5f647`: incluye tanto `analitica/2026-11/ordenescompra.json` como `analitica/2026-11/procesos.json` e índices.
+- Por lo tanto, **no es correcto afirmar que los agregados de OC nunca se regeneran**. Sí se observan actualizaciones con distinta selección de archivos; queda por verificar si todos los derivados son generados y publicados de forma atómica respecto al catálogo.
+
+**Diagnóstico provisional:** la publicación puede contener versiones desalineadas entre catálogo y agregados. El historial es compatible con esa hipótesis, pero no demuestra aún la causa ni identifica el proceso responsable. Para atribuir responsabilidad se necesitan logs de ejecución, lista exacta de archivos en cada commit y comparación con el catálogo del mismo commit.
+
+**Decisión de fase:** continuar fase 1 (motor seguro y pruebas) y fase 2 (consultas con fuentes consistentes), manteniendo bloqueadas las entidades/períodos cuyo agregado difiera. No corregir automáticamente datos publicados ni alterar el ETL.
