@@ -1,0 +1,16 @@
+name: Asistente IA - auditoría pública de fuentes
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  auditar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Comparar catálogo y agregados públicos sin escribir datos
+        run: node scripts/asistente_ia/backend/auditar_fuentes.mjs
