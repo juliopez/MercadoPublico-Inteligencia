@@ -70,7 +70,7 @@ jobs:
           assert 'VERSIÓN ESTABLE' not in root_page.read_text(), 'La portada raíz conserva la etiqueta anterior'
           assert pathlib.Path('historico/v1/index.html').is_file(), 'Falta respaldo fuente de V1'
           a=json.loads((root/'data/analitica/2026-08/procesos.json').read_text())
-          assert a['registros']==83937
+          assert a['registros']==next(x['conteos']['procesos'] for x in m['periodos'] if x['periodo']=='2026-08')
           assert a.get('top_actores_monto') and a.get('modalidades'), 'Faltan agregados nuevos en Pages'
           # No desplegar Pages con un catalogo mas reciente que sus agregados.
           # El push de datos brutos activa primero la publicacion de derivados;
