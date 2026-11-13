@@ -61,3 +61,8 @@ Captura de GitHub Actions aportada por el usuario: workflow «Asistente IA - aud
 La captura muestra solo el tramo final del log: no permite afirmar cuántas verificaciones de otras entidades pasaron, ni el detalle completo de errores anteriores. Para completar la auditoría se requiere leer el log íntegro del job.
 
 **Resultado de la fase 2:** bloqueo de datos incoherentes verificado en ejecución real; investigación de la causa raíz y reparación de la cadena de publicación pendientes de autorización y evidencia. No se alteraron archivos productivos.
+
+## Log completo recuperado mediante GitHub API — 13/11/2026
+Se recuperó íntegramente el log del job `131934132010` (run `43439795069`). Se verificaron **24 combinaciones** (6 meses × 4 entidades): **18 OK y 6 FALLA**. Desglose: procesos 6/6 OK; ofertas 6/6 OK; resultados 6/6 OK; órdenes de compra 0/6 OK. Los seis fallos corresponden exactamente a `ordenescompra` en 2026-06, 07, 08, 09, 10 y 11, con mensaje `Inconsistencia entre catálogo y agregado`. Fecha de publicación reportada: `2026-11-13T12:11:57.840734+00:00`. Commit comprobado en checkout: `b690cbd554eeea85feb9a033345f8ac78a497784`. Ejecución de auditoría entre 14:08:16 y 14:08:19 UTC. Resultado esperado: código 1 al detectar divergencias.
+
+**Alcance:** se validó consistencia de conteos del catálogo frente a agregados y, en procesos, suma de modalidades; no se realizó reconciliación fila a fila de los fragmentos de origen ni se demostró que los montos sean correctos. La causa de la divergencia de OC sigue pendiente.
