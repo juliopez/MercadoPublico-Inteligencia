@@ -26,3 +26,24 @@ test('serie dos meses',async()=>{const m=await motorCon();const r=await m.consul
 test('rechaza totales inconsistentes',async()=>{const m=await motorCon({'data/analitica/2026-08/procesos.json':{...agosto,registros:1}});await assert.rejects(m.consultar({operacion:'modalidades',periodo:'2026-08'}),{status:503});});
 test('rechaza modalidades que no suman',async()=>{const m=await motorCon({'data/analitica/2026-08/procesos.json':{...agosto,modalidades:[['Licitación',1]]}});await assert.rejects(m.consultar({operacion:'modalidades',periodo:'2026-08'}),{status:503});});
 test('no inventa organismos',async()=>{const m=await motorCon();await assert.rejects(m.consultar({operacion:'organismo',periodo:'2026-08',organismo:'organismo inexistente'}),{status:404});});
+
+test('etiquetas compuestas de modalidades',async()=>{
+ const m=await motorCon({'data/analitica/2026-08/procesos.json':{
+  ...agosto,modalidades:[['Compra Ágil (API)',75714],['Licitación Pública',8230]]
+ }});
+ const r=await m.consultar({operacion:'modalidades',periodo:'2026-08'});
+ assert.equal(r.datos.licitaciones,8230);
+ assert.equal(r.datos.compras_agiles,75714);
+});
+test('agregado de OC desfasado queda bloqueado',async()=>{
+ const m=await motorCon({'data/catalogo-publico.json':{
+  ...catalogo,periodos:[{...catalogo.periodos[0],conteos:{...catalogo.periodos[0].conteos,ordenescompra:153438}},catalogo.periodos[1]]
+ },'data/analitica/2026-08/ordenescompra.json':{
+  periodo:'2026-08',entidad:'ordenescompra',registros:153221
+ }});
+ await assert.rejects(m.consultar({operacion:'resumen',periodo:'2026-08',entidad:'ordenescompra'}),{status:503});
+});
+test('serie rechaza entidad inválida',async()=>{
+ const m=await motorCon();
+ await assert.rejects(m.consultar({operacion:'serie',entidad:'privado',periodos:['2026-08','2026-09']}),{status:400});
+});
