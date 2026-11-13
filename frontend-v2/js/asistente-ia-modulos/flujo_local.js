@@ -21,7 +21,14 @@ function presentar(intencion, r) {
     explicacion=`Principales actores de ${r.entidad} en ${r.periodo}, por ${d.criterio}: `+
       (d.filas.map(x=>`${x.posicion}. ${x.actor}: ${entero(x.valor)}`).join('; ') || 'sin registros');
   } else if (intencion.operacion === 'serie') {
-    explicacion=`Comparación de ${r.entidad}: `+d.map(x=>`${x.periodo}: ${entero(x.registros)} registros`).join('; ');
+    const nombre = r.modalidad === 'licitaciones' ? 'licitaciones' : r.modalidad === 'compras_agiles' ? 'compras ágiles' : 'registros de '+r.entidad;
+    explicacion='Comparación de '+nombre+': '+d.map(x=>x.periodo+': '+entero(x.registros)).join('; ');
+    if (d.length===2) {
+      const diferencia=d[1].registros-d[0].registros;
+      const porcentaje=d[0].registros===0 ? null : Math.abs(diferencia)*100/d[0].registros;
+      explicacion+='; diferencia de '+entero(Math.abs(diferencia))+' ('+(diferencia>0?'aumento':diferencia<0?'disminución':'sin cambio')+
+        (porcentaje===null?'':', '+porcentaje.toLocaleString('es-CL',{maximumFractionDigits:2})+' %')+').';
+    }
   } else if (intencion.operacion === 'organismo') {
     explicacion=`${d.organismo}: ${entero(d.procesos_unicos)} procesos únicos en ${r.periodo}.`;
   } else throw new ConsultaError('Operación no presentable',400);
