@@ -12,6 +12,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Probar adaptación local de contratos sin consumir Gemini
+        run: node --test frontend-v2/js/asistente-ia-adaptador.test.mjs
       - name: Consulta única al Worker existente (puede consumir cuota gratuita Gemini)
         env:
           WORKER_CHAT_URL: https://observatorio-mercado-publico-ia.julio-c-lopez-n-1972.workers.dev/chat
