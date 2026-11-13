@@ -45,8 +45,18 @@ for (const mes of meses) {
   await verificar(`organismo real ${mes}`, async () => {
     const url = new URL(`data/analitica/${mes}/procesos.json`, 'https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/').toString();
     const d = await leerJSON(url);
-    const primero = d.organismos_procesos_unicos?.find(x => x.procesos > 0 && x.organismo?.length >= 3);
-    exigir(!!primero, 'No existe organismo real en agregado');
+    const canon = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/\s+/g, ' ');
+    const organismos = d.organismos_procesos_unicos;
+    exigir(Array.isArray(organismos), 'Índice de organismos ausente');
+    const frecuencias = new Map();
+    for (const x of organismos) {
+      if (typeof x.organismo !== 'string') continue;
+      const clave = canon(x.organismo);
+      frecuencias.set(clave, (frecuencias.get(clave) || 0) + 1);
+    }
+    const primero = organismos.find(x => x.procesos > 0 && typeof x.organismo === 'string' &&
+      x.organismo.length >= 3 && frecuencias.get(canon(x.organismo)) === 1);
+    exigir(!!primero, 'No existe organismo inequívoco en agregado');
     const r = await motor.consultar({ operacion: 'organismo', periodo: mes, organismo: primero.organismo });
     exigir(r.datos.procesos_unicos === primero.procesos, 'Conteo de organismo diferente');
   });
