@@ -1,3 +1,20 @@
+## Cierre operativo 12/11/2026 — disparos Ubuntu y ejecución GitHub
+
+**Configuración confirmada por salida de terminal del usuario:** el instalador `scripts/instalar_cron_licitaciones_1615.sh` informó `CRON_INSTALADO` y mostró la entrada `15 16 * * 1-5` invocando `scripts/ubuntu_dispatch_licitaciones_1615.sh`. El cron anterior de recuperación local 16:15 fue sustituido por el disparador remoto. GitHub Actions contiene `.github/workflows/licitaciones-api-1615-actions.yml` en `main` y usa únicamente `workflow_dispatch`, sin horario `schedule` de GitHub. PR #13 fusionado. **No hay todavía evidencia de ejecución remota exitosa ni de publicación final en Pages para el nuevo proceso**.
+
+**Los cuatro procesos dependen de que Ubuntu esté encendido al momento del disparo**, en horario de Chile y de lunes a viernes:
+
+| Hora | Proceso | Dónde se ejecuta |
+| --- | --- | --- |
+| 09:00 | P7 conciliación cronológica MER | Ubuntu, proceso completo |
+| 16:00 | P1 ETL ZIP licitaciones y OC | Ubuntu, proceso completo |
+| 16:15 | AUX licitaciones API | Ubuntu dispara GitHub Actions; ejecución remota |
+| 22:05 | P2 Compra Ágil API | Ubuntu dispara GitHub Actions; ejecución remota |
+
+Una vez aceptado el disparo de las 16:15 o 22:05, el procesamiento remoto no necesita que Ubuntu permanezca encendido. El disparo de las 22:05 requiere que el temporizador local esté activo; su estado efectivo no queda acreditado por la instalación del cron 16:15.
+
+**Primera comprobación pendiente 13/11:** verificar que el disparo 16:15 aparezca en Actions, que termine correctamente, que MER se actualice, que los derivados se publiquen y que el frontend muestre los datos. Conservar registro de errores sin presumir éxito. El cron 16:00 y los demás procesos no fueron modificados por el instalador 16:15.
+
 # Punto de recuperación operativa — Observatorio de Mercado Público
 
 **Última revisión documental:** 2026-11-11 (Chile). **Repositorio:** `juliopez/MercadoPublico-Inteligencia`, rama principal `main`.
