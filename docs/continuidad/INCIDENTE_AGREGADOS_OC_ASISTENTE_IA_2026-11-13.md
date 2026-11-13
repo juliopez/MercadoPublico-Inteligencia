@@ -133,3 +133,12 @@ Se recuperaron directamente los 24 archivos de agregados de `main` (6 meses × p
 Versiones observadas: procesos 3 en los seis meses; ofertas/resultados 1 en junio–septiembre y 3 en octubre–noviembre; órdenes de compra 3 en los seis meses. Por tanto, el resultado certifica coincidencia de conteos, **no** homogeneidad de esquema, validez de montos, ni igualdad de bytes entre GitHub y GitHub Pages.
 
 **Pendientes antes del cierre operativo completo:** nueva ejecución exitosa del workflow `asistente-ia-auditoria-fuentes.yml` y comprobación HTTP de los archivos efectivamente servidos por Pages. El acceso web a Pages no pudo verificarse en esta sesión, por lo que no se declara esa comprobación realizada.
+
+## Tercera auditoría — divergencia GitHub main vs GitHub Pages (13/11/2026)
+Se recuperó el log completo del job `131945480818`, run `43443089693`. El checkout de GitHub Actions usó commit `e0286c537aa0caf7634da35b419c1f107936e876`. El script `scripts/asistente_ia/backend/auditar_fuentes.mjs` **lee mediante fetch la URL pública configurada en `motor.mjs`**, no los JSON del checkout: `https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/`.
+
+Resultado HTTP público en la ejecución: **18 OK / 6 fallas**, todas de órdenes de compra, mientras la consulta directa de los 24 archivos de `main` confirmó **24/24 conteos coincidentes**. La fecha del catálogo servido al auditor fue `2026-11-13T12:11:57.840734+00:00`.
+
+**Diagnóstico diferencial:** la versión pública de Pages que recibió el runner no era coherente con los agregados actuales de `main`. Puede tratarse de un despliegue pendiente, una configuración de origen Pages o caché CDN/HTTP; el log no permite distinguir todavía esas posibilidades. No modificar agregados ni repetir exportación MER para resolver un problema de entrega web.
+
+**Siguiente comprobación:** revisar fuente de publicación de Pages (rama/carpeta o workflow), último despliegue y URL HTTP de un agregado OC; comparar con GitHub `main` y cabeceras de caché. Repetir auditoría tras confirmar sincronización web. No declarar cierre operativo antes de 24/24 desde la URL pública.
