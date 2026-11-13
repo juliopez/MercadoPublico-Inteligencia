@@ -1,5 +1,8 @@
 name: Licitaciones API 16:15 - remoto
 on:
+  schedule:
+    - cron: '15 19 * * 1-5'
+    - cron: '15 20 * * 1-5'
   workflow_dispatch:
 permissions:
   contents: write
@@ -34,10 +37,10 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/servicio-google.json" >> "$GITHUB_ENV"
           python -m py_compile scripts/recuperar_licitaciones_api.py scripts/cargar_licitaciones_api_mer.py scripts/exportar_mer_operativo_v2.py
           python - <<'PY'
-          import datetime,json,pathlib
+          import datetime,json,pathlib,os
           from zoneinfo import ZoneInfo
           n=datetime.datetime.now(ZoneInfo("America/Santiago"))
-          assert n.weekday()<5 and 16<=n.hour<22, 'Fuera de ventana 16:00-21:59 Chile'
+          assert n.weekday()<5 and ((n.hour==16 and n.minute>=15) or (16<n.hour<22 and os.environ.get('GITHUB_EVENT_NAME')=='workflow_dispatch')), 'Fuera de ventana Chile'
           p=n.strftime('%Y-%m')
           cat=json.loads(pathlib.Path('config/catalogo_sheets.json').read_text())
           assert cat['periodos'][p]['tipo']=='operativo'
