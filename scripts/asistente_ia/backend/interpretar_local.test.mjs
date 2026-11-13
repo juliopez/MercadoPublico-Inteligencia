@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { interpretarLocal } from './interpretar_local.mjs';
+const meses=['2026-08','2026-10','2026-11'];
+test('licitaciones agosto',()=>assert.deepEqual(interpretarLocal('¿Cuántas licitaciones hubo en agosto de 2026?',meses),{operacion:'modalidades',periodo:'2026-08'}));
+test('órdenes noviembre',()=>assert.deepEqual(interpretarLocal('total órdenes de compra en noviembre de 2026',meses),{operacion:'resumen',periodo:'2026-11',entidad:'ordenescompra'}));
+test('ranking ofertas',()=>assert.deepEqual(interpretarLocal('top proveedores por ofertas octubre de 2026',meses),{operacion:'ranking',periodo:'2026-10',entidad:'ofertas',criterio:'registros',limite:5}));
+test('comparar meses',()=>assert.deepEqual(interpretarLocal('comparar procesos entre octubre de 2026 y noviembre de 2026',meses),{operacion:'serie',entidad:'procesos',periodos:['2026-10','2026-11']}));
+test('nombre de persona no se presume organismo',()=>assert.deepEqual(interpretarLocal('¿Makarena Bañares participa en Mercado Público?',meses),{necesita_aclaracion:true}));
+test('mes sin año requiere aclaración',()=>assert.deepEqual(interpretarLocal('cuántas ofertas en noviembre',meses),{necesita_aclaracion:true}));
+test('período no publicado requiere aclaración',()=>assert.deepEqual(interpretarLocal('cuántas ofertas en enero de 2024',meses),{necesita_aclaracion:true}));
+test('ambigüedad de entidades requiere aclaración',()=>assert.deepEqual(interpretarLocal('ofertas y adjudicaciones noviembre de 2026',meses),{necesita_aclaracion:true}));
