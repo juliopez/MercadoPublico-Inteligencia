@@ -1,0 +1,16 @@
+name: Asistente IA - comprobar GitHub Pages vs main
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  comparar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Comparar los 24 agregados de main con la respuesta HTTP de Pages
+        run: node scripts/asistente_ia/backend/comparar_pages_main.mjs
