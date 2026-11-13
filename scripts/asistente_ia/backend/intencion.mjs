@@ -53,7 +53,10 @@ export function interpretarRespuestaGemini(texto, periodosDisponibles) {
   // No aceptar Markdown, bloques de código, prosa ni JSON incrustado.
   let valor;
   try { valor = JSON.parse(texto.trim()); } catch { error('Gemini no devolvió JSON válido'); }
-  if (valor && typeof valor === 'object' && !Array.isArray(valor) &&\n      Object.keys(valor).length === 1 && valor.necesita_aclaracion === true)\n    return { necesita_aclaracion: true };\n  return validarIntencion(valor, periodosDisponibles);
+  if (valor && typeof valor === 'object' && !Array.isArray(valor) &&
+      Object.keys(valor).length === 1 && valor.necesita_aclaracion === true)
+    return { necesita_aclaracion: true };
+  return validarIntencion(valor, periodosDisponibles);
 }
 
 export function crearPromptIntencion(pregunta, periodosDisponibles) {
@@ -75,5 +78,6 @@ export function crearPromptIntencion(pregunta, periodosDisponibles) {
     'Si faltan período, nombre exacto u otros datos imprescindibles, devuelve {"necesita_aclaracion":true}; no inventes valores.',
     'No generes SQL, JavaScript, URL, claves, cifras, nombres de organismos ni rutas de archivos.',
   ];
-  return { instrucciones: reglas.join('\n'), pregunta: pregunta.trim() };
+  return { instrucciones: reglas.join('
+'), pregunta: pregunta.trim() };
 }
