@@ -18,8 +18,8 @@ main{max-width:760px;margin:5vh auto;padding:24px}h1{font-size:1.6rem}
 </main>
 <script type="module">
 import { crearAsistenteUI } from '../js/asistente-ia-ui.js';
-import { crearLectorPublico } from '../../scripts/asistente_ia/backend/lector_publico.mjs';
-import { crearFlujoLocal } from '../../scripts/asistente_ia/backend/flujo_local.mjs';
+import { crearLectorPublico } from '../js/asistente-ia-modulos/lector_publico.mjs';
+import { crearFlujoLocal } from '../js/asistente-ia-modulos/flujo_local.mjs';
 const flujo = crearFlujoLocal({ leerJSON: crearLectorPublico() });
 async function consultar(pregunta) {
   try {
