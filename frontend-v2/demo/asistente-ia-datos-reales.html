@@ -24,7 +24,7 @@ main{max-width:760px;margin:5vh auto;padding:24px}h1{font-size:1.6rem}
     const [{ crearAsistenteUI }, { crearLectorPublico }, { crearFlujoLocal }] = await Promise.all([
       import('../js/asistente-ia-ui.js'),
       import('../js/asistente-ia-modulos/lector_publico.js'),
-      import('../js/asistente-ia-modulos/flujo_local.js')
+      import('../js/asistente-ia-modulos/flujo_local.js?v=84a2ecc')
     ]);
     const flujo = crearFlujoLocal({ leerJSON: crearLectorPublico() });
     async function consultar(pregunta) {
