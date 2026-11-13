@@ -1,6 +1,6 @@
 // Puente de solo lectura: lenguaje natural -> motor determinista -> contrato de interfaz.
-import { crearMotor, ConsultaError } from './motor.js';
-import { interpretarLocal } from './interpretar_local.js';
+import { crearMotor, ConsultaError } from './motor.js?v=comp-20261113b';
+import { interpretarLocal } from './interpretar_local.js?v=comp-20261113b';
 
 const entero = n => new Intl.NumberFormat('es-CL').format(n);
 function presentar(intencion, r) {
