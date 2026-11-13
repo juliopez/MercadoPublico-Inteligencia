@@ -2,12 +2,12 @@
 import { ENTIDADES, PERIODO, ConsultaError } from './motor.js';
 
 const OPERACIONES = new Set(['resumen', 'modalidades', 'organismo', 'serie', 'ranking']);
-const CLAVES = new Set(['operacion','periodo','entidad','organismo','periodos','criterio','limite']);
+const CLAVES = new Set(['operacion','periodo','entidad','organismo','periodos','criterio','limite','modalidad']);
 const CLAVES_POR_OPERACION = {
   resumen: new Set(['operacion','periodo','entidad']),
   modalidades: new Set(['operacion','periodo']),
   organismo: new Set(['operacion','periodo','organismo']),
-  serie: new Set(['operacion','entidad','periodos']),
+  serie: new Set(['operacion','entidad','periodos','modalidad']),
   ranking: new Set(['operacion','periodo','entidad','criterio','limite'])
 };
 function error(mensaje) { throw new ConsultaError(mensaje, 400); }
@@ -28,6 +28,10 @@ export function validarIntencion(valor, periodosDisponibles) {
         valor.periodos.some(x => typeof x !== 'string' || !periodosDisponibles.includes(x)))
       error('Períodos de serie inválidos');
     salida.periodos = [...valor.periodos];
+    if ('modalidad' in valor) {
+      if (valor.entidad !== 'procesos' || !['licitaciones','compras_agiles'].includes(valor.modalidad)) error('Modalidad comparativa inválida');
+      salida.modalidad = valor.modalidad;
+    }
   } else {
     if (typeof valor.periodo !== 'string' || !PERIODO.test(valor.periodo) || !periodosDisponibles.includes(valor.periodo))
       error('Período no publicado o ausente');
