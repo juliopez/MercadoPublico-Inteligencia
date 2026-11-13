@@ -55,6 +55,11 @@ jobs:
           p=os.environ['PERIODO_SOLICITADO']
           assert c['periodos'][p]['tipo']=='operativo', 'Sólo mes operativo vigente'
           PY
+      - name: Configurar identidad Git para rebase de checkpoints y publicación
+        if: steps.ventana.outputs.ok == 'true'
+        run: |
+          git config user.name 'MER API Actions'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
       - name: Ejecutar lotes y guardar checkpoints sin repetir detalles
         if: steps.ventana.outputs.ok == 'true'
         shell: bash
