@@ -66,3 +66,21 @@ La captura muestra solo el tramo final del log: no permite afirmar cuántas veri
 Se recuperó íntegramente el log del job `131934132010` (run `43439795069`). Se verificaron **24 combinaciones** (6 meses × 4 entidades): **18 OK y 6 FALLA**. Desglose: procesos 6/6 OK; ofertas 6/6 OK; resultados 6/6 OK; órdenes de compra 0/6 OK. Los seis fallos corresponden exactamente a `ordenescompra` en 2026-06, 07, 08, 09, 10 y 11, con mensaje `Inconsistencia entre catálogo y agregado`. Fecha de publicación reportada: `2026-11-13T12:11:57.840734+00:00`. Commit comprobado en checkout: `b690cbd554eeea85feb9a033345f8ac78a497784`. Ejecución de auditoría entre 14:08:16 y 14:08:19 UTC. Resultado esperado: código 1 al detectar divergencias.
 
 **Alcance:** se validó consistencia de conteos del catálogo frente a agregados y, en procesos, suma de modalidades; no se realizó reconciliación fila a fila de los fragmentos de origen ni se demostró que los montos sean correctos. La causa de la divergencia de OC sigue pendiente.
+
+## Segunda auditoría real — fragmentos originales vs catálogo y agregados
+Evidencia: captura de GitHub Actions `https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/43440956680/job/131938120327`, workflow «Asistente IA - trazabilidad fragmentos OC», job `auditar-fragmentos`, 13/11/2026. El script `auditar_fragmentos_oc.py` terminó con código 1 **porque detectó discrepancias**, no porque fallara su ejecución.
+
+| Período | Fragmentos | Fragmentos faltantes | Filas fragmentos | Catálogo | Agregado |
+|---|---:|---:|---:|---:|---:|
+| 2026-06 | 151 | 0 | 150551 | 150551 | 150451 |
+| 2026-07 | 152 | 0 | 151050 | 151050 | 150980 |
+| 2026-08 | 154 | 0 | 153438 | 153438 | 153221 |
+| 2026-09 | 149 | 0 | 148772 | 148772 | 147966 |
+| 2026-10 | 178 | 0 | 177972 | 177972 | 167042 |
+| 2026-11 | 55 | 0 | 54984 | 54984 | 67023 |
+
+**Resultado:** `fragmentos_igual_catalogo: 6`, `fragmentos_igual_agregado: 0`. Se confirma que el **conteo** del catálogo refleja exactamente las filas de los fragmentos disponibles y que los seis agregados OC no reflejan esos mismos totales. No se infiere que todos los atributos o importes de cada fila sean correctos; esa validación no fue parte de esta auditoría.
+
+**Diagnóstico:** los agregados OC publicados están desalineados respecto a los fragmentos y catálogo actuales. La causa operacional exacta (falta de regeneración, generación parcial o publicación no atómica) aún debe identificarse con logs/historial. No hay evidencia que justifique volver a consultar API ni reescribir MER.
+
+**Siguiente decisión controlada:** identificar la invocación de `scripts/generar_analitica_v2.py` dentro del publicador y establecer la regeneración/verificación de OC tras actualizar los fragmentos; cualquier cambio productivo requiere aprobación expresa.
