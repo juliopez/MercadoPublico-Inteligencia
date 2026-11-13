@@ -84,3 +84,10 @@ Evidencia: captura de GitHub Actions `https://github.com/juliopez/MercadoPublico
 **Diagnóstico:** los agregados OC publicados están desalineados respecto a los fragmentos y catálogo actuales. La causa operacional exacta (falta de regeneración, generación parcial o publicación no atómica) aún debe identificarse con logs/historial. No hay evidencia que justifique volver a consultar API ni reescribir MER.
 
 **Siguiente decisión controlada:** identificar la invocación de `scripts/generar_analitica_v2.py` dentro del publicador y establecer la regeneración/verificación de OC tras actualizar los fragmentos; cualquier cambio productivo requiere aprobación expresa.
+
+## Punto técnico identificado en el exportador V2 (inspección de código)
+Se inspeccionó `scripts/exportar_frontend_v2.py`. Su función `main()` exporta una entidad y un período a staging, reemplaza `frontend-v2/data/partes/{entidad}/{periodo}` y actualiza `conteos`, `partes`, `huellas` y `fecha_publicacion` de `catalogo-publico.json`. **No invoca** `scripts/generar_analitica_v2.py` ni actualiza `frontend-v2/data/analitica/{periodo}/{entidad}.json` en ese mismo procedimiento.
+
+**Implicación demostrada:** una ejecución del exportador sin un paso externo posterior de regeneración de agregados puede dejar el catálogo y los fragmentos actualizados mientras el agregado queda con la versión anterior. Este mecanismo es compatible con las seis discrepancias observadas; **no prueba por sí solo** que esa sea la secuencia concreta de las últimas publicaciones, pues falta inspeccionar el orquestador y sus logs.
+
+**Próxima verificación:** identificar el script/workflow invocador y confirmar si, cuándo y con qué criterios ejecuta `generar_analitica_v2.py`. Diseñar corrección transaccional con verificación de integridad antes de publicar, pero no alterar el exportador ni el cron sin aprobación específica del cambio.
