@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Asistente IA · prueba de conexión</title>
+<link rel="stylesheet" href="../css/asistente-ia.css">
+<style>body{font:16px/1.55 system-ui,sans-serif;background:#f5f7fb;color:#14283b;margin:0}main{max-width:760px;margin:5vh auto;padding:24px}h1{font-size:1.6rem}.aviso{background:#fff8e9;border-left:4px solid #b5791b;padding:14px;margin-bottom:20px}</style>
+</head>
+<body><main>
+<h1>Asistente IA · conexión experimental</h1>
+<p class="aviso"><strong>Prueba aislada con datos reales.</strong> Esta página intenta consultar el Worker existente de Cloudflare. No integra todavía el nuevo motor determinista ni garantiza que el contrato del Worker sea compatible. Si la respuesta no es verificable, no se mostrarán cifras. No forma parte de la página principal.</p>
+<div id="asistente"></div>
+</main>
+<script type="module">
+import { crearAsistenteUI } from '../js/asistente-ia-ui.js';
+const ENDPOINT = 'https://observatorio-mercado-publico-ia.julio-c-lopez-n-1972.workers.dev/chat';
+async function consultar(pregunta) {
+  const controlador = new AbortController();
+  const limite = setTimeout(() => controlador.abort(), 15000);
+  try {
+    const respuesta = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pregunta }),
+      signal: controlador.signal
+    });
+    if (!respuesta.ok) throw new Error('Servicio no disponible');
+    const tipo = respuesta.headers.get('content-type') || '';
+    if (!tipo.includes('application/json')) throw new Error('Formato no verificable');
+    const texto = await respuesta.text();
+    if (texto.length > 50000) throw new Error('Respuesta demasiado extensa');
+    const dato = JSON.parse(texto);
+    // Solo se acepta el contrato trazable de la nueva arquitectura.
+    // No se interpreta texto libre como dato numérico verificado.
+    if (dato?.estado === 'aclaracion' && typeof (dato.pregunta_aclaracion || dato.mensaje) === 'string') {
+      return dato;
+    }
+    if (dato?.estado === 'respondida' && dato.resultado &&
+        typeof dato.resultado.explicacion === 'string' &&
+        Array.isArray(dato.resultado.fuentes) && dato.resultado.fuentes.length > 0 &&
+        typeof dato.resultado.metodo === 'string' && dato.resultado.metodo) {
+      return dato;
+    }
+    throw new Error('Contrato sin trazabilidad suficiente');
+  } finally { clearTimeout(limite); }
+}
+crearAsistenteUI({contenedor:document.getElementById('asistente'),consultar,habilitado:true});
+</script>
+</body></html>
