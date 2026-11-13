@@ -2,9 +2,13 @@ name: Generar analítica mensual V2
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - '.github/workflows/generar-analitica-v2.yml'
-      - 'frontend-v2/js/analitica-visual.js'
+      - 'scripts/generar_analitica_v2.py'
+      - 'scripts/asistente_ia/backend/sincronizar_analitica_v2.py'
+      - 'frontend-v2/data/catalogo-publico.json'
+      - 'frontend-v2/data/partes/**'
 permissions:
   contents: write
 concurrency:
@@ -23,43 +27,31 @@ jobs:
           python-version: '3.11'
       - name: Comprobar sintaxis
         run: |
-          python -m py_compile scripts/generar_analitica_v2.py
+          python -m py_compile scripts/generar_analitica_v2.py scripts/asistente_ia/backend/sincronizar_analitica_v2.py
           node --check frontend-v2/js/analitica-visual.js
           node --check frontend-v2/js/app.js
-      - name: Generar y publicar agregados verificables
+      - name: Regenerar solo agregados desfasados y verificar todos los períodos
+        run: |
+          set -euo pipefail
+          python scripts/asistente_ia/backend/sincronizar_analitica_v2.py
+      - name: Publicar derivados solo si las fuentes no cambiaron
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for period in 2026-06 2026-07 2026-08 2026-09 2026-10; do
-            for entity in procesos ofertas resultados ordenescompra; do
-              export PERIOD="$period" ENTITY="$entity"
-              n=$(python - <<'PY'
-          import os,json
-          d=json.load(open('frontend-v2/data/catalogo-publico.json'))
-          p=next(p for p in d['periodos'] if p['periodo']==os.environ['PERIOD'])
-          print(p['conteos'][os.environ['ENTITY']])
-          PY
-              )
-              if [ "$n" = 0 ]; then continue; fi
-              python scripts/generar_analitica_v2.py --periodo "$period" --entidad "$entity"
-              python - <<'PY'
-          import os,json,pathlib
-          p=os.environ['PERIOD'];e=os.environ['ENTITY']
-          d=json.load(open('frontend-v2/data/catalogo-publico.json'))
-          count=next(r for r in d['periodos'] if r['periodo']==p)['conteos'][e]
-          a=json.loads((pathlib.Path('frontend-v2/data/analitica')/p/(e+'.json')).read_text())
-          assert a['registros']==count and a['version']==1
-          assert 'top_actores_monto' in a and 'modalidades' in a
-          assert sum(int(v) for _,v in a['modalidades']) <= count
-          assert sum(int(v) for _,v in a['top_actores_monto']) <= a['monto_total_clp']
-          print('ANALITICA_VERIFICADA',p,e,count)
-          PY
-            done
-            git add "frontend-v2/data/analitica/$period/"
-            if ! git diff --cached --quiet; then
-              git commit -m "data(v2): publicar agregados analíticos $period"
-              git pull --rebase origin main
-              git push origin main
-            fi
-          done
+          git add -A frontend-v2/data/analitica
+          if git diff --cached --quiet; then
+            echo "ANALITICA_SIN_CAMBIOS"
+            exit 0
+          fi
+          # Nunca publicar agregados calculados contra un catálogo anterior.
+          BASE_CATALOGO="$(git rev-parse HEAD:frontend-v2/data/catalogo-publico.json)"
+          git fetch origin main
+          ACTUAL_CATALOGO="$(git rev-parse origin/main:frontend-v2/data/catalogo-publico.json)"
+          if [ "$BASE_CATALOGO" != "$ACTUAL_CATALOGO" ]; then
+            echo "BLOQUEADO: catálogo cambió durante la generación; esperar nueva ejecución"
+            exit 1
+          fi
+          git commit -m "data(v2): sincronizar agregados analíticos con catálogo"
+          git pull --rebase origin main
+          git push origin HEAD:main
