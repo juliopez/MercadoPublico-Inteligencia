@@ -38,15 +38,28 @@ export async function crearMotor({ leerJSON }) {
   function respuesta(periodo, entidad, p, datos, metodo) {
     return { periodo, entidad, datos, cobertura: { tipo: p.tipo, actualizado: catalogo.fecha_publicacion }, fuentes: fuentes(periodo, entidad), metodo };
   }
-  async function consultar({ operacion, periodo, entidad = 'procesos', organismo, periodos, criterio = 'registros', limite = 10 }) {
+  async function consultar({ operacion, periodo, entidad = 'procesos', organismo, periodos, modalidad, criterio = 'registros', limite = 10 }) {
     if (!['resumen', 'modalidades', 'organismo', 'serie', 'ranking'].includes(operacion)) throw new ConsultaError('Operación no admitida', 400);
     if (operacion === 'serie') {
       if (!Array.isArray(periodos) || periodos.length < 2 || periodos.length > 12 || new Set(periodos).size !== periodos.length || periodos.some(x => !PERIODO.test(x))) throw new ConsultaError('Períodos de serie inválidos', 400);
       const valores = await Promise.all(periodos.map(async mes => {
         const { d } = await agregado(mes, entidad);
+        if (modalidad !== undefined) {
+          if (entidad !== 'procesos' || !['licitaciones','compras_agiles'].includes(modalidad)) throw new ConsultaError('Modalidad de serie inválida',400);
+          if (!Array.isArray(d.modalidades)) throw new ConsultaError('Modalidades ausentes',503);
+          let suma=0, valor=0;
+          for (const par of d.modalidades) {
+            if (!Array.isArray(par) || par.length!==2 || typeof par[0]!=='string' || !Number.isSafeInteger(par[1]) || par[1]<0) throw new ConsultaError('Modalidades inválidas',503);
+            const clave=par[0].normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();
+            suma+=par[1];
+            if (modalidad==='licitaciones' ? clave.includes('licitacion') : clave.includes('compra agil')) valor+=par[1];
+          }
+          if (suma!==d.registros) throw new ConsultaError('Total de modalidades inconsistente',503);
+          return {periodo:mes,registros:valor};
+        }
         return { periodo: mes, registros: d.registros };
       }));
-      return { entidad, datos: valores, cobertura: { actualizado: catalogo.fecha_publicacion }, fuentes: [...new Set(periodos.flatMap(mes => fuentes(mes, entidad)))], metodo: 'serie_determinista' };
+      return { entidad, modalidad, datos: valores, cobertura: { actualizado: catalogo.fecha_publicacion }, fuentes: [...new Set(periodos.flatMap(mes => fuentes(mes, entidad)))], metodo: 'serie_determinista' };
     }
     const { d, p } = await agregado(periodo, entidad);
     if (operacion === 'ranking') {
