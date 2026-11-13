@@ -1,0 +1,18 @@
+name: Asistente IA - flujo local integral aislado
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar sintaxis del puente
+        run: node --check scripts/asistente_ia/backend/flujo_local.mjs
+      - name: Probar integración aislada sin Gemini
+        run: node --test scripts/asistente_ia/backend/flujo_local.test.mjs
