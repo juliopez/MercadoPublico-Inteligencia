@@ -38,8 +38,8 @@ export async function crearMotor({ leerJSON }) {
   function respuesta(periodo, entidad, p, datos, metodo) {
     return { periodo, entidad, datos, cobertura: { tipo: p.tipo, actualizado: catalogo.fecha_publicacion }, fuentes: fuentes(periodo, entidad), metodo };
   }
-  async function consultar({ operacion, periodo, entidad = 'procesos', organismo, periodos }) {
-    if (!['resumen', 'modalidades', 'organismo', 'serie'].includes(operacion)) throw new ConsultaError('Operación no admitida', 400);
+  async function consultar({ operacion, periodo, entidad = 'procesos', organismo, periodos, criterio = 'registros', limite = 10 }) {
+    if (!['resumen', 'modalidades', 'organismo', 'serie', 'ranking'].includes(operacion)) throw new ConsultaError('Operación no admitida', 400);
     if (operacion === 'serie') {
       if (!Array.isArray(periodos) || periodos.length < 2 || periodos.length > 12 || new Set(periodos).size !== periodos.length || periodos.some(x => !PERIODO.test(x))) throw new ConsultaError('Períodos de serie inválidos', 400);
       const valores = await Promise.all(periodos.map(async mes => {
@@ -49,6 +49,21 @@ export async function crearMotor({ leerJSON }) {
       return { entidad, datos: valores, cobertura: { actualizado: catalogo.fecha_publicacion }, fuentes: [...new Set(periodos.flatMap(mes => fuentes(mes, entidad)))], metodo: 'serie_determinista' };
     }
     const { d, p } = await agregado(periodo, entidad);
+    if (operacion === 'ranking') {
+      if (!['registros', 'monto'].includes(criterio) || !Number.isSafeInteger(limite) || limite < 1 || limite > 10)
+        throw new ConsultaError('Parámetros de ranking inválidos', 400);
+      const campo = criterio === 'registros' ? 'top_actores' : 'top_actores_monto';
+      if (!Array.isArray(d[campo])) throw new ConsultaError('Ranking no disponible', 503);
+      const filas = d[campo].slice(0, limite).map((par, i) => {
+        if (!Array.isArray(par) || par.length !== 2 || typeof par[0] !== 'string' ||
+            !par[0].trim() || !Number.isSafeInteger(par[1]) || par[1] < 0)
+          throw new ConsultaError('Ranking inválido', 503);
+        return { posicion: i + 1, actor: par[0], valor: par[1] };
+      });
+      if (filas.some((fila, i) => i > 0 && fila.valor > filas[i - 1].valor))
+        throw new ConsultaError('Ranking desordenado', 503);
+      return respuesta(periodo, entidad, p, { criterio, filas, unidad: criterio === 'monto' ? 'CLP informado' : 'registros' }, 'ranking_agregado');
+    }
     if (operacion === 'resumen') {
       if (!Number.isSafeInteger(d.registros_con_monto) || d.registros_con_monto < 0 || d.registros_con_monto > d.registros ||
           !Number.isSafeInteger(d.monto_total_clp) || d.monto_total_clp < 0 ||
