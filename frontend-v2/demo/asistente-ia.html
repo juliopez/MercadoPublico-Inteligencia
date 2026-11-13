@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Asistente IA · vista de prueba aislada</title>
+<link rel="stylesheet" href="../css/asistente-ia.css">
+<style>
+body{font:16px/1.55 system-ui,sans-serif;background:#f5f7fb;color:#14283b;margin:0}
+main{max-width:760px;margin:5vh auto;padding:24px}
+h1{font-size:1.6rem}.aviso{background:#fff8e9;border-left:4px solid #b5791b;padding:14px;margin-bottom:20px}
+</style>
+</head>
+<body>
+<main>
+<h1>Asistente IA · vista de prueba aislada</h1>
+<p class="aviso"><strong>Demostración sin datos reales.</strong> Las respuestas son simuladas para probar la interacción. Esta página no consulta Gemini, Cloudflare ni los datos del Observatorio.</p>
+<div id="asistente"></div>
+</main>
+<script type="module">
+import { crearAsistenteUI } from '../js/asistente-ia-ui.js';
+const consultar = async pregunta => {
+  if (/periodo|período|mes|fecha/i.test(pregunta) && !/2026|junio|julio|agosto|septiembre|octubre|noviembre/i.test(pregunta)) {
+    return {estado:'aclaracion',pregunta_aclaracion:'¿Qué mes de 2026 deseas consultar? (Ejemplo de aclaración)'};
+  }
+  return {estado:'respondida',resultado:{explicacion:'Ejemplo de respuesta: la pregunta fue recibida. No se han consultado datos reales ni se muestran cifras.',datos:{demostracion:true},fuentes:[]}};
+};
+crearAsistenteUI({contenedor:document.getElementById('asistente'),consultar,habilitado:true});
+</script>
+</body>
+</html>
