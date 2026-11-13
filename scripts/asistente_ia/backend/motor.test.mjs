@@ -56,3 +56,30 @@ test('rechaza cobertura monetaria superior al total de registros',async()=>{
  const m=await motorCon({'data/analitica/2026-08/ofertas.json':{...ofertas,registros_con_monto:432112}});
  await assert.rejects(m.consultar({operacion:'resumen',periodo:'2026-08',entidad:'ofertas'}),{status:503});
 });
+
+test('ranking determinista de proveedores por registros',async()=>{
+ const m=await motorCon({'data/analitica/2026-08/ofertas.json':{
+  ...ofertas,top_actores:[['Proveedor A',30],['Proveedor B',20]]
+ }});
+ const r=await m.consultar({operacion:'ranking',periodo:'2026-08',entidad:'ofertas',criterio:'registros',limite:1});
+ assert.deepEqual(r.datos.filas,[{posicion:1,actor:'Proveedor A',valor:30}]);
+ assert.equal(r.datos.unidad,'registros');
+});
+test('ranking por monto informado',async()=>{
+ const m=await motorCon({'data/analitica/2026-08/ofertas.json':{
+  ...ofertas,top_actores_monto:[['Proveedor B',5000],['Proveedor A',1000]]
+ }});
+ const r=await m.consultar({operacion:'ranking',periodo:'2026-08',entidad:'ofertas',criterio:'monto'});
+ assert.equal(r.datos.filas[0].actor,'Proveedor B');
+ assert.equal(r.datos.unidad,'CLP informado');
+});
+test('ranking desordenado queda bloqueado',async()=>{
+ const m=await motorCon({'data/analitica/2026-08/ofertas.json':{
+  ...ofertas,top_actores:[['Proveedor A',2],['Proveedor B',10]]
+ }});
+ await assert.rejects(m.consultar({operacion:'ranking',periodo:'2026-08',entidad:'ofertas'}),{status:503});
+});
+test('ranking no permite más de diez posiciones',async()=>{
+ const m=await motorCon();
+ await assert.rejects(m.consultar({operacion:'ranking',periodo:'2026-08',limite:11}),{status:400});
+});
