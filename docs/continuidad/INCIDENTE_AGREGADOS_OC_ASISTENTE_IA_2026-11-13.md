@@ -54,3 +54,10 @@ Se consultó el historial de GitHub:
 **Diagnóstico provisional:** la publicación puede contener versiones desalineadas entre catálogo y agregados. El historial es compatible con esa hipótesis, pero no demuestra aún la causa ni identifica el proceso responsable. Para atribuir responsabilidad se necesitan logs de ejecución, lista exacta de archivos en cada commit y comparación con el catálogo del mismo commit.
 
 **Decisión de fase:** continuar fase 1 (motor seguro y pruebas) y fase 2 (consultas con fuentes consistentes), manteniendo bloqueadas las entidades/períodos cuyo agregado difiera. No corregir automáticamente datos publicados ni alterar el ETL.
+
+## Ejecución real de auditoría — evidencia aportada 13/11/2026
+Captura de GitHub Actions aportada por el usuario: workflow «Asistente IA - auditoría pública de fuentes», job `auditar`, URL `https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/43439795069/job/131934132010`, duración 34 segundos, estado **failed**. En el paso «Comparar catálogo y agregados públicos sin escribir datos», el reporte enumera discrepancias `Inconsistencia entre catálogo y agregado` para `ordenescompra` en los períodos 2026-06 a 2026-11. Terminó `Process completed with exit code 1`, que es el resultado esperado del auditor cuando encuentra fallas, **no una avería de la infraestructura de Actions**.
+
+La captura muestra solo el tramo final del log: no permite afirmar cuántas verificaciones de otras entidades pasaron, ni el detalle completo de errores anteriores. Para completar la auditoría se requiere leer el log íntegro del job.
+
+**Resultado de la fase 2:** bloqueo de datos incoherentes verificado en ejecución real; investigación de la causa raíz y reparación de la cadena de publicación pendientes de autorización y evidencia. No se alteraron archivos productivos.
