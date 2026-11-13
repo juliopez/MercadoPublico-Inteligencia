@@ -25,9 +25,11 @@ if r.get("estado") not in ("CONCILIACION_VERIFICADA","CONCILIACION_PARCIAL_VERIF
  print("SIN_PUBLICACION: no hubo traslados");raise SystemExit(0)
 for periodo in r["periodos_afectados"]:
  subprocess.run([".venv/bin/python","scripts/exportar_mer_operativo_v2.py","--periodo",periodo,"--aplicar","--incluir-api"],check=True)
- print("EXPORTADO_PERIODO",periodo,flush=True)
+ for entidad in ("procesos","ofertas","resultados","ordenescompra"):
+  subprocess.run([".venv/bin/python","scripts/generar_analitica_v2.py","--periodo",periodo,"--entidad",entidad],check=True)
+ print("EXPORTADO_E_INDICES_VERIFICADOS",periodo,flush=True)
 PY
-git add frontend-v2/data/catalogo-publico.json frontend-v2/data/partes/
+git add frontend-v2/data/catalogo-publico.json frontend-v2/data/partes/ frontend-v2/data/analitica/
 if git diff --cached --quiet; then echo "SIN_CAMBIOS_GIT";exit 0;fi
 git diff --cached --check
 git -c user.name="MER Ubuntu Conciliacion" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "data(v2): conciliacion cronologica MER"
