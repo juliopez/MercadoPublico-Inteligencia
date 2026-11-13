@@ -16,25 +16,36 @@ main{max-width:760px;margin:5vh auto;padding:24px}h1{font-size:1.6rem}
 <p class="aviso"><strong>Prueba experimental aislada.</strong> Consulta archivos JSON públicos del Observatorio mediante el motor determinista. No usa Gemini ni Cloudflare, no modifica registros y no forma parte del portal principal. Si el catálogo y los agregados no coinciden, se bloquea la respuesta.</p>
 <div id="asistente"></div>
 </main>
-<script type="module">
-import { crearAsistenteUI } from '../js/asistente-ia-ui.js';
-import { crearLectorPublico } from '../js/asistente-ia-modulos/lector_publico.mjs';
-import { crearFlujoLocal } from '../js/asistente-ia-modulos/flujo_local.mjs';
-const flujo = crearFlujoLocal({ leerJSON: crearLectorPublico() });
-async function consultar(pregunta) {
+<script>
+(async () => {
+  const contenedor = document.getElementById('asistente');
+  contenedor.textContent = 'Preparando interfaz de consulta…';
   try {
-    return await flujo.consultar(pregunta);
+    const [{ crearAsistenteUI }, { crearLectorPublico }, { crearFlujoLocal }] = await Promise.all([
+      import('../js/asistente-ia-ui.js'),
+      import('../js/asistente-ia-modulos/lector_publico.js'),
+      import('../js/asistente-ia-modulos/flujo_local.js')
+    ]);
+    const flujo = crearFlujoLocal({ leerJSON: crearLectorPublico() });
+    async function consultar(pregunta) {
+      try { return await flujo.consultar(pregunta); }
+      catch (error) {
+        return {
+          estado: 'aclaracion',
+          pregunta_aclaracion: error?.status === 503
+            ? 'No se pueden verificar los datos publicados para esta consulta. Se ha bloqueado la respuesta.'
+            : 'No fue posible completar la consulta con las fuentes públicas. Comprueba el período y reformula la pregunta.'
+        };
+      }
+    }
+    crearAsistenteUI({ contenedor, consultar, habilitado: true });
   } catch (error) {
-    // Mensaje conservador: nunca sustituir datos faltantes por cifras aproximadas.
-    const inconsistencia = error?.status === 503;
-    return {
-      estado: 'aclaracion',
-      pregunta_aclaracion: inconsistencia
-        ? 'No se pueden verificar los datos publicados para esta consulta. Se ha bloqueado la respuesta hasta comprobar la coherencia de las fuentes.'
-        : 'No fue posible completar la consulta con las fuentes públicas. Comprueba el período y reformula la pregunta.'
-    };
+    const aviso = document.createElement('p');
+    aviso.setAttribute('role', 'alert');
+    aviso.textContent = 'No se pudo cargar el formulario. Diagnóstico: módulo de interfaz no disponible o bloqueado por el navegador. Recarga la página; si persiste, revisaremos la publicación de los archivos JavaScript.';
+    contenedor.replaceChildren(aviso);
+    console.error('Asistente IA experimental: error al cargar módulos', error);
   }
-}
-crearAsistenteUI({contenedor:document.getElementById('asistente'),consultar,habilitado:true});
+})();
 </script>
 </body></html>
