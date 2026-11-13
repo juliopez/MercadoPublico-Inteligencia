@@ -112,3 +112,17 @@ Con autorización del usuario se incorporó `scripts/asistente_ia/backend/sincro
 - Se eliminó la comprobación incompatible `version == 1`; el generador actual escribe `version: 3`.
 
 **Pendiente crítico:** verificar la ejecución real del workflow, la publicación efectiva y repetir la auditoría independiente de 24 combinaciones. No declarar incidente resuelto solo por la modificación del YAML. No se alteraron cron Ubuntu, MER ni ETL.
+
+## Verificación posterior a la corrección — 13/11/2026
+El usuario aportó captura de GitHub Actions del workflow «Generar analítica mensual V2»: ejecución automática #25 y ejecución manual #26, ambas **success**. Posteriormente se consultaron directamente en GitHub los seis agregados `frontend-v2/data/analitica/YYYY-MM/ordenescompra.json` y el catálogo actual:
+
+| Mes | Catálogo OC | Agregado OC | Versión |
+|---|---:|---:|---:|
+| 2026-06 | 150551 | 150551 | 3 |
+| 2026-07 | 151050 | 151050 | 3 |
+| 2026-08 | 153438 | 153438 | 3 |
+| 2026-09 | 148772 | 148772 | 3 |
+| 2026-10 | 177972 | 177972 | 3 |
+| 2026-11 | 54984 | 54984 | 3 |
+
+**Resultado comprobado:** 6/6 agregados OC coinciden con los conteos del catálogo en `main`; el desfase de conteos OC está corregido. **Pendiente para cierre integral:** ejecutar de nuevo `Asistente IA - auditoría pública de fuentes` y obtener 24/24 verificaciones, además de confirmar que Pages sirve los mismos archivos actualizados. No equiparar igualdad de conteos con auditoría de exactitud de todos los montos.
