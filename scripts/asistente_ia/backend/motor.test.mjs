@@ -83,3 +83,15 @@ test('ranking no permite más de diez posiciones',async()=>{
  const m=await motorCon();
  await assert.rejects(m.consultar({operacion:'ranking',periodo:'2026-08',limite:11}),{status:400});
 });
+
+test('ranking de organismos usa procesos únicos y no top_actores', async()=>{
+ const m=await motorCon({'data/analitica/2026-08/procesos.json':{
+   ...agosto,organismos_procesos_unicos:[
+     {organismo:'Organismo B',procesos:7},{organismo:'Organismo A',procesos:12}
+   ]
+ }});
+ const r=await m.consultar({operacion:'ranking',periodo:'2026-08',entidad:'procesos',criterio:'registros',limite:2});
+ assert.deepEqual(r.datos.filas.map(x=>x.actor),['Organismo A','Organismo B']);
+ assert.equal(r.datos.tipo_actor,'organismo comprador');
+ assert.equal(r.metodo,'ranking_organismos_agregado');
+});
