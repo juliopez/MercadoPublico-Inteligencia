@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generarIndice, generarIndiceParticionado } from './generar_indice_nombres.mjs';
+import { buscarEnIndiceLocal } from './lector_indice_nombres.mjs';
 
 const raiz = '/tmp/frontend-v2-fixture';
 const ruta = (entidad) => 'data/partes/' + entidad + '/2026-10/0001.json';
@@ -84,5 +85,23 @@ test('no reemplaza un índice ya existente', async () => {
  await mkdir(destino);
  try {
    await assert.rejects(generarIndiceParticionado({raiz,periodo:'2026-10',destino,leerArchivo}),/destino ya existe/);
+ } finally { await rm(carpeta,{recursive:true,force:true}); }
+});
+
+test('integración: genera índice incremental y recupera nombre desde archivos reales de prueba', async () => {
+ const { mkdtemp, rm } = await import('node:fs/promises');
+ const { tmpdir } = await import('node:os');
+ const { join } = await import('node:path');
+ const carpeta = await mkdtemp(join(tmpdir(),'indice-integracion-'));
+ const destino = join(carpeta,'indice');
+ const fixture = structuredClone(catalogo);
+ fixture.periodos[0].conteos = { ofertas:1, resultados:1, ordenescompra:1 };
+ try {
+   await generarIndiceParticionado({raiz,periodo:'2026-10',destino,
+     leerArchivo:async archivo => archivo.endsWith('catalogo-publico.json') ? fixture : leerArchivo(archivo)});
+   const respuesta = await buscarEnIndiceLocal({directorio:destino,consulta:'Makarena Bañares'});
+   assert.equal(respuesta.total_coincidencias,2);
+   assert.deepEqual(respuesta.resultados.map(x=>x.entidad).sort(),['ofertas','resultados']);
+   assert.ok(respuesta.resultados.every(x=>x.periodo==='2026-10' && x.parte.includes('/2026-10/')));
  } finally { await rm(carpeta,{recursive:true,force:true}); }
 });
