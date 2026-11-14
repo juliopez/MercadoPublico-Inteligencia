@@ -76,3 +76,12 @@ El destino debe ser un directorio **nuevo**, fuera del frontend publicado. El co
 **Criterios de aceptación:** finalización sin error; manifiesto con los 706 archivos y conteos exactos; comprobación de que cada archivo referenciado existe; muestreo de trazabilidad `parte`/`fila`/`codigo` contra la parte de origen; búsqueda exacta y parcial con límites; tiempo, RAM máxima y tamaño en disco registrados. Si faltan partes, abortar sin afirmar cobertura completa.
 
 **Advertencia de arquitectura:** el índice actual se particiona por archivo de origen, **no por clave de nombre**. Esto acota la RAM del generador pero todavía no permite búsquedas eficientes en el Worker sin recorrer muchos archivos. Antes de la integración, construir un índice de acceso por clave o prefijo y comprobar sus costos. No activar consultas conversacionales por nombres hasta resolver ese punto.
+
+## Integración técnica en PR #20 (14/11)
+- Contrato Gemini `buscar_participante` limitado a búsqueda exacta por período; no identifica legalmente a personas ni certifica adjudicaciones.
+- Generador incremental por partes y archivos `clave-xx.ndjson`; lector local y lector HTTP de Pages, ambos con pruebas aisladas.
+- Motor y adaptador Worker admiten la función inyectada `buscarIndiceNombres`; el adaptador puede construirla desde `fetchIndice`.
+- La publicación de índices en `frontend-v2/data/indices-nombres/<periodo>/` y la activación del Worker **no están realizadas**.
+- El job `indice_octubre_aislado` se añadió al workflow de pruebas para validar 705.626 registros reales de octubre sin escribir en producción.
+- Primer intento de índice real: fallo por un nombre de longitud menor a tres caracteres. Se corrigió la partición para aceptar nombres cortos en datos de origen, manteniendo las consultas del usuario con mínimo de tres caracteres. Revalidación pendiente.
+- No fusionar ni desplegar sin comprobar cobertura real, tamaño de índices, tiempos y compatibilidad de la implementación Worker existente.
