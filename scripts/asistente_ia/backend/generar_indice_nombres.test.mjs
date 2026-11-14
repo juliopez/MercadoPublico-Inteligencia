@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { generarIndice } from './generar_indice_nombres.mjs';
+import { generarIndice, generarIndiceParticionado } from './generar_indice_nombres.mjs';
 
 const raiz = '/tmp/frontend-v2-fixture';
 const ruta = (entidad) => 'data/partes/' + entidad + '/2026-10/0001.json';
@@ -38,4 +38,36 @@ test('rechaza rutas externas en el catálogo', async () => {
   const roto = structuredClone(catalogo);
   roto.periodos[0].partes.ofertas = ['https://example.com/evil.json'];
   await assert.rejects(generarIndice({raiz, periodo:'2026-10', leerArchivo: async archivo => archivo.endsWith('catalogo-publico.json') ? roto : leerArchivo(archivo)}), /Ruta no autorizada/);
+});
+
+test('generación incremental crea partes y manifiesto con conteos exactos', async () => {
+ const { mkdtemp, readFile, rm } = await import('node:fs/promises');
+ const { tmpdir } = await import('node:os');
+ const { join } = await import('node:path');
+ const raizTemporal = await mkdtemp(join(tmpdir(), 'indice-test-'));
+ const destino = join(raizTemporal, 'indice');
+ const fixture = structuredClone(catalogo);
+ fixture.periodos[0].conteos = { ofertas:1, resultados:1, ordenescompra:1 };
+ try {
+   const res = await generarIndiceParticionado({raiz, periodo:'2026-10', destino, leerArchivo: async archivo => archivo.endsWith('catalogo-publico.json') ? fixture : leerArchivo(archivo)});
+   assert.equal(res.registros_origen,3);
+   assert.equal(res.archivos.length,3);
+   const indice = JSON.parse(await readFile(join(destino,'ofertas-0001.json'),'utf8'));
+   assert.equal(indice[0].nombre,'Makarena Bañares');
+   const manifiesto = JSON.parse(await readFile(join(destino,'manifiesto.json'),'utf8'));
+   assert.equal(manifiesto.entradas,3);
+ } finally { await rm(raizTemporal,{recursive:true,force:true}); }
+});
+test('generación incremental no publica índice con conteos incompletos', async () => {
+ const { mkdtemp, access, rm } = await import('node:fs/promises');
+ const { tmpdir } = await import('node:os');
+ const { join } = await import('node:path');
+ const raizTemporal = await mkdtemp(join(tmpdir(),'indice-incompleto-'));
+ const destino = join(raizTemporal,'indice');
+ const fixture = structuredClone(catalogo);
+ fixture.periodos[0].conteos = { ofertas:2, resultados:1, ordenescompra:1 };
+ try {
+   await assert.rejects(generarIndiceParticionado({raiz,periodo:'2026-10',destino,leerArchivo:async archivo => archivo.endsWith('catalogo-publico.json') ? fixture : leerArchivo(archivo)}),/Conteo inconsistente/);
+   await assert.rejects(access(destino));
+ } finally { await rm(raizTemporal,{recursive:true,force:true}); }
 });
