@@ -2,28 +2,46 @@
 export function formatearResultadoAsistente(resultado) {
   if (!resultado || typeof resultado !== 'object') return 'No hay resultados verificables.';
   if (typeof resultado.explicacion === 'string' && resultado.explicacion.trim()) return resultado.explicacion;
-  const datos = resultado.datos;
-  if (!datos || typeof datos !== 'object' || Array.isArray(datos)) return 'No hay datos verificables para presentar.';
-  const nombres = {
-    total_procesos: 'Total de procesos',
-    licitaciones: 'Licitaciones',
-    compras_agiles: 'Compras ágiles',
-    otras_modalidades: 'Otras modalidades'
-  };
-  const periodo = typeof resultado.periodo === 'string' && /^\d{4}-\d{2}$/.test(resultado.periodo)
-    ? resultado.periodo : '';
-  let encabezado = 'Resultados verificados';
-  if (periodo) {
+  const formato = n => new Intl.NumberFormat('es-CL', { maximumFractionDigits: 2 }).format(n);
+  const fecha = resultado.cobertura?.actualizado;
+  const actualizado = typeof fecha === 'string' && !Number.isNaN(Date.parse(fecha))
+    ? '\nActualización de datos: ' + new Intl.DateTimeFormat('es-CL', {dateStyle:'medium', timeZone:'America/Santiago'}).format(new Date(fecha)) : '';
+  const periodoTexto = periodo => {
+    if (typeof periodo !== 'string' || !/^\d{4}-(0[1-9]|1[0-2])$/.test(periodo)) return periodo || 'período no especificado';
     const [anio, mes] = periodo.split('-').map(Number);
-    if (mes >= 1 && mes <= 12) encabezado += ' de ' + new Intl.DateTimeFormat('es-CL', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(anio, mes - 1, 1)));
+    return new Intl.DateTimeFormat('es-CL', {month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(Date.UTC(anio,mes-1,1)));
+  };
+  const datos = resultado.datos;
+  if (Array.isArray(datos)) {
+    if (!datos.length || !datos.every(x => x && typeof x.periodo === 'string' && typeof x.registros === 'number' && Number.isFinite(x.registros)))
+      return 'No hay una serie temporal verificable para presentar.';
+    const filas = datos.map(x => periodoTexto(x.periodo) + ': ' + formato(x.registros));
+    if (datos.length === 2 && datos[0].registros > 0) {
+      const variacion = (datos[1].registros - datos[0].registros) / datos[0].registros * 100;
+      filas.push('Variación entre ambos períodos: ' + (variacion > 0 ? '+' : '') + formato(variacion) + '%');
+    }
+    return 'Comparación de ' + (resultado.modalidad === 'licitaciones' ? 'licitaciones' : resultado.modalidad === 'compras_agiles' ? 'compras ágiles' : resultado.entidad || 'registros') + ':\n' + filas.join('\n') + actualizado;
   }
+  if (!datos || typeof datos !== 'object') return 'No hay datos verificables para presentar.';
+  if (Array.isArray(datos.filas)) {
+    if (!datos.filas.length) return 'El ranking no contiene registros.';
+    const filas = datos.filas.map(x => x.posicion + '. ' + x.actor + ': ' + formato(x.valor));
+    const unidad = datos.unidad === 'CLP informado' ? 'montos informados en CLP' : 'registros';
+    return 'Ranking de ' + (resultado.entidad || 'actores') + ' por ' + unidad + ' (' + periodoTexto(resultado.periodo) + '):\n' + filas.join('\n') + actualizado;
+  }
+  const nombres = {
+    total_procesos: 'Total de procesos', licitaciones: 'Licitaciones',
+    compras_agiles: 'Compras ágiles', otras_modalidades: 'Otras modalidades',
+    registros: 'Registros', registros_con_monto: 'Registros con monto',
+    monto_total_clp: 'Monto total informado (CLP)', procesos_unicos: 'Procesos únicos'
+  };
   const filas = Object.entries(datos).filter(([, valor]) => typeof valor === 'number' && Number.isFinite(valor))
-    .map(([clave, valor]) => (nombres[clave] || clave.replaceAll('_', ' ')) + ': ' + new Intl.NumberFormat('es-CL', { maximumFractionDigits: 2 }).format(valor));
-  if (!filas.length) return encabezado + '. No hay cifras compatibles para mostrar.';
-  const actualizado = resultado.cobertura?.actualizado;
-  const fecha = typeof actualizado === 'string' && !Number.isNaN(Date.parse(actualizado))
-    ? '\nActualización de datos: ' + new Intl.DateTimeFormat('es-CL', {dateStyle:'medium', timeZone:'America/Santiago'}).format(new Date(actualizado)) : '';
-  return encabezado + ':\n' + filas.join('\n') + fecha;
+    .map(([clave, valor]) => (nombres[clave] || clave.replaceAll('_', ' ')) + ': ' + formato(valor));
+  if (typeof datos.organismo === 'string') filas.unshift('Organismo: ' + datos.organismo);
+  if (typeof datos.campo_monto === 'string') filas.push('Campo monetario: ' + datos.campo_monto);
+  if (typeof datos.advertencia === 'string' && datos.advertencia.trim()) filas.push('Advertencia: ' + datos.advertencia);
+  if (!filas.length) return 'Resultados verificados de ' + periodoTexto(resultado.periodo) + '. No hay cifras compatibles para mostrar.';
+  return 'Resultados verificados de ' + periodoTexto(resultado.periodo) + ':\n' + filas.join('\n') + actualizado;
 }
 
 // Componente aislado de interfaz conversacional. No se monta por defecto.
