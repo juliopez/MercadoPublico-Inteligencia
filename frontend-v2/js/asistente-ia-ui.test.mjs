@@ -40,3 +40,23 @@ test('estilos limitados a las clases del componente', async () => {
   assert.ok(reglas.length >= 5);
   assert.doesNotMatch(css, /(^|\})\s*(body|html|header|main|button|textarea)\s*\{/m);
 });
+
+test('presenta conteos de octubre con formato legible y fecha de cobertura', async () => {
+  const { formatearResultadoAsistente } = await import('./asistente-ia-ui.js');
+  const texto = formatearResultadoAsistente({
+    periodo: '2026-10',
+    datos: { total_procesos: 92302, licitaciones: 6895, compras_agiles: 85407, otras_modalidades: 0 },
+    cobertura: { actualizado: '2026-11-13T23:00:57Z' }
+  });
+  assert.match(texto, /octubre de 2026/);
+  assert.match(texto, /6\.895/);
+  assert.match(texto, /85\.407/);
+  assert.match(texto, /92\.302/);
+  assert.match(texto, /Actualización de datos/);
+  assert.doesNotMatch(texto, /"total_procesos"/);
+});
+test('mantiene explicación validada y no inventa datos ausentes', async () => {
+  const { formatearResultadoAsistente } = await import('./asistente-ia-ui.js');
+  assert.equal(formatearResultadoAsistente({explicacion:'Explicación verificada',datos:{licitaciones:3}}),'Explicación verificada');
+  assert.match(formatearResultadoAsistente({datos:{}}),/No hay cifras compatibles/);
+});
