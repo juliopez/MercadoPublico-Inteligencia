@@ -3,7 +3,7 @@
 import { crearMotor, ConsultaError } from './motor.mjs';
 import { crearOrquestador } from './orquestador.mjs';
 
-export function crearAdaptadorWorker({ fetchDatos, interpretarGemini }) {
+export function crearAdaptadorWorker({ fetchDatos, interpretarGemini, buscarIndiceNombres }) {
   if (typeof fetchDatos !== 'function' || typeof interpretarGemini !== 'function')
     throw new TypeError('Se requieren adaptadores de datos y Gemini');
   async function leerJSON(url) {
@@ -15,7 +15,7 @@ export function crearAdaptadorWorker({ fetchDatos, interpretarGemini }) {
   }
   return Object.freeze({
     async consultar(pregunta) {
-      const motor = await crearMotor({ leerJSON });
+      const motor = await crearMotor({ leerJSON, buscarIndiceNombres });
       return crearOrquestador({ motor, interpretar: interpretarGemini }).consultar(pregunta);
     }
   });
