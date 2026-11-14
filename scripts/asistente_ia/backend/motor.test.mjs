@@ -95,3 +95,24 @@ test('ranking de organismos usa procesos únicos y no top_actores', async()=>{
  assert.equal(r.datos.tipo_actor,'organismo comprador');
  assert.equal(r.metodo,'ranking_organismos_agregado');
 });
+
+
+test('motor permite buscar nombres solo con índice suministrado',async()=>{
+ const indice=[{clave:'makarena banares',nombre:'Makarena Bañares',entidad:'ofertas',periodo:'2026-08',parte:'data/partes/ofertas/2026-08/0001.json',fila:0,codigo:'123-1-COT26',validacion:null}];
+ const m=await crearMotor({
+   leerJSON:async url=>{const key=new URL(url).pathname.split('/frontend-v2/')[1];if(key==='data/catalogo-publico.json')return structuredClone(catalogo);throw new Error('No se debe leer otro archivo');},
+   leerIndiceNombres:async periodo=>periodo==='2026-08'?indice:[]
+ });
+ const res=await m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'MAKARENA BANARES'});
+ assert.equal(res.datos.total_coincidencias,1);
+ assert.equal(res.datos.resultados[0].codigo,'123-1-COT26');
+ assert.match(res.datos.advertencia,/no acreditan identidad/);
+});
+test('motor rechaza consulta sin índice publicado',async()=>{
+ const m=await motorCon();
+ await assert.rejects(m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'}),{status:503});
+});
+test('motor rechaza índices mezclados de otros períodos',async()=>{
+ const m=await crearMotor({leerJSON:async url=>catalogo,leerIndiceNombres:async()=>[{periodo:'2026-07'}]});
+ await assert.rejects(m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'}),{status:503});
+});
