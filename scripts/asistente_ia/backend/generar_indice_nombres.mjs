@@ -1,9 +1,10 @@
 // Generador explícito, fuera de producción. Lee únicamente partes públicas locales.
 // Uso: node scripts/asistente_ia/backend/generar_indice_nombres.mjs <raiz-frontend-v2> <periodo> <directorio-salida>
 // No altera el catálogo, las partes, ETL ni el frontend.
-import { readFile, writeFile, mkdir, rename, rm, stat } from 'node:fs/promises';
+import { readFile, writeFile, appendFile, mkdir, rename, rm, stat } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { construirIndiceNombres } from './indice_nombres.mjs';
+import { particionarPorNombre } from './indice_por_clave.mjs';
 
 // Generación incremental: solo una parte de origen en memoria por iteración.
 export async function generarIndiceParticionado({ raiz, periodo, destino, leerArchivo = async ruta => JSON.parse(await readFile(ruta, 'utf8')) }) {
@@ -17,7 +18,7 @@ export async function generarIndiceParticionado({ raiz, periodo, destino, leerAr
   try { await stat(carpeta); throw new Error('El destino ya existe; no se sobrescribe'); }
   catch (error) { if (error.code !== 'ENOENT') throw error; }
   await mkdir(temporal, { recursive: false });
-  const manifiesto = { version: 1, periodo, fecha_catalogo: catalogo.fecha_publicacion, archivos: [], registros_origen: 0, entradas: 0 };
+  const manifiesto = { version: 1, periodo, fecha_catalogo: catalogo.fecha_publicacion, archivos: [], prefijos: {}, registros_origen: 0, entradas: 0 };
   try {
     for (const entidad of ['ofertas', 'resultados', 'ordenescompra']) {
       const partes = seleccionado.partes?.[entidad];
@@ -30,6 +31,10 @@ export async function generarIndiceParticionado({ raiz, periodo, destino, leerAr
         const entradas = construirIndiceNombres([{ entidad, periodo, parte, registros }]);
         const nombre = entidad + '-' + parte.split('/').at(-1);
         await writeFile(join(temporal, nombre), JSON.stringify(entradas));
+        for (const [prefijo, grupo] of particionarPorNombre(entradas)) {
+          await appendFile(join(temporal, 'clave-' + prefijo + '.ndjson'), grupo.map(entrada => JSON.stringify(entrada)).join('\n') + '\n');
+          manifiesto.prefijos[prefijo] = (manifiesto.prefijos[prefijo] ?? 0) + grupo.length;
+        }
         manifiesto.archivos.push({ archivo: nombre, origen: parte, registros: registros.length, entradas: entradas.length });
         manifiesto.registros_origen += registros.length;
         manifiesto.entradas += entradas.length;
