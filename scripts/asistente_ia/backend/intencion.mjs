@@ -45,9 +45,11 @@ export function validarIntencion(valor, periodosDisponibles) {
       salida.modalidad = valor.modalidad;
     }
   } else {
-    if (typeof valor.periodo !== 'string' || !PERIODO.test(valor.periodo) || !periodosDisponibles.includes(valor.periodo))
+    if (valor.operacion === 'buscar_participante' && !('periodo' in valor)) valor = {...valor, periodo:'todos'};
+    if (valor.operacion === 'buscar_participante' && valor.periodo === 'todos') salida.periodo = 'todos';
+    else if (typeof valor.periodo !== 'string' || !PERIODO.test(valor.periodo) || !periodosDisponibles.includes(valor.periodo))
       error('Período no publicado o ausente');
-    salida.periodo = valor.periodo;
+    else salida.periodo = valor.periodo;
   }
   if (valor.operacion === 'organismo') {
     if (typeof valor.organismo !== 'string' || valor.organismo.trim().length < 3 || valor.organismo.length > 200)
@@ -99,7 +101,7 @@ export function crearPromptIntencion(pregunta, periodosDisponibles) {
     'organismo: operacion, periodo, organismo (nombre exacto).',
     'serie: operacion, entidad opcional, periodos (entre 2 y 12 distintos), modalidad opcional licitaciones|compras_agiles solo si entidad=procesos.',
     'ranking: operacion, periodo, entidad opcional, criterio registros|monto y limite entero 1..10 opcionales.',
-    'buscar_participante: operacion, periodo, nombre exacto, modo exacto opcional, limite entero 1..20 opcional; coincidencia textual no demuestra identidad ni adjudicación.',
+    'buscar_participante: operacion, nombre exacto, periodo opcional (si no se indica, usa todos), modo exacto opcional, limite entero 1..20 opcional; coincidencia textual no demuestra identidad ni adjudicación.',
     'Para cinco organismos compradores con más procesos usa EXACTAMENTE {"operacion":"ranking","periodo":"2026-10","entidad":"procesos","criterio":"registros","limite":5} si el período solicitado es octubre de 2026 y está disponible.',
     'No uses entidad organismos/compradores ni criterio procesos: son etiquetas de lenguaje natural, no valores del contrato.',
     'Para ranking de proveedores por registros de resultados usa ranking, entidad resultados; NUNCA equipares registros de resultados a adjudicaciones verificadas.',
