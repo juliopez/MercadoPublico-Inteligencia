@@ -71,3 +71,15 @@ test('generación incremental no publica índice con conteos incompletos', async
    await assert.rejects(access(destino));
  } finally { await rm(raizTemporal,{recursive:true,force:true}); }
 });
+
+test('no reemplaza un índice ya existente', async () => {
+ const { mkdtemp, mkdir, rm } = await import('node:fs/promises');
+ const { tmpdir } = await import('node:os');
+ const { join } = await import('node:path');
+ const carpeta = await mkdtemp(join(tmpdir(),'indice-existente-'));
+ const destino = join(carpeta,'indice');
+ await mkdir(destino);
+ try {
+   await assert.rejects(generarIndiceParticionado({raiz,periodo:'2026-10',destino,leerArchivo}),/destino ya existe/);
+ } finally { await rm(carpeta,{recursive:true,force:true}); }
+});
