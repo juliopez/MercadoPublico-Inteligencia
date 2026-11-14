@@ -56,6 +56,9 @@ test('generación incremental crea partes y manifiesto con conteos exactos', asy
    assert.equal(indice[0].nombre,'Makarena Bañares');
    const manifiesto = JSON.parse(await readFile(join(destino,'manifiesto.json'),'utf8'));
    assert.equal(manifiesto.entradas,3);
+   assert.equal(manifiesto.prefijos.ma,2);
+   const porClave = (await readFile(join(destino,'clave-ma.ndjson'),'utf8')).trim().split('\\n').map(JSON.parse);
+   assert.equal(porClave.length,2);
  } finally { await rm(raizTemporal,{recursive:true,force:true}); }
 });
 test('generación incremental no publica índice con conteos incompletos', async () => {
