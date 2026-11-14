@@ -15,7 +15,7 @@ export function rutaPublica(ruta) {
   return new URL(ruta, BASE).toString();
 }
 
-export async function crearMotor({ leerJSON, leerIndiceNombres } = {}) {
+export async function crearMotor({ leerJSON, leerIndiceNombres, buscarIndiceNombres } = {}) {
   if (typeof leerJSON !== 'function') throw new TypeError('leerJSON debe ser función');
   const catalogo = await leerJSON(rutaPublica('data/catalogo-publico.json'));
   if (!Array.isArray(catalogo?.periodos)) throw new ConsultaError('Catálogo inválido', 503);
@@ -43,13 +43,20 @@ export async function crearMotor({ leerJSON, leerIndiceNombres } = {}) {
   async function consultar({ operacion, periodo, entidad = 'procesos', organismo, periodos, modalidad, criterio = 'registros', limite = 10, nombre, modo = 'exacto' }) {
     if (!['resumen', 'modalidades', 'organismo', 'serie', 'ranking', 'buscar_participante'].includes(operacion)) throw new ConsultaError('Operación no admitida', 400);
     if (operacion === 'buscar_participante') {
-      if (typeof leerIndiceNombres !== 'function') throw new ConsultaError('Índice de nombres no publicado', 503);
+      if (typeof leerIndiceNombres !== 'function' && typeof buscarIndiceNombres !== 'function') throw new ConsultaError('Índice de nombres no publicado', 503);
       if (typeof periodo !== 'string' || !disponibles.has(periodo)) throw new ConsultaError('Período no publicado', 404);
       if (typeof nombre !== 'string' || nombre.trim().length < 3 || nombre.length > 200 || !['exacto', 'contiene'].includes(modo) || !Number.isSafeInteger(limite) || limite < 1 || limite > 100)
         throw new ConsultaError('Búsqueda de participante inválida', 400);
-      const indice = await leerIndiceNombres(periodo);
-      if (!Array.isArray(indice) || indice.some(x => x.periodo !== periodo)) throw new ConsultaError('Índice de nombres inconsistente', 503);
-      const datos = buscarNombre(indice, nombre, { limite, modo });
+      const datos = typeof buscarIndiceNombres === 'function'
+        ? await buscarIndiceNombres({ periodo, consulta: nombre, limite, modo })
+        : await (async () => {
+            const indice = await leerIndiceNombres(periodo);
+            if (!Array.isArray(indice) || indice.some(x => x.periodo !== periodo)) throw new ConsultaError('Índice de nombres inconsistente', 503);
+            return buscarNombre(indice, nombre, { limite, modo });
+          })();
+      if (!datos || !Number.isSafeInteger(datos.total_coincidencias) || !Array.isArray(datos.resultados) ||
+          datos.resultados.some(x => x.periodo !== periodo) || datos.resultados.length > limite ||
+          datos.total_coincidencias < datos.resultados.length) throw new ConsultaError('Respuesta de índice inconsistente', 503);
       return { periodo, entidad: 'participantes', datos, cobertura: { tipo: disponibles.get(periodo).tipo, actualizado: catalogo.fecha_publicacion, alcance: 'índice suministrado y validado para el período' }, fuentes: [rutaPublica('data/catalogo-publico.json')], metodo: 'busqueda_textual_indice' };
     }
     if (operacion === 'serie') {
