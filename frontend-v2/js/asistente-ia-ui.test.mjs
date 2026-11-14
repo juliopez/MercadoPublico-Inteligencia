@@ -74,3 +74,23 @@ test('mantiene explicación validada y no inventa datos ausentes', async () => {
   assert.equal(formatearResultadoAsistente({explicacion:'Explicación verificada',datos:{licitaciones:3}}),'Explicación verificada');
   assert.match(formatearResultadoAsistente({datos:{}}),/No hay cifras compatibles/);
 });
+
+test('presenta ranking de organismos sin ocultar filas', async () => {
+  const { formatearResultadoAsistente } = await import('./asistente-ia-ui.js');
+  const texto = formatearResultadoAsistente({periodo:'2026-10',entidad:'procesos',datos:{criterio:'registros',unidad:'procesos únicos',filas:[{posicion:1,actor:'UNIVERSIDAD DE CHILE',valor:2489}]}});
+  assert.match(texto,/UNIVERSIDAD DE CHILE: 2\.489/);
+  assert.doesNotMatch(texto,/No hay cifras compatibles/);
+});
+test('presenta comparación mensual y variación', async () => {
+  const { formatearResultadoAsistente } = await import('./asistente-ia-ui.js');
+  const texto = formatearResultadoAsistente({entidad:'procesos',modalidad:'licitaciones',datos:[{periodo:'2026-09',registros:6974},{periodo:'2026-10',registros:6895}]});
+  assert.match(texto,/septiembre de 2026: 6\.974/);
+  assert.match(texto,/octubre de 2026: 6\.895/);
+  assert.match(texto,/Variación entre ambos períodos/);
+});
+test('monto tiene unidad CLP y advertencia', async () => {
+  const { formatearResultadoAsistente } = await import('./asistente-ia-ui.js');
+  const texto = formatearResultadoAsistente({periodo:'2026-10',datos:{monto_total_clp:257873921793,advertencia:'Monto informado, no pago'}});
+  assert.match(texto,/Monto total informado \(CLP\): 257\.873\.921\.793/);
+  assert.match(texto,/no pago/);
+});
