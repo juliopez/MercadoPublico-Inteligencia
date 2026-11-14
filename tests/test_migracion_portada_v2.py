@@ -14,7 +14,7 @@ class MigracionPortadaV2(unittest.TestCase):
         original = (ROOT/"frontend-v2/index.html").read_text(encoding="utf-8")
         result = MOD.render(original)
         self.assertIn('<base href="./frontend-v2/">', result)
-        self.assertIn('src="./js/app.js"', result)
+        self.assertRegex(result, r'src="./js/app\.js(?:\?[^"]*)?"')
         self.assertIn("history.replaceState", result)
         self.assertIn("Plataforma de análisis de datos", result)
         self.assertNotIn("Versión 1 publicada", result)
