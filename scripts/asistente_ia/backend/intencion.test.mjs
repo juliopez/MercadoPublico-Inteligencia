@@ -36,3 +36,8 @@ test('rechaza búsqueda contiene no soportada por prefijos',()=>assert.throws(()
  validarIntencion({operacion:'buscar_participante',periodo:'2026-10',nombre:'Bañares',modo:'contiene'},meses)));
 test('rechaza inyección de ruta en búsqueda',()=>assert.throws(()=>
  validarIntencion({operacion:'buscar_participante',periodo:'2026-10',nombre:'Makarena Bañares',ruta:'secreto'},meses)));
+
+test('nombre sin período consulta todos los meses publicados',()=>assert.deepEqual(
+ validarIntencion({operacion:'buscar_participante',nombre:'Makarena Bañares'},meses),
+ {operacion:'buscar_participante',periodo:'todos',nombre:'Makarena Bañares',modo:'exacto',limite:20}
+));
