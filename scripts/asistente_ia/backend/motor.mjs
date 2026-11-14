@@ -44,20 +44,29 @@ export async function crearMotor({ leerJSON, leerIndiceNombres, buscarIndiceNomb
     if (!['resumen', 'modalidades', 'organismo', 'serie', 'ranking', 'buscar_participante'].includes(operacion)) throw new ConsultaError('Operación no admitida', 400);
     if (operacion === 'buscar_participante') {
       if (typeof leerIndiceNombres !== 'function' && typeof buscarIndiceNombres !== 'function') throw new ConsultaError('Índice de nombres no publicado', 503);
-      if (typeof periodo !== 'string' || !disponibles.has(periodo)) throw new ConsultaError('Período no publicado', 404);
-      if (typeof nombre !== 'string' || nombre.trim().length < 3 || nombre.length > 200 || !['exacto', 'contiene'].includes(modo) || !Number.isSafeInteger(limite) || limite < 1 || limite > 100)
+      if (periodo !== 'todos' && (typeof periodo !== 'string' || !disponibles.has(periodo))) throw new ConsultaError('Período no publicado', 404);
+      if (typeof nombre !== 'string' || nombre.trim().length < 3 || nombre.length > 200 || modo !== 'exacto' || !Number.isSafeInteger(limite) || limite < 1 || limite > 100)
         throw new ConsultaError('Búsqueda de participante inválida', 400);
-      const datos = typeof buscarIndiceNombres === 'function'
-        ? await buscarIndiceNombres({ periodo, consulta: nombre, limite, modo })
-        : await (async () => {
-            const indice = await leerIndiceNombres(periodo);
-            if (!Array.isArray(indice) || indice.some(x => x.periodo !== periodo)) throw new ConsultaError('Índice de nombres inconsistente', 503);
-            return buscarNombre(indice, nombre, { limite, modo });
-          })();
-      if (!datos || !Number.isSafeInteger(datos.total_coincidencias) || !Array.isArray(datos.resultados) ||
-          datos.resultados.some(x => x.periodo !== periodo) || datos.resultados.length > limite ||
-          datos.total_coincidencias < datos.resultados.length) throw new ConsultaError('Respuesta de índice inconsistente', 503);
-      return { periodo, entidad: 'participantes', datos, cobertura: { tipo: disponibles.get(periodo).tipo, actualizado: catalogo.fecha_publicacion, alcance: 'índice suministrado y validado para el período' }, fuentes: [rutaPublica('data/catalogo-publico.json')], metodo: 'busqueda_textual_indice' };
+      const meses = periodo === 'todos' ? [...disponibles.keys()] : [periodo];
+      let total = 0;
+      const resultados = [];
+      for (const mes of meses) {
+        const datosMes = typeof buscarIndiceNombres === 'function'
+          ? await buscarIndiceNombres({ periodo: mes, consulta: nombre, limite, modo })
+          : await (async () => {
+              const indice = await leerIndiceNombres(mes);
+              if (!Array.isArray(indice) || indice.some(x => x.periodo !== mes)) throw new ConsultaError('Índice de nombres inconsistente', 503);
+              return buscarNombre(indice, nombre, { limite, modo });
+            })();
+        if (!datosMes || !Number.isSafeInteger(datosMes.total_coincidencias) || !Array.isArray(datosMes.resultados) ||
+            datosMes.resultados.some(x => x.periodo !== mes) || datosMes.resultados.length > limite ||
+            datosMes.total_coincidencias < datosMes.resultados.length) throw new ConsultaError('Respuesta de índice inconsistente', 503);
+        total += datosMes.total_coincidencias;
+        resultados.push(...datosMes.resultados.slice(0,Math.max(0,limite-resultados.length)));
+      }
+      const datos = { consulta: nombre, modo, total_coincidencias: total, resultados: resultados.slice(0,limite), truncado: total > limite,
+        advertencia: 'Coincidencias textuales en los meses indexados; no acreditan identidad personal ni adjudicación verificada.' };
+      return { periodo, entidad: 'participantes', datos, cobertura: { tipo: 'indice_publicado', actualizado: catalogo.fecha_publicacion, periodos: meses }, fuentes: [rutaPublica('data/catalogo-publico.json')], metodo: 'busqueda_textual_indice' };
     }
     if (operacion === 'serie') {
       if (!Array.isArray(periodos) || periodos.length < 2 || periodos.length > 12 || new Set(periodos).size !== periodos.length || periodos.some(x => !PERIODO.test(x))) throw new ConsultaError('Períodos de serie inválidos', 400);
