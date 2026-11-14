@@ -1,3 +1,7 @@
+## Validación del asistente Gemini — 14/11/2026
+
+[Informe de las cinco pruebas funcionales, incidencia JSON_INVALIDO y límites de validación](VALIDACION_ASISTENTE_GEMINI_2026-11-14.md). Resultado: 5/5 consultas respondidas en frontend después de PR #19; valores aún sin auditoría independiente contra JSON de origen. No se modificaron procesos productivos de datos.
+
 ## Cierre operativo 12/11/2026 — disparos Ubuntu y ejecución GitHub
 
 **Configuración confirmada por salida de terminal del usuario:** el instalador `scripts/instalar_cron_licitaciones_1615.sh` informó `CRON_INSTALADO` y mostró la entrada `15 16 * * 1-5` invocando `scripts/ubuntu_dispatch_licitaciones_1615.sh`. El cron anterior de recuperación local 16:15 fue sustituido por el disparador remoto. GitHub Actions contiene `.github/workflows/licitaciones-api-1615-actions.yml` en `main` y usa únicamente `workflow_dispatch`, sin horario `schedule` de GitHub. PR #13 fusionado. **No hay todavía evidencia de ejecución remota exitosa ni de publicación final en Pages para el nuevo proceso**.
