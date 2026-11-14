@@ -61,7 +61,7 @@ const agregadosAmpliados={
 function ampliar(inconsistente=false){
   return crearFlujoLocal({leerJSON:async url=>{
     if(url.endsWith('catalogo-publico.json'))return catalogoAmpliado;
-    const m=/analitica\\/(2026-0[78])\\/(procesos|ofertas|resultados|ordenescompra)\\.json$/.exec(url);
+    const m=/analitica\/(2026-0[78])\/(procesos|ofertas|resultados|ordenescompra)\.json$/.exec(url);
     if(!m)throw Error('Ruta inesperada '+url);
     const [ , periodo, entidad]=m;
     const d=agregadosAmpliados[periodo][entidad];

@@ -1,6 +1,6 @@
 // Integración aislada del asistente IA en la sección 07 del Observatorio V2.
 // No altera los módulos de consulta, ETL, publicaciones ni el estado de las búsquedas.
-import { crearAsistenteUI } from './asistente-ia-ui.js?v=20261114-integracion1';
+import { crearAsistenteUI } from './asistente-ia-ui.js?v=20261114-consultas2';
 
 const ENDPOINT = 'https://observatorio-mercado-publico-ia.julio-c-lopez-n-1972.workers.dev/chat';
 

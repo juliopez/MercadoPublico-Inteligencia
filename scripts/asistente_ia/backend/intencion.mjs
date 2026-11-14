@@ -77,8 +77,12 @@ export function crearPromptIntencion(pregunta, periodosDisponibles) {
     'resumen: operacion, periodo, entidad opcional.',
     'modalidades: operacion, periodo.',
     'organismo: operacion, periodo, organismo (nombre exacto).',
-    'serie: operacion, entidad opcional, periodos (entre 2 y 12 distintos).',
+    'serie: operacion, entidad opcional, periodos (entre 2 y 12 distintos), modalidad opcional licitaciones|compras_agiles solo si entidad=procesos.',
     'ranking: operacion, periodo, entidad opcional, criterio registros|monto y limite entero 1..10 opcionales.',
+    'Para cinco organismos compradores con más procesos usa ranking, entidad procesos, criterio registros, limite 5.',
+    'Para ranking de proveedores por registros de resultados usa ranking, entidad resultados; NUNCA equipares registros de resultados a adjudicaciones verificadas.',
+    'Si piden adjudicaciones contractuales verificadas o detalle de una licitación individual, devuelve {"necesita_aclaracion":true}: estas operaciones no están soportadas.',
+    'Para comparar licitaciones entre dos meses usa serie, entidad procesos, modalidad licitaciones y periodos ordenados cronológicamente.',
     'Si faltan período, nombre exacto u otros datos imprescindibles, devuelve {"necesita_aclaracion":true}; no inventes valores.',
     'No generes SQL, JavaScript, URL, claves, cifras, nombres de organismos ni rutas de archivos.',
   ];
