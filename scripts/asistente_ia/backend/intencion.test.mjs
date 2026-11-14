@@ -18,3 +18,12 @@ test('acepta solicitud de aclaración',()=>assert.deepEqual(interpretarRespuesta
 test('rechaza aclaración con campos extras',()=>assert.throws(()=>interpretarRespuestaGemini('{"necesita_aclaracion":true,"url":"https://evil.example"}',meses)));
 test('pregunta larga rechazada',()=>assert.throws(()=>crearPromptIntencion('a'.repeat(1001),meses)));
 test('prompt no incluye claves',()=>assert.ok(!crearPromptIntencion('¿Cuántas licitaciones en agosto?',meses).instrucciones.includes('GEMINI_API_KEY')));
+
+
+test('normaliza alias acotados de ranking de compradores',()=>assert.deepEqual(
+  interpretarRespuestaGemini(JSON.stringify({operacion:'ranking',periodo:'2026-10',entidad:'organismos_compradores',criterio:'procesos',limite:'5'}),meses),
+  {operacion:'ranking',periodo:'2026-10',entidad:'procesos',criterio:'registros',limite:5}
+));
+test('rechaza campos no autorizados incluso con alias',()=>assert.throws(()=>
+  interpretarRespuestaGemini(JSON.stringify({operacion:'ranking',periodo:'2026-10',entidad:'compradores',campo_extrano:'x'}),meses)
+));

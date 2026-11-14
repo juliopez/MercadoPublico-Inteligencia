@@ -11,6 +11,17 @@ const CLAVES_POR_OPERACION = {
   ranking: new Set(['operacion','periodo','entidad','criterio','limite'])
 };
 function error(mensaje) { throw new ConsultaError(mensaje, 400); }
+// Se admiten únicamente equivalencias explícitas; nunca campos arbitrarios del modelo.
+function normalizarIntencion(valor) {
+  if (!valor || typeof valor !== 'object' || Array.isArray(valor)) return valor;
+  const salida = { ...valor };
+  if (salida.operacion === 'ranking') {
+    if (salida.entidad === 'organismos' || salida.entidad === 'organismos_compradores' || salida.entidad === 'compradores') salida.entidad = 'procesos';
+    if (salida.criterio === 'procesos' || salida.criterio === 'cantidad' || salida.criterio === 'conteo') salida.criterio = 'registros';
+    if (typeof salida.limite === 'string' && /^[1-9]$|^10$/.test(salida.limite)) salida.limite = Number(salida.limite);
+  }
+  return salida;
+}
 export function validarIntencion(valor, periodosDisponibles) {
   if (!valor || typeof valor !== 'object' || Array.isArray(valor)) error('Intención no es un objeto');
   if (!OPERACIONES.has(valor.operacion)) error('Operación no admitida');
@@ -60,7 +71,7 @@ export function interpretarRespuestaGemini(texto, periodosDisponibles) {
   if (valor && typeof valor === 'object' && !Array.isArray(valor) &&
       Object.keys(valor).length === 1 && valor.necesita_aclaracion === true)
     return { necesita_aclaracion: true };
-  return validarIntencion(valor, periodosDisponibles);
+  return validarIntencion(normalizarIntencion(valor), periodosDisponibles);
 }
 
 export function crearPromptIntencion(pregunta, periodosDisponibles) {
@@ -79,7 +90,8 @@ export function crearPromptIntencion(pregunta, periodosDisponibles) {
     'organismo: operacion, periodo, organismo (nombre exacto).',
     'serie: operacion, entidad opcional, periodos (entre 2 y 12 distintos), modalidad opcional licitaciones|compras_agiles solo si entidad=procesos.',
     'ranking: operacion, periodo, entidad opcional, criterio registros|monto y limite entero 1..10 opcionales.',
-    'Para cinco organismos compradores con más procesos usa ranking, entidad procesos, criterio registros, limite 5.',
+    'Para cinco organismos compradores con más procesos usa EXACTAMENTE {"operacion":"ranking","periodo":"2026-10","entidad":"procesos","criterio":"registros","limite":5} si el período solicitado es octubre de 2026 y está disponible.',
+    'No uses entidad organismos/compradores ni criterio procesos: son etiquetas de lenguaje natural, no valores del contrato.',
     'Para ranking de proveedores por registros de resultados usa ranking, entidad resultados; NUNCA equipares registros de resultados a adjudicaciones verificadas.',
     'Si piden adjudicaciones contractuales verificadas o detalle de una licitación individual, devuelve {"necesita_aclaracion":true}: estas operaciones no están soportadas.',
     'Para comparar licitaciones entre dos meses usa serie, entidad procesos, modalidad licitaciones y periodos ordenados cronológicamente.',
