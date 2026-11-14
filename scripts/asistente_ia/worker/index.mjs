@@ -1,6 +1,7 @@
 // Worker experimental unificado: Gemini interpreta, motor público calcula.
 // No incluye secretos; desplegar solo con autorización y GEMINI_API_KEY configurada.
 import { crearAdaptadorWorker, crearInterpreteGemini } from '../backend/adaptador-worker.mjs';
+import { crearBuscadorR2 } from '../backend/lector_indice_r2.mjs';
 
 const ORIGEN = 'https://juliopez.github.io';
 const cabeceras = { 'Content-Type':'application/json; charset=utf-8', 'Access-Control-Allow-Origin':ORIGEN, 'Access-Control-Allow-Methods':'POST, OPTIONS', 'Access-Control-Allow-Headers':'Content-Type', 'Cache-Control':'no-store' };
@@ -18,7 +19,7 @@ export default {
       const pregunta=body?.pregunta;
       if(typeof pregunta!=='string'||!pregunta.trim()||pregunta.length>1000) return respuesta({estado:'aclaracion',pregunta_aclaracion:'Escribe una pregunta de hasta 1.000 caracteres.'},400);
       const interprete=crearInterpreteGemini({fetchGemini:fetch,apiKey:env.GEMINI_API_KEY,modelo:env.GEMINI_MODEL||'gemini-3.5-flash'});
-      const asistente=crearAdaptadorWorker({fetchDatos:fetch,fetchIndice:fetch,interpretarGemini:interprete});
+      const asistente=crearAdaptadorWorker({fetchDatos:fetch,interpretarGemini:interprete, ...(env.NOMBRES_BUCKET ? {buscarIndiceNombres:crearBuscadorR2({bucket:env.NOMBRES_BUCKET})} : {})});
       const resultado=await asistente.consultar(pregunta);
       if(resultado.estado==='aclaracion') return respuesta({estado:'aclaracion',pregunta_aclaracion:resultado.mensaje});
       // La explicación se genera solo desde datos calculados, no desde texto libre de Gemini.
