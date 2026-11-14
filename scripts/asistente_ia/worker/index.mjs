@@ -24,6 +24,9 @@ export default {
       // La explicación se genera solo desde datos calculados, no desde texto libre de Gemini.
       return respuesta(resultado);
     } catch(error) {
+      // Diagnóstico estructurado sin exponer preguntas, respuestas ni credenciales.
+      const etapa = error?.status === 503 ? 'dependencia_externa' : 'interpretacion';
+      console.error('ASISTENTE_WORKER_FALLO', JSON.stringify({ etapa, codigo: Number(error?.status) || 500, tipo: error?.name || 'Error' }));
       return respuesta({estado:'aclaracion',pregunta_aclaracion:error?.status===503?'Los datos o Gemini no están disponibles para una respuesta verificada.':'No se pudo interpretar la consulta. Especifica período, entidad y operación.'});
     }
   }
