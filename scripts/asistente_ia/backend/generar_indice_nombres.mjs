@@ -1,7 +1,7 @@
 // Generador explícito, fuera de producción. Lee únicamente partes públicas locales.
 // Uso: node scripts/asistente_ia/backend/generar_indice_nombres.mjs <raiz-frontend-v2> <periodo> <directorio-salida>
 // No altera el catálogo, las partes, ETL ni el frontend.
-import { readFile, writeFile, mkdir, rename, rm } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rename, rm, stat } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { construirIndiceNombres } from './indice_nombres.mjs';
 
@@ -14,6 +14,8 @@ export async function generarIndiceParticionado({ raiz, periodo, destino, leerAr
   if (!seleccionado) throw new Error('Período ausente del catálogo');
   const carpeta = resolve(destino);
   const temporal = carpeta + '.temporal';
+  try { await stat(carpeta); throw new Error('El destino ya existe; no se sobrescribe'); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; }
   await mkdir(temporal, { recursive: false });
   const manifiesto = { version: 1, periodo, fecha_catalogo: catalogo.fecha_publicacion, archivos: [], registros_origen: 0, entradas: 0 };
   try {
