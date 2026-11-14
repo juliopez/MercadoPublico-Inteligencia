@@ -26,7 +26,25 @@ export default {
     } catch(error) {
       // Diagnóstico estructurado sin exponer preguntas, respuestas ni credenciales.
       const etapa = error?.status === 503 ? 'dependencia_externa' : 'interpretacion';
-      console.error('ASISTENTE_WORKER_FALLO', JSON.stringify({ etapa, codigo: Number(error?.status) || 500, tipo: error?.name || 'Error' }));
+      const motivosValidacion = Object.freeze({
+        'Intención no es un objeto':'INTENCION_TIPO',
+        'Operación no admitida':'OPERACION_NO_ADMITIDA',
+        'Catálogo de períodos inválido':'CATALOGO_PERIODOS',
+        'Campo de intención no permitido':'CAMPO_NO_PERMITIDO',
+        'Entidad no admitida':'ENTIDAD_NO_ADMITIDA',
+        'Períodos de serie inválidos':'SERIE_PERIODOS',
+        'Modalidad comparativa inválida':'MODALIDAD_INVALIDA',
+        'Período no publicado o ausente':'PERIODO_NO_DISPONIBLE',
+        'Nombre de organismo inválido':'ORGANISMO_INVALIDO',
+        'Criterio inválido':'CRITERIO_INVALIDO',
+        'Límite inválido':'LIMITE_INVALIDO',
+        'Respuesta del modelo inválida':'RESPUESTA_MODELO_INVALIDA',
+        'Gemini no devolvió JSON válido':'JSON_INVALIDO',
+        'Pregunta inválida':'PREGUNTA_INVALIDA',
+        'Períodos disponibles inválidos':'PERIODOS_INVALIDOS'
+      });
+      const motivo = Object.prototype.hasOwnProperty.call(motivosValidacion,error?.message) ? motivosValidacion[error.message] : 'NO_CLASIFICADO';
+      console.error('ASISTENTE_WORKER_FALLO', JSON.stringify({ etapa, codigo: Number(error?.status) || 500, tipo: error?.name || 'Error', motivo }));
       return respuesta({estado:'aclaracion',pregunta_aclaracion:error?.status===503?'Los datos o Gemini no están disponibles para una respuesta verificada.':'No se pudo interpretar la consulta. Especifica período, entidad y operación.'});
     }
   }
