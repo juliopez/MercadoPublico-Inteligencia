@@ -65,6 +65,18 @@ export async function crearMotor({ leerJSON }) {
     if (operacion === 'ranking') {
       if (!['registros', 'monto'].includes(criterio) || !Number.isSafeInteger(limite) || limite < 1 || limite > 10)
         throw new ConsultaError('Parámetros de ranking inválidos', 400);
+      // Para procesos, el ranking por registros corresponde a organismos compradores
+      // y debe provenir del índice de procesos únicos, no de top_actores.
+      if (entidad === 'procesos' && criterio === 'registros') {
+        if (!Array.isArray(d.organismos_procesos_unicos)) throw new ConsultaError('Índice de organismos no disponible', 503);
+        const filas = d.organismos_procesos_unicos.map(x => {
+          if (typeof x?.organismo !== 'string' || !x.organismo.trim() || !Number.isSafeInteger(x.procesos) || x.procesos < 0)
+            throw new ConsultaError('Ranking de organismos inválido', 503);
+          return { actor: x.organismo, valor: x.procesos };
+        }).sort((a,b) => b.valor - a.valor || a.actor.localeCompare(b.actor,'es')).slice(0,limite)
+          .map((x,i) => ({ posicion:i+1, ...x }));
+        return respuesta(periodo, entidad, p, { criterio, filas, unidad: 'procesos únicos', tipo_actor: 'organismo comprador' }, 'ranking_organismos_agregado');
+      }
       const campo = criterio === 'registros' ? 'top_actores' : 'top_actores_monto';
       if (!Array.isArray(d[campo])) throw new ConsultaError('Ranking no disponible', 503);
       const filas = d[campo].slice(0, limite).map((par, i) => {
