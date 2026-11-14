@@ -10,7 +10,9 @@ const entradas = [
 test('prefijo normalizado es estable con tildes y mayúsculas', () => {
  assert.equal(prefijoNombre('MÁKARENA Bañares'),'ma');
  assert.equal(prefijoNombre('empresa diferente'),'em');
- assert.throws(() => prefijoNombre('ab'),/corto/);
+ assert.equal(prefijoNombre('ab'),'ab');
+ assert.equal(prefijoNombre('A'),'a');
+ assert.throws(() => prefijoNombre(''),/vacío/);
 });
 test('particiona entradas por nombre sin perder procedencia', () => {
  const partes = particionarPorNombre(entradas);
