@@ -116,3 +116,27 @@ test('motor rechaza índices mezclados de otros períodos',async()=>{
  const m=await crearMotor({leerJSON:async url=>catalogo,leerIndiceNombres:async()=>[{periodo:'2026-07'}]});
  await assert.rejects(m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'}),{status:503});
 });
+
+test('motor consulta lector selectivo sin cargar índice completo',async()=>{
+ const m=await crearMotor({
+   leerJSON:async url => {
+     const key=new URL(url).pathname.split('/frontend-v2/')[1];
+     if(key==='data/catalogo-publico.json') return structuredClone(catalogo);
+     throw new Error('No debe consultar agregado para búsqueda');
+   },
+   buscarIndiceNombres:async ({periodo,consulta,limite,modo})=>{
+     assert.equal(periodo,'2026-08'); assert.equal(consulta,'Makarena Bañares');
+     assert.equal(limite,20); assert.equal(modo,'exacto');
+     return {total_coincidencias:1,resultados:[{periodo:'2026-08',clave:'makarena banares',nombre:'Makarena Bañares',entidad:'ofertas'}],truncado:false};
+   }
+ });
+ const r=await m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'});
+ assert.equal(r.datos.total_coincidencias,1);
+});
+test('motor rechaza lector selectivo con período diferente',async()=>{
+ const m=await crearMotor({
+   leerJSON:async()=>structuredClone(catalogo),
+   buscarIndiceNombres:async()=>({total_coincidencias:1,resultados:[{periodo:'2026-07'}]})
+ });
+ await assert.rejects(m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'}),{status:503});
+});
