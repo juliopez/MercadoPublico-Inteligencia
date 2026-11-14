@@ -85,3 +85,9 @@ El destino debe ser un directorio **nuevo**, fuera del frontend publicado. El co
 - El job `indice_octubre_aislado` se añadió al workflow de pruebas para validar 705.626 registros reales de octubre sin escribir en producción.
 - Primer intento de índice real: fallo por un nombre de longitud menor a tres caracteres. Se corrigió la partición para aceptar nombres cortos en datos de origen, manteniendo las consultas del usuario con mínimo de tres caracteres. Revalidación pendiente.
 - No fusionar ni desplegar sin comprobar cobertura real, tamaño de índices, tiempos y compatibilidad de la implementación Worker existente.
+
+## Validación real de octubre y ampliación al histórico
+- Workflow `Asistente IA - pruebas aisladas`, run `43649306701`: generación real de octubre **correcta**, 705.626 registros, 706 partes, 705.626 entradas, 584 prefijos. Consulta exacta `Makarena Bañares`: **0 coincidencias en octubre**; no extrapolar a otros meses ni a variantes.
+- Se extendió la operación `buscar_participante` para que, cuando el usuario no indique período, consulte **todos los períodos publicados**, con suma de coincidencias y trazabilidad por archivo.
+- Se añadió generación histórica aislada y job de comprobación de cobertura para todos los meses. **Resultado histórico completo pendiente de validar**.
+- El Worker del PR #20 ahora inyecta lector HTTP y la interfaz formatea coincidencias. Sin publicación de los archivos `indices-nombres`, el despliegue no puede considerarse operativo.
