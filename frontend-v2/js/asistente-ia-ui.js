@@ -1,3 +1,31 @@
+// Formatea resultados deterministas sin alterar cifras ni inventar explicaciones.
+export function formatearResultadoAsistente(resultado) {
+  if (!resultado || typeof resultado !== 'object') return 'No hay resultados verificables.';
+  if (typeof resultado.explicacion === 'string' && resultado.explicacion.trim()) return resultado.explicacion;
+  const datos = resultado.datos;
+  if (!datos || typeof datos !== 'object' || Array.isArray(datos)) return 'No hay datos verificables para presentar.';
+  const nombres = {
+    total_procesos: 'Total de procesos',
+    licitaciones: 'Licitaciones',
+    compras_agiles: 'Compras ágiles',
+    otras_modalidades: 'Otras modalidades'
+  };
+  const periodo = typeof resultado.periodo === 'string' && /^\d{4}-\d{2}$/.test(resultado.periodo)
+    ? resultado.periodo : '';
+  let encabezado = 'Resultados verificados';
+  if (periodo) {
+    const [anio, mes] = periodo.split('-').map(Number);
+    if (mes >= 1 && mes <= 12) encabezado += ' de ' + new Intl.DateTimeFormat('es-CL', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(anio, mes - 1, 1)));
+  }
+  const filas = Object.entries(datos).filter(([, valor]) => typeof valor === 'number' && Number.isFinite(valor))
+    .map(([clave, valor]) => (nombres[clave] || clave.replaceAll('_', ' ')) + ': ' + new Intl.NumberFormat('es-CL', { maximumFractionDigits: 2 }).format(valor));
+  if (!filas.length) return encabezado + '. No hay cifras compatibles para mostrar.';
+  const actualizado = resultado.cobertura?.actualizado;
+  const fecha = typeof actualizado === 'string' && !Number.isNaN(Date.parse(actualizado))
+    ? '\nActualización de datos: ' + new Intl.DateTimeFormat('es-CL', {dateStyle:'medium', timeZone:'America/Santiago'}).format(new Date(actualizado)) : '';
+  return encabezado + ':\n' + filas.join('\n') + fecha;
+}
+
 // Componente aislado de interfaz conversacional. No se monta por defecto.
 // La integración productiva requiere habilitación explícita y endpoint aprobado.
 export function crearAsistenteUI({ contenedor, consultar, habilitado = false } = {}) {
@@ -56,7 +84,7 @@ export function crearAsistenteUI({ contenedor, consultar, habilitado = false } =
         mensaje('Asistente', respuesta.pregunta_aclaracion || respuesta.mensaje || 'Especifica el período o el tipo de registro.');
       } else if (respuesta?.estado === 'respondida' && respuesta.resultado) {
         const r = respuesta.resultado;
-        mensaje('Asistente', r.explicacion || JSON.stringify(r.datos));
+        mensaje('Asistente', formatearResultadoAsistente(r));
         if (Array.isArray(r.fuentes)) {
           const item = nodo('div', undefined, 'asistente-ia-fuentes');
           item.append(nodo('strong', 'Fuentes: '));
