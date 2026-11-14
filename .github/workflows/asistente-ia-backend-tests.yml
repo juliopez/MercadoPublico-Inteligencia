@@ -23,34 +23,42 @@ jobs:
       - name: Pruebas deterministas sin red
         run: node --test scripts/asistente_ia/backend/*.test.mjs
 
-  indice_octubre_aislado:
+  indice_historico_aislado:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Generar indice de octubre en carpeta temporal
-        run: node scripts/asistente_ia/backend/generar_indice_nombres.mjs "$PWD/frontend-v2" 2026-10 "$RUNNER_TEMP/indice-nombres-2026-10"
-      - name: Validar cobertura y consulta real
+      - name: Generar indices historicos fuera del frontend
+        run: node scripts/asistente_ia/backend/generar_historico_nombres.mjs "$PWD/frontend-v2" "$RUNNER_TEMP/indices-nombres"
+      - name: Validar cobertura de todos los periodos
         run: |
           node --input-type=module -e '
           import {readFile} from "node:fs/promises";
           import {join} from "node:path";
           import {buscarEnIndiceLocal} from "./scripts/asistente_ia/backend/lector_indice_nombres.mjs";
-          const d=join(process.env.RUNNER_TEMP,"indice-nombres-2026-10");
-          const m=JSON.parse(await readFile(join(d,"manifiesto.json"),"utf8"));
-          if(m.registros_origen!==705626 || m.archivos.length!==706) throw Error("Cobertura incompleta");
-          if(Object.values(m.prefijos).reduce((a,b)=>a+b,0)!==m.entradas) throw Error("Entradas inconsistentes");
-          const q=await buscarEnIndiceLocal({directorio:d,consulta:"Makarena Bañares"});
-          console.log(JSON.stringify({periodo:m.periodo,registros:m.registros_origen,partes:m.archivos.length,entradas:m.entradas,prefijos:Object.keys(m.prefijos).length,coincidencias:q.total_coincidencias}));
+          const catalogo=JSON.parse(await readFile("frontend-v2/data/catalogo-publico.json","utf8"));
+          let registros=0,partes=0,coincidencias=0;
+          for(const p of catalogo.periodos){
+            const d=join(process.env.RUNNER_TEMP,"indices-nombres",p.periodo);
+            const m=JSON.parse(await readFile(join(d,"manifiesto.json"),"utf8"));
+            const esperado=["ofertas","resultados","ordenescompra"].reduce((a,e)=>a+p.conteos[e],0);
+            const cantidad=["ofertas","resultados","ordenescompra"].reduce((a,e)=>a+p.partes[e].length,0);
+            if(m.registros_origen!==esperado||m.archivos.length!==cantidad) throw Error("Cobertura inconsistente "+p.periodo);
+            if(Object.values(m.prefijos).reduce((a,b)=>a+b,0)!==m.entradas) throw Error("Entradas inconsistentes "+p.periodo);
+            const q=await buscarEnIndiceLocal({directorio:d,consulta:"Makarena Bañares"});
+            coincidencias+=q.total_coincidencias;
+            registros+=m.registros_origen;partes+=m.archivos.length;
+          }
+          console.log(JSON.stringify({periodos:catalogo.periodos.length,registros,partes,coincidencias}));
           '
-      - name: Guardar manifiesto de auditoria
+      - name: Guardar indices historicos de auditoria
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: indice-nombres-2026-10
-          path: ${{ runner.temp }}/indice-nombres-2026-10/
+          name: indices-nombres-historicos
+          path: ${{ runner.temp }}/indices-nombres/
           compression-level: 6
           retention-days: 7
