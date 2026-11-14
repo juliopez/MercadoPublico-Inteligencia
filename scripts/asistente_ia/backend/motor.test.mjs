@@ -126,7 +126,7 @@ test('motor consulta lector selectivo sin cargar índice completo',async()=>{
    },
    buscarIndiceNombres:async ({periodo,consulta,limite,modo})=>{
      assert.equal(periodo,'2026-08'); assert.equal(consulta,'Makarena Bañares');
-     assert.equal(limite,20); assert.equal(modo,'exacto');
+     assert.equal(limite,10); assert.equal(modo,'exacto');
      return {total_coincidencias:1,resultados:[{periodo:'2026-08',clave:'makarena banares',nombre:'Makarena Bañares',entidad:'ofertas'}],truncado:false};
    }
  });
