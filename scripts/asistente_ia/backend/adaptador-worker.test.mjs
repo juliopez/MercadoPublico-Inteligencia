@@ -65,7 +65,7 @@ test('adaptador Worker resuelve participante con índice inyectado',async()=>{
    fetchDatos, interpretarGemini:async()=>JSON.stringify({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'}),
    buscarIndiceNombres:async ({periodo,consulta})=>{
      assert.equal(periodo,'2026-08'); assert.equal(consulta,'Makarena Bañares');
-     return {total_coincidencias:1,resultados:[{periodo,clave:'makarena banares',nombre:consulta,entidad:'ofertas'}],truncado:false};
+     return {total_coincidencias:1,resultados:[{periodo,clave:'makarena banares',nombre:consulta,entidad:'ofertas',parte:'data/partes/ofertas/2026-08/0001.json'}],truncado:false};
    }
  });
  const r=await adaptador.consultar('¿Makarena Bañares participa?');
