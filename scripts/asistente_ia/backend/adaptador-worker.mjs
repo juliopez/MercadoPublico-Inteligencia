@@ -2,8 +2,9 @@
 // La instancia se crea por petición y recibe dependencias explícitas.
 import { crearMotor, ConsultaError } from './motor.mjs';
 import { crearOrquestador } from './orquestador.mjs';
+import { crearBuscadorPublico } from './lector_indice_publico.mjs';
 
-export function crearAdaptadorWorker({ fetchDatos, interpretarGemini, buscarIndiceNombres }) {
+export function crearAdaptadorWorker({ fetchDatos, interpretarGemini, buscarIndiceNombres, fetchIndice }) {
   if (typeof fetchDatos !== 'function' || typeof interpretarGemini !== 'function')
     throw new TypeError('Se requieren adaptadores de datos y Gemini');
   async function leerJSON(url) {
@@ -13,9 +14,10 @@ export function crearAdaptadorWorker({ fetchDatos, interpretarGemini, buscarIndi
     if (!dato || typeof dato !== 'object') throw new ConsultaError('Fuente pública inválida', 503);
     return dato;
   }
+  const buscador = buscarIndiceNombres ?? (typeof fetchIndice === 'function' ? crearBuscadorPublico({fetchIndice}) : undefined);
   return Object.freeze({
     async consultar(pregunta) {
-      const motor = await crearMotor({ leerJSON, buscarIndiceNombres });
+      const motor = await crearMotor({ leerJSON, buscarIndiceNombres: buscador });
       return crearOrquestador({ motor, interpretar: interpretarGemini }).consultar(pregunta);
     }
   });
