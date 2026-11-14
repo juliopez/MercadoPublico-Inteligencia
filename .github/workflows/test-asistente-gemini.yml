@@ -1,0 +1,19 @@
+name: Validar integración Gemini V2
+on:
+  pull_request:
+    paths:
+      - 'frontend-v2/**'
+      - '.github/workflows/test-asistente-gemini.yml'
+  workflow_dispatch:
+jobs:
+  pruebas-asistente:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Ejecutar pruebas del asistente
+        run: node --test frontend-v2/js/asistente-ia-ui.test.mjs
