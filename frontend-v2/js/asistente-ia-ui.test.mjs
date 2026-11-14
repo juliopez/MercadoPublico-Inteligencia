@@ -30,9 +30,23 @@ test('las fuentes externas se restringen a GitHub Pages con HTTPS', async () => 
   assert.match(codigo, /url\.hostname\s*!==\s*'juliopez\.github\.io'/);
   assert.match(codigo, /noopener noreferrer/);
 });
-test('no existe importación ni carga automática en la página principal', async () => {
+test('la página principal incorpora sección 07 y monta la integración aislada', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-  assert.doesNotMatch(html, /asistente-ia-ui\.js|asistente-ia\.css/);
+  assert.match(html, /id="bloque-asistente-ia"/);
+  assert.match(html, /href="#bloque-asistente-ia"/);
+  assert.match(html, /id="asistente-ia-contenedor"/);
+  assert.match(html, /js\/asistente-ia-integracion\.js/);
+  assert.match(html, /css\/asistente-ia\.css/);
+});
+test('la integración consulta el Worker sin intervenir procesos productivos', async () => {
+  const codigo = await readFile(new URL('./asistente-ia-integracion.js', import.meta.url), 'utf8');
+  assert.match(codigo, /crearAsistenteUI/);
+  assert.match(codigo, /workers\.dev\/chat/);
+  assert.match(codigo, /method: 'POST'/);
+  assert.match(codigo, /controlador\.abort\(\), 30000/);
+  assert.match(codigo, /estado === 'respondida'/);
+  assert.match(codigo, /estado === 'aclaracion'/);
+  assert.doesNotMatch(codigo, /innerHTML|localStorage|document\.write/);
 });
 test('estilos limitados a las clases del componente', async () => {
   const css = await readFile(new URL('../css/asistente-ia.css', import.meta.url), 'utf8');
