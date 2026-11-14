@@ -35,3 +35,13 @@ La [política de cuatro procesos](../POLITICA_PROTECCION_CUATRO_PROCESOS.md) pre
 - A las 18:35:22 Chile el HEAD local fue `676e9cf` (PR #10, mitigación 429). La salida posterior de `git pull` durante la publicación manual avanzó hasta `d5b20cb37`; no confundir la mitigación 429 de P1/PUB-V2 con la causa del bloqueo de AUX-1615.
 - Ejecución manual `bash scripts/ubuntu_publicar_v2_post_etl.sh --aplicar`: `EXPORTACION_V2_VERIFICADA`, 5.857 procesos de noviembre, 49.866 OC, 4.915 documentales MER, 2.111 nuevos y 6.326 vínculos publicados; commit `c8303ef3c` enviado a `main`, con `CATALOGO_PUBLICO_ACTUALIZADO`. **Esto acredita publicación en repositorio, no todavía éxito de Actions/Pages ni visibilidad individual de las 196 licitaciones**.
 - Pendiente: verificar despliegue Pages y conciliación por identificadores de las 196; observar el siguiente ciclo autónomo 16:15 para comprobar que publica sin intervención. No repetir carga MER ni alterar procesos protegidos.
+
+## Integración Gemini V2 — 14/11/2026
+
+- **Autorización:** responsable aprobó continuar con pruebas, fusión, publicación y documentación del widget.
+- **PR #15:** fusionado a `main` mediante commit `cfd5d85ef872a70bd3a85a4e56d4858c6792620b`.
+- **Alcance:** sección 07 del frontend V2; integración del módulo UI existente con Cloudflare Worker `/chat`; pruebas de regresión del asistente y workflow independiente `.github/workflows/test-asistente-gemini.yml`.
+- **Evidencia automatizada:** run GitHub Actions `43642073928`, workflow `Validar integración Gemini V2`, resultado `completed/success`, sobre commit `1fdf955616eb88ba39a1d6d01be88c219f43fec7`.
+- **Publicación:** el archivo `frontend-v2/index.html` en `main` incluye la sección 07 y su script; **no se obtuvo confirmación HTTP del contenido servido por GitHub Pages ni prueba interactiva en navegador** en esta revisión. No declarar despliegue verificado hasta obtener esa evidencia.
+- **Protección:** no se modificaron ETL, MER, cron, timers, Worker ni workflows operativos.
+- **Reversión:** revertir el merge `cfd5d85` mediante PR de reversión, previa comprobación de cambios posteriores en `main`; no reescribir historia ni tocar datos.
