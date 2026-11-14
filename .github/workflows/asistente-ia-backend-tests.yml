@@ -50,6 +50,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: manifiesto-indice-nombres-2026-10
-          path: ${{ runner.temp }}/indice-nombres-2026-10/manifiesto.json
+          name: indice-nombres-2026-10
+          path: ${{ runner.temp }}/indice-nombres-2026-10/
+          compression-level: 6
           retention-days: 7
