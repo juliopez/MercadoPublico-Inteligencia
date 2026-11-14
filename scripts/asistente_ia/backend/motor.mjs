@@ -15,6 +15,12 @@ export function rutaPublica(ruta) {
   return new URL(ruta, BASE).toString();
 }
 
+export function rutaPartePublica(parte) {
+  if (typeof parte !== 'string' || !/^data\/partes\/(ofertas|resultados|ordenescompra)\/20\d{2}-(0[1-9]|1[0-2])\/[a-z0-9_-]+\.json$/.test(parte))
+    throw new ConsultaError('Ruta de parte no autorizada', 400);
+  return new URL(parte, BASE).toString();
+}
+
 export async function crearMotor({ leerJSON, leerIndiceNombres, buscarIndiceNombres } = {}) {
   if (typeof leerJSON !== 'function') throw new TypeError('leerJSON debe ser función');
   const catalogo = await leerJSON(rutaPublica('data/catalogo-publico.json'));
@@ -66,7 +72,7 @@ export async function crearMotor({ leerJSON, leerIndiceNombres, buscarIndiceNomb
       }
       const datos = { consulta: nombre, modo, total_coincidencias: total, resultados: resultados.slice(0,limite), truncado: total > limite,
         advertencia: 'Coincidencias textuales en los meses indexados; no acreditan identidad personal ni adjudicación verificada.' };
-      return { periodo, entidad: 'participantes', datos, cobertura: { tipo: 'indice_publicado', actualizado: catalogo.fecha_publicacion, periodos: meses }, fuentes: [rutaPublica('data/catalogo-publico.json')], metodo: 'busqueda_textual_indice' };
+      return { periodo, entidad: 'participantes', datos, cobertura: { tipo: 'indice_publicado', actualizado: catalogo.fecha_publicacion, periodos: meses }, fuentes: [rutaPublica('data/catalogo-publico.json'), ...new Set(resultados.map(x => rutaPartePublica(x.parte)))], metodo: 'busqueda_textual_indice' };
     }
     if (operacion === 'serie') {
       if (!Array.isArray(periodos) || periodos.length < 2 || periodos.length > 12 || new Set(periodos).size !== periodos.length || periodos.some(x => !PERIODO.test(x))) throw new ConsultaError('Períodos de serie inválidos', 400);
