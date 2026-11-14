@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { crearAsistenteUI } from './asistente-ia-ui.js';
+import { crearAsistenteUI, formatearResultadoAsistente } from './asistente-ia-ui.js';
 
 test('el asistente permanece apagado por defecto y no modifica el contenedor', () => {
   let escrituras = 0;
@@ -93,4 +93,17 @@ test('monto tiene unidad CLP y advertencia', async () => {
   const texto = formatearResultadoAsistente({periodo:'2026-10',datos:{monto_total_clp:257873921793,advertencia:'Monto informado, no pago'}});
   assert.match(texto,/Monto total informado \(CLP\): 257\.873\.921\.793/);
   assert.match(texto,/no pago/);
+});
+
+test('presenta coincidencias de participantes sin atribuir identidad o adjudicación',()=>{
+ const texto=formatearResultadoAsistente({
+   entidad:'participantes',periodo:'2026-10',datos:{
+     consulta:'Makarena Bañares',total_coincidencias:1,
+     resultados:[{nombre:'Makarena Bañares',entidad:'ofertas',codigo:'ABC-1'}],
+     advertencia:'Coincidencias textuales; no acreditan identidad personal ni adjudicación verificada.'
+   }
+ });
+ assert.match(texto,/Makarena Bañares/);
+ assert.match(texto,/ofertas/);
+ assert.match(texto,/no acreditan identidad/);
 });
