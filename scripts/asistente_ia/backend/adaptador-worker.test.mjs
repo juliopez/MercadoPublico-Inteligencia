@@ -44,3 +44,18 @@ test('respuesta vacía de Gemini no se transforma en datos', async () => {
   const interpretar = crearInterpreteGemini({ apiKey: 'secreto', fetchGemini: async () => ({ ok: true, json: async () => ({ candidates: [] }) }) });
   await assert.rejects(interpretar({ instrucciones: 'Solo JSON', pregunta: 'Pregunta' }), e => e.status === 503);
 });
+
+
+test('Gemini reserva tokens suficientes para JSON de intención',async()=>{
+  let configuracion;
+  const interpretar=crearInterpreteGemini({apiKey:'test',fetchGemini:async(_url,opciones)=>{
+    configuracion=JSON.parse(opciones.body).generationConfig;
+    return {ok:true,json:async()=>({candidates:[{finishReason:'STOP',content:{parts:[{text:'{"operacion":"resumen","periodo":"2026-08"}'}]}}]})};
+  }});
+  assert.match(await interpretar({instrucciones:'Prueba',pregunta:'Resumen'}),/resumen/);
+  assert.ok(configuracion.maxOutputTokens>=1024);
+});
+test('Gemini identifica truncamiento por MAX_TOKENS',async()=>{
+  const interpretar=crearInterpreteGemini({apiKey:'test',fetchGemini:async()=>({ok:true,json:async()=>({candidates:[{finishReason:'MAX_TOKENS',content:{parts:[{text:'{"operacion":'}]}}]})})});
+  await assert.rejects(()=>interpretar({instrucciones:'Prueba',pregunta:'Resumen'}),e=>e.status===503&&/tokens/.test(e.message));
+});
