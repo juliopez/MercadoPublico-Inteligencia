@@ -1,8 +1,8 @@
 // Generador explícito, fuera de producción. Lee únicamente partes públicas locales.
-// Uso: node scripts/asistente_ia/backend/generar_indice_nombres.mjs <raiz-frontend-v2> <periodo> <archivo-salida>
+// Uso: node scripts/asistente_ia/backend/generar_indice_nombres.mjs <raiz-frontend-v2> <periodo> <directorio-salida>
 // No altera el catálogo, las partes, ETL ni el frontend.
 import { readFile, writeFile, mkdir, rename, rm } from 'node:fs/promises';
-import { resolve, join, dirname } from 'node:path';
+import { resolve, join } from 'node:path';
 import { construirIndiceNombres } from './indice_nombres.mjs';
 
 // Generación incremental: solo una parte de origen en memoria por iteración.
@@ -62,13 +62,11 @@ export async function generarIndice({ raiz, periodo, leerArchivo = async ruta =>
 }
 if (process.argv[1] && resolve(process.argv[1]) === resolve(new URL(import.meta.url).pathname)) {
   const [raiz, periodo, salida] = process.argv.slice(2);
-  if (!raiz || !periodo || !salida) { console.error('Uso: node generar_indice_nombres.mjs <raiz> <periodo> <salida>'); process.exitCode = 2; }
+  if (!raiz || !periodo || !salida) { console.error('Uso: node generar_indice_nombres.mjs <raiz> <periodo> <directorio-salida>'); process.exitCode = 2; }
   else {
     try {
-      const indice = await generarIndice({ raiz: resolve(raiz), periodo });
-      await mkdir(dirname(resolve(salida)), { recursive: true });
-      await writeFile(resolve(salida), JSON.stringify(indice));
-      console.log(JSON.stringify({ periodo, entradas: indice.entradas.length, salida: resolve(salida) }));
+      const indice = await generarIndiceParticionado({ raiz: resolve(raiz), periodo, destino: resolve(salida) });
+      console.log(JSON.stringify({ periodo, registros_origen: indice.registros_origen, entradas: indice.entradas, archivos: indice.archivos.length, salida: resolve(salida) }));
     } catch (error) { console.error(error.message); process.exitCode = 1; }
   }
 }
