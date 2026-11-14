@@ -60,3 +60,19 @@ Total combinado: **3.293.166 registros**. Las partes del catálogo incluyen un a
 Se inspeccionaron directamente los primeros archivos de octubre de las tres entidades: 1.000 registros por archivo, 3.000 registros en total, con campos de nombres disponibles. Tamaños de las respuestas de GitHub: ofertas 221.880 caracteres, resultados 424.568 caracteres, OC 278.810 caracteres. Estas muestras **no prueban** que los 3.302 archivos sean legibles ni que el generador complete el procesamiento total.
 
 **Riesgo de escalabilidad**: la versión inicial de `generar_indice_nombres.mjs` acumula todos los lotes y luego construye el índice; con 3,29 millones de registros puede agotar memoria. Antes de una ejecución completa, cambiar a procesamiento incremental, escribir índice particionado y establecer límites de memoria/tamaño. Evitar que el Worker descargue el índice íntegro en cada pregunta. Esta auditoría no ha generado ni publicado un índice real.
+
+## Procedimiento de prueba completa aislada — pendiente de ejecución
+**Prerrequisito:** disponer de una copia local íntegra de `frontend-v2/data/catalogo-publico.json` y de las partes de ofertas, resultados y órdenes de compra referenciadas para el período. No asumir que un checkout Git contiene todas las partes si fueron generadas fuera del repositorio.
+
+Desde la raíz de una copia de trabajo que tenga los archivos de datos:
+
+```bash
+node scripts/asistente_ia/backend/generar_indice_nombres.mjs \
+  "$PWD/frontend-v2" 2026-10 "$HOME/indice-nombres-prueba-2026-10"
+```
+
+El destino debe ser un directorio **nuevo**, fuera del frontend publicado. El comando no escribe en MER, Google Sheets, ETL, cron, Worker ni Pages. El manifiesto resultante debe registrar 470.841 ofertas, 56.813 resultados y 177.972 órdenes de compra: **705.626 registros de origen** para octubre, repartidos en **706 archivos de índice**. El total de entradas por nombre puede ser menor o mayor que el de registros (campos vacíos o dos nombres diferentes en un resultado).
+
+**Criterios de aceptación:** finalización sin error; manifiesto con los 706 archivos y conteos exactos; comprobación de que cada archivo referenciado existe; muestreo de trazabilidad `parte`/`fila`/`codigo` contra la parte de origen; búsqueda exacta y parcial con límites; tiempo, RAM máxima y tamaño en disco registrados. Si faltan partes, abortar sin afirmar cobertura completa.
+
+**Advertencia de arquitectura:** el índice actual se particiona por archivo de origen, **no por clave de nombre**. Esto acota la RAM del generador pero todavía no permite búsquedas eficientes en el Worker sin recorrer muchos archivos. Antes de la integración, construir un índice de acceso por clave o prefijo y comprobar sus costos. No activar consultas conversacionales por nombres hasta resolver ese punto.
