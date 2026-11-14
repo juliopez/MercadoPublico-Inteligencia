@@ -35,12 +35,14 @@ export function crearInterpreteGemini({ fetchGemini, apiKey, modelo = 'gemini-3.
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: instrucciones }] },
         contents: [{ role: 'user', parts: [{ text: pregunta }] }],
-        generationConfig: { responseMimeType: 'application/json', temperature: 0, maxOutputTokens: 256 }
+        generationConfig: { responseMimeType: 'application/json', temperature: 0, maxOutputTokens: 2048 }
       })
     });
     if (!respuesta?.ok) throw new ConsultaError('Servicio de interpretación temporalmente no disponible', 503);
     const dato = await respuesta.json();
-    const partes = dato?.candidates?.[0]?.content?.parts;
+    const candidato = dato?.candidates?.[0];
+    if (candidato?.finishReason === 'MAX_TOKENS') throw new ConsultaError('Gemini agotó los tokens de salida', 503);
+    const partes = candidato?.content?.parts;
     const texto = Array.isArray(partes) ? partes.filter(x => typeof x?.text === 'string').map(x => x.text).join('') : '';
     if (!texto) throw new ConsultaError('Gemini no devolvió una intención válida', 503);
     return texto;
