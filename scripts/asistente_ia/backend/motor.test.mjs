@@ -95,3 +95,63 @@ test('ranking de organismos usa procesos únicos y no top_actores', async()=>{
  assert.equal(r.datos.tipo_actor,'organismo comprador');
  assert.equal(r.metodo,'ranking_organismos_agregado');
 });
+
+
+test('motor permite buscar nombres solo con índice suministrado',async()=>{
+ const indice=[{clave:'makarena banares',nombre:'Makarena Bañares',entidad:'ofertas',periodo:'2026-08',parte:'data/partes/ofertas/2026-08/0001.json',fila:0,codigo:'123-1-COT26',validacion:null}];
+ const m=await crearMotor({
+   leerJSON:async url=>{const key=new URL(url).pathname.split('/frontend-v2/')[1];if(key==='data/catalogo-publico.json')return structuredClone(catalogo);throw new Error('No se debe leer otro archivo');},
+   leerIndiceNombres:async periodo=>periodo==='2026-08'?indice:[]
+ });
+ const res=await m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'MAKARENA BANARES'});
+ assert.equal(res.datos.total_coincidencias,1);
+ assert.equal(res.datos.resultados[0].codigo,'123-1-COT26');
+ assert.match(res.datos.advertencia,/no acreditan identidad/);
+});
+test('motor rechaza consulta sin índice publicado',async()=>{
+ const m=await motorCon();
+ await assert.rejects(m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'}),{status:503});
+});
+test('motor rechaza índices mezclados de otros períodos',async()=>{
+ const m=await crearMotor({leerJSON:async url=>catalogo,leerIndiceNombres:async()=>[{periodo:'2026-07'}]});
+ await assert.rejects(m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'}),{status:503});
+});
+
+test('motor consulta lector selectivo sin cargar índice completo',async()=>{
+ const m=await crearMotor({
+   leerJSON:async url => {
+     const key=new URL(url).pathname.split('/frontend-v2/')[1];
+     if(key==='data/catalogo-publico.json') return structuredClone(catalogo);
+     throw new Error('No debe consultar agregado para búsqueda');
+   },
+   buscarIndiceNombres:async ({periodo,consulta,limite,modo})=>{
+     assert.equal(periodo,'2026-08'); assert.equal(consulta,'Makarena Bañares');
+     assert.equal(limite,10); assert.equal(modo,'exacto');
+     return {total_coincidencias:1,resultados:[{periodo:'2026-08',clave:'makarena banares',nombre:'Makarena Bañares',entidad:'ofertas',parte:'data/partes/ofertas/2026-08/0001.json'}],truncado:false};
+   }
+ });
+ const r=await m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'});
+ assert.equal(r.datos.total_coincidencias,1);
+});
+test('motor rechaza lector selectivo con período diferente',async()=>{
+ const m=await crearMotor({
+   leerJSON:async()=>structuredClone(catalogo),
+   buscarIndiceNombres:async()=>({total_coincidencias:1,resultados:[{periodo:'2026-07',parte:'data/partes/ofertas/2026-07/0001.json'}]})
+ });
+ await assert.rejects(m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'}),{status:503});
+});
+
+test('motor consulta todos los meses y suma coincidencias',async()=>{
+ const meses=[];
+ const m=await crearMotor({
+   leerJSON:async()=>structuredClone(catalogo),
+   buscarIndiceNombres:async ({periodo})=>{
+     meses.push(periodo);
+     return {total_coincidencias:1,resultados:[{periodo,clave:'makarena banares',nombre:'Makarena Bañares',parte:'data/partes/ofertas/'+periodo+'/0001.json'}]};
+   }
+ });
+ const r=await m.consultar({operacion:'buscar_participante',periodo:'todos',nombre:'Makarena Bañares'});
+ assert.deepEqual(meses,['2026-08','2026-09']);
+ assert.equal(r.datos.total_coincidencias,2);
+ assert.equal(r.datos.resultados.length,2);
+});

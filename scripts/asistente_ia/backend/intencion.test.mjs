@@ -27,3 +27,17 @@ test('normaliza alias acotados de ranking de compradores',()=>assert.deepEqual(
 test('rechaza campos no autorizados incluso con alias',()=>assert.throws(()=>
   interpretarRespuestaGemini(JSON.stringify({operacion:'ranking',periodo:'2026-10',entidad:'compradores',campo_extrano:'x'}),meses)
 ));
+
+test('Gemini interpreta búsqueda exacta de participante con límites seguros',()=>assert.deepEqual(
+ interpretarRespuestaGemini('{"operacion":"buscar_participante","periodo":"2026-10","nombre":" Makarena Bañares "}',meses),
+ {operacion:'buscar_participante',periodo:'2026-10',nombre:'Makarena Bañares',modo:'exacto',limite:20}
+));
+test('rechaza búsqueda contiene no soportada por prefijos',()=>assert.throws(()=>
+ validarIntencion({operacion:'buscar_participante',periodo:'2026-10',nombre:'Bañares',modo:'contiene'},meses)));
+test('rechaza inyección de ruta en búsqueda',()=>assert.throws(()=>
+ validarIntencion({operacion:'buscar_participante',periodo:'2026-10',nombre:'Makarena Bañares',ruta:'secreto'},meses)));
+
+test('nombre sin período consulta todos los meses publicados',()=>assert.deepEqual(
+ validarIntencion({operacion:'buscar_participante',nombre:'Makarena Bañares'},meses),
+ {operacion:'buscar_participante',periodo:'todos',nombre:'Makarena Bañares',modo:'exacto',limite:20}
+));

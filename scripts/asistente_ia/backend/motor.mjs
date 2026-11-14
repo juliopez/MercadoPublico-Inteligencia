@@ -1,4 +1,6 @@
 // Motor determinista aislado: no modifica datos ni consulta Gemini.
+import { buscarNombre } from './indice_nombres.mjs';
+
 export const BASE = 'https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/';
 export const ENTIDADES = Object.freeze(['procesos', 'ofertas', 'resultados', 'ordenescompra']);
 export const PERIODO = /^20\d{2}-(0[1-9]|1[0-2])$/;
@@ -13,7 +15,13 @@ export function rutaPublica(ruta) {
   return new URL(ruta, BASE).toString();
 }
 
-export async function crearMotor({ leerJSON }) {
+export function rutaPartePublica(parte) {
+  if (typeof parte !== 'string' || !/^data\/partes\/(ofertas|resultados|ordenescompra)\/20\d{2}-(0[1-9]|1[0-2])\/[a-z0-9_-]+\.json$/.test(parte))
+    throw new ConsultaError('Ruta de parte no autorizada', 400);
+  return new URL(parte, BASE).toString();
+}
+
+export async function crearMotor({ leerJSON, leerIndiceNombres, buscarIndiceNombres } = {}) {
   if (typeof leerJSON !== 'function') throw new TypeError('leerJSON debe ser función');
   const catalogo = await leerJSON(rutaPublica('data/catalogo-publico.json'));
   if (!Array.isArray(catalogo?.periodos)) throw new ConsultaError('Catálogo inválido', 503);
@@ -38,8 +46,34 @@ export async function crearMotor({ leerJSON }) {
   function respuesta(periodo, entidad, p, datos, metodo) {
     return { periodo, entidad, datos, cobertura: { tipo: p.tipo, actualizado: catalogo.fecha_publicacion }, fuentes: fuentes(periodo, entidad), metodo };
   }
-  async function consultar({ operacion, periodo, entidad = 'procesos', organismo, periodos, modalidad, criterio = 'registros', limite = 10 }) {
-    if (!['resumen', 'modalidades', 'organismo', 'serie', 'ranking'].includes(operacion)) throw new ConsultaError('Operación no admitida', 400);
+  async function consultar({ operacion, periodo, entidad = 'procesos', organismo, periodos, modalidad, criterio = 'registros', limite = 10, nombre, modo = 'exacto' }) {
+    if (!['resumen', 'modalidades', 'organismo', 'serie', 'ranking', 'buscar_participante'].includes(operacion)) throw new ConsultaError('Operación no admitida', 400);
+    if (operacion === 'buscar_participante') {
+      if (typeof leerIndiceNombres !== 'function' && typeof buscarIndiceNombres !== 'function') throw new ConsultaError('Índice de nombres no publicado', 503);
+      if (periodo !== 'todos' && (typeof periodo !== 'string' || !disponibles.has(periodo))) throw new ConsultaError('Período no publicado', 404);
+      if (typeof nombre !== 'string' || nombre.trim().length < 3 || nombre.length > 200 || modo !== 'exacto' || !Number.isSafeInteger(limite) || limite < 1 || limite > 100)
+        throw new ConsultaError('Búsqueda de participante inválida', 400);
+      const meses = periodo === 'todos' ? [...disponibles.keys()] : [periodo];
+      let total = 0;
+      const resultados = [];
+      for (const mes of meses) {
+        const datosMes = typeof buscarIndiceNombres === 'function'
+          ? await buscarIndiceNombres({ periodo: mes, consulta: nombre, limite, modo })
+          : await (async () => {
+              const indice = await leerIndiceNombres(mes);
+              if (!Array.isArray(indice) || indice.some(x => x.periodo !== mes)) throw new ConsultaError('Índice de nombres inconsistente', 503);
+              return buscarNombre(indice, nombre, { limite, modo });
+            })();
+        if (!datosMes || !Number.isSafeInteger(datosMes.total_coincidencias) || !Array.isArray(datosMes.resultados) ||
+            datosMes.resultados.some(x => x.periodo !== mes) || datosMes.resultados.length > limite ||
+            datosMes.total_coincidencias < datosMes.resultados.length) throw new ConsultaError('Respuesta de índice inconsistente', 503);
+        total += datosMes.total_coincidencias;
+        resultados.push(...datosMes.resultados.slice(0,Math.max(0,limite-resultados.length)));
+      }
+      const datos = { consulta: nombre, modo, total_coincidencias: total, resultados: resultados.slice(0,limite), truncado: total > limite,
+        advertencia: 'Coincidencias textuales en los meses indexados; no acreditan identidad personal ni adjudicación verificada.' };
+      return { periodo, entidad: 'participantes', datos, cobertura: { tipo: 'indice_publicado', actualizado: catalogo.fecha_publicacion, periodos: meses }, fuentes: [rutaPublica('data/catalogo-publico.json'), ...new Set(resultados.map(x => rutaPartePublica(x.parte)))], metodo: 'busqueda_textual_indice' };
+    }
     if (operacion === 'serie') {
       if (!Array.isArray(periodos) || periodos.length < 2 || periodos.length > 12 || new Set(periodos).size !== periodos.length || periodos.some(x => !PERIODO.test(x))) throw new ConsultaError('Períodos de serie inválidos', 400);
       const valores = await Promise.all(periodos.map(async mes => {

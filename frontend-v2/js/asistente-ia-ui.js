@@ -23,6 +23,11 @@ export function formatearResultadoAsistente(resultado) {
     return 'Comparación de ' + (resultado.modalidad === 'licitaciones' ? 'licitaciones' : resultado.modalidad === 'compras_agiles' ? 'compras ágiles' : resultado.entidad || 'registros') + ':\n' + filas.join('\n') + actualizado;
   }
   if (!datos || typeof datos !== 'object') return 'No hay datos verificables para presentar.';
+  if (resultado.entidad === 'participantes' && Number.isSafeInteger(datos.total_coincidencias) && Array.isArray(datos.resultados)) {
+    const titulo = 'Coincidencias textuales de «' + (datos.consulta || 'nombre consultado') + '» en ' + periodoTexto(resultado.periodo) + ': ' + formato(datos.total_coincidencias) + '.';
+    const filas = datos.resultados.map((x,i) => (i+1) + '. ' + x.nombre + ' — ' + x.entidad + (x.codigo ? ' — código ' + x.codigo : '') + (x.validacion ? ' — validación: ' + x.validacion : ''));
+    return [titulo, ...filas, datos.truncado ? 'Se muestran solo las primeras coincidencias.' : '', datos.advertencia || 'La coincidencia no acredita identidad ni adjudicación.', actualizado].filter(Boolean).join('\n');
+  }
   if (Array.isArray(datos.filas)) {
     if (!datos.filas.length) return 'El ranking no contiene registros.';
     const filas = datos.filas.map(x => x.posicion + '. ' + x.actor + ': ' + formato(x.valor));
