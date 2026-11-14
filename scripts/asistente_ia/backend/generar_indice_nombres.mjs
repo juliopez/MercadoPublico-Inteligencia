@@ -14,6 +14,8 @@ export async function generarIndiceParticionado({ raiz, periodo, destino, leerAr
   const seleccionado = catalogo?.periodos?.find(p => p.periodo === periodo);
   if (!seleccionado) throw new Error('Período ausente del catálogo');
   const carpeta = resolve(destino);
+  const origen = resolve(raiz);
+  if (carpeta === origen || carpeta.startsWith(origen + '/')) throw new Error('La salida debe estar fuera del frontend de origen');
   const temporal = carpeta + '.temporal';
   try { await stat(carpeta); throw new Error('El destino ya existe; no se sobrescribe'); }
   catch (error) { if (error.code !== 'ENOENT') throw error; }
