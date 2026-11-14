@@ -18,7 +18,7 @@ export default {
       const pregunta=body?.pregunta;
       if(typeof pregunta!=='string'||!pregunta.trim()||pregunta.length>1000) return respuesta({estado:'aclaracion',pregunta_aclaracion:'Escribe una pregunta de hasta 1.000 caracteres.'},400);
       const interprete=crearInterpreteGemini({fetchGemini:fetch,apiKey:env.GEMINI_API_KEY,modelo:env.GEMINI_MODEL||'gemini-3.5-flash'});
-      const asistente=crearAdaptadorWorker({fetchDatos:fetch,interpretarGemini:interprete});
+      const asistente=crearAdaptadorWorker({fetchDatos:fetch,fetchIndice:fetch,interpretarGemini:interprete});
       const resultado=await asistente.consultar(pregunta);
       if(resultado.estado==='aclaracion') return respuesta({estado:'aclaracion',pregunta_aclaracion:resultado.mensaje});
       // La explicación se genera solo desde datos calculados, no desde texto libre de Gemini.
