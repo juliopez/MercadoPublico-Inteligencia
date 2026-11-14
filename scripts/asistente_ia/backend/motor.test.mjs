@@ -127,7 +127,7 @@ test('motor consulta lector selectivo sin cargar índice completo',async()=>{
    buscarIndiceNombres:async ({periodo,consulta,limite,modo})=>{
      assert.equal(periodo,'2026-08'); assert.equal(consulta,'Makarena Bañares');
      assert.equal(limite,10); assert.equal(modo,'exacto');
-     return {total_coincidencias:1,resultados:[{periodo:'2026-08',clave:'makarena banares',nombre:'Makarena Bañares',entidad:'ofertas'}],truncado:false};
+     return {total_coincidencias:1,resultados:[{periodo:'2026-08',clave:'makarena banares',nombre:'Makarena Bañares',entidad:'ofertas',parte:'data/partes/ofertas/2026-08/0001.json'}],truncado:false};
    }
  });
  const r=await m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'});
@@ -136,7 +136,7 @@ test('motor consulta lector selectivo sin cargar índice completo',async()=>{
 test('motor rechaza lector selectivo con período diferente',async()=>{
  const m=await crearMotor({
    leerJSON:async()=>structuredClone(catalogo),
-   buscarIndiceNombres:async()=>({total_coincidencias:1,resultados:[{periodo:'2026-07'}]})
+   buscarIndiceNombres:async()=>({total_coincidencias:1,resultados:[{periodo:'2026-07',parte:'data/partes/ofertas/2026-07/0001.json'}]})
  });
  await assert.rejects(m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'}),{status:503});
 });
@@ -147,7 +147,7 @@ test('motor consulta todos los meses y suma coincidencias',async()=>{
    leerJSON:async()=>structuredClone(catalogo),
    buscarIndiceNombres:async ({periodo})=>{
      meses.push(periodo);
-     return {total_coincidencias:1,resultados:[{periodo,clave:'makarena banares',nombre:'Makarena Bañares'}]};
+     return {total_coincidencias:1,resultados:[{periodo,clave:'makarena banares',nombre:'Makarena Bañares',parte:'data/partes/ofertas/'+periodo+'/0001.json'}]};
    }
  });
  const r=await m.consultar({operacion:'buscar_participante',periodo:'todos',nombre:'Makarena Bañares'});
