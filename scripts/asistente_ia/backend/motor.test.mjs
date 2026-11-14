@@ -140,3 +140,18 @@ test('motor rechaza lector selectivo con período diferente',async()=>{
  });
  await assert.rejects(m.consultar({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'}),{status:503});
 });
+
+test('motor consulta todos los meses y suma coincidencias',async()=>{
+ const meses=[];
+ const m=await crearMotor({
+   leerJSON:async()=>structuredClone(catalogo),
+   buscarIndiceNombres:async ({periodo})=>{
+     meses.push(periodo);
+     return {total_coincidencias:1,resultados:[{periodo,clave:'makarena banares',nombre:'Makarena Bañares'}]};
+   }
+ });
+ const r=await m.consultar({operacion:'buscar_participante',periodo:'todos',nombre:'Makarena Bañares'});
+ assert.deepEqual(meses,['2026-08','2026-09']);
+ assert.equal(r.datos.total_coincidencias,2);
+ assert.equal(r.datos.resultados.length,2);
+});
