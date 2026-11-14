@@ -107,7 +107,7 @@ export function crearPromptIntencion(pregunta, periodosDisponibles) {
     'Para ranking de proveedores por registros de resultados usa ranking, entidad resultados; NUNCA equipares registros de resultados a adjudicaciones verificadas.',
     'Si piden adjudicaciones contractuales verificadas o detalle de una licitación individual, devuelve {"necesita_aclaracion":true}: estas operaciones no están soportadas.',
     'Para comparar licitaciones entre dos meses usa serie, entidad procesos, modalidad licitaciones y periodos ordenados cronológicamente.',
-    'Si faltan período, nombre exacto u otros datos imprescindibles, devuelve {"necesita_aclaracion":true}; no inventes valores.',
+    'Para buscar participante, si no se indica mes utiliza periodo todos. Para otras operaciones, si falta período u otro dato imprescindible devuelve {"necesita_aclaracion":true}; no inventes valores.',
     'No generes SQL, JavaScript, URL, claves, cifras, nombres de organismos ni rutas de archivos.',
   ];
   return { instrucciones: reglas.join('\n'), pregunta: pregunta.trim() };
