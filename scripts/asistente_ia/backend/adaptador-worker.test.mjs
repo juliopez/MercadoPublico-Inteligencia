@@ -59,3 +59,16 @@ test('Gemini identifica truncamiento por MAX_TOKENS',async()=>{
   const interpretar=crearInterpreteGemini({apiKey:'test',fetchGemini:async()=>({ok:true,json:async()=>({candidates:[{finishReason:'MAX_TOKENS',content:{parts:[{text:'{"operacion":'}]}}]})})});
   await assert.rejects(()=>interpretar({instrucciones:'Prueba',pregunta:'Resumen'}),e=>e.status===503&&/tokens/.test(e.message));
 });
+
+test('adaptador Worker resuelve participante con índice inyectado',async()=>{
+ const adaptador=crearAdaptadorWorker({
+   fetchDatos, interpretarGemini:async()=>JSON.stringify({operacion:'buscar_participante',periodo:'2026-08',nombre:'Makarena Bañares'}),
+   buscarIndiceNombres:async ({periodo,consulta})=>{
+     assert.equal(periodo,'2026-08'); assert.equal(consulta,'Makarena Bañares');
+     return {total_coincidencias:1,resultados:[{periodo,clave:'makarena banares',nombre:consulta,entidad:'ofertas'}],truncado:false};
+   }
+ });
+ const r=await adaptador.consultar('¿Makarena Bañares participa?');
+ assert.equal(r.estado,'respondida');
+ assert.equal(r.resultado.datos.total_coincidencias,1);
+});
