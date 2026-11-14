@@ -3,7 +3,7 @@ import { crearMotor, ConsultaError } from './motor.js?v=mod-20261113c';
 import { interpretarLocal } from './interpretar_local.js?v=mod-20261113c';
 
 const entero = n => new Intl.NumberFormat('es-CL').format(n);
-function presentar(intencion, r) {
+export function presentar(intencion, r) {
   const d=r.datos;
   let explicacion;
   if (intencion.operacion === 'modalidades') {
