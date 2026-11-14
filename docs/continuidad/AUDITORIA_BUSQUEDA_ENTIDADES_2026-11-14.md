@@ -34,3 +34,10 @@ Evaluar, sin modificar producción, si el asistente puede responder consultas co
 
 ## Estado
 **Auditoría inicial de estructura completada; implementación pendiente de autorización específica y validación técnica.** Este documento no modifica ningún proceso operativo.
+
+## Avance de implementación aislada — 14/11/2026
+- Prototipo `scripts/asistente_ia/backend/indice_nombres.mjs`: normalización, índice con procedencia y búsqueda exacta/parcial.
+- `scripts/asistente_ia/backend/motor.mjs`: nueva operación `buscar_participante` disponible **solo cuando se inyecta** `leerIndiceNombres`; no hay índice real publicado ni conexión Gemini.
+- `scripts/asistente_ia/backend/generar_indice_nombres.mjs`: generador local, explícito y no programado, basado en partes del catálogo; **no se ha ejecutado contra todas las partes reales**.
+- Pruebas sintéticas del generador en `generar_indice_nombres.test.mjs`: comprueban tres entidades, procedencia, partes faltantes y rechazo de rutas externas. Las pruebas sintéticas no acreditan cobertura, rendimiento ni exactitud del índice real.
+- Antes de usarlo en producción, comprobar tamaño del índice real, memoria, tiempos de generación, política de actualización y modo de lectura acotado desde Cloudflare; no incorporar generación a cron/ETL sin autorización.
