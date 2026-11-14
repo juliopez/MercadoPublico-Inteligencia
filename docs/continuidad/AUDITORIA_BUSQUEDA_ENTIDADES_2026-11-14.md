@@ -41,3 +41,22 @@ Evaluar, sin modificar producción, si el asistente puede responder consultas co
 - `scripts/asistente_ia/backend/generar_indice_nombres.mjs`: generador local, explícito y no programado, basado en partes del catálogo; **no se ha ejecutado contra todas las partes reales**.
 - Pruebas sintéticas del generador en `generar_indice_nombres.test.mjs`: comprueban tres entidades, procedencia, partes faltantes y rechazo de rutas externas. Las pruebas sintéticas no acreditan cobertura, rendimiento ni exactitud del índice real.
 - Antes de usarlo en producción, comprobar tamaño del índice real, memoria, tiempos de generación, política de actualización y modo de lectura acotado desde Cloudflare; no incorporar generación a cron/ETL sin autorización.
+
+## Auditoría de volumen con catálogo real (14/11/2026)
+Catálogo examinado: `frontend-v2/data/catalogo-publico.json`, fecha de publicación `2026-11-14T08:46:24.555594+00:00`.
+
+| Período | Ofertas | Resultados | Órdenes de compra | Partes de estas 3 entidades |
+| --- | ---: | ---: | ---: | ---: |
+| 2026-06 | 407.923 | 63.214 | 150.551 | 623 |
+| 2026-07 | 437.855 | 54.526 | 151.050 | 645 |
+| 2026-08 | 432.111 | 65.945 | 153.438 | 653 |
+| 2026-09 | 398.018 | 48.637 | 148.772 | 597 |
+| 2026-10 | 470.841 | 56.813 | 177.972 | 706 |
+| 2026-11 | 28 | 0 | 75.472 | 78 |
+| **Total** | **2.146.776** | **289.135** | **857.255** | **3.302** |
+
+Total combinado: **3.293.166 registros**. Las partes del catálogo incluyen un archivo de resultados para noviembre aunque su conteo sea cero.
+
+Se inspeccionaron directamente los primeros archivos de octubre de las tres entidades: 1.000 registros por archivo, 3.000 registros en total, con campos de nombres disponibles. Tamaños de las respuestas de GitHub: ofertas 221.880 caracteres, resultados 424.568 caracteres, OC 278.810 caracteres. Estas muestras **no prueban** que los 3.302 archivos sean legibles ni que el generador complete el procesamiento total.
+
+**Riesgo de escalabilidad**: la versión inicial de `generar_indice_nombres.mjs` acumula todos los lotes y luego construye el índice; con 3,29 millones de registros puede agotar memoria. Antes de una ejecución completa, cambiar a procesamiento incremental, escribir índice particionado y establecer límites de memoria/tamaño. Evitar que el Worker descargue el índice íntegro en cada pregunta. Esta auditoría no ha generado ni publicado un índice real.
