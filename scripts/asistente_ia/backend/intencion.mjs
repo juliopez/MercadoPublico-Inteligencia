@@ -95,7 +95,7 @@ export function crearPromptIntencion(pregunta, periodosDisponibles) {
     'Devuelve SOLO un objeto JSON, sin Markdown, explicaciones ni campos adicionales.',
     'Operaciones permitidas: resumen, modalidades, organismo, serie, ranking, buscar_participante.',
     'Entidades permitidas: procesos, ofertas, resultados, ordenescompra.',
-    'Períodos permitidos: ' + periodosDisponibles.join(', ') + '.',
+    'Períodos permitidos: ' + periodosDisponibles.join(', ') + '. Solo para buscar_participante se permite periodo todos.',
     'resumen: operacion, periodo, entidad opcional.',
     'modalidades: operacion, periodo.',
     'organismo: operacion, periodo, organismo (nombre exacto).',
