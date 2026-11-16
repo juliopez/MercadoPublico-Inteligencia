@@ -2,11 +2,11 @@
   "version": 3,
   "periodo": "2026-11",
   "entidad": "procesos",
-  "conteo": 12349,
+  "conteo": 12543,
   "fragmentos": 13,
   "tipo": "prefijo_palabra_agrupado",
   "longitud_prefijo": 3,
-  "particiones": 3773,
+  "particiones": 3782,
   "grupos": 665,
   "formato": "referencias_fragmento_fila",
   "campos": [
