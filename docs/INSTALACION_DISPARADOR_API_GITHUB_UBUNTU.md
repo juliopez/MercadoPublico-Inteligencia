@@ -56,3 +56,11 @@ Esto deja el `schedule` nocturno anterior como respaldo y **no toca** el cron Ub
 2. El disparador es **una solicitud diaria**, no una cola histórica de jornadas. La recuperación de días perdidos y mayor capacidad nocturna quedan fuera del alcance aprobado para esta etapa.
 3. Los workflows `schedule` y `workflow_dispatch` pueden coincidir en una noche: el disparador minimiza duplicados y los checkpoints del motor son la protección final. Verificar empíricamente convivencia la primera noche.
 4. El estado real solo puede declararse `instalado` después de realizar el comando en el Ubuntu del usuario.
+
+## Corrección de publicación parcial — 17/11/2026
+
+Auditoría de la jornada 16/11: Actions [43992911275](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/43992911275) se canceló alrededor de las 04:06 Chile tras cuatro lotes confirmados de 400 (1.600 consultas); el quinto quedó interrumpido. El artifact `api-dia-43992911275` preservó el estado. Los pasos de exportación y Pages quedaron omitidos. La causa externa de la cancelación no quedó demostrada.
+
+Mitigación en `.github/workflows/api-compra-agil-400-actions.yml`: el ciclo de lotes deja de iniciar nuevos lotes después de 4 horas transcurridas desde el comienzo de la etapa; se reserva tiempo del runner para exportación, derivados y Pages. Si la etapa de lotes falla, se intenta exportar igualmente desde el MER, **sin volver a consultar la API ni asumir que el último lote incompleto se guardó**. Si la exportación tiene éxito, se intenta desplegar y verificar Pages. Se preservan los checkpoints y la ventana nocturna, sin alterar el tamaño de lote (400), el intervalo de 10 s ni las pausas por 429.
+
+**Límite:** una cancelación externa/global puede impedir ejecutar cualquier paso posterior; esta mitigación reduce ese riesgo, pero no constituye una garantía absoluta. La jornada puede quedar incompleta y debe continuar desde checkpoint en ejecuciones posteriores. Validar en Actions la ejecución de los pasos `Exportar e indexar el mes operativo` y `Desplegar y verificar Pages`, además de los conteos visibles en Pages. No reejecutar lotes solo para reparar una publicación.
