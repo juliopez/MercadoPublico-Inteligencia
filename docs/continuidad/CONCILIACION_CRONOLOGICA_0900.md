@@ -70,10 +70,22 @@ Contrastar: inicio cercano a 09:00; tabla/mes y PK transferidas; fechas inválid
 - Instalador: `818ff63`.
 - Instalación en Ubuntu: captura de `crontab -l | grep MER_CONCILIACION_0900` del 09/11/2026.
 
-## Incidente 17/11/2026 y aislamiento propuesto (pendiente de despliegue local)
+## Incidente 17/11/2026 y aislamiento instalado (recuperación acreditada)
 
 El cron se disparó a las 09:00:01, pero el log terminó con `GIT_NO_LIMPIO`; el archivo rastreado `scripts/asistente_ia/backend/adaptador-worker.mjs` tenía cambios locales. No se acreditó conciliación del 17/11. No descartar esos cambios.
 
 Corrección propuesta en PR: el cron llama a `scripts/ubuntu_conciliar_mer_0900_aislado.sh`, que utiliza un clon dedicado en `~/.local/share/mercadopublico/conciliacion-runtime` y el Python virtual del proyecto original, sin alterar su árbol de desarrollo. El motor conserva las validaciones y usa `MER_LOCK_DIR` para compartir los mismos locks con el entorno original. El log del cron permanece en el directorio original, pero el informe `salida_operativa/conciliacion_cronologica.json` queda en el runtime aislado. Las credenciales siguen en el perfil Ubuntu.
 
 **Activación:** una vez fusionado el PR, ejecutar el instalador desde una copia limpia del código o actualizar solamente los scripts aprobados en el equipo sin descartar modificaciones locales. Verificar `crontab -l` antes de iniciar una recuperación manual; no permitir dos conciliaciones simultáneas. Ejecutar el wrapper manualmente una vez para recuperar 17/11 y revisar el log, el informe del runtime, los cambios MER y la publicación. La aprobación del código en GitHub no instala ni ejecuta por sí sola el cron de Ubuntu.
+
+
+### Cierre verificado el 17/11/2026 (evidencia Ubuntu proporcionada)
+
+- PR #22 fusionado a `main` (commit `1fdd4ffaa580dbbf4cf22a6f45ec859ebc6cd6be`): wrapper aislado `scripts/ubuntu_conciliar_mer_0900_aislado.sh`, `MER_LOCK_DIR` compartido y ajuste del instalador cron.
+- En Ubuntu se actualizó la entrada de `crontab` para invocar el wrapper aislado, se preparó el runtime independiente y se ejecutó manualmente la conciliación pendiente.
+- El registro local mostró `CONCILIACION_PUBLICADA 2026-11-17T10:21:43-03:00`; la ejecución publicó exportaciones e índices en `main`. Esta evidencia acredita finalización y push; la comprobación independiente de Pages debe auditarse por separado.
+- Para recuperar el repositorio de desarrollo, se guardó la modificación local de `scripts/asistente_ia/backend/adaptador-worker.mjs` en `stash@{0}` (mensaje `respaldo-adaptador-worker-2026-11-17`), se respaldó fuera del árbol la copia no rastreada del wrapper y se hizo `git pull --ff-only origin main`.
+- La versión de `main` ya tenía `maxOutputTokens: 2048`; por ello **no se aplicó el stash**. `git status --porcelain --untracked-files=no` no devolvió modificaciones rastreadas. Permanecen archivos locales no rastreados (logs, salida_operativa y scripts auxiliares), **no eliminados**.
+- Estado: causa `GIT_NO_LIMPIO` mitigada mediante aislamiento; recuperación manual completada; próximo cron autónomo de 09:00 **pendiente de observación**, sin prometer éxito frente a fallas ajenas al bloqueo corregido.
+
+> Nota de vigencia: las instrucciones anteriores de «activación pendiente» describen el estado previo a esta recuperación y no deben utilizarse como diagnóstico actual.
