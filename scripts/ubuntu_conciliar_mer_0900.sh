@@ -6,9 +6,11 @@ cd "$ROOT"
 export TZ=America/Santiago
 export GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS:-$HOME/.config/mercadopublico/servicio-google.json}"
 mkdir -p logs salida_operativa
-exec 9>"$ROOT/logs/.conciliacion_mer_0900.lock"
+LOCK_DIR="${MER_LOCK_DIR:-$ROOT/logs}"
+mkdir -p "$LOCK_DIR"
+exec 9>"$LOCK_DIR/.conciliacion_mer_0900.lock"
 flock -n 9 || { echo "CONCILIACION_YA_ACTIVA";exit 0; }
-exec 8>"$ROOT/logs/.mer_escritura_compartida.lock"
+exec 8>"$LOCK_DIR/.mer_escritura_compartida.lock"
 flock -w 3600 8 || { echo "MER_OCUPADO";exit 5; }
 [[ -x .venv/bin/python ]] || { echo "FALTA_VENV";exit 2; }
 [[ -f "$GOOGLE_APPLICATION_CREDENTIALS" ]] || { echo "FALTA_CREDENCIAL";exit 2; }
