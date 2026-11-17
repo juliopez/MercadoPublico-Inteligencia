@@ -84,6 +84,15 @@ Consulta manual de solo lectura ejecutada en Ubuntu el **09/11/2026**, contra `/
 
 **Interpretación:** 8.202 es la suma de cantidades diarias, **no un conteo de códigos únicos ni necesariamente de licitaciones publicadas en noviembre**. Una consulta anterior reportó 8.165 entradas y 8.124 códigos únicos; existe una diferencia de 37 entradas entre mediciones que requiere cotejo de listados/códigos, no suposición de equivalencia. Esta línea base sirve para contrastar la ejecución del cron del 10/11; no demuestra por sí sola carga al MER.
 
+
+## Cierre operativo del 17/11/2026 — conciliación 09:00 y API nocturna 22:05
+
+**P7, conciliación 09:00 (Ubuntu).** El cron de las 09:00 se inició pero se detuvo por `GIT_NO_LIMPIO` en el árbol de desarrollo (modificación rastreada del adaptador del asistente IA). PR [#22](https://github.com/juliopez/MercadoPublico-Inteligencia/pull/22) integrado: runtime Git aislado y locks compartidos. Se actualizó el cron en Ubuntu y se ejecutó recuperación manual con resultado `CONCILIACION_PUBLICADA 2026-11-17T10:21:43-03:00`. Se verificó árbol rastreado limpio tras respaldo del cambio en stash, actualización de `main` y conservación de archivos no rastreados. La próxima ejecución autónoma y la visibilidad en Pages se verifican por separado. Detalle: [CONCILIACION_CRONOLOGICA_0900.md](CONCILIACION_CRONOLOGICA_0900.md).
+
+**P2, API Compra Ágil 22:05 (Ubuntu dispara; Actions ejecuta).** La jornada del lunes 16/11, [run 43992911275](https://github.com/juliopez/MercadoPublico-Inteligencia/actions/runs/43992911275), terminó `cancelled` alrededor de las 04:06 del 17/11, con cuatro lotes completos de 400 consultas (1.600), checkpoints enviados a `main`, y artifact de respaldo `api-dia-43992911275`. El quinto lote se interrumpió. Exportación/indexación y Pages se omitieron; **no confundir checkpoints con publicación visible**. No se demostró causa de cancelación. PR [#23](https://github.com/juliopez/MercadoPublico-Inteligencia/pull/23), fusionado a `main` (commit `181b52ece27bf0246677e4711804a5ef76acbdf1`): reservar tiempo para publicar, exportar MER confirmado también ante fallo de lotes y desplegar si exportación exitosa. Una cancelación global todavía puede impedir pasos posteriores. Próxima ejecución y publicación parcial **pendientes de validación**. Detalle: [INSTALACION_DISPARADOR_API_GITHUB_UBUNTU.md](../INSTALACION_DISPARADOR_API_GITHUB_UBUNTU.md).
+
+**Alcance del cierre:** cambios de código fusionados y documentación actualizada; no se reejecutó la API ni se modificaron manualmente los datos MER para reparar la publicación nocturna. Las verificaciones futuras deben contrastar estado Actions, `control/ultimo_reporte_api_mer.json`, catálogo/fragmentos, despliegue Pages y datos efectivamente visibles.
+
 ## Cómo reanudar una auditoría
 
 1. Leer estos documentos y la política maestra.
