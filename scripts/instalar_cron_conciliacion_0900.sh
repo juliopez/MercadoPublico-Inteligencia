@@ -7,7 +7,7 @@ cd "$ROOT"
 [[ -r "$HOME/.config/mercadopublico/servicio-google.json" ]] || { echo "FALTA_CREDENCIAL";exit 2; }
 [[ "$(date +%z)" == "$(TZ=America/Santiago date +%z)" ]] || { echo "BLOQUEO_ZONA_HORARIA";exit 3; }
 .venv/bin/python -m py_compile scripts/conciliar_mer_cronologico.py scripts/exportar_mer_operativo_v2.py
-bash -n scripts/ubuntu_conciliar_mer_0900.sh
+bash -n scripts/ubuntu_conciliar_mer_0900.sh scripts/ubuntu_conciliar_mer_0900_aislado.sh
 mkdir -p logs
 TAG="# MER_CONCILIACION_0900"
 ENTRY="0 9 * * 1-5 /bin/bash \"$ROOT/scripts/ubuntu_conciliar_mer_0900.sh\" >> \"$ROOT/logs/conciliacion_mer_0900.log\" 2>&1 $TAG"
