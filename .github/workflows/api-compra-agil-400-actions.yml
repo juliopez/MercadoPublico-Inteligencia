@@ -93,11 +93,21 @@ jobs:
             git push origin HEAD:main
           fi
       - name: Ejecutar lotes y guardar checkpoints sin repetir detalles
+        id: lotes
         if: steps.ventana.outputs.ok == 'true'
         shell: bash
         run: |
           set -euo pipefail
+          # Los runners hospedados tienen un límite práctico de 6 horas.
+          # Reservar tiempo para exportación, índices y Pages; no agotar
+          # el runner con consultas y dejar sin publicar datos confirmados.
+          inicio_lotes=$SECONDS
+          limite_lotes_segundos=14400
           for indice in $(seq 1 12); do
+            if (( SECONDS - inicio_lotes >= limite_lotes_segundos )); then
+              echo "LIMITE_LOTES_PUBLICACION_PARCIAL: conservar checkpoint y publicar MER"
+              break
+            fi
             # No iniciar un nuevo lote cuya ejecución promedio sobrepase las 07:00.
             if ! python - <<'PY'
           import datetime
@@ -188,7 +198,10 @@ jobs:
             control/cola_api_mer.json
             control/ultimo_reporte_api_mer.json
       - name: Exportar e indexar el mes operativo
-        if: steps.ventana.outputs.ok == 'true' && success()
+        id: exportar
+        # Ejecutar también si falló un lote: publicar solamente registros ya confirmados en MER.
+        # La cancelación global de Actions no garantiza ejecutar pasos posteriores.
+        if: always() && steps.ventana.outputs.ok == 'true' && (steps.lotes.outcome == 'success' || steps.lotes.outcome == 'failure')
         run: |
           set -euo pipefail
           python scripts/exportar_mer_operativo_v2.py --periodo "$PERIODO_SOLICITADO" --aplicar --incluir-api
@@ -221,7 +234,7 @@ jobs:
             fi
           fi
       - name: Desplegar y verificar Pages
-        if: steps.ventana.outputs.ok == 'true' && success()
+        if: always() && steps.ventana.outputs.ok == 'true' && steps.exportar.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
