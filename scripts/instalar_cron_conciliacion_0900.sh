@@ -10,10 +10,13 @@ cd "$ROOT"
 bash -n scripts/ubuntu_conciliar_mer_0900.sh scripts/ubuntu_conciliar_mer_0900_aislado.sh
 mkdir -p logs
 TAG="# MER_CONCILIACION_0900"
-ENTRY="0 9 * * 1-5 /bin/bash \"$ROOT/scripts/ubuntu_conciliar_mer_0900.sh\" >> \"$ROOT/logs/conciliacion_mer_0900.log\" 2>&1 $TAG"
+ENTRY="0 9 * * 1-5 /bin/bash \"$ROOT/scripts/ubuntu_conciliar_mer_0900_aislado.sh\" >> \"$ROOT/logs/conciliacion_mer_0900.log\" 2>&1 $TAG"
 CURRENT="$(crontab -l 2>/dev/null || true)"
-if printf '%s\n' "$CURRENT" | grep -Fq "$TAG";then
- echo "CRON_EXISTENTE";crontab -l | grep -F "$TAG";exit 0
+if printf '%s\n' "$CURRENT" | grep -Fq "$TAG"; then
+  if printf '%s\n' "$CURRENT" | grep -F "$TAG" | grep -Fq 'ubuntu_conciliar_mer_0900_aislado.sh'; then
+    echo "CRON_EXISTENTE"; crontab -l | grep -F "$TAG"; exit 0
+  fi
+  CURRENT="$(printf '%s\n' "$CURRENT" | grep -Fv "$TAG" || true)"
 fi
 printf '%s\n%s\n' "$CURRENT" "$ENTRY" | crontab -
 echo "CRON_INSTALADO: lunes a viernes 09:00 America/Santiago"
