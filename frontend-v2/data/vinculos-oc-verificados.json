@@ -34131,6 +34131,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1002592-31-COT26",
+      "codigo_oc": "1013353-144-SE26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1004823-113-COT26",
+      "codigo_oc": "1004823-125-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1004823-119-COT26",
       "codigo_oc": "1004823-115-AG26",
       "periodo_oc": "2026-11",
@@ -34195,6 +34211,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1006-51-COT26",
+      "codigo_oc": "1006-239-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1009566-127-COT26",
       "codigo_oc": "1009566-123-AG26",
       "periodo_oc": "2026-11",
@@ -34213,6 +34237,14 @@
     {
       "codigo_proceso": "1011183-54-COT26",
       "codigo_oc": "1011183-76-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1011183-58-COT26",
+      "codigo_oc": "1011183-83-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -34245,6 +34277,14 @@
     {
       "codigo_proceso": "1020285-26-COT26",
       "codigo_oc": "1020285-24-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1020285-27-COT26",
+      "codigo_oc": "1020285-25-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -34357,6 +34397,14 @@
     {
       "codigo_proceso": "1028897-815-COT26",
       "codigo_oc": "1028897-1822-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1028897-816-COT26",
+      "codigo_oc": "1028897-1828-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -34723,6 +34771,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1057370-226-COT26",
+      "codigo_oc": "1057370-676-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1057385-158-COT26",
       "codigo_oc": "1057385-430-AG26",
       "periodo_oc": "2026-11",
@@ -34971,6 +35027,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1057389-2152-COT26",
+      "codigo_oc": "1057389-4905-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1057389-2157-COT26",
       "codigo_oc": "1057389-4925-AG26",
       "periodo_oc": "2026-11",
@@ -35013,6 +35077,14 @@
     {
       "codigo_proceso": "1057402-1407-COT26",
       "codigo_oc": "1057402-12138-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1057414-115-COT26",
+      "codigo_oc": "1057414-803-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -35771,6 +35843,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1057495-701-COT26",
+      "codigo_oc": "1057495-1297-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1057501-3129-COT26",
       "codigo_oc": "1057501-11674-AG26",
       "periodo_oc": "2026-11",
@@ -35819,6 +35899,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1057501-3711-COT26",
+      "codigo_oc": "1057501-12536-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1057501-3751-COT26",
       "codigo_oc": "1057501-12562-AG26",
       "periodo_oc": "2026-11",
@@ -35837,6 +35925,14 @@
     {
       "codigo_proceso": "1057501-3797-COT26",
       "codigo_oc": "1057501-12806-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1057501-3909-COT26",
+      "codigo_oc": "1057501-13132-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -36347,6 +36443,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1057532-584-COT26",
+      "codigo_oc": "1057532-1858-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1057536-1023-COT26",
       "codigo_oc": "1057536-3336-AG26",
       "periodo_oc": "2026-11",
@@ -36779,8 +36883,24 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1057536-1359-COT26",
+      "codigo_oc": "1057536-3415-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1057536-1360-COT26",
       "codigo_oc": "1057536-3269-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1057536-1361-COT26",
+      "codigo_oc": "1057536-3448-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -36829,6 +36949,14 @@
     {
       "codigo_proceso": "1057536-1375-COT26",
       "codigo_oc": "1057536-3379-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1057536-1455-COT26",
+      "codigo_oc": "1057536-3447-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -37019,6 +37147,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1057539-5008-COT26",
+      "codigo_oc": "1057539-9748-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1057540-601-COT26",
       "codigo_oc": "1057540-2719-AG26",
       "periodo_oc": "2026-11",
@@ -37083,6 +37219,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1057804-40-COT26",
+      "codigo_oc": "1057804-44-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1057804-43-COT26",
       "codigo_oc": "1057804-41-AG26",
       "periodo_oc": "2026-11",
@@ -37091,8 +37235,24 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1057804-47-COT26",
+      "codigo_oc": "1057804-45-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1057822-76-COT26",
       "codigo_oc": "1057822-146-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1057822-81-COT26",
+      "codigo_oc": "1057822-148-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -37667,6 +37827,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1059109-108-COT26",
+      "codigo_oc": "1059109-118-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1062448-344-COT26",
       "codigo_oc": "1062448-2128-AG26",
       "periodo_oc": "2026-11",
@@ -38043,6 +38211,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1078634-5-COT26",
+      "codigo_oc": "1078634-18-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1079445-813-COT26",
+      "codigo_oc": "1079445-759-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1079454-659-COT26",
       "codigo_oc": "1079454-509-AG26",
       "periodo_oc": "2026-11",
@@ -38139,6 +38323,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1079576-132-COT26",
+      "codigo_oc": "1079576-1145-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1079576-140-COT26",
       "codigo_oc": "1079576-1168-AG26",
       "periodo_oc": "2026-11",
@@ -38157,6 +38349,14 @@
     {
       "codigo_proceso": "1079576-144-COT26",
       "codigo_oc": "1079576-1171-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1079576-150-COT26",
+      "codigo_oc": "1079576-1188-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -38355,6 +38555,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1095-30-COT26",
+      "codigo_oc": "1095-97-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1098710-201-COT26",
       "codigo_oc": "1098710-430-AG26",
       "periodo_oc": "2026-11",
@@ -38381,6 +38589,14 @@
     {
       "codigo_proceso": "1113144-88-COT26",
       "codigo_oc": "1113144-88-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1113146-68-COT26",
+      "codigo_oc": "1113146-74-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -38421,6 +38637,14 @@
     {
       "codigo_proceso": "1126-29-COT26",
       "codigo_oc": "1126-108-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1126922-1017-COT26",
+      "codigo_oc": "1126922-1811-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -38619,8 +38843,32 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1138297-123-COT26",
+      "codigo_oc": "1138297-139-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1138297-125-COT26",
       "codigo_oc": "1138297-135-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1138297-126-COT26",
+      "codigo_oc": "1138297-138-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1138297-127-COT26",
+      "codigo_oc": "1138297-137-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -38747,8 +38995,24 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1165648-244-COT26",
+      "codigo_oc": "1165648-243-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1165649-254-COT26",
       "codigo_oc": "1165649-275-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1165649-256-COT26",
+      "codigo_oc": "1165649-291-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -38821,6 +39085,14 @@
     {
       "codigo_proceso": "1165649-282-COT26",
       "codigo_oc": "1165649-282-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1165649-289-COT26",
+      "codigo_oc": "1165649-292-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -38939,6 +39211,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1175-445-COT26",
+      "codigo_oc": "1175-1107-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1175-463-COT26",
+      "codigo_oc": "1187104-18-SE26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1176812-66-COT26",
       "codigo_oc": "1176812-107-AG26",
       "periodo_oc": "2026-11",
@@ -38965,6 +39253,22 @@
     {
       "codigo_proceso": "1180740-150-COT26",
       "codigo_oc": "1180740-226-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1180825-45-COT26",
+      "codigo_oc": "1180825-73-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1180825-59-COT26",
+      "codigo_oc": "1180825-72-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -39163,6 +39467,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1208102-68-COT26",
+      "codigo_oc": "1208102-69-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1208106-44-COT26",
       "codigo_oc": "1208106-91-AG26",
       "periodo_oc": "2026-11",
@@ -39347,6 +39659,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1229-30-COT26",
+      "codigo_oc": "1229-40-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1233613-447-COT26",
       "codigo_oc": "1233613-2142-AG26",
       "periodo_oc": "2026-11",
@@ -39405,6 +39725,14 @@
     {
       "codigo_proceso": "1233619-746-COT26",
       "codigo_oc": "1233619-1395-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1233619-784-COT26",
+      "codigo_oc": "1233619-1443-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -39483,6 +39811,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1250359-44-COT26",
+      "codigo_oc": "1250359-23-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1260-97-COT26",
       "codigo_oc": "1260-177-AG26",
       "periodo_oc": "2026-11",
@@ -39539,6 +39875,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1275930-68-COT26",
+      "codigo_oc": "1275930-240-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1288-226-COT26",
       "codigo_oc": "1288-588-AG26",
       "periodo_oc": "2026-11",
@@ -39565,6 +39909,14 @@
     {
       "codigo_proceso": "1300-200-COT26",
       "codigo_oc": "1300-403-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1300-202-COT26",
+      "codigo_oc": "1300-428-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -39659,8 +40011,24 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1305504-123-COT26",
+      "codigo_oc": "1305504-235-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1305525-120-COT26",
       "codigo_oc": "1305525-229-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1305525-120-COT26",
+      "codigo_oc": "1305525-233-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -39771,8 +40139,24 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1375760-76-COT26",
+      "codigo_oc": "1375760-87-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1375760-77-COT26",
       "codigo_oc": "1375760-82-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1380-4989-COT26",
+      "codigo_oc": "1380-13631-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -39835,6 +40219,30 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1386073-152-COT26",
+      "codigo_oc": "1386073-193-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1386073-153-COT26",
+      "codigo_oc": "1386073-195-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1386073-154-COT26",
+      "codigo_oc": "1386073-194-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1388-29-COT26",
       "codigo_oc": "1388-24-AG26",
       "periodo_oc": "2026-11",
@@ -39845,6 +40253,14 @@
     {
       "codigo_proceso": "1389183-181-COT26",
       "codigo_oc": "1389183-714-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1389183-186-COT26",
+      "codigo_oc": "1389183-762-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -39939,8 +40355,48 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1395-445-COT26",
+      "codigo_oc": "1395-979-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1395-447-COT26",
+      "codigo_oc": "1395-981-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1395-463-COT26",
+      "codigo_oc": "1395-977-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1395-464-COT26",
+      "codigo_oc": "1395-978-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "14-44-COT26",
       "codigo_oc": "14-522-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1401-20-COT26",
+      "codigo_oc": "1401-44-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -40059,6 +40515,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1417913-276-COT26",
+      "codigo_oc": "1417913-898-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1417913-279-COT26",
       "codigo_oc": "1417913-904-AG26",
       "periodo_oc": "2026-11",
@@ -40069,6 +40533,14 @@
     {
       "codigo_proceso": "1417913-284-COT26",
       "codigo_oc": "1417913-897-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1422417-27-COT26",
+      "codigo_oc": "1422417-48-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -40203,6 +40675,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1430395-60-COT26",
+      "codigo_oc": "1430395-36-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1430709-530-COT26",
       "codigo_oc": "1430709-208-AG26",
       "periodo_oc": "2026-11",
@@ -40253,6 +40733,14 @@
     {
       "codigo_proceso": "1431841-1254-COT26",
       "codigo_oc": "1431841-1450-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1431841-1265-COT26",
+      "codigo_oc": "1431841-1527-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -40333,6 +40821,14 @@
     {
       "codigo_proceso": "1432083-1674-COT26",
       "codigo_oc": "1432083-2629-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1432083-1689-COT26",
+      "codigo_oc": "1432083-2651-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -40587,6 +41083,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1447930-592-COT26",
+      "codigo_oc": "1447930-571-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1450521-89-COT26",
       "codigo_oc": "1450521-48-AG26",
       "periodo_oc": "2026-11",
@@ -40645,6 +41149,14 @@
     {
       "codigo_proceso": "1461-52-COT26",
       "codigo_oc": "1461-45-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1461-53-COT26",
+      "codigo_oc": "1461-47-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -41195,6 +41707,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1549-4158-COT26",
+      "codigo_oc": "1549-4814-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1549-4171-COT26",
       "codigo_oc": "1549-4743-AG26",
       "periodo_oc": "2026-11",
@@ -41381,6 +41901,14 @@
     {
       "codigo_proceso": "1549-4476-COT26",
       "codigo_oc": "1549-4731-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1549-4478-COT26",
+      "codigo_oc": "1549-4822-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -41619,6 +42147,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1549-4618-COT26",
+      "codigo_oc": "1549-4821-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1549-4625-COT26",
+      "codigo_oc": "1549-4796-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1555-1532-COT26",
       "codigo_oc": "1555-3149-AG26",
       "periodo_oc": "2026-11",
@@ -41731,6 +42275,30 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1561141-1-COT26",
+      "codigo_oc": "1561141-2-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1561141-2-COT26",
+      "codigo_oc": "1561141-3-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1561141-4-COT26",
+      "codigo_oc": "1561141-1-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1562-108-COT26",
       "codigo_oc": "1562-547-AG26",
       "periodo_oc": "2026-11",
@@ -41835,6 +42403,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1612-80-COT26",
+      "codigo_oc": "1612-150-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1618-82-COT26",
+      "codigo_oc": "1618-320-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1618-84-COT26",
       "codigo_oc": "1618-322-AG26",
       "periodo_oc": "2026-11",
@@ -41933,6 +42517,14 @@
     {
       "codigo_proceso": "1641-5943-COT26",
       "codigo_oc": "1641-22495-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1642-565-COT26",
+      "codigo_oc": "1642-1042-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -42211,6 +42803,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1664-321-COT26",
+      "codigo_oc": "1664-930-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1664-322-COT26",
+      "codigo_oc": "1664-932-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1671-199-COT26",
       "codigo_oc": "1671-281-AG26",
       "periodo_oc": "2026-11",
@@ -42387,6 +42995,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1704-3857-COT26",
+      "codigo_oc": "1704-6324-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1704-3954-COT26",
+      "codigo_oc": "1704-6326-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1709-248-COT26",
       "codigo_oc": "1709-584-AG26",
       "periodo_oc": "2026-11",
@@ -42475,6 +43099,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1751-37-COT26",
+      "codigo_oc": "1751-72-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1756-130-COT26",
       "codigo_oc": "1756-146-AG26",
       "periodo_oc": "2026-11",
@@ -42493,6 +43125,14 @@
     {
       "codigo_proceso": "1775-20-COT26",
       "codigo_oc": "1775-57-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1775-22-COT26",
+      "codigo_oc": "1775-59-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -42691,6 +43331,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "1962-359-COT26",
+      "codigo_oc": "1962-764-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "1973-981-COT26",
       "codigo_oc": "1973-3861-AG26",
       "periodo_oc": "2026-11",
@@ -42701,6 +43349,14 @@
     {
       "codigo_proceso": "1976-147-COT26",
       "codigo_oc": "1976-257-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "1976-153-COT26",
+      "codigo_oc": "1976-268-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -42907,6 +43563,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2036-411-COT26",
+      "codigo_oc": "2036-512-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2036-414-COT26",
+      "codigo_oc": "2036-522-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2036-415-COT26",
       "codigo_oc": "2036-510-AG26",
       "periodo_oc": "2026-11",
@@ -43019,6 +43691,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2069-2888-COT26",
+      "codigo_oc": "2069-10442-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2069-2889-COT26",
+      "codigo_oc": "2069-10443-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2078-491-COT26",
       "codigo_oc": "2078-1210-AG26",
       "periodo_oc": "2026-11",
@@ -43117,6 +43805,22 @@
     {
       "codigo_proceso": "2092-117-COT26",
       "codigo_oc": "2092-117-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2092-134-COT26",
+      "codigo_oc": "2092-129-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2092-136-COT26",
+      "codigo_oc": "2092-130-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -43355,6 +44059,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2211-1159-COT26",
+      "codigo_oc": "2211-1049-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2211-1202-COT26",
       "codigo_oc": "2211-999-AG26",
       "periodo_oc": "2026-11",
@@ -43547,6 +44259,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2281-1926-COT26",
+      "codigo_oc": "2281-1585-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2281-1929-COT26",
       "codigo_oc": "2281-1531-AG26",
       "periodo_oc": "2026-11",
@@ -43573,6 +44293,14 @@
     {
       "codigo_proceso": "2281-1953-COT26",
       "codigo_oc": "2281-1520-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2281-1964-COT26",
+      "codigo_oc": "2281-1587-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -43803,6 +44531,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2291-1147-COT26",
+      "codigo_oc": "2291-1811-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2293-79-COT26",
       "codigo_oc": "2293-66-AG26",
       "periodo_oc": "2026-11",
@@ -43851,6 +44587,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2294-2680-COT26",
+      "codigo_oc": "2294-2505-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2294-2701-COT26",
       "codigo_oc": "2294-2490-AG26",
       "periodo_oc": "2026-11",
@@ -43861,6 +44605,14 @@
     {
       "codigo_proceso": "2294-2703-COT26",
       "codigo_oc": "2294-2527-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2294-2720-COT26",
+      "codigo_oc": "2294-2520-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -43893,6 +44645,14 @@
     {
       "codigo_proceso": "2296-664-COT26",
       "codigo_oc": "2296-526-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2297-1291-COT26",
+      "codigo_oc": "2297-1472-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -44027,6 +44787,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2298-307-COT26",
+      "codigo_oc": "2298-1101-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2298-308-COT26",
       "codigo_oc": "2298-1074-AG26",
       "periodo_oc": "2026-11",
@@ -44075,6 +44843,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2298-321-COT26",
+      "codigo_oc": "2298-1097-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2298-323-COT26",
+      "codigo_oc": "2298-1095-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2298-326-COT26",
       "codigo_oc": "2298-1066-AG26",
       "periodo_oc": "2026-11",
@@ -44085,6 +44869,14 @@
     {
       "codigo_proceso": "2305-30-COT26",
       "codigo_oc": "2305-96-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2306-1007-COT26",
+      "codigo_oc": "2306-1037-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -44285,6 +45077,14 @@
     {
       "codigo_proceso": "2307-533-COT26",
       "codigo_oc": "2307-1415-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2307-540-COT26",
+      "codigo_oc": "2307-1462-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -44653,6 +45453,22 @@
     {
       "codigo_proceso": "2343-594-COT26",
       "codigo_oc": "2343-694-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2343-617-COT26",
+      "codigo_oc": "2343-713-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2343-627-COT26",
+      "codigo_oc": "2343-715-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -45347,6 +46163,38 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2409-1625-COT26",
+      "codigo_oc": "2409-1567-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2409-1628-COT26",
+      "codigo_oc": "2409-1578-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2409-1629-COT26",
+      "codigo_oc": "2409-1576-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2409-1636-COT26",
+      "codigo_oc": "2409-1580-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2409-1641-COT26",
       "codigo_oc": "2409-1583-AG26",
       "periodo_oc": "2026-11",
@@ -45483,6 +46331,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2409-1693-COT26",
+      "codigo_oc": "2409-1662-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2409-1708-COT26",
       "codigo_oc": "2409-1600-AG26",
       "periodo_oc": "2026-11",
@@ -45565,6 +46421,14 @@
     {
       "codigo_proceso": "2409-1762-COT26",
       "codigo_oc": "2409-1615-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2409-1770-COT26",
+      "codigo_oc": "2409-1668-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -45675,6 +46539,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2409-1801-COT26",
+      "codigo_oc": "2409-1651-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2409-1807-COT26",
       "codigo_oc": "2409-1591-AG26",
       "periodo_oc": "2026-11",
@@ -45747,6 +46619,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2409-1902-COT26",
+      "codigo_oc": "2409-1688-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2421-318-COT26",
+      "codigo_oc": "2421-1409-SE26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2421-419-COT26",
       "codigo_oc": "2421-1303-AG26",
       "periodo_oc": "2026-11",
@@ -45757,6 +46645,14 @@
     {
       "codigo_proceso": "2421-422-COT26",
       "codigo_oc": "2421-1304-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2421-424-COT26",
+      "codigo_oc": "2421-1408-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -46005,6 +46901,14 @@
     {
       "codigo_proceso": "2427-1205-COT26",
       "codigo_oc": "2427-1127-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2427-1225-COT26",
+      "codigo_oc": "2427-1133-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -46427,6 +47331,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2460-1057-COT26",
+      "codigo_oc": "2460-1174-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2460-1058-COT26",
       "codigo_oc": "2460-1155-AG26",
       "periodo_oc": "2026-11",
@@ -46507,6 +47419,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2460-1081-COT26",
+      "codigo_oc": "2460-1178-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2460-1087-COT26",
       "codigo_oc": "2460-1157-AG26",
       "periodo_oc": "2026-11",
@@ -46549,6 +47469,14 @@
     {
       "codigo_proceso": "2546-1085-COT26",
       "codigo_oc": "2546-1066-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2546-1154-COT26",
+      "codigo_oc": "2546-1081-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -46683,6 +47611,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2548-365-COT26",
+      "codigo_oc": "2548-812-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2585-1263-COT26",
       "codigo_oc": "2585-1342-AG26",
       "periodo_oc": "2026-11",
@@ -46779,6 +47715,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2620-14-COT26",
+      "codigo_oc": "2620-12-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2664-708-COT26",
       "codigo_oc": "2664-885-AG26",
       "periodo_oc": "2026-11",
@@ -46805,6 +47749,14 @@
     {
       "codigo_proceso": "2664-711-COT26",
       "codigo_oc": "2664-883-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2664-712-COT26",
+      "codigo_oc": "2664-934-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -47051,6 +48003,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2675-391-COT26",
+      "codigo_oc": "2675-509-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2675-394-COT26",
+      "codigo_oc": "2675-510-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2676-763-COT26",
       "codigo_oc": "2676-681-AG26",
       "periodo_oc": "2026-11",
@@ -47285,6 +48253,14 @@
     {
       "codigo_proceso": "2687-153-COT26",
       "codigo_oc": "2687-179-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2687-153-COT26",
+      "codigo_oc": "2687-183-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -47771,6 +48747,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2727-651-COT26",
+      "codigo_oc": "2727-1096-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2727-652-COT26",
       "codigo_oc": "2727-1094-AG26",
       "periodo_oc": "2026-11",
@@ -47917,6 +48901,30 @@
     {
       "codigo_proceso": "2735-1332-COT26",
       "codigo_oc": "2735-1511-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2735-1336-COT26",
+      "codigo_oc": "2735-1484-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2735-1337-COT26",
+      "codigo_oc": "2735-1488-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2735-1338-COT26",
+      "codigo_oc": "2735-1487-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -48197,6 +49205,14 @@
     {
       "codigo_proceso": "2776-877-COT26",
       "codigo_oc": "2776-717-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "2776-932-COT26",
+      "codigo_oc": "2776-751-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -48491,6 +49507,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2825-248-COT26",
+      "codigo_oc": "2825-465-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2825-249-COT26",
       "codigo_oc": "2825-447-AG26",
       "periodo_oc": "2026-11",
@@ -48779,6 +49803,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "2902-141-COT26",
+      "codigo_oc": "2902-1018-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "2904-288-COT26",
       "codigo_oc": "2904-1195-AG26",
       "periodo_oc": "2026-11",
@@ -48971,6 +50003,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "3000-1339-COT26",
+      "codigo_oc": "3000-1159-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "3047-448-COT26",
       "codigo_oc": "3047-652-AG26",
       "periodo_oc": "2026-11",
@@ -48981,6 +50021,14 @@
     {
       "codigo_proceso": "3047-453-COT26",
       "codigo_oc": "3047-648-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3047-456-COT26",
+      "codigo_oc": "3047-668-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -49021,6 +50069,14 @@
     {
       "codigo_proceso": "3066-97-COT26",
       "codigo_oc": "3066-144-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3066-97-COT26",
+      "codigo_oc": "3066-146-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -49523,6 +50579,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "3291-27-COT26",
+      "codigo_oc": "3291-28-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "3316-161-COT26",
       "codigo_oc": "3316-230-AG26",
       "periodo_oc": "2026-11",
@@ -49861,6 +50925,22 @@
     {
       "codigo_proceso": "3416-240-COT26",
       "codigo_oc": "3416-600-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3416-253-COT26",
+      "codigo_oc": "3416-630-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3416-262-COT26",
+      "codigo_oc": "3416-631-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -50323,6 +51403,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "3506-797-COT26",
+      "codigo_oc": "3506-887-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "3506-799-COT26",
       "codigo_oc": "3506-853-AG26",
       "periodo_oc": "2026-11",
@@ -50595,8 +51683,32 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "3536-129-COT26",
+      "codigo_oc": "3536-168-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "3536-134-COT26",
       "codigo_oc": "3536-167-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3536-137-COT26",
+      "codigo_oc": "3536-172-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3536-139-COT26",
+      "codigo_oc": "3536-169-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -50669,6 +51781,30 @@
     {
       "codigo_proceso": "3630-204-COT26",
       "codigo_oc": "3630-298-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3630-218-COT26",
+      "codigo_oc": "3630-321-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3630-219-COT26",
+      "codigo_oc": "3630-320-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3630-220-COT26",
+      "codigo_oc": "3630-319-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -51027,8 +52163,32 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "3708-147-COT26",
+      "codigo_oc": "3708-391-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "3708-154-COT26",
       "codigo_oc": "3708-353-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3709-41-COT26",
+      "codigo_oc": "3709-1360-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3709-43-COT26",
+      "codigo_oc": "3709-1357-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -51427,6 +52587,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "3810-335-COT26",
+      "codigo_oc": "3810-1201-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "3836-315-COT26",
       "codigo_oc": "3836-825-AG26",
       "periodo_oc": "2026-11",
@@ -51587,6 +52755,30 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "3858-414-COT26",
+      "codigo_oc": "3858-525-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3863-138-COT26",
+      "codigo_oc": "3863-379-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3863-165-COT26",
+      "codigo_oc": "3863-380-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "3863-167-COT26",
       "codigo_oc": "3863-360-AG26",
       "periodo_oc": "2026-11",
@@ -51683,6 +52875,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "3892-430-COT26",
+      "codigo_oc": "3892-630-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "3922-266-COT26",
       "codigo_oc": "3922-1135-AG26",
       "periodo_oc": "2026-11",
@@ -51693,6 +52893,14 @@
     {
       "codigo_proceso": "3922-273-COT26",
       "codigo_oc": "3922-1098-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3922-297-COT26",
+      "codigo_oc": "3922-1171-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -51757,6 +52965,14 @@
     {
       "codigo_proceso": "3928-409-COT26",
       "codigo_oc": "3928-1659-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3928-410-COT26",
+      "codigo_oc": "3928-1676-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -52171,6 +53387,22 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "3983-405-COT26",
+      "codigo_oc": "3983-279-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "3983-407-COT26",
+      "codigo_oc": "3983-280-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "4019-386-COT26",
       "codigo_oc": "4019-374-AG26",
       "periodo_oc": "2026-11",
@@ -52237,6 +53469,38 @@
     {
       "codigo_proceso": "4019-418-COT26",
       "codigo_oc": "4019-393-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4019-430-COT26",
+      "codigo_oc": "4019-395-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4019-433-COT26",
+      "codigo_oc": "4019-396-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4019-435-COT26",
+      "codigo_oc": "4019-398-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4019-436-COT26",
+      "codigo_oc": "4019-397-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -52397,6 +53661,14 @@
     {
       "codigo_proceso": "4066-444-COT26",
       "codigo_oc": "4066-278-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4066-448-COT26",
+      "codigo_oc": "4066-292-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -52581,6 +53853,22 @@
     {
       "codigo_proceso": "4079-366-COT26",
       "codigo_oc": "4079-507-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4079-378-COT26",
+      "codigo_oc": "4079-526-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4079-384-COT26",
+      "codigo_oc": "4079-523-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -53131,6 +54419,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "4152-849-COT26",
+      "codigo_oc": "4152-832-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "4157-867-COT26",
       "codigo_oc": "4157-1122-AG26",
       "periodo_oc": "2026-11",
@@ -53149,6 +54445,14 @@
     {
       "codigo_proceso": "4157-882-COT26",
       "codigo_oc": "4157-1095-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4157-951-COT26",
+      "codigo_oc": "4157-1169-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -53427,6 +54731,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "4293-28-COT26",
+      "codigo_oc": "4293-64-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "4315-165-COT26",
       "codigo_oc": "4315-644-AG26",
       "periodo_oc": "2026-11",
@@ -53643,6 +54955,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "4367-474-COT26",
+      "codigo_oc": "4367-524-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "4371-322-COT26",
       "codigo_oc": "4371-493-AG26",
       "periodo_oc": "2026-11",
@@ -53715,6 +55035,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "4371-405-COT26",
+      "codigo_oc": "4371-523-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "4371-407-COT26",
       "codigo_oc": "4371-512-AG26",
       "periodo_oc": "2026-11",
@@ -53733,6 +55061,14 @@
     {
       "codigo_proceso": "4389-58-COT26",
       "codigo_oc": "4389-94-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4389-61-COT26",
+      "codigo_oc": "4389-98-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -53861,6 +55197,22 @@
     {
       "codigo_proceso": "4455-307-COT26",
       "codigo_oc": "4455-869-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4455-334-COT26",
+      "codigo_oc": "4455-904-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4455-341-COT26",
+      "codigo_oc": "4455-906-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -54019,6 +55371,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "4494-705-COT26",
+      "codigo_oc": "4494-964-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "4494-707-COT26",
       "codigo_oc": "4494-954-AG26",
       "periodo_oc": "2026-11",
@@ -54029,6 +55389,14 @@
     {
       "codigo_proceso": "4494-709-COT26",
       "codigo_oc": "4494-960-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4494-740-COT26",
+      "codigo_oc": "4494-979-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -54227,6 +55595,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "4642-307-COT26",
+      "codigo_oc": "4642-1099-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "4642-313-COT26",
       "codigo_oc": "4642-1041-AG26",
       "periodo_oc": "2026-11",
@@ -54357,6 +55733,14 @@
     {
       "codigo_proceso": "4777-896-COT26",
       "codigo_oc": "4777-938-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "4777-897-COT26",
+      "codigo_oc": "4777-979-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -54651,6 +56035,30 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "5052-491-COT26",
+      "codigo_oc": "5052-1300-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5052-492-COT26",
+      "codigo_oc": "5052-1301-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5053-124-COT26",
+      "codigo_oc": "5053-1882-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "5054-99-COT26",
       "codigo_oc": "5054-178-AG26",
       "periodo_oc": "2026-11",
@@ -54699,6 +56107,46 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "5060-1067-COT26",
+      "codigo_oc": "5060-1128-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5060-1069-COT26",
+      "codigo_oc": "5060-1137-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5060-1073-COT26",
+      "codigo_oc": "5060-1135-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5060-1074-COT26",
+      "codigo_oc": "5060-1134-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5060-1076-COT26",
+      "codigo_oc": "5060-1132-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "5060-1100-COT26",
       "codigo_oc": "5060-1097-AG26",
       "periodo_oc": "2026-11",
@@ -54717,6 +56165,14 @@
     {
       "codigo_proceso": "5060-1164-COT26",
       "codigo_oc": "5060-1079-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5060-1176-COT26",
+      "codigo_oc": "5060-1125-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -55059,6 +56515,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "514862-402-COT26",
+      "codigo_oc": "514862-734-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "5178-5188-COT26",
       "codigo_oc": "5178-4879-AG26",
       "periodo_oc": "2026-11",
@@ -55163,6 +56627,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "5178-5397-COT26",
+      "codigo_oc": "5178-5087-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "5178-5401-COT26",
       "codigo_oc": "5178-4971-AG26",
       "periodo_oc": "2026-11",
@@ -55213,6 +56685,14 @@
     {
       "codigo_proceso": "5190-175-COT26",
       "codigo_oc": "5190-335-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5190-176-COT26",
+      "codigo_oc": "5190-343-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -55299,6 +56779,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "520149-121-COT26",
+      "codigo_oc": "520149-162-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "520149-122-COT26",
       "codigo_oc": "520149-159-AG26",
       "periodo_oc": "2026-11",
@@ -55325,6 +56813,30 @@
     {
       "codigo_proceso": "5240-8-COT26",
       "codigo_oc": "5240-265-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5251-1140-COT26",
+      "codigo_oc": "5251-1089-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5251-1143-COT26",
+      "codigo_oc": "5251-1090-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5251-1145-COT26",
+      "codigo_oc": "5251-1092-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -55373,6 +56885,22 @@
     {
       "codigo_proceso": "5251-1239-COT26",
       "codigo_oc": "5251-1091-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5251-1252-COT26",
+      "codigo_oc": "5251-1099-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5251-1269-COT26",
+      "codigo_oc": "5251-1108-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -55493,6 +57021,22 @@
     {
       "codigo_proceso": "5338-328-COT26",
       "codigo_oc": "5338-657-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5338-334-COT26",
+      "codigo_oc": "5338-662-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5338-335-COT26",
+      "codigo_oc": "5338-661-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -55771,6 +57315,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "539119-178-COT26",
+      "codigo_oc": "539119-3818-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "5394-646-COT26",
       "codigo_oc": "5394-746-AG26",
       "periodo_oc": "2026-11",
@@ -55939,8 +57491,24 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "5416-849-COT26",
+      "codigo_oc": "5416-1336-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "5418-75-COT26",
       "codigo_oc": "5418-262-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5424-153-COT26",
+      "codigo_oc": "5424-153-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -56013,6 +57581,14 @@
     {
       "codigo_proceso": "548867-25-COT26",
       "codigo_oc": "548867-38-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5490-122-COT26",
+      "codigo_oc": "5490-151-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -56179,6 +57755,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "5517-463-COT26",
+      "codigo_oc": "5517-502-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "5517-482-COT26",
       "codigo_oc": "5517-497-AG26",
       "periodo_oc": "2026-11",
@@ -56243,6 +57827,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "5517-500-COT26",
+      "codigo_oc": "5517-515-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "5517-503-COT26",
       "codigo_oc": "5517-493-AG26",
       "periodo_oc": "2026-11",
@@ -56269,6 +57861,14 @@
     {
       "codigo_proceso": "5517-507-COT26",
       "codigo_oc": "5517-489-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5517-539-COT26",
+      "codigo_oc": "5517-511-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -56347,6 +57947,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "5539-163-COT26",
+      "codigo_oc": "5539-243-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "5574-40-COT26",
       "codigo_oc": "5574-88-AG26",
       "periodo_oc": "2026-11",
@@ -56381,6 +57989,14 @@
     {
       "codigo_proceso": "557639-3053-COT26",
       "codigo_oc": "557639-3191-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "557639-3064-COT26",
+      "codigo_oc": "557639-3375-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -56453,6 +58069,14 @@
     {
       "codigo_proceso": "557639-3215-COT26",
       "codigo_oc": "557639-3136-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "557639-3217-COT26",
+      "codigo_oc": "557639-3431-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -56533,6 +58157,14 @@
     {
       "codigo_proceso": "557639-3304-COT26",
       "codigo_oc": "557639-3107-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "557639-3307-COT26",
+      "codigo_oc": "557639-3383-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -56725,6 +58357,30 @@
     {
       "codigo_proceso": "557639-3386-COT26",
       "codigo_oc": "557639-3167-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "557639-3389-COT26",
+      "codigo_oc": "557639-3380-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "557639-3391-COT26",
+      "codigo_oc": "557639-3379-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "557639-3392-COT26",
+      "codigo_oc": "557639-3307-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -56947,6 +58603,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "557639-3675-COT26",
+      "codigo_oc": "557639-3434-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "5585-70-COT26",
       "codigo_oc": "5585-86-AG26",
       "periodo_oc": "2026-11",
@@ -56965,6 +58629,14 @@
     {
       "codigo_proceso": "5603-182-COT26",
       "codigo_oc": "5603-156-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "5611-57-COT26",
+      "codigo_oc": "5611-111-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -57093,6 +58765,14 @@
     {
       "codigo_proceso": "5702-397-COT26",
       "codigo_oc": "5702-824-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "574-298-COT26",
+      "codigo_oc": "574-407-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -57533,6 +59213,14 @@
     {
       "codigo_proceso": "612-221-COT26",
       "codigo_oc": "612-750-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "612-222-COT26",
+      "codigo_oc": "612-788-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -57995,6 +59683,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "640840-236-COT26",
+      "codigo_oc": "640840-220-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "640840-237-COT26",
       "codigo_oc": "640840-209-AG26",
       "periodo_oc": "2026-11",
@@ -58019,8 +59715,32 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "652-336-COT26",
+      "codigo_oc": "652-429-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "652-357-COT26",
       "codigo_oc": "652-417-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "652-358-COT26",
+      "codigo_oc": "652-428-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "652-370-COT26",
+      "codigo_oc": "652-437-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -58283,6 +60003,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "744835-650-COT26",
+      "codigo_oc": "744835-609-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "744835-652-COT26",
       "codigo_oc": "744835-598-AG26",
       "periodo_oc": "2026-11",
@@ -58501,6 +60229,22 @@
     {
       "codigo_proceso": "764-146-COT26",
       "codigo_oc": "764-290-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "764-153-COT26",
+      "codigo_oc": "764-298-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "765-55-COT26",
+      "codigo_oc": "765-260-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -58947,6 +60691,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "855-40-COT26",
+      "codigo_oc": "855-244-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "857-66-COT26",
       "codigo_oc": "857-170-AG26",
       "periodo_oc": "2026-11",
@@ -59019,6 +60771,14 @@
       "limite": "Relación de origen; no acredita adjudicación ni pago"
     },
     {
+      "codigo_proceso": "858-222-COT26",
+      "codigo_oc": "858-510-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
       "codigo_proceso": "859378-387-COT26",
       "codigo_oc": "859378-725-AG26",
       "periodo_oc": "2026-11",
@@ -59045,6 +60805,14 @@
     {
       "codigo_proceso": "859378-404-COT26",
       "codigo_oc": "859378-735-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "859378-407-COT26",
+      "codigo_oc": "859378-750-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
@@ -59653,6 +61421,14 @@
     {
       "codigo_proceso": "948-156-COT26",
       "codigo_oc": "948-247-AG26",
+      "periodo_oc": "2026-11",
+      "estado_verificacion": "confirmado_documentalmente",
+      "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
+      "limite": "Relación de origen; no acredita adjudicación ni pago"
+    },
+    {
+      "codigo_proceso": "948-184-COT26",
+      "codigo_oc": "948-274-AG26",
       "periodo_oc": "2026-11",
       "estado_verificacion": "confirmado_documentalmente",
       "fuente": "MER v2 / ZIP oficial OC / Descripcion/Obervaciones",
