@@ -69,3 +69,11 @@ Contrastar: inicio cercano a 09:00; tabla/mes y PK transferidas; fechas inválid
 - Orquestador: `350bac6`.
 - Instalador: `818ff63`.
 - Instalación en Ubuntu: captura de `crontab -l | grep MER_CONCILIACION_0900` del 09/11/2026.
+
+## Incidente 17/11/2026 y aislamiento propuesto (pendiente de despliegue local)
+
+El cron se disparó a las 09:00:01, pero el log terminó con `GIT_NO_LIMPIO`; el archivo rastreado `scripts/asistente_ia/backend/adaptador-worker.mjs` tenía cambios locales. No se acreditó conciliación del 17/11. No descartar esos cambios.
+
+Corrección propuesta en PR: el cron llama a `scripts/ubuntu_conciliar_mer_0900_aislado.sh`, que utiliza un clon dedicado en `~/.local/share/mercadopublico/conciliacion-runtime` y el Python virtual del proyecto original, sin alterar su árbol de desarrollo. El motor conserva las validaciones y usa `MER_LOCK_DIR` para compartir los mismos locks con el entorno original. El log del cron permanece en el directorio original, pero el informe `salida_operativa/conciliacion_cronologica.json` queda en el runtime aislado. Las credenciales siguen en el perfil Ubuntu.
+
+**Activación:** una vez fusionado el PR, ejecutar el instalador desde una copia limpia del código o actualizar solamente los scripts aprobados en el equipo sin descartar modificaciones locales. Verificar `crontab -l` antes de iniciar una recuperación manual; no permitir dos conciliaciones simultáneas. Ejecutar el wrapper manualmente una vez para recuperar 17/11 y revisar el log, el informe del runtime, los cambios MER y la publicación. La aprobación del código en GitHub no instala ni ejecuta por sí sola el cron de Ubuntu.
