@@ -105,7 +105,25 @@ jobs:
           s=json.load(open('control/cola_api_mer.json'))['jornadas_actions'][os.environ['MER_API_FECHA_OBJETIVO']]
           assert s.get('completa') is True
           PY
-            then echo 'JORNADA_AGOTADA'; break; fi
+            then
+              echo 'JORNADA_AGOTADA; buscar siguiente fecha pendiente del mes'
+              siguiente="$(python - <<'PY'
+          import datetime,json,os
+          from zoneinfo import ZoneInfo
+          now=datetime.datetime.now(ZoneInfo('America/Santiago')).date()
+          state=json.load(open('control/cola_api_mer.json')).get('jornadas_actions',{})
+          inicio=now.replace(day=1)
+          for i in range((now-inicio).days+1):
+           fecha=(inicio+datetime.timedelta(days=i)).isoformat()
+           if not state.get(fecha,{}).get('completa',False):
+            print(fecha)
+            break
+          PY
+              )"
+              if [ -z "$siguiente" ]; then echo 'MES_OPERATIVO_SIN_JORNADAS_PENDIENTES'; break; fi
+              export MER_API_FECHA_OBJETIVO="$siguiente"
+              echo "SIGUIENTE_JORNADA $MER_API_FECHA_OBJETIVO"
+            fi
             if python - <<'PY'
           import datetime,json,os
           from zoneinfo import ZoneInfo
