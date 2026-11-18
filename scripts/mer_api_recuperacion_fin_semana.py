@@ -244,7 +244,7 @@ def main():
    # No pasar página hasta que todas las cotizaciones estén confirmadas en la cola.
    # Los códigos fallidos también se guardan en cola como ERROR para reintentar.
    for number,codes in page_batches:
-    if all(not code.endswith("-COT26") or code in cache for code in codes):
+    if all(not code.endswith("-COT26") or code in cache or code in keys["Procesos"] for code in codes):
      if number<total_pages:window["pagina"]=number+1
      else:
       window["pagina"]=1
