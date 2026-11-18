@@ -1,0 +1,194 @@
+name: Compra Agil recuperacion domingo 20 Chile
+on:
+  schedule:
+    - cron: '0 23 * * 0'
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: mer-api-actions-unica
+  cancel-in-progress: false
+jobs:
+  jornada:
+    runs-on: ubuntu-latest
+    timeout-minutes: 540
+    env:
+      CHILECOMPRA_TICKET: ${{ secrets.CHILECOMPRA_TICKET }}
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      GH_TOKEN: ${{ github.token }}
+      MER_API_DELAY_SECONDS: "10"
+      MER_API_MAX_DETAIL: "400"
+      MER_API_RUN_NOW: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Validar sábado 20:00 Chile y seleccionar fecha pendiente
+        id: ventana
+        run: python scripts/seleccionar_recuperacion_fin_semana.py domingo
+      - uses: actions/setup-python@v5
+        if: steps.ventana.outputs.ok == 'true'
+        with:
+          python-version: '3.11'
+      - name: Dependencias y preflight
+        if: steps.ventana.outputs.ok == 'true'
+        run: |
+          set -euo pipefail
+          test -n "$CHILECOMPRA_TICKET"
+          test -n "$GOOGLE_SERVICE_ACCOUNT_JSON"
+          python -m pip install --disable-pip-version-check 'gspread>=6,<7' 'google-auth>=2,<3'
+          python -m py_compile scripts/mer_api_recuperacion_fin_semana.py
+          python - <<'PY'
+          import json,os
+          c=json.load(open('config/catalogo_sheets.json'))
+          p=os.environ['PERIODO_SOLICITADO']
+          assert c['periodos'][p]['tipo']=='operativo', 'Sólo mes operativo vigente'
+          PY
+      - name: Configurar identidad Git para rebase de checkpoints y publicación
+        if: steps.ventana.outputs.ok == 'true'
+        run: |
+          git config user.name 'MER API Actions'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+      - name: Ejecutar lotes y guardar checkpoints sin repetir detalles
+        id: lotes
+        if: steps.ventana.outputs.ok == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Los runners hospedados tienen un límite práctico de 6 horas.
+          # Reservar tiempo para exportación, índices y Pages; no agotar
+          # el runner con consultas y dejar sin publicar datos confirmados.
+          inicio_lotes=$SECONDS
+          limite_lotes_segundos=14400
+          for indice in $(seq 1 12); do
+            if (( SECONDS - inicio_lotes >= limite_lotes_segundos )); then
+              echo "LIMITE_LOTES_PUBLICACION_PARCIAL: conservar checkpoint y publicar MER"
+              break
+            fi
+            export MER_API_RUN_ID="gha-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${indice}"
+            python scripts/mer_api_recuperacion_fin_semana.py
+            python - <<'PY'
+          import json,os
+          r=json.load(open('control/ultimo_reporte_api_mer.json'))
+          assert r.get('id_ejecucion')==os.environ['MER_API_RUN_ID'], 'Reporte desfasado'
+          assert r.get('fecha_objetivo')==os.environ['MER_API_FECHA_OBJETIVO'], 'Jornada distinta'
+          print('CHECKPOINT',r,flush=True)
+          PY
+            git add control/cola_api_mer.json control/ultimo_reporte_api_mer.json
+            git diff --cached --check
+            if ! git diff --cached --quiet; then
+              git -c user.name='MER API Actions' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "data(api): jornada $MER_API_FECHA_OBJETIVO lote $indice"
+              # Rebasar sobre publicaciones concurrentes sin sobrescribir cambios.
+              # Ante conflicto de contenido, abortar y conservar el artifact.
+              publicado=0
+              for intento in 1 2 3; do
+                git fetch origin main
+                if ! git rebase origin/main; then
+                  git rebase --abort || true
+                  echo 'ERROR: conflicto de contenido al rebasar checkpoint; estado conservado en artifact'
+                  exit 1
+                fi
+                if git push origin HEAD:main; then publicado=1; break; fi
+                echo "PUSH_CONCURRENTE_REINTENTO $intento"
+                sleep 5
+              done
+              if [ "$publicado" -ne 1 ]; then
+                echo 'ERROR: main cambio durante tres intentos; estado conservado en artifact'
+                exit 1
+              fi
+            fi
+            if python - <<'PY'
+          import json,os
+          s=json.load(open('control/cola_api_mer.json'))['jornadas_actions'][os.environ['MER_API_FECHA_OBJETIVO']]
+          assert s.get('completa') is True
+          PY
+            then echo 'JORNADA_AGOTADA'; break; fi
+            if python - <<'PY'
+          import datetime,json,os
+          from zoneinfo import ZoneInfo
+          state=json.load(open('control/cola_api_mer.json'))['jornadas_actions'][os.environ['MER_API_FECHA_OBJETIVO']]
+          pause=state.get('pausa_hasta')
+          assert not pause or pause<=datetime.datetime.now(ZoneInfo('America/Santiago')).isoformat(), 'API en enfriamiento'
+          PY
+            then :; else echo 'CUOTA_API_ENFRIAMIENTO'; break; fi
+          done
+      - name: Resguardar estado aun ante falla
+        if: always() && steps.ventana.outputs.ok == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-recuperacion-domingo-${{ github.run_id }}
+          path: |
+            control/cola_api_mer.json
+            control/ultimo_reporte_api_mer.json
+      - name: Exportar e indexar el mes operativo
+        id: exportar
+        # Ejecutar también si falló un lote: publicar solamente registros ya confirmados en MER.
+        # La cancelación global de Actions no garantiza ejecutar pasos posteriores.
+        if: always() && steps.ventana.outputs.ok == 'true' && (steps.lotes.outcome == 'success' || steps.lotes.outcome == 'failure')
+        run: |
+          set -euo pipefail
+          python scripts/exportar_mer_operativo_v2.py --periodo "$PERIODO_SOLICITADO" --aplicar --incluir-api
+          for entidad in procesos ordenescompra ofertas resultados; do
+            python scripts/indexar_busqueda_frontend_v2.py --periodo "$PERIODO_SOLICITADO" --entidad "$entidad"
+            python scripts/generar_perfiles_v2.py --periodo "$PERIODO_SOLICITADO" --entidad "$entidad"
+            python scripts/generar_analitica_v2.py --periodo "$PERIODO_SOLICITADO" --entidad "$entidad"
+          done
+          python scripts/indexar_relaciones_frontend_v2.py --periodo "$PERIODO_SOLICITADO"
+          python scripts/indexar_relaciones_procesos_v2.py --periodo "$PERIODO_SOLICITADO"
+          git add frontend-v2/data/
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git -c user.name='MER API Actions' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "data(api): publicar jornada $MER_API_FECHA_OBJETIVO"
+            publicado=0
+            for intento in 1 2 3; do
+              git fetch origin main
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo 'CONFLICTO: cambios de contenido incompatibles; no sobrescribir'
+                exit 1
+              fi
+              if git push origin HEAD:main; then publicado=1; break; fi
+              echo "PUBLICACION_CONCURRENTE_REINTENTO $intento"
+              sleep 5
+            done
+            if [ "$publicado" -ne 1 ]; then
+              echo 'CONFLICTO: publicación cancelada tras tres intentos'
+              exit 1
+            fi
+          fi
+      - name: Desplegar y verificar Pages
+        if: always() && steps.ventana.outputs.ok == 'true' && steps.exportar.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          export BEFORE="$(gh run list --workflow preview-frontend-v2.yml --event workflow_dispatch --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
+          gh workflow run preview-frontend-v2.yml --ref main
+          run_id=""
+          for i in $(seq 1 40); do
+            run_id="$(gh run list --workflow preview-frontend-v2.yml --event workflow_dispatch --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
+            if [ "$run_id" != "$BEFORE" ] && [ "$run_id" != 0 ]; then break; fi
+            sleep 15
+          done
+          if [ "$run_id" = "$BEFORE" ] || [ "$run_id" = 0 ]; then echo 'ERROR: no se encontró deploy Pages'; exit 1; fi
+          gh run watch "$run_id" --exit-status
+          python - <<'PY'
+          import json,os,time,urllib.request
+          p=os.environ['PERIODO_SOLICITADO']
+          wanted=json.load(open('frontend-v2/data/catalogo-publico.json'))
+          expected=next(x['conteos'] for x in wanted['periodos'] if x['periodo']==p)
+          url='https://juliopez.github.io/MercadoPublico-Inteligencia/frontend-v2/data/catalogo-publico.json'
+          for i in range(12):
+           try:
+            q=urllib.request.Request(url+'?verificacion='+str(time.time_ns()),headers={'Cache-Control':'no-cache'})
+            live=json.load(urllib.request.urlopen(q,timeout=25))
+            entry=next(x for x in live['periodos'] if x['periodo']==p)
+            if entry['conteos']==expected:
+             print('PAGES_VERIFICADO',p,expected,flush=True)
+             break
+           except Exception as exc: print('PAGES_REINTENTO',type(exc).__name__,flush=True)
+           time.sleep(20)
+          else:raise SystemExit('ERROR: Pages no corresponde al catálogo publicado')
+          PY
