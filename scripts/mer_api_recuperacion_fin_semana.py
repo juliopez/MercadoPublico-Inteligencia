@@ -57,7 +57,7 @@ def main():
  try:target_date=dt.date.fromisoformat(target)
  except ValueError:raise SystemExit("BLOQUEO: fecha objetivo inválida")
  if target_date>now.date() or target_date.month!=now.month or target_date.year!=now.year:raise SystemExit("BLOQUEO: fuera del mes operativo actual")
- if now.weekday()<5 or not (19<=now.hour<=23 or now.hour<7):
+ if os.getenv("GITHUB_ACTIONS")!="true":
   print("SKIP: fuera de ventana de recuperación fin de semana");return
  ticket=os.getenv("CHILECOMPRA_TICKET","").strip()
  secret=os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON","").strip()
@@ -149,7 +149,7 @@ def main():
    total_pages=int((payload.get("paginacion") or {}).get("total_paginas") or scanning_page)
    listing_codes=[str(i.get("codigo") or "") for i in payload["items"] if isinstance(i,dict)]
    # Guardar exactamente las páginas completas que podremos declarar procesadas.
-   needed=[c for c in listing_codes if c.endswith("-COT26") and c not in cache and c not in candidates]
+   needed=[c for c in listing_codes if c.endswith("-COT26") and c not in cache and c not in keys["Procesos"] and c not in candidates]
    available=maximum-len(candidates)
    candidates.extend(needed[:available])
    page_batches.append((scanning_page,listing_codes))
