@@ -68042,6 +68042,20 @@
         }
       },
       "completa": false
+    },
+    "2026-11-17": {
+      "pagina": 1,
+      "consultas": {
+        "1777-76-COT26": {
+          "estado": "ERROR",
+          "ultima_consulta": "2026-11-17",
+          "proxima_revision": "2026-11-17T23:13:45.499509-03:00",
+          "intentos": 1,
+          "error": "HTTP 429 x3"
+        }
+      },
+      "completa": false,
+      "pausa_hasta": "2026-11-17T23:13:45.499509-03:00"
     }
   }
 }
