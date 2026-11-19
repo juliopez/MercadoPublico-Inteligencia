@@ -1,15 +1,13 @@
 {
-  "id_ejecucion": "gha-44213138724-1-1",
+  "id_ejecucion": "gha-44434235199-1-1",
   "periodo": "2026-11",
-  "fecha": "2026-11-17",
-  "consultados": 0,
-  "procesos": 0,
+  "fecha": "2026-11-18",
+  "consultados": 400,
+  "procesos": 400,
   "ofertas": 0,
   "resultados": 0,
-  "errores": 1,
+  "errores": 0,
   "pagina": 1,
-  "limite_429": true,
-  "reintentar_desde": "2026-11-17T23:13:45.499509-03:00",
-  "fecha_objetivo": "2026-11-17",
+  "fecha_objetivo": "2026-11-18",
   "jornada_completa": false
 }
