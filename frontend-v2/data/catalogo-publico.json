@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "fecha_publicacion": "2026-11-19T19:49:31.428413+00:00",
+  "fecha_publicacion": "2026-11-19T20:23:14.000790+00:00",
   "fuente": "Extractos públicos MER v2 de Google Sheets privadas, exportados por período",
   "periodos": [
     {
@@ -3784,7 +3784,7 @@
       "periodo": "2026-11",
       "tipo": "operativo",
       "conteos": {
-        "procesos": 17812,
+        "procesos": 17993,
         "ofertas": 36,
         "resultados": 0,
         "ordenescompra": 92196
@@ -3916,7 +3916,7 @@
   ],
   "ultima_exportacion": {
     "periodo": "2026-11",
-    "fecha_utc": "2026-11-19T19:49:31.428413+00:00",
+    "fecha_utc": "2026-11-19T20:23:14.000790+00:00",
     "fuente": "MER_OPERATIVO_V2"
   }
 }
