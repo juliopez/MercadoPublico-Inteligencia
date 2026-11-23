@@ -44,3 +44,9 @@ La conciliación cronológica local de las 09:00 del 23/11 redistribuyó registr
 6. Solo después, contrastar con cron/systemd instalado en Ubuntu y elaborar inventario consolidado.
 
 **Política:** auditoría de solo lectura; no eliminar, reprogramar ni ejecutar procesos productivos sin autorización.
+
+## Verificación posterior a aprobación (23/11)
+
+Se reabrieron los YAML vigentes `compra-agil-recuperacion-sabado.yml` y `compra-agil-recuperacion-domingo.yml`. Ambos ya contienen en el chequeo de enfriamiento posterior al cambio de jornada: `json.load(...).get('jornadas_actions',{}).get(os.environ['MER_API_FECHA_OBJETIVO'],{})` (línea 131). Esta es la corrección del `KeyError: '2026-11-02'` que se observó en el log del run `45105256358`; no es necesario duplicarla. La consulta inicial del estado de la jornada actual en la línea 106 se ejecuta **después** de `mer_api_recuperacion_fin_semana.py`, que debe crear su checkpoint. El siguiente ciclo llama al mismo script con la nueva fecha objetivo.
+
+El run `45158022768` de la jornada ordinaria fue `success` a nivel job, pero `VENTANA_API_CHILE ... 07:39 ... FUERA_VENTANA`: procesamiento omitido. No interpretar `success` como éxito de ingestión. Pendiente validar en una próxima ejecución de fin de semana que `SIGUIENTE_JORNADA` se acompañe de un checkpoint creado y de procesamiento efectivo de la nueva fecha. No se dispararon workflows ni se alteró producción en esta revisión.
