@@ -21,12 +21,13 @@ jobs:
       MER_API_DELAY_SECONDS: "10"
       MER_API_MAX_DETAIL: "400"
       MER_API_RUN_NOW: "1"
+      MER_RECOVERY_SCHEDULE_CRON: ${{ github.event.schedule }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
-      - name: Validar sábado 20:00 Chile y seleccionar fecha pendiente
+      - name: Validar disparo sabado y seleccionar fecha pendiente
         id: ventana
         run: python scripts/seleccionar_recuperacion_fin_semana.py sabado
       - uses: actions/setup-python@v5
