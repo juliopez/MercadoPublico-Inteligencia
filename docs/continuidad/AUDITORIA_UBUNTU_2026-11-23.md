@@ -38,3 +38,23 @@
 **P1:** diagnosticar causa de `PUBLICACION_V2_FALLIDA` de 16/19/20 noviembre y verificar si una publicación posterior recuperó todos los datos. **P2:** auditar logs de jobs y conteos/checkpoints de `licitaciones-api-1615-actions.yml` y `api-compra-agil-400-actions.yml`, especialmente runs `schedule` con `success` y las solicitudes Ubuntu 22:05. **P3:** observar cierre y rotación cuando correspondan; comprobar destino real de `estado_cierre.json`. **P4:** completar inventario global de workflows GitHub (la auditoría Actions de 23/11 también es parcial), luego inventario consolidado con responsabilidades, conflictos y redundancias.
 
 **Política:** no alterar cron, systemd, workflows ni productivo sin autorización explícita. Documento refleja evidencia disponible al 23/11, no validación futura.
+
+## Ampliación de auditoría remota — 23/11/2026
+
+**Contador de cuatro problemas (no confundir hallazgo con solución):** P1 publicación 16:00 = abierto; P2 licitaciones 16:15 = verificación de tres jornadas completada, cierre integral de seis jornadas pendiente; P3 Compra Ágil 22:05 = abierto, evidencia de ejecuciones omitidas; P4 inventario global y consolidado = abierto. **0/4 cerrados integralmente**.
+
+### P1: publicación 16:00 — causa exacta aún no acreditada
+
+Se examinó `scripts/ubuntu_cron_integrado.sh` y `scripts/ubuntu_publicar_v2_post_etl.sh`. El primero convierte cualquier error del publicador en `PUBLICACION_V2_FALLIDA`/código 20. El segundo tiene bloqueos posibles: estado de sincronización, lock, árbol Git con cambios rastreados, `git pull --ff-only`, exportación MER/vínculos (con reintentos solo para 429), `git add/commit/push`. **El mensaje del orquestador no permite discriminar la causa**; requiere leer las líneas anteriores del log completo de 16, 19 y 20/11. No atribuir sin pruebas el fallo a GitHub, cuotas o concurrencia. La conciliación 09:00 del 23/11 sí publicó, pero eso no acredita que todos los derivados de las jornadas fallidas se hayan recuperado.
+
+### P2: licitaciones 16:15 — logs GitHub revisados
+
+Se consultaron jobs y logs de runs `44800371336` (20/11), `44596356785` (19/11) y `44378497389` (18/11). Los tres jobs tuvieron todos sus pasos `success`; el último lote reportó `PENDIENTES_API=0`, `PUBLICACION_REPOSITORIO_OK` y `LICITACIONES_API_PUBLICADAS`. Detalles guardados al final: 1.381 (20/11), 1.353 (19/11), 1.253 (18/11), con cero pendientes y cero errores en los informes finales. El proceso distingue registros del mes de otros períodos. Las jornadas 13, 16 y 17/11 figuran `success` en listado, pero aún no se inspeccionaron sus logs finales. No equivale a comprobación independiente de Pages para cada jornada.
+
+### P3: Compra Ágil nocturna — success sin procesamiento
+
+Runs `45158022768` y `45142604562`, ambos `schedule` del 23/11 UTC, finalizaron `success`, pero **todos los pasos posteriores al validador de ventana quedaron `skipped`**. En `45158022768` el log muestra `VENTANA_API_CHILE 2026-11-23T07:39:35-03:00 OBJETIVO 2026-11-22 ESTADO FUERA_VENTANA`. No hubo recuperación ni exportación en esos dos runs. Por contraste, run `44848066536` (disparo manual nocturno 20/11 Chile) ejecutó lotes, exportación y Pages; log: `PAGES_VERIFICADO 2026-11` con 22.717 procesos, 117.618 OC, 46 ofertas y 0 resultados en aquella instantánea. El YAML `api-compra-agil-400-actions.yml` tiene cron UTC 01:05 y 02:05 y permite `workflow_dispatch` desde Ubuntu 22:05. **No concluir que dos cron UTC equivalen a dos cargas ni desactivar nada sin auditoría de ventanas/checkpoints.**
+
+### P4: alcance
+
+Se verificaron directamente YAML de `licitaciones-api-1615-actions.yml`, `api-compra-agil-400-actions.yml` y scripts locales. El censo exhaustivo de `.github/workflows` continúa pendiente por limitación de enumeración de directorios de la conexión GitHub; los 28 nombres del inventario documental no son un censo completo.
