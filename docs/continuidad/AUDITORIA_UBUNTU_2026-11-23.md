@@ -114,3 +114,13 @@ Los supuestos horarios Ubuntu de 10:15, 19:00 y 22:05 no aparecen en este cronta
 El operador aprobó reemplazar la invocación horaria `0 * * * *` de `scripts/ubuntu_cron_integrado.sh --cron` por `0 16 * * 1-5`. El operador informó «listo» tras ejecutar el comando de sustitución en Ubuntu. **Estado: cambio comunicado por el operador, sin lectura posterior de `crontab -l` que confirme el resultado.**
 
 Motivo: el script ya contiene un filtro interno que permite trabajo real exclusivamente de lunes a viernes a las 16:00; las invocaciones restantes no ejecutan el ETL. Se conserva el filtro como defensa adicional. No se solicitó modificar el script ni las otras entradas cron (09:00 conciliación, 16:15 licitaciones). El cambio se aplica en el crontab local, no en los archivos versionados del repositorio. Verificar la línea efectiva en una futura comprobación ordinaria, sin repetir auditorías extensas.
+
+### Confirmación posterior del crontab
+
+El operador ejecutó `crontab -l | grep ubuntu_cron_integrado` y entregó la línea efectiva:
+
+```cron
+0 16 * * 1-5 /bin/bash "/home/julio/Julio Lopez/chilecompra/MercadoPublico-Inteligencia/scripts/ubuntu_cron_integrado.sh" --cron
+```
+
+**Verificado:** cron ya invoca el orquestador de lunes a viernes a las 16:00 según la zona horaria del sistema Ubuntu. No hay invocación horaria de este script en la línea verificada. La ejecución exitosa del ETL sigue pendiente de la próxima corrida natural (P1).
