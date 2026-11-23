@@ -28,7 +28,7 @@ Fuente: `docs/GITHUB_ACTIONS_MANTENIMIENTO.md` y dos workflows de recuperación 
 
 En la ejecución dominical, el salto a 02/11 produjo `KeyError: '2026-11-02'` al consultar una jornada sin checkpoint. Los pasos posteriores de exportación y Pages continuaron y verificaron 22.781 procesos, 117.618 OC, 465 ofertas, 43 resultados. Se corrigió el acceso al estado faltante en `main`: sábado `132babdafde83cf81f38f2b00867ff7e8adb52d6`, domingo `84da57fcd3ca69be2852cc7b40d7f79d6b58dd25`. **La corrección todavía requiere validación mediante nueva ejecución real**.
 
-La conciliación cronológica local de las 09:00 del 23/11 redistribuyó registros y publicó cerca de las 09:12, según capturas de Ubuntu aportadas durante la sesión; esa evidencia pertenece a la futura auditoría Ubuntu. El catálogo posterior de `main` registró 22.354 procesos, 103.092 OC, 465 ofertas y 43 resultados. La diferencia de procesos (427) coincide con el traslado informado por la conciliación. La diferencia de OC (14.526) no debe atribuirse íntegramente a los 12.741 traslados informados sin reconciliación adicional.
+La conciliación cronológica local de las 09:00 del 23/11 redistribuyó registros y publicó cerca de las 09:12, según capturas de Ubuntu aportadas durante la sesión; esa evidencia pertenece a la futura auditoría Ubuntu. El catálogo posterior de `main` registró 22.354 procesos, 103.092 OC, 465 ofertas y 43 resultados. La diferencia de procesos (427) coincide con el traslado informado por la conciliación. La diferencia de OC (14.526) coincide con la suma de traslados de la conciliación: 12.741 a octubre, 1.172 a septiembre, 335 a agosto, 146 a junio y 132 a julio. No hay diferencia residual de 1.785 OC.
 
 ## Proceso de las 10:15: sin identificar
 
@@ -39,7 +39,7 @@ La conciliación cronológica local de las 09:00 del 23/11 redistribuyó registr
 1. Enumerar todos los archivos en `.github/workflows/` y todos los workflows registrados (activos, deshabilitados y manuales); cruzar nombres, IDs, disparadores, UTC/Chile, concurrencia, permisos y secretos.
 2. Obtener últimas ejecuciones por workflow, conclusión de cada job, pasos omitidos, volumen de datos, errores y checkpoints.
 3. Identificar o descartar con evidencia el workflow atribuido a las 10:15 y revisar sus últimas ejecuciones.
-4. Reconciliar exportaciones, catálogo de `main` y Pages tras conciliación 09:00; investigar 1.785 OC aún no explicadas por los movimientos informados.
+4. Reconciliar exportaciones, catálogo de `main` y Pages tras conciliación 09:00; la diferencia de 14.526 OC queda explicada por los traslados del log de conciliación: 12.741 a octubre, 1.172 a septiembre, 335 a agosto, 146 a junio y 132 a julio (total 14.526).
 5. Validar el arreglo `KeyError` de fin de semana en la próxima ejecución real.
 6. Solo después, contrastar con cron/systemd instalado en Ubuntu y elaborar inventario consolidado.
 
