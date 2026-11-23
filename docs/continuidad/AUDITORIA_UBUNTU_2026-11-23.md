@@ -58,3 +58,7 @@ Runs `45158022768` y `45142604562`, ambos `schedule` del 23/11 UTC, finalizaron 
 ### P4: alcance
 
 Se verificaron directamente YAML de `licitaciones-api-1615-actions.yml`, `api-compra-agil-400-actions.yml` y scripts locales. El censo exhaustivo de `.github/workflows` continúa pendiente por limitación de enumeración de directorios de la conexión GitHub; los 28 nombres del inventario documental no son un censo completo.
+
+### P2 — cierre de verificación de seis jornadas (ampliación)
+
+También se inspeccionaron logs finales de `44156552736` (17/11), `43937353697` (16/11) y `43490405837` (13/11). Los tres muestran `LICITACIONES_API_PUBLICADAS`, `PENDIENTES_API=0`, `PUBLICACION_REPOSITORIO_OK` y `errores=0` en el último informe. Detalles guardados: 1.274 (17/11), 1.891 (16/11), 1.330 (13/11). **Se cierra la comprobación de procesamiento y publicación en repositorio de las seis jornadas 13,16–20/11**; la comprobación específica de Pages por jornada es otra prueba y no se afirma realizada. **Contador actualizado: 1/4 problemas cerrados dentro del alcance definido; 3/4 abiertos** (P1, P3, P4).
