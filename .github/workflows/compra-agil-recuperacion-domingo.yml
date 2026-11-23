@@ -128,7 +128,7 @@ jobs:
             if python - <<'PY'
           import datetime,json,os
           from zoneinfo import ZoneInfo
-          state=json.load(open('control/cola_api_mer.json'))['jornadas_actions'][os.environ['MER_API_FECHA_OBJETIVO']]
+          state=json.load(open('control/cola_api_mer.json')).get('jornadas_actions',{}).get(os.environ['MER_API_FECHA_OBJETIVO'],{})
           pause=state.get('pausa_hasta')
           assert not pause or pause<=datetime.datetime.now(ZoneInfo('America/Santiago')).isoformat(), 'API en enfriamiento'
           PY
