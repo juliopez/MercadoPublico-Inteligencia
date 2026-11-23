@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Selecciona la jornada más antigua aún no completada del mes operativo.
-Solo habilita el schedule correspondiente a las 20:00 de Santiago.
+Tolera retrasos del schedule y evita duplicar el cron UTC de otra estación.
 No consulta la API ni modifica el MER.
 """
 import datetime as dt
@@ -16,14 +16,42 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 def seleccionar(ahora, dia, state, periodo):
     chile = ahora.astimezone(TZ)
     esperado = 5 if dia == "sabado" else 6
-    # El schedule alternativo UTC de invierno/verano no debe duplicar el disparo.
-    if chile.weekday() != esperado or chile.hour != 20:
-        return None
-    if periodo != chile.strftime("%Y-%m"):
+    # GitHub puede retrasar el schedule varias horas, incluso hasta el día siguiente.
+    # El disparador de 23:00 UTC corresponde a verano (UTC-3);
+    # el de 00:00 UTC corresponde a invierno (UTC-4).
+    # Se valida la hora UTC prevista, NO la hora efectiva del runner.
+    cron = os.getenv("MER_RECOVERY_SCHEDULE_CRON", "").strip()
+    if cron:
+        try:
+            hora_utc = int(cron.split()[1])
+        except (IndexError, ValueError):
+            return None
+        if hora_utc not in (0, 23):
+            return None
+        candidatos = [chile.date() - dt.timedelta(days=i) for i in range(3)]
+        fecha_programada = None
+        for fecha_candidata in candidatos:
+            if fecha_candidata.weekday() != esperado:
+                continue
+            prevista = dt.datetime.combine(fecha_candidata, dt.time(20), TZ)
+            if prevista.astimezone(dt.timezone.utc).hour != hora_utc:
+                continue
+            retraso = (ahora - prevista).total_seconds()
+            if 0 <= retraso <= 36 * 3600:
+                fecha_programada = fecha_candidata
+                break
+        if fecha_programada is None:
+            return None
+    else:
+        # Disparo manual: permitir reintentos del fin de semana sin ventana horaria.
+        fecha_programada = chile.date()
+        if fecha_programada.weekday() != esperado:
+            return None
+    if periodo != fecha_programada.strftime("%Y-%m"):
         return None
     jornadas = state.get("jornadas_actions", {})
-    inicio = chile.date().replace(day=1)
-    for desplazamiento in range((chile.date() - inicio).days + 1):
+    inicio = fecha_programada.replace(day=1)
+    for desplazamiento in range((fecha_programada - inicio).days + 1):
         fecha = (inicio + dt.timedelta(days=desplazamiento)).isoformat()
         if not jornadas.get(fecha, {}).get("completa", False):
             return fecha
