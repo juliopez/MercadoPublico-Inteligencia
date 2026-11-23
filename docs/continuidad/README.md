@@ -1,3 +1,11 @@
+## Incidente recuperación Compra Ágil fin de semana — 21–22/11/2026 (corrección 22/11)
+
+**Evidencia:** ejecuciones de sábado `44977382632` (21/11 23:43 Chile) y `44983026915` (22/11 00:59 Chile) terminaron `success`, pero el selector devolvió `OBJETIVO SIN_AUTORIZACION_O_PENDIENTES` y todos los pasos de recuperación, checkpoints, exportación y Pages quedaron `skipped`. **No se recuperaron registros en estas dos ejecuciones**. El motivo acreditado es que GitHub retrasó los cron y el selector exigía `chile.weekday()` y `chile.hour == 20` al iniciar el runner.
+
+**Corrección aplicada directamente a `main` (22/11):** `scripts/seleccionar_recuperacion_fin_semana.py` (commit `e4cf384978330c0c7928df8dda3c06340d8ebdc7`) y workflows `.github/workflows/compra-agil-recuperacion-sabado.yml` (`0cd5e312617f55a8f4fb6f8b8b053c7e63f3ba6a`) y `domingo.yml` (`b6ecdb2a19019e5e4491e7a48b423df851e27ff2`). Se pasa `github.event.schedule` mediante `MER_RECOVERY_SCHEDULE_CRON`, se identifica el horario UTC de verano/invierno y se toleran retrasos de hasta 36 horas, incluidos cruces de medianoche. Se conserva el filtro de mes operativo y de jornadas incompletas, checkpoints, reintentos y publicación existente. **No se modificaron cron ni workflows de lunes a viernes.**
+
+**Limitaciones y auditoría pendiente:** los workflows tienen `timeout-minutes: 540` y el bucle de lotes reserva tiempo para exportación; no existe ejecución indefinida. La corrección está publicada, **pero no se ha verificado aún una recuperación efectiva tras el cambio**. Auditar el workflow de domingo por separado y, en la siguiente ejecución habilitada, comprobar `steps.ventana.outputs.ok`, lotes procesados, errores 429/5xx, checkpoint, escritura MER, catálogo y `PAGES_VERIFICADO`. Un resultado `success` con etapas `skipped` **no equivale a recuperación exitosa**. El doble cron UTC por estación puede producir un disparo alternativo que debe quedar omitido; no debe duplicar procesamiento.
+
 ## Validación del asistente Gemini — 14/11/2026
 
 [Informe de las cinco pruebas funcionales, incidencia JSON_INVALIDO y límites de validación](VALIDACION_ASISTENTE_GEMINI_2026-11-14.md). Resultado: 5/5 consultas respondidas en frontend después de PR #19; valores aún sin auditoría independiente contra JSON de origen. No se modificaron procesos productivos de datos.
