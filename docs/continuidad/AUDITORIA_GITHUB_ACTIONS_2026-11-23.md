@@ -86,3 +86,11 @@ Se inspeccionaron directamente los **28 archivos** del grupo operativo/mantenimi
 Los otros 23 YAML del grupo no declaran `schedule`; usan `workflow_dispatch`, `push` o `workflow_run` según archivo. En particular `licitaciones-api-1615-actions.yml` y `observacion-api-2230.yml` solo tienen `workflow_dispatch`; `preview-frontend-v2.yml` tiene manual, `workflow_run` y `push`; `conciliar-multimes-ca-oc-v2.yml` manual y `push`.
 
 **Advertencias:** el cron UTC no garantiza hora exacta de inicio; las dobles programaciones no significan dos recuperaciones útiles. La clasificación aún no cubre los 46 YAML de asistente/validaciones ni el registro de habilitación GitHub. Pendiente contrastar cron/systemd Ubuntu. No se ejecutó ni modificó automatización productiva.
+
+## Cierre del censo de disparadores: 74 de 74 YAML inspeccionados
+
+Se inspeccionaron los 46 YAML restantes (19 del grupo asistente y 27 del grupo validaciones/verificaciones). **Uno** de estos 46 declara `schedule`: `verificar-publicacion-diaria-v2.yml`, cron UTC `12 21,22 * * 1-5`. Los otros 45 no tienen `schedule` y usan disparadores manuales, `push` y/o `pull_request`.
+
+**Total corregido: 6 YAML con `schedule` y 68 sin `schedule`**, entre los 74 archivos del repositorio. Los seis son: `api-compra-agil-400-actions.yml`, `compra-agil-recuperacion-sabado.yml`, `compra-agil-recuperacion-domingo.yml`, `publicacion-v2-post-etl.yml`, `reparar-analitica-organismos-v2.yml`, `verificar-publicacion-diaria-v2.yml`. La clasificación anterior de cinco era parcial y queda expresamente sustituida por este censo completo.
+
+**Límites:** existencia de YAML no prueba habilitación efectiva, cumplimiento del cron ni éxito de procesamiento. Aún no se obtuvo el listado de estados `active/disabled` de GitHub Actions ni la configuración real de crontab/systemd Ubuntu; mantener el problema de inventario abierto hasta contrastar esos datos.
