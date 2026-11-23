@@ -1,3 +1,7 @@
+## Inventario y auditoría GitHub Actions — 23/11/2026
+
+Documento de referencia: [AUDITORIA_GITHUB_ACTIONS_2026-11-23.md](AUDITORIA_GITHUB_ACTIONS_2026-11-23.md). Incluye 28 workflows identificados documentalmente, YAML examinados, ejecuciones verificadas, correcciones, limitaciones de cobertura y pendientes. **Estado: auditoría parcial; no declarar inventario exhaustivo ni ejecución de las 10:15 verificada.** Siguiente etapa: auditoría separada de cron y systemd instalados en Ubuntu, y luego inventario consolidado.
+
 ## Auditoría 23/11/2026 — continuidad del recuperador y conciliación matinal
 
 **Evidencia GitHub Actions:** ejecución dominical `45105256358` (inicio 23/11 00:19 Chile) procesó el 01/11: 64 consultas, 64 procesos, 419 ofertas, 43 resultados, 0 errores finales; hubo un HTTP 429 con reintento. La jornada 01/11 quedó `completa=true`. Al avanzar al 02/11, el control de enfriamiento accedió directamente a `jornadas_actions['2026-11-02']` antes de que existiera el checkpoint y lanzó `KeyError`. Por la estructura `if` del workflow, el error no impidió el paso de exportación ni Pages, pero interrumpió la continuidad de jornadas. La exportación de esa ejecución verificó 22.781 procesos, 117.618 OC, 465 ofertas y 43 resultados; Pages informó `PAGES_VERIFICADO`.
