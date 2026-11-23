@@ -120,3 +120,20 @@ La API GitHub de `actions/workflows` para consultar estados `active/disabled` no
 **P1 abierto** únicamente por falta de evidencia de ejecución productiva posterior a la reparación; **P2 cerrado**; **P3 abierto** por eficacia real de ventana nocturna y continuidad de recuperación; **P4 avanzado sustancialmente** (censo YAML, disparadores y seis automatizaciones Ubuntu realizados), pendiente solo la habilitación real de workflows y una matriz de redundancias/decisiones si aportan valor operativo. El contador histórico sigue **1/4**, sin convertir comprobaciones accesorias en nuevos problemas. No solicitar más comandos de inventario ni cambios de configuración hasta revisar toda la evidencia existente.
 
 **Nota de control:** este apartado sustituye afirmaciones previas de que el censo de YAML, sus disparadores o el inventario cron/systemd siguen sin realizarse. No se alteraron workflows, ETL, cron, timers ni datos productivos.
+
+## P4 — contraste funcional de seis workflows programados (23/11, continuación)
+
+Se releyeron directamente los seis YAML con `schedule`. Clasificación por responsabilidad:
+
+| Workflow | Responsabilidad | Concurrencia |
+|---|---|---|
+| `api-compra-agil-400-actions.yml` | Ingesta diaria nocturna Compra Ágil | `mer-api-actions-unica` |
+| `compra-agil-recuperacion-sabado.yml` | Recuperación de jornadas pendientes, sábado | `mer-api-actions-unica` |
+| `compra-agil-recuperacion-domingo.yml` | Recuperación de jornadas pendientes, domingo | `mer-api-actions-unica` |
+| `publicacion-v2-post-etl.yml` | Derivados e índices tras ETL/cargas, con validación de origen | `publicacion-v2-post-etl` |
+| `reparar-analitica-organismos-v2.yml` | Reparación selectiva de agregados incompletos | `mer-reparar-analitica-organismos` |
+| `verificar-publicacion-diaria-v2.yml` | Supervisión de actualidad MER e índices | `supervision-diaria-v2` |
+
+**Conclusión acotada:** no se acredita duplicación funcional que justifique desactivar alguno. Los tres procesos Compra Ágil comparten grupo de concurrencia y tienen selectores/ventanas distintos. Publicación, reparación y supervisión son funciones diferentes, aunque sus disparadores (`push`, `workflow_run`, `schedule`, `workflow_dispatch`) pueden coincidir temporalmente. Un `success` sin trabajo por ventana no equivale a duplicación de datos. No modificar horarios ni deshabilitar YAML por esta revisión.
+
+**Estado pendiente preciso de P4:** únicamente el registro efectivo `active/disabled` de los workflows en GitHub Actions, que la conexión GitHub actual no permitió consultar. Los 74 archivos, sus disparadores, los seis programados y las seis automatizaciones locales ya fueron revisados; no repetir crontab/systemd ni solicitar inventarios ya entregados. La ausencia de estados de habilitación impide afirmar que los 74 estén activos; tampoco impide utilizar el inventario funcional como referencia.
