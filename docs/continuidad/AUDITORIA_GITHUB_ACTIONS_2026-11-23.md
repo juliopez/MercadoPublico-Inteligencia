@@ -70,3 +70,19 @@ Se enumeró directamente el endpoint GitHub Contents `.github/workflows/`: **74 
 **Disparadores verificados en YAML:** `licitaciones-api-1615-actions.yml` solo `workflow_dispatch` (cron externo Ubuntu); `observacion-api-2230.yml` solo `workflow_dispatch` (no confundir nombre con horario activo); `conciliar-multimes-ca-oc-v2.yml` manual y push de scripts; `publicacion-v2-post-etl.yml` workflow_run, push de datos, cron de comprobación `0,15,30,45 20,21 * * 1-5` y manual. `api-compra-agil-400-actions.yml` dos cron UTC 01:05/02:05 y manual, con filtro de ventana chilena. Recuperaciones sábado y domingo usan cron doble UTC y manual.
 
 **Pendiente de censo completo:** consultar registro de workflows habilitados/deshabilitados, todos los disparadores de los 74 YAML, ejecuciones y contrastar cron/systemd local. No afirmar que 74 workflows estén activos. La causa del `KeyError` de recuperación ya tiene arreglo presente en los YAML de sábado/domingo, pero falta ejecución posterior que confirme tránsito entre jornadas.
+
+## Clasificación de disparadores: 28 YAML operativos (23/11)
+
+Se inspeccionaron directamente los **28 archivos** del grupo operativo/mantenimiento (clasificación por nombre, no habilitación). Cinco declaran `schedule`:
+
+| YAML | Cron UTC |
+|---|---|
+| `api-compra-agil-400-actions.yml` | `5 1 * * *`, `5 2 * * *` |
+| `compra-agil-recuperacion-sabado.yml` | `0 23 * * 6`, `0 0 * * 0` |
+| `compra-agil-recuperacion-domingo.yml` | `0 23 * * 0`, `0 0 * * 1` |
+| `publicacion-v2-post-etl.yml` | `0,15,30,45 20,21 * * 1-5` |
+| `reparar-analitica-organismos-v2.yml` | `15 22,23 * * 1-5` |
+
+Los otros 23 YAML del grupo no declaran `schedule`; usan `workflow_dispatch`, `push` o `workflow_run` según archivo. En particular `licitaciones-api-1615-actions.yml` y `observacion-api-2230.yml` solo tienen `workflow_dispatch`; `preview-frontend-v2.yml` tiene manual, `workflow_run` y `push`; `conciliar-multimes-ca-oc-v2.yml` manual y `push`.
+
+**Advertencias:** el cron UTC no garantiza hora exacta de inicio; las dobles programaciones no significan dos recuperaciones útiles. La clasificación aún no cubre los 46 YAML de asistente/validaciones ni el registro de habilitación GitHub. Pendiente contrastar cron/systemd Ubuntu. No se ejecutó ni modificó automatización productiva.
