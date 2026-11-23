@@ -1,3 +1,7 @@
+# Estado consolidado al 23/11/2026
+
+**Comenzar por [MEMORIA_OPERATIVA_CONSOLIDADA_2026-11-23.md](MEMORIA_OPERATIVA_CONSOLIDADA_2026-11-23.md).** Recoge arquitectura, decisiones, cron confirmado a las 16:00 L–V, 74 YAML inventariados, todos los workflows devueltos por API en estado `active`, problemas P1/P3 pendientes de ejecución natural y P2/P4 cerrados. **Las entradas históricas de este README que indiquen cron horario, P4 abierto o ausencia de validación de licitaciones 16:15 están superadas por esa memoria y las auditorías del 23/11.** No modificar producción sin autorización.
+
 ## Auditoría Ubuntu — 23/11/2026
 
 [Inventario de seis automatizaciones y resultados verificados](AUDITORIA_UBUNTU_2026-11-23.md). Incluye tres tareas cron, tres timers systemd, enlaces con workflows GitHub, incidencias de publicación del ETL 16:00 (16, 19 y 20/11), y comprobaciones pendientes. **Auditoría de resultados parcial: no confundir dispatch o workflow success con carga y publicación completa.** No se modificaron procesos.
