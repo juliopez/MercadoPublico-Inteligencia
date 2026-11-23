@@ -1,3 +1,7 @@
+## Auditoría Ubuntu — 23/11/2026
+
+[Inventario de seis automatizaciones y resultados verificados](AUDITORIA_UBUNTU_2026-11-23.md). Incluye tres tareas cron, tres timers systemd, enlaces con workflows GitHub, incidencias de publicación del ETL 16:00 (16, 19 y 20/11), y comprobaciones pendientes. **Auditoría de resultados parcial: no confundir dispatch o workflow success con carga y publicación completa.** No se modificaron procesos.
+
 ## Inventario y auditoría GitHub Actions — 23/11/2026
 
 Documento de referencia: [AUDITORIA_GITHUB_ACTIONS_2026-11-23.md](AUDITORIA_GITHUB_ACTIONS_2026-11-23.md). Incluye 28 workflows identificados documentalmente, YAML examinados, ejecuciones verificadas, correcciones, limitaciones de cobertura y pendientes. **Estado: auditoría parcial; no declarar inventario exhaustivo ni ejecución de las 10:15 verificada.** Siguiente etapa: auditoría separada de cron y systemd instalados en Ubuntu, y luego inventario consolidado.
