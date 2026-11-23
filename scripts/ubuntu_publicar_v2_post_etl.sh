@@ -31,8 +31,8 @@ test -z "$(git status --porcelain --untracked-files=no)" || {
 }
 git pull --ff-only origin main
 # Reintentar solamente exportaciones de lectura; nunca repetir la carga ETL en MER.
-# La cuota por minuto de Sheets se recupera con espera creciente. No reintentar
-# errores de datos o credenciales, para que queden visibles al operador.
+# Reintentar errores transitorios de Sheets (cuota 429 y servicio 500/502/503/504)
+# con espera creciente. No reintentar errores de datos o credenciales.
 exportar_con_reintentos() {
   local intento=1 max=4 espera=70 registro rc
   while (( intento <= max )); do
@@ -43,7 +43,7 @@ exportar_con_reintentos() {
       rc=$?
     fi
     cat "$registro" >&2
-    if ! grep -Eq '429|Quota exceeded|RESOURCE_EXHAUSTED|Rate Limit Exceeded' "$registro"; then
+    if ! grep -Eq 'APIError: \[(429|500|502|503|504)\]|Quota exceeded|RESOURCE_EXHAUSTED|Rate Limit Exceeded' "$registro"; then
       rm -f "$registro"; return "$rc"
     fi
     rm -f "$registro"
@@ -51,7 +51,7 @@ exportar_con_reintentos() {
       echo "PUBLICACION_V2_PENDIENTE: cuota Sheets agotada tras $max intentos" >&2
       return "$rc"
     fi
-    echo "PUBLICACION_V2_REINTENTO_429 intento=$intento espera_segundos=$espera" >&2
+    echo "PUBLICACION_V2_REINTENTO_TRANSITORIO intento=$intento espera_segundos=$espera" >&2
     sleep "$espera"
     espera=$(( espera * 2 ))
     intento=$(( intento + 1 ))
