@@ -108,3 +108,9 @@ El usuario ejecutó `crontab -l` y las consultas filtradas de `systemctl list-ti
 Se inspeccionó el script de `main` `scripts/ubuntu_cron_integrado.sh`: en modo `--cron` solo continúa si `date +%u <= 5` y `date +%H == 16`, con `TZ=America/Santiago`; por ello el cron cada hora **sí** implementa el inicio de las 16:00 de lunes a viernes, no es una programación horaria errónea. Su publicación final invoca `scripts/ubuntu_publicar_v2_post_etl.sh --aplicar`. El 23/11 el usuario confirmó `git pull --ff-only` del PR #26, `bash -n` correcto y Git rastreado limpio; queda pendiente ejecución real.
 
 Los supuestos horarios Ubuntu de 10:15, 19:00 y 22:05 no aparecen en este crontab ni en la salida systemd filtrada; tratarlos como **no verificados en el equipo**, no como procesos activos comprobados. La programación nocturna de Compra Ágil existe en GitHub Actions independientemente de ello. Se mantiene inventario abierto hasta revisar estados de Actions y mecanismos locales restantes.
+
+## Ajuste de frecuencia cron 16:00 — 23/11/2026
+
+El operador aprobó reemplazar la invocación horaria `0 * * * *` de `scripts/ubuntu_cron_integrado.sh --cron` por `0 16 * * 1-5`. El operador informó «listo» tras ejecutar el comando de sustitución en Ubuntu. **Estado: cambio comunicado por el operador, sin lectura posterior de `crontab -l` que confirme el resultado.**
+
+Motivo: el script ya contiene un filtro interno que permite trabajo real exclusivamente de lunes a viernes a las 16:00; las invocaciones restantes no ejecutan el ETL. Se conserva el filtro como defensa adicional. No se solicitó modificar el script ni las otras entradas cron (09:00 conciliación, 16:15 licitaciones). El cambio se aplica en el crontab local, no en los archivos versionados del repositorio. Verificar la línea efectiva en una futura comprobación ordinaria, sin repetir auditorías extensas.
