@@ -1,4 +1,9 @@
 # Memoria operativa consolidada — Observatorio Mercado Público
+
+## Actualización vigente — 24/11/2026
+
+[Incidente Pages, evidencia y corrección preventiva](AUDITORIA_GITHUB_ACTIONS_2026-11-23.md#actualización-24112026--incidente-pages-y-mitigación-preventiva-p3-de-auditoría): Compra Ágil nocturna del 23/11 publicó cuatro lotes (1.600 registros adicionales) en MER y GitHub, pero falló el despliegue por ausencia momentánea del artefacto recién cargado. Mitigación en `a06fbfde`: comprobar disponibilidad del artefacto antes del despliegue (12 intentos, intervalo 10 s). Frontend recuperado según captura del operador: 25.002 procesos en noviembre, fecha 24/11 03:15; coincide con el total de Sheets. **Incidente recuperado, prevención pendiente de validación autónoma; P3 de auditoría sigue en seguimiento**, incluida recuperación de fin de semana. P1 favorable con limitaciones de evidencia local; P2/P4 cerrados. Esta actualización prevalece sobre estados anteriores de auditoría, no cambia los identificadores de procesos históricos. Sin nuevas modificaciones productivas.
+
 **Corte:** 23 de noviembre de 2026. **Ámbito:** proyecto `juliopez/MercadoPublico-Inteligencia`. **Propósito:** conservar contexto, decisiones, evidencias y pendientes para retomar sin repetir auditorías. Este documento es una síntesis; las fuentes primarias son código, logs, ejecuciones y auditorías enlazadas. Los hechos históricos no sustituyen el estado actual.
 
 ## 1. Contrato de trabajo
