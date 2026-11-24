@@ -1,5 +1,10 @@
 # Pendientes y riesgos operativos
 
+## Actualización vigente — 24/11/2026
+
+[Incidente Pages, evidencia y corrección preventiva](AUDITORIA_GITHUB_ACTIONS_2026-11-23.md#actualización-24112026--incidente-pages-y-mitigación-preventiva-p3-de-auditoría): Compra Ágil nocturna del 23/11 publicó cuatro lotes (1.600 registros adicionales) en MER y GitHub, pero falló el despliegue por ausencia momentánea del artefacto recién cargado. Mitigación en `a06fbfde`: comprobar disponibilidad del artefacto antes del despliegue (12 intentos, intervalo 10 s). Frontend recuperado según captura del operador: 25.002 procesos en noviembre, fecha 24/11 03:15; coincide con el total de Sheets. **Incidente recuperado, prevención pendiente de validación autónoma; P3 de auditoría sigue en seguimiento**, incluida recuperación de fin de semana. P1 favorable con limitaciones de evidencia local; P2/P4 cerrados. Esta actualización prevalece sobre estados anteriores de auditoría, no cambia los identificadores de procesos históricos. Sin nuevas modificaciones productivas.
+
+
 **Corte:** 2026-11-06. Esta lista recoge **validaciones abiertas**, no afirma que exista un fallo activo.
 
 | ID | Prioridad | Pendiente / riesgo | Criterio de cierre | Referencia |
