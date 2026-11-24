@@ -22,6 +22,7 @@ on:
       - '.github/workflows/preview-frontend-v2.yml'
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 concurrency:
@@ -130,6 +131,24 @@ jobs:
       - uses: actions/upload-pages-artifact@v4
         with:
           path: _pages
+      - name: Esperar disponibilidad del artefacto en la API de Actions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for intento in $(seq 1 12); do
+            if respuesta="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=github-pages" --jq '[.artifacts[] | select(.name == "github-pages" and .expired == false)] | length')"; then
+              if [ "$respuesta" = "1" ]; then
+                echo "PAGES_ARTIFACT_DISPONIBLE intento=$intento"
+                exit 0
+              fi
+            fi
+            echo "PAGES_ARTIFACT_REINTENTO $intento"
+            if [ "$intento" -lt 12 ]; then sleep 10; fi
+          done
+          echo "::error::Artefacto github-pages no disponible en la API de Actions"
+          exit 1
       - name: Desplegar plataforma V2 en raíz del sitio
         id: deploy
         uses: actions/deploy-pages@v4
