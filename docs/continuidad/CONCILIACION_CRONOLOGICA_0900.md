@@ -89,3 +89,10 @@ Corrección propuesta en PR: el cron llama a `scripts/ubuntu_conciliar_mer_0900_
 - Estado: causa `GIT_NO_LIMPIO` mitigada mediante aislamiento; recuperación manual completada; próximo cron autónomo de 09:00 **pendiente de observación**, sin prometer éxito frente a fallas ajenas al bloqueo corregido.
 
 > Nota de vigencia: las instrucciones anteriores de «activación pendiente» describen el estado previo a esta recuperación y no deben utilizarse como diagnóstico actual.
+
+
+## Incidente 25/11/2026 — bloqueo de derivados tras conciliación multimes
+
+Evidencia: MER operativo modificado 09:08 Chile; exportación `844dd7b7f` 09:12; participación `1e787328f` 09:14. Catálogo de main con ultima_exportacion.periodo=2026-10, aunque el operativo es noviembre. El operador aportó captura del workflow Publicacion V2 posterior al ETL Ubuntu #91, paso Comprobar exportacion nueva y hora de Santiago: BLOQUEO: período exportado ajeno al operativo o cierre excepcional (exit 1); los pasos de derivados quedaron omitidos. Los seis conteos de procesos del catálogo y analítica coinciden; noviembre 26.838, coincidente con dimensión de Sheets menos encabezado. No repetir la conciliación.
+
+Corrección autorizada: [b25ee1246](https://github.com/juliopez/MercadoPublico-Inteligencia/commit/b25ee12461b0836e31098ffcc8124e9e7625bdae), exclusivamente publicacion-v2-post-etl.yml. Identifica el último commit que modifica catálogo por asunto exacto e identidad de autor Git configurada en el orquestador (identificación operativa, no autenticación criptográfica); obtiene períodos afectados por fragmentos/analítica del commit, exige que estén catalogados, regenera y valida derivados de cada uno. Conserva la restricción para los demás orígenes y la ventana schedule. El cambio del YAML activa su disparador push. Se verificó el contenido en main; no se verificó todavía la ejecución del nuevo workflow ni Pages. Pendiente observar DERIVADOS_VERIFICADOS de los períodos afectados y verificación Pages; no modificar MER, ETL, API ni cron. La mitigación de disponibilidad de artefacto Pages del 24/11 es independiente.
