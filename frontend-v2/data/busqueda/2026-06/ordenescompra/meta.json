@@ -2,11 +2,11 @@
   "version": 3,
   "periodo": "2026-06",
   "entidad": "ordenescompra",
-  "conteo": 150451,
+  "conteo": 150607,
   "fragmentos": 151,
   "tipo": "prefijo_palabra_agrupado",
   "longitud_prefijo": 3,
-  "particiones": 4125,
+  "particiones": 4126,
   "grupos": 602,
   "formato": "referencias_fragmento_fila",
   "campos": [
