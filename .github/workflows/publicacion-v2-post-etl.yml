@@ -51,11 +51,30 @@ jobs:
           active=[p for p,d in private["periodos"].items() if d.get("tipo")=="operativo"]
           if len(active)!=1:raise SystemExit("BLOQUEO: catálogo con mes operativo ambiguo")
           if period not in private["periodos"]:raise SystemExit("BLOQUEO: mes de exportación no catalogado")
-          if period!=active[0] and private["periodos"][period].get("estado")!="cierre_operativo_pendiente_conciliacion_oficial":
+          # La conciliación 09:00 exporta varios meses autorizados en una sola
+          # transacción; ultima_exportacion solo identifica el último de ellos.
+          path="frontend-v2/data/catalogo-publico.json"
+          export_commit=subprocess.check_output(["git","log","-1","--format=%H","--",path],text=True).strip()
+          subject=subprocess.check_output(["git","show","-s","--format=%s",export_commit],text=True).strip()
+          author=subprocess.check_output(["git","show","-s","--format=%an",export_commit],text=True).strip()
+          reconciliation=subject=="data(v2): conciliacion cronologica MER" and author=="MER Ubuntu Conciliacion"
+          targets=[period]
+          if reconciliation:
+              # Regenerar todos los períodos cuyos fragmentos cambiaron, incluso
+              # si el número de filas no cambió. No autorizar períodos desconocidos.
+              import re
+              files=subprocess.check_output(["git","diff-tree","--no-commit-id","--name-only","-r",export_commit],text=True).splitlines()
+              affected={m.group(1) for f in files if (m:=re.match(r"frontend-v2/data/(?:partes/[^/]+/|analitica/)(20[0-9]{2}-[0-9]{2})/",f))}
+              targets=sorted(affected|{period})
+              public_periods={x["periodo"] for x in catalog["periodos"]}
+              if any(p not in public_periods or p not in private["periodos"] or private["periodos"][p].get("tipo") not in ("operativo","historico") for p in targets):
+                  raise SystemExit("BLOQUEO: conciliación con períodos no catalogados")
+              print("CONCILIACION_PERIODOS_AUTORIZADOS",targets)
+          elif period!=active[0] and private["periodos"][period].get("estado")!="cierre_operativo_pendiente_conciliacion_oficial":
               raise SystemExit("BLOQUEO: período exportado ajeno al operativo o cierre excepcional")
           output=pathlib.Path(os.environ["GITHUB_OUTPUT"])
           def done(valid,msg):
-              with output.open("a") as f:f.write(f"ready={'true' if valid else 'false'}\nperiodo={period}\n")
+              with output.open("a") as f:f.write(f"ready={'true' if valid else 'false'}\nperiodo={period}\nperiodos={' '.join(targets)}\n")
               print(msg)
           if os.environ["EVENTO"]=="schedule" and (now.weekday()>4 or now.hour!=17):
               done(False,"Fuera de las 17:00 Santiago");raise SystemExit(0)
@@ -74,10 +93,12 @@ jobs:
       - name: Generar índices, perfiles y analítica del mes operativo
         if: steps.origen.outputs.ready == 'true'
         env:
-          PERIODO: ${{ steps.origen.outputs.periodo }}
+          PERIODOS: ${{ steps.origen.outputs.periodos }}
         run: |
           set -euo pipefail
           python -m py_compile scripts/indexar_busqueda_frontend_v2.py scripts/generar_perfiles_v2.py scripts/generar_analitica_v2.py scripts/indexar_relaciones_frontend_v2.py scripts/indexar_relaciones_procesos_v2.py
+          for PERIODO in $PERIODOS; do
+          export PERIODO
           for entidad in procesos ordenescompra ofertas resultados; do
             python scripts/indexar_busqueda_frontend_v2.py --periodo "$PERIODO" --entidad "$entidad"
             python scripts/generar_perfiles_v2.py --periodo "$PERIODO" --entidad "$entidad"
@@ -105,19 +126,22 @@ jobs:
           assert json.loads((root/"relaciones-procesos"/p/"meta.json").read_text())["registros"]==entry["conteos"]["procesos"]
           print("DERIVADOS_VERIFICADOS",p)
           PY
+          done
       - name: Publicar derivados solamente al pasar validaciones
         if: steps.origen.outputs.ready == 'true'
         env:
-          PERIODO: ${{ steps.origen.outputs.periodo }}
+          PERIODOS: ${{ steps.origen.outputs.periodos }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for PERIODO in $PERIODOS; do
           git add "frontend-v2/data/busqueda/$PERIODO/" "frontend-v2/data/perfiles/$PERIODO/" "frontend-v2/data/analitica/$PERIODO/" "frontend-v2/data/relaciones-procesos/$PERIODO/" "frontend-v2/data/indices/$PERIODO.json"
           git add -u "frontend-v2/data/busqueda/$PERIODO/" "frontend-v2/data/perfiles/$PERIODO/" "frontend-v2/data/analitica/$PERIODO/" "frontend-v2/data/relaciones-procesos/$PERIODO/"
+          done
           git diff --cached --check
           if git diff --cached --quiet; then echo "SIN_CAMBIOS_DERIVADOS";exit 0;fi
-          git commit -m "data(v2): actualizar indices y agregados $PERIODO"
+          git commit -m "data(v2): actualizar indices y agregados $PERIODOS"
           git pull --rebase origin main
           git push origin main
           echo "DERIVADOS_PUBLICADOS"
