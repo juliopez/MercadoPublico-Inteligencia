@@ -1,16 +1,16 @@
 {
   "version": "2.0",
-  "fecha_publicacion": "2026-11-25T06:13:41.246471+00:00",
+  "fecha_publicacion": "2026-11-25T12:12:12.533371+00:00",
   "fuente": "Extractos públicos MER v2 de Google Sheets privadas, exportados por período",
   "periodos": [
     {
       "periodo": "2026-06",
       "tipo": "historico",
       "conteos": {
-        "procesos": 80909,
+        "procesos": 80911,
         "ofertas": 407923,
         "resultados": 63214,
-        "ordenescompra": 150600
+        "ordenescompra": 150607
       },
       "partes": {
         "procesos": [
@@ -737,10 +737,10 @@
       "periodo": "2026-07",
       "tipo": "historico",
       "conteos": {
-        "procesos": 81011,
+        "procesos": 81013,
         "ofertas": 437855,
         "resultados": 54526,
-        "ordenescompra": 151118
+        "ordenescompra": 151126
       },
       "partes": {
         "procesos": [
@@ -1490,10 +1490,10 @@
       "periodo": "2026-08",
       "tipo": "historico",
       "conteos": {
-        "procesos": 83964,
+        "procesos": 83969,
         "ofertas": 432111,
         "resultados": 65945,
-        "ordenescompra": 153586
+        "ordenescompra": 153598
       },
       "partes": {
         "procesos": [
@@ -2253,10 +2253,10 @@
       "periodo": "2026-09",
       "tipo": "historico",
       "conteos": {
-        "procesos": 79591,
+        "procesos": 79612,
         "ofertas": 398018,
         "resultados": 48637,
-        "ordenescompra": 149215
+        "ordenescompra": 149241
       },
       "partes": {
         "procesos": [
@@ -2957,10 +2957,10 @@
       "periodo": "2026-10",
       "tipo": "historico",
       "conteos": {
-        "procesos": 93607,
+        "procesos": 93711,
         "ofertas": 470841,
         "resultados": 56813,
-        "ordenescompra": 180442
+        "ordenescompra": 180640
       },
       "partes": {
         "procesos": [
@@ -3786,10 +3786,10 @@
       "periodo": "2026-11",
       "tipo": "operativo",
       "conteos": {
-        "procesos": 27232,
+        "procesos": 26838,
         "ofertas": 465,
         "resultados": 43,
-        "ordenescompra": 133661
+        "ordenescompra": 118574
       },
       "partes": {
         "procesos": [
@@ -3819,8 +3819,7 @@
           "data/partes/procesos/2026-11/0024.json",
           "data/partes/procesos/2026-11/0025.json",
           "data/partes/procesos/2026-11/0026.json",
-          "data/partes/procesos/2026-11/0027.json",
-          "data/partes/procesos/2026-11/0028.json"
+          "data/partes/procesos/2026-11/0027.json"
         ],
         "ofertas": [
           "data/partes/ofertas/2026-11/0001.json"
@@ -3947,29 +3946,14 @@
           "data/partes/ordenescompra/2026-11/0116.json",
           "data/partes/ordenescompra/2026-11/0117.json",
           "data/partes/ordenescompra/2026-11/0118.json",
-          "data/partes/ordenescompra/2026-11/0119.json",
-          "data/partes/ordenescompra/2026-11/0120.json",
-          "data/partes/ordenescompra/2026-11/0121.json",
-          "data/partes/ordenescompra/2026-11/0122.json",
-          "data/partes/ordenescompra/2026-11/0123.json",
-          "data/partes/ordenescompra/2026-11/0124.json",
-          "data/partes/ordenescompra/2026-11/0125.json",
-          "data/partes/ordenescompra/2026-11/0126.json",
-          "data/partes/ordenescompra/2026-11/0127.json",
-          "data/partes/ordenescompra/2026-11/0128.json",
-          "data/partes/ordenescompra/2026-11/0129.json",
-          "data/partes/ordenescompra/2026-11/0130.json",
-          "data/partes/ordenescompra/2026-11/0131.json",
-          "data/partes/ordenescompra/2026-11/0132.json",
-          "data/partes/ordenescompra/2026-11/0133.json",
-          "data/partes/ordenescompra/2026-11/0134.json"
+          "data/partes/ordenescompra/2026-11/0119.json"
         ]
       }
     }
   ],
   "ultima_exportacion": {
-    "periodo": "2026-11",
-    "fecha_utc": "2026-11-25T06:13:41.246471+00:00",
+    "periodo": "2026-10",
+    "fecha_utc": "2026-11-25T12:12:12.533371+00:00",
     "fuente": "MER_OPERATIVO_V2"
   }
 }
