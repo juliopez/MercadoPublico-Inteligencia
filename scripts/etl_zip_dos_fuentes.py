@@ -13,14 +13,41 @@ def importar():
  spec=importlib.util.spec_from_file_location("historicos_mer",ROOT/"scripts/importador_historicos_v2.py")
  mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod);return mod
 def descargar(url,path):
+ import errno,http.client,shutil,ssl,urllib.error
+ path=Path(path)
+ parcial=path.with_name(path.name+".part")
  req=urllib.request.Request(url,headers={"User-Agent":"MercadoPublico-MER-v2/1.0"})
- with urllib.request.urlopen(req,timeout=180) as res,open(path,"wb") as out:
-  import shutil;shutil.copyfileobj(res,out,1024*1024)
- with zipfile.ZipFile(path) as z:
-  if not any(x.filename.lower().endswith(".csv") for x in z.infolist()):raise ValueError("ZIP sin CSV")
-  bad=z.testzip()
-  if bad:raise ValueError("CRC incorrecto: "+bad)
- return {"url":url,"bytes":path.stat().st_size,"sha256":hashlib.sha256(path.read_bytes()).hexdigest()}
+ def transitorio(exc):
+  if isinstance(exc,urllib.error.HTTPError):
+   return exc.code in (408,429,500,502,503,504)
+  if isinstance(exc,urllib.error.URLError):
+   return transitorio(exc.reason)
+  if isinstance(exc,ssl.SSLCertVerificationError):
+   return False
+  if isinstance(exc,(TimeoutError,ConnectionError,http.client.IncompleteRead,http.client.RemoteDisconnected,ssl.SSLEOFError)):
+   return True
+  return isinstance(exc,OSError) and exc.errno in (errno.ETIMEDOUT,errno.ECONNRESET,errno.ECONNREFUSED,errno.EHOSTUNREACH,errno.ENETUNREACH,errno.EPIPE)
+ for intento in range(1,4):
+  try:
+   print(f"DESCARGA_INTENTO {intento}/3 {url}",flush=True)
+   with urllib.request.urlopen(req,timeout=180) as res,open(parcial,"wb") as out:
+    shutil.copyfileobj(res,out,1024*1024)
+   with zipfile.ZipFile(parcial) as z:
+    if not any(x.filename.lower().endswith(".csv") for x in z.infolist()):raise ValueError("ZIP sin CSV")
+    bad=z.testzip()
+    if bad:raise ValueError("CRC incorrecto: "+bad)
+   metadata={"url":url,"bytes":parcial.stat().st_size,"sha256":hashlib.sha256(parcial.read_bytes()).hexdigest()}
+   os.replace(parcial,path)
+   print(f"DESCARGA_VERIFICADA intento={intento} {url}",flush=True)
+   return metadata
+  except Exception as exc:
+   parcial.unlink(missing_ok=True)
+   if intento==3 or not transitorio(exc):
+    print(f"DESCARGA_FALLIDA intento={intento} {url}: {exc}",flush=True)
+    raise
+   espera=30*intento
+   print(f"DESCARGA_REINTENTO espera={espera}s {url}: {exc}",flush=True)
+   time.sleep(espera)
 def worksheet_rows(ws,cols):
  vals=ws.get_all_values()
  if not vals or vals[0]!=cols:raise ValueError("Contrato MER incompatible: "+ws.title)
