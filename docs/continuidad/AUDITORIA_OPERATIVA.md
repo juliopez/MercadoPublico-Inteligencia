@@ -1,5 +1,12 @@
 # Auditoría operativa — evidencias y procedimiento
 
+## 26/11/2026 — colisión de publicación vespertina
+
+ETL 16:00 terminó ORQUESTADOR OK 16:27:16, exportación 36ff8cdab: noviembre 27.917 procesos, 150.166 OC, 467 ofertas, 43 resultados. Run 45883764460/job 140129262208 validó derivados pero push rechazado 16:28:20 (main esperado b358e9386, real 090c6dfb), tras publicaciones concurrentes de participación y analítica. Pages run 45883873342 exitoso, pero búsqueda/perfiles del repositorio quedaron con 27.913 procesos y 118.574 OC; diferencias 4 y 31.592. API 16:15 run 45882218904 en curso al auditar. Supervisor matinal corregido run 45820050042 success.
+
+Corrección autorizada ce718522: exclusivamente .github/workflows/publicacion-v2-post-etl.yml. Hasta cinco intentos de push; cada intento obtiene main remoto, regenera y valida derivados, preserva períodos autorizados acumulados, sin rebase de derivados obsoletos ni force push. Esperas 10/20/30/40 s; agotamiento explícito; errores de validación mantienen bloqueo. Reset hard únicamente en checkout efímero del runner. Push de workflow dispara recuperación de índices sin repetir ETL ni escribir Sheets. Se conserva horario y grupo de concurrencia. Pendiente confirmar ejecución corregida y coherencia catálogo/búsqueda/perfiles/Pages; no se garantiza ausencia de colisiones futuras ni recuperación ante fallos persistentes. Reversión: revertir ce718522 previa autorización.
+
+
 ## Incidente 25/11/2026 — ETL 16:00, timeout TLS
 
 Journal local aportado: cron inició 16:00:01 y cerró 16:03:05; despacho 16:15 inició 16:15:01 y cerró 16:15:05 (no acredita finalización remota). Logs arranque/orquestador 160001: descarga licitaciones iniciada, descarga OC falló en handshake TLS tras timeout 180 s, URLError, CONTROL_SINCRONIZACION FALLIDA, etapa principal exit 1, orquestador exit 10. Ambas fuentes se preparan antes de escrituras MER: no se alcanzaron carga, conciliación ni publicación. No se acreditó relación causal con túnel MCP.
