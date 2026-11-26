@@ -1,5 +1,10 @@
 # Pendientes y riesgos operativos
 
+## 26/11/2026 — validación autónoma 09:00 y corrección del supervisor
+
+Ubuntu: CONCILIACION_PUBLICADA 09:09:42, commit 64e939f8b. Publicador corregido ayer: run 45817071270 success, derivados e13ab616 09:12:32, períodos julio–noviembre; Pages run 45817690689 success. Catálogo noviembre 27.913 procesos. Se valida operación autónoma de la corrección b25ee1246. Supervisor separado run 45817542363/job 139901053600 falló 09:13:37 por guardia de período histórico, y su código también exigía exportación posterior a 16:00 fuera de contexto. Corrección autorizada c6567efb exclusivamente en verificar-publicacion-diaria-v2.yml: reconoce origen conciliación por metadatos Git (no autenticación criptográfica), revisa períodos afectados y operativo, analítica, fragmentos, búsqueda y perfiles de cuatro entidades; conserva bloqueo de históricos no reconocidos y control de frescura vespertino para schedule (y manual desde 18h). El control horario por sí solo no distingue una exportación API de una exportación ETL. No modifica cron, publicador, MER ni datos. Push propio activa verificación. Pendiente acreditar resultado del nuevo supervisor y control programado de tarde; no repetir conciliación. Reversión: revertir c6567efb previa autorización.
+
+
 ## Incidente 25/11/2026 — ETL 16:00, timeout TLS
 
 Journal local aportado: cron inició 16:00:01 y cerró 16:03:05; despacho 16:15 inició 16:15:01 y cerró 16:15:05 (no acredita finalización remota). Logs arranque/orquestador 160001: descarga licitaciones iniciada, descarga OC falló en handshake TLS tras timeout 180 s, URLError, CONTROL_SINCRONIZACION FALLIDA, etapa principal exit 1, orquestador exit 10. Ambas fuentes se preparan antes de escrituras MER: no se alcanzaron carga, conciliación ni publicación. No se acreditó relación causal con túnel MCP.
