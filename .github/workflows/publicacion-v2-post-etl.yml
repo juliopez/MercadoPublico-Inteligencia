@@ -35,11 +35,20 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Comprobar exportacion nueva y hora de Santiago
-        id: origen
+      - name: Generar validar y publicar derivados con reintentos seguros
         env:
           EVENTO: ${{ github.event_name }}
         run: |
+          set -euo pipefail
+          export ORIGIN_OUTPUT="$RUNNER_TEMP/mer-origin.txt"
+          # Every attempt starts from a fresh remote snapshot. Never force-push.
+          for ATTEMPT in 1 2 3 4 5; do
+            export ATTEMPT
+            git fetch origin main
+            git reset --hard origin/main
+            BASE="$(git rev-parse HEAD)"
+            echo "PUBLICACION_INTENTO $ATTEMPT base=$BASE"
+            : > "$ORIGIN_OUTPUT"
           python - <<'PY'
           import datetime,json,os,pathlib,subprocess
           from zoneinfo import ZoneInfo
@@ -72,11 +81,11 @@ jobs:
               print("CONCILIACION_PERIODOS_AUTORIZADOS",targets)
           elif period!=active[0] and private["periodos"][period].get("estado")!="cierre_operativo_pendiente_conciliacion_oficial":
               raise SystemExit("BLOQUEO: período exportado ajeno al operativo o cierre excepcional")
-          output=pathlib.Path(os.environ["GITHUB_OUTPUT"])
+          output=pathlib.Path(os.environ["ORIGIN_OUTPUT"])
           def done(valid,msg):
               with output.open("a") as f:f.write(f"ready={'true' if valid else 'false'}\nperiodo={period}\nperiodos={' '.join(targets)}\n")
               print(msg)
-          if os.environ["EVENTO"]=="schedule" and (now.weekday()>4 or now.hour!=17):
+          if os.environ["EVENTO"]=="schedule" and os.environ["ATTEMPT"]=="1" and (now.weekday()>4 or now.hour!=17):
               done(False,"Fuera de las 17:00 Santiago");raise SystemExit(0)
           path="frontend-v2/data/catalogo-publico.json"
           if sum(x.get("periodo")==period for x in catalog["periodos"])!=1:
@@ -90,11 +99,21 @@ jobs:
               done(False,"Sin exportacion fresca del dia posterior a las 16h para schedule");raise SystemExit(0)
           done(True,f"Origen listo {last}")
           PY
-      - name: Generar índices, perfiles y analítica del mes operativo
-        if: steps.origen.outputs.ready == 'true'
-        env:
-          PERIODOS: ${{ steps.origen.outputs.periodos }}
-        run: |
+            if ! grep -qx 'ready=true' "$ORIGIN_OUTPUT"; then exit 0; fi
+            PERIODOS="$(sed -n 's/^periodos=//p' "$ORIGIN_OUTPUT")"
+            # Preserve historical periods selected on earlier attempts even if a new
+            # operational export arrives during regeneration.
+            PERIODOS="$(printf '%s\n' ${PERIODOS_ACUMULADOS:-} $PERIODOS | sort -u | xargs)"
+            PERIODOS_ACUMULADOS="$PERIODOS"
+            export PERIODOS
+            python - <<'PY'
+          import json,os,pathlib
+          private=json.loads(pathlib.Path("config/catalogo_sheets.json").read_text())["periodos"]
+          public=json.loads(pathlib.Path("frontend-v2/data/catalogo-publico.json").read_text())["periodos"]
+          for p in os.environ["PERIODOS"].split():
+              assert p in private and private[p]["tipo"] in ("operativo","historico")
+              assert sum(x["periodo"]==p for x in public)==1
+          PY
           set -euo pipefail
           python -m py_compile scripts/indexar_busqueda_frontend_v2.py scripts/generar_perfiles_v2.py scripts/generar_analitica_v2.py scripts/indexar_relaciones_frontend_v2.py scripts/indexar_relaciones_procesos_v2.py
           for PERIODO in $PERIODOS; do
@@ -127,11 +146,6 @@ jobs:
           print("DERIVADOS_VERIFICADOS",p)
           PY
           done
-      - name: Publicar derivados solamente al pasar validaciones
-        if: steps.origen.outputs.ready == 'true'
-        env:
-          PERIODOS: ${{ steps.origen.outputs.periodos }}
-        run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -140,8 +154,20 @@ jobs:
           git add -u "frontend-v2/data/busqueda/$PERIODO/" "frontend-v2/data/perfiles/$PERIODO/" "frontend-v2/data/analitica/$PERIODO/" "frontend-v2/data/relaciones-procesos/$PERIODO/"
           done
           git diff --cached --check
-          if git diff --cached --quiet; then echo "SIN_CAMBIOS_DERIVADOS";exit 0;fi
+          if git diff --cached --quiet; then
+            if [[ "$(git ls-remote origin refs/heads/main | cut -f1)" == "$BASE" ]]; then echo "SIN_CAMBIOS_DERIVADOS"; exit 0; fi
+            echo "MAIN_CAMBIO_SIN_DERIVADOS"; sleep "$((10*ATTEMPT))"; continue
+          fi
           git commit -m "data(v2): actualizar indices y agregados $PERIODOS"
-          git pull --rebase origin main
-          git push origin main
-          echo "DERIVADOS_PUBLICADOS"
+          
+            if git push origin main; then
+              echo "DERIVADOS_PUBLICADOS intento=$ATTEMPT"
+              exit 0
+            fi
+            # If the server accepted the push but the response was lost, the next
+            # snapshot will detect no changes. Never rebase stale generated artifacts.
+            echo "PUBLICACION_REINTENTO intento=$ATTEMPT"
+            if [[ "$ATTEMPT" != 5 ]]; then sleep "$((10*ATTEMPT))"; fi
+          done
+          echo "::error::PUBLICACION_AGOTADA tras cinco intentos"
+          exit 1
