@@ -40,42 +40,62 @@ jobs:
           if len(active)!=1:raise SystemExit("BLOQUEO: mes operativo ambiguo en catálogo privado")
           period=(catalog.get("ultima_exportacion") or {}).get("periodo") or active[0]
           if period not in private["periodos"]:raise SystemExit("BLOQUEO: última exportación sin período privado")
-          if period!=active[0] and private["periodos"][period].get("estado")!="cierre_operativo_pendiente_conciliacion_oficial":
+          import re
+          event=os.environ.get("GITHUB_EVENT_NAME","")
+          path="frontend-v2/data/catalogo-publico.json"
+          export_commit=subprocess.check_output(["git","log","-1","--format=%H","--",path],text=True).strip()
+          subject=subprocess.check_output(["git","show","-s","--format=%s",export_commit],text=True).strip()
+          author=subprocess.check_output(["git","show","-s","--format=%an",export_commit],text=True).strip()
+          reconciliation=subject=="data(v2): conciliacion cronologica MER" and author=="MER Ubuntu Conciliacion"
+          targets=[period]
+          if reconciliation:
+              files=subprocess.check_output(["git","diff-tree","--no-commit-id","--name-only","-r",export_commit],text=True).splitlines()
+              affected={m.group(1) for f in files if (m:=re.match(r"frontend-v2/data/(?:partes/[^/]+/|analitica/)(20[0-9]{2}-[0-9]{2})/",f))}
+              targets=sorted(affected|{period,active[0]})
+              if any(p not in private["periodos"] or private["periodos"][p].get("tipo") not in ("operativo","historico") for p in targets):
+                  raise SystemExit("BLOQUEO: conciliación con períodos no catalogados")
+          elif period!=active[0] and private["periodos"][period].get("estado")!="cierre_operativo_pendiente_conciliacion_oficial":
               raise SystemExit("BLOQUEO: último período ajeno a mes operativo o cierre")
-          # Para el cron diario, se exige que el mes operativo coincida con Santiago.
-          if now.hour>=18 and active[0]!=now.strftime("%Y-%m"):
+          # La vigilancia horaria es independiente de la integridad de cada publicación.
+          daily_check=event=="schedule" or (event=="workflow_dispatch" and now.hour>=18)
+          if daily_check and active[0]!=now.strftime("%Y-%m"):
               raise SystemExit("BLOQUEO: rotación mensual no sincronizada con calendario")
-          entries=[x for x in catalog["periodos"] if x["periodo"]==period]
           errors=[]
-          if len(entries)!=1:
-              errors.append("Catálogo sin período vigente único")
-          else:
+          for p in targets:
+              entries=[x for x in catalog["periodos"] if x["periodo"]==p]
+              if len(entries)!=1:
+                  errors.append(f"{p}: catálogo sin período único")
+                  continue
               entry=entries[0]
-              if entry.get("tipo")!=private["periodos"][period]["tipo"]:
-                  errors.append("Clasificación pública/histórica no sincronizada")
-              for ent in ("procesos","ordenescompra"):
+              if entry.get("tipo")!=private["periodos"][p]["tipo"]:
+                  errors.append(f"{p}: clasificación pública/histórica no sincronizada")
+              for ent in ("procesos","ordenescompra","ofertas","resultados"):
                   n=entry["conteos"].get(ent)
-                  analytic=root/"analitica"/period/(ent+".json")
-                  if not analytic.exists():errors.append(f"Falta analítica {ent}")
+                  analytic=root/"analitica"/p/(ent+".json")
+                  if not analytic.exists():errors.append(f"{p}: falta analítica {ent}")
                   elif json.loads(analytic.read_text()).get("registros")!=n:
-                      errors.append(f"Diferencia catálogo-analítica {ent}: {n}")
-                  if not entry["partes"].get(ent):errors.append(f"Sin fragmentos {ent}")
+                      errors.append(f"{p}: diferencia catálogo-analítica {ent}: {n}")
+                  parts=entry["partes"].get(ent,[])
+                  if n is None or (n>0 and not parts):errors.append(f"{p}: sin fragmentos {ent}")
+                  elif any(not (root/rel.removeprefix("data/")).is_file() for rel in parts):
+                      errors.append(f"{p}: fragmento ausente {ent}")
+                  for kind,field in (("busqueda","conteo"),("perfiles","registros")):
+                      meta=root/kind/p/ent/"meta.json"
+                      if not meta.is_file() or json.loads(meta.read_text()).get(field)!=n:
+                          errors.append(f"{p}: diferencia {kind} {ent}")
           def last_commit(*paths):
               raw=subprocess.check_output(["git","log","-1","--format=%cI","--",*paths],text=True).strip()
               return datetime.datetime.fromisoformat(raw).astimezone(ZoneInfo("America/Santiago")) if raw else None
           export=last_commit("frontend-v2/data/catalogo-publico.json")
-          derived=last_commit(f"frontend-v2/data/analitica/{period}/procesos.json",f"frontend-v2/data/analitica/{period}/ordenescompra.json")
-          # Si la exportación aún no existe hoy, es imposible acreditar la cadena.
-          if not export or export.date()!=now.date() or export.hour<16:
-              errors.append(f"Exportación de Ubuntu no publicada hoy después de las 16:00; última={export}")
-          # Los derivados pueden regenerarse sin cambiar su contenido: en ese caso
-          # Git no crea un commit para el archivo. Su fecha no prueba desfase.
-          # La coherencia efectiva se valida arriba con conteos y existencia.
-          if not derived:
-              errors.append("No existe publicación histórica de analítica del período")
-          print("SUPERVISION_MER",json.dumps({"ahora":now.isoformat(),"periodo":period,"exportacion":str(export),"derivados":str(derived),"errores":errors},ensure_ascii=False))
+          # No confundir una conciliación matinal o carga API con la supervisión horaria.
+          if daily_check and (not export or export.date()!=now.date() or export.hour<16):
+              errors.append(f"Exportación no publicada hoy después de las 16:00; última={export}")
+          for p in targets:
+              if not last_commit(f"frontend-v2/data/analitica/{p}/procesos.json",f"frontend-v2/data/analitica/{p}/ordenescompra.json"):
+                  errors.append(f"{p}: no existe publicación histórica de analítica")
+          print("SUPERVISION_MER",json.dumps({"ahora":now.isoformat(),"evento":event,"control_horario":daily_check,"conciliacion":reconciliation,"periodos":targets,"exportacion":str(export),"errores":errors},ensure_ascii=False))
           if errors:
               for error in errors:print("::error::"+error)
               raise SystemExit(1)
-          print("PUBLICACION_DIARIA_VERIFICADA")
+          print("PUBLICACION_DIARIA_VERIFICADA" if daily_check else "INTEGRIDAD_PUBLICACION_VERIFICADA")
           PY
