@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "fecha_publicacion": "2026-11-26T02:44:22.535452+00:00",
+  "fecha_publicacion": "2026-11-26T12:09:18.689396+00:00",
   "fuente": "Extractos públicos MER v2 de Google Sheets privadas, exportados por período",
   "periodos": [
     {
@@ -737,7 +737,7 @@
       "periodo": "2026-07",
       "tipo": "historico",
       "conteos": {
-        "procesos": 81013,
+        "procesos": 81014,
         "ofertas": 437855,
         "resultados": 54526,
         "ordenescompra": 151126
@@ -1490,7 +1490,7 @@
       "periodo": "2026-08",
       "tipo": "historico",
       "conteos": {
-        "procesos": 83969,
+        "procesos": 83971,
         "ofertas": 432111,
         "resultados": 65945,
         "ordenescompra": 153598
@@ -2253,7 +2253,7 @@
       "periodo": "2026-09",
       "tipo": "historico",
       "conteos": {
-        "procesos": 79612,
+        "procesos": 79644,
         "ofertas": 398018,
         "resultados": 48637,
         "ordenescompra": 149241
@@ -2957,7 +2957,7 @@
       "periodo": "2026-10",
       "tipo": "historico",
       "conteos": {
-        "procesos": 93711,
+        "procesos": 93780,
         "ofertas": 470841,
         "resultados": 56813,
         "ordenescompra": 180640
@@ -3786,7 +3786,7 @@
       "periodo": "2026-11",
       "tipo": "operativo",
       "conteos": {
-        "procesos": 28254,
+        "procesos": 27913,
         "ofertas": 467,
         "resultados": 43,
         "ordenescompra": 118574
@@ -3820,8 +3820,7 @@
           "data/partes/procesos/2026-11/0025.json",
           "data/partes/procesos/2026-11/0026.json",
           "data/partes/procesos/2026-11/0027.json",
-          "data/partes/procesos/2026-11/0028.json",
-          "data/partes/procesos/2026-11/0029.json"
+          "data/partes/procesos/2026-11/0028.json"
         ],
         "ofertas": [
           "data/partes/ofertas/2026-11/0001.json"
@@ -3954,8 +3953,8 @@
     }
   ],
   "ultima_exportacion": {
-    "periodo": "2026-11",
-    "fecha_utc": "2026-11-26T02:44:22.535452+00:00",
+    "periodo": "2026-10",
+    "fecha_utc": "2026-11-26T12:09:18.689396+00:00",
     "fuente": "MER_OPERATIVO_V2"
   }
 }
