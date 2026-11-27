@@ -1,5 +1,12 @@
 # Historial de continuidad y decisiones
 
+## 27/11/2026 — recurrencia de disponibilidad transitoria del artefacto Pages
+
+Run 46082016750/job 140783378577: carga exitosa 20:24:51.836, artefacto 15237394082 (320999505 bytes), API Actions disponible 20:24:52.275, deploy-pages encontró cero artefactos 20:24:52.632. Consulta posterior confirma artefacto existente y no expirado. La mitigación a06fbfde por consulta REST sola fue insuficiente; hipótesis de propagación inconsistente entre APIs, no causa interna confirmada. Run previo 46081915368 del mismo SHA e7271d7e1 verificó despliegue y catálogo público; noviembre 29.622 procesos y 158.363 OC según catálogo Git. No repetir ETL ni carga MER.
+
+Corrección autorizada 68d102bb exclusivamente en .github/workflows/preview-frontend-v2.yml: conserva verificación REST previa, espera adicional 30 s, hasta tres invocaciones deploy-pages sobre mismo artefacto (esperas 30/60 s tras fallos); dos primeras toleran error solo para permitir reintento; tercera falla explícitamente si no logra desplegar, guardia de éxito y comprobación pública sin caché intactas. URL de entorno admite salida de cualquiera de tres intentos; timeout job 20→30 min. Sin cambios en horarios, grupos de concurrencia, ETL, datos o Sheets. Push activa workflow. Pendiente validar ejecución corregida y recuperación real ante nuevo fallo transitorio; no se garantiza recuperación frente a fallos persistentes. Reversión: revertir 68d102bb previa autorización.
+
+
 ## 26/11/2026 — colisión de publicación vespertina
 
 ETL 16:00 terminó ORQUESTADOR OK 16:27:16, exportación 36ff8cdab: noviembre 27.917 procesos, 150.166 OC, 467 ofertas, 43 resultados. Run 45883764460/job 140129262208 validó derivados pero push rechazado 16:28:20 (main esperado b358e9386, real 090c6dfb), tras publicaciones concurrentes de participación y analítica. Pages run 45883873342 exitoso, pero búsqueda/perfiles del repositorio quedaron con 27.913 procesos y 118.574 OC; diferencias 4 y 31.592. API 16:15 run 45882218904 en curso al auditar. Supervisor matinal corregido run 45820050042 success.
