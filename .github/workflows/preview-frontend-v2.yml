@@ -32,10 +32,10 @@ jobs:
   vista-previa:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}frontend-v2/
+      url: ${{ steps.deploy.outputs.page_url || steps.deploy2.outputs.page_url || steps.deploy3.outputs.page_url }}frontend-v2/
     steps:
       - uses: actions/checkout@v4
         with:
@@ -149,9 +149,32 @@ jobs:
           done
           echo "::error::Artefacto github-pages no disponible en la API de Actions"
           exit 1
-      - name: Desplegar plataforma V2 en raíz del sitio
+      - name: Esperar propagación del artefacto
+        run: sleep 30
+      - name: Desplegar plataforma V2 (intento 1)
         id: deploy
+        continue-on-error: true
         uses: actions/deploy-pages@v4
+      - name: Esperar antes del segundo intento
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 30
+      - name: Desplegar plataforma V2 (intento 2)
+        if: steps.deploy.outcome == 'failure'
+        id: deploy2
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+      - name: Esperar antes del tercer intento
+        if: steps.deploy2.outcome == 'failure'
+        run: sleep 60
+      - name: Desplegar plataforma V2 (intento 3)
+        if: steps.deploy2.outcome == 'failure'
+        id: deploy3
+        uses: actions/deploy-pages@v4
+      - name: Confirmar despliegue exitoso
+        if: steps.deploy.outcome != 'success' && steps.deploy2.outcome != 'success' && steps.deploy3.outcome != 'success'
+        run: |
+          echo "::error::PAGES_DESPLIEGUE_AGOTADO"
+          exit 1
       - name: Comprobar raíz pública, redirección antigua y catálogo sin caché
         run: |
           python3 - <<'PY'
