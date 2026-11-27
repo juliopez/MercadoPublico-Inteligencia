@@ -4,9 +4,9 @@
   "entidad": "ordenescompra",
   "campo_actor": "proveedor",
   "campo_monto": "monto_total_oc_clp",
-  "registros": 134670,
-  "registros_identificados": 134670,
-  "actores": 22400,
+  "registros": 158363,
+  "registros_identificados": 158363,
+  "actores": 24563,
   "archivos": 256,
   "nota": "Cifras descriptivas por entidad/mes; registros y montos no equivalen a operaciones únicas ni adjudicaciones verificadas."
 }
